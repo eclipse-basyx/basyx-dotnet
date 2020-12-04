@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Configurations>Debug;Release</Configurations>
+    <Authors>Constantin Ziesche</Authors>
+    <Copyright>Copyright 2020 - Robert Bosch GmbH</Copyright>
+    <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
+    <RepositoryUrl>https://git.eclipse.org/r/plugins/gitiles/basyx/basyx/+/master/sdks/csnet/</RepositoryUrl>
+    <Description>The official BaSyx Asset Administration Shell Repository Http Server Reference Implementation</Description>
+    <Company>Robert Bosch GmbH</Company>
+    <PackageTags>BaSys BaSyx Asset Administration Shell Repository Server Component</PackageTags>
+    <PackageLicenseExpression>EPL-2.0</PackageLicenseExpression>
+    <PackageIcon>basyxlogo.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>   
+    <PackageReference Include="BaSyx.AAS.Server.Http" Version="1.0.0" />   
+    <PackageReference Include="BaSyx.Common.UI" Version="1.0.0" />   
+    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="1.0.0" />   
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ServerSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

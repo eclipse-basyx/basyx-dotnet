@@ -1,0 +1,14 @@
+﻿@model IAsset
+@using BaSyx.Models.Core.AssetAdministrationShell.Generics
+
+@if (Model != null)
+{
+    <div class="card border-dark mb-3">
+        <div class="card-header"><h4>Asset</h4></div>
+        <ul class="list-group list-group-flush">
+            @await Html.PartialAsync("_IdShort", Model.IdShort)
+            @await Html.PartialAsync("_Identifier", Model.Identification)
+            @await Html.PartialAsync("_Description", Model.Description)
+        </ul>
+    </div>
+}

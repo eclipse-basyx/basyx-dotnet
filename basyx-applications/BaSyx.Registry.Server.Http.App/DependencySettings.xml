@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DependencySettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DependencyCollection>
+    <Dependencies>
+      <Dependency>
+        <DllPath>BaSyx.Registry.ReferenceImpl.FileBased.dll</DllPath>
+        <InterfaceType>BaSyx.API.Platform.IAssetAdministrationShellRegistry</InterfaceType>
+        <ImplementationType>BaSyx.Registry.ReferenceImpl.FileBased.FileBasedRegistry</ImplementationType>
+        <ServiceLifetime>Singleton</ServiceLifetime>
+      </Dependency>
+    </Dependencies>
+  </DependencyCollection>
+  <Miscellaneous/>
+</DependencySettings>

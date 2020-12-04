@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BaSyx.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "-i C:\\Development\\BaSys42\\basys-devices\\SmartFunctionKitPressing\\SFK4Pressing-v30_v2b.aasx -o C:\\Development\\BaSys42\\basys-devices\\SmartFunctionKitPressing\\SFK4Pressing-v30_v2b-nightly.aasx -v"
+    }
+  }
+}

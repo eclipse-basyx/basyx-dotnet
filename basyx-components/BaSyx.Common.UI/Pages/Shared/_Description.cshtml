@@ -1,0 +1,16 @@
+﻿@model LangStringSet
+@using BaSyx.Models.Core.AssetAdministrationShell
+
+@if (Model?.Count > 0)
+{
+    string description = string.Empty;
+    for (int i = 0; i < Model.Count; i++)
+    {
+        <li class="list-group-item">
+            <div class="row align-items-center">
+                <div class="col-sm-2"><b>Description[@Model[i].Language]</b></div>
+                <div class="col-sm-10">@Model[i].Text</div>
+            </div>
+        </li>
+    }
+}

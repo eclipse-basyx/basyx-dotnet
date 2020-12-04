@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ServerConfig>
+    <Hosting>
+      <Environment>Development</Environment>
+      <ContentPath>Content</ContentPath>
+      <Urls>
+        <Url>http://+:5080</Url>
+        <Url>https://+:5443</Url>
+      </Urls>
+    </Hosting>
+    <DefaultRoute/>
+  </ServerConfig>
+  <Miscellaneous>
+    <CompanyLogo>/images/Bosch.png</CompanyLogo>
+  </Miscellaneous>
+</ServerSettings>

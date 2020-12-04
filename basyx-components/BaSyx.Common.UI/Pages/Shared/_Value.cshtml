@@ -1,0 +1,15 @@
+﻿@model IValue
+@using BaSyx.Models.Core.Common
+
+@if (Model != null)
+{
+    if (Model.ValueType == null)
+    {
+        var serialized = Json.Serialize(Model.Value).ToString();
+        @serialized
+    }
+    else
+    {
+        @Model.Value?.ToString()
+    }
+}

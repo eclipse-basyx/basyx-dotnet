@@ -1,0 +1,12 @@
+﻿@model Identifier
+@using BaSyx.Models.Core.AssetAdministrationShell.Identification;
+
+@if (Model != null)
+{
+    <li class="list-group-item">
+        <div class="row align-items-center">
+            <div class="col-sm-2"><b>Identifier (@Model.IdType.ToString())</b></div>
+            <div class="col-sm-10">@Model.Id</div>
+        </div>
+    </li>
+}

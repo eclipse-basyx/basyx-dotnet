@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BaSyx.AASX.Server.Http": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\ZIC5HO\\Desktop\\SmartFunctionKitForPressing.aasx"
+    }
+  }
+}

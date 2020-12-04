@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="icon" type="image/png" href="~/favicon.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="#"><img src="~/images/basyxlogo.png" width="200" /></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/swagger">Swagger Doc</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@ViewData["ApiRoot"]">REST-API</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://www.eclipse.org/legal/epl-2.0/">License</a>
+                        </li>
+                    </ul>
+                    @if (!string.IsNullOrEmpty((string)ViewData["CompanyLogo"]))
+                    {
+                        <div class="order-sm-last">
+                            <img src="@ViewData["CompanyLogo"]" width="160" />
+                        </div>
+                    }
+                    @*<form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                        </form>
+                   *@
+                </div>
+            </nav>
+     </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; Robert Bosch GmbH 2020 <a href="https://www.eclipse.org/legal/epl-2.0/">License EPL-2.0</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        function uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        function ExecuteOperation(requestPath, className) {
+            var argNames = document.getElementsByClassName("argInName " + className);
+            var argTypes = document.getElementsByClassName("argInType " + className);
+            var argValues = document.getElementsByClassName("argInValue " + className);
+
+            var args = [];
+            for (var i = 0; i < argNames.length; i++) {
+                var value = {
+                    idShort: argNames.item(i).innerText,
+                    modelType: {
+                        name: "Property"
+                    },
+                    valueType: {
+                        dataObjectType: {
+                            name: argTypes.item(i).innerText.toLowerCase()
+                        }
+                    },
+                    value: argValues.item(i).value
+                };
+                var arg = {
+                    modelType: {
+                        name: "OperationVariable"
+                    },
+                    value
+                };
+                args.push(arg);
+            }
+
+            var invocationRequest = {
+                requestId: uuidv4(),
+                inputArguments: args,
+                timeout: 30000
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: requestPath + '/invoke?async=false',
+                contentType: 'application/json',
+                data: JSON.stringify(invocationRequest),
+                error: function (jqXHR, errorType, exception) {
+                    alert("Failed to execute: " + JSON.stringify(invocationRequest));
+                    alert(jqXHR.responseText + " | " + errorType + " | " + exception);
+                },
+                success: function (data) {
+                    for (var i = 0; i < data.outputArguments.length; i++) {
+                        var argOutIdShort = data.outputArguments[i].value.idShort;
+                        $('#argOutValue_' + className + argOutIdShort).val(JSON.stringify(data.outputArguments[i].value.value));
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        function GetPropertyValue(requestPath, hashedPathIdInput) {
+            $.ajax({
+                type: 'GET',
+                url: requestPath + '/value',
+                success: function (data) {
+                    $('#' + hashedPathIdInput).val(data);
+                    $('#' + hashedPathIdInput).css('border-color', 'green');
+                }
+            });
+        }
+    </script>
+    <script>
+        function SetPropertyValue(requestPath, hashedPathIdInput, value) {
+            $.ajax({
+                type: 'PUT',
+                url: requestPath + '/value',
+                contentType: 'application/json',
+                data: JSON.stringify(value),
+                error: function () {
+                    $('#' + hashedPathIdInput).css('border-color', 'red');
+                    alert("Error updating Property-Value: " + value);
+                },
+                statusCode: {
+                    204: function () {
+                        $('#' + hashedPathIdInput).css('border-color', 'green');
+                    }
+                },
+                success: function () { }
+            });
+        }
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

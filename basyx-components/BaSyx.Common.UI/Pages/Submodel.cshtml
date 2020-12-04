@@ -1,0 +1,32 @@
+﻿@page
+@model BaSyx.Common.UI.Pages.SubmodelModel
+@using BaSyx.API.Components;
+@using BaSyx.Models.Core.AssetAdministrationShell.Generics;
+@using BaSyx.Utils.Settings.Types;
+@using Microsoft.AspNetCore.Hosting;
+
+
+@{
+    ISubmodelServiceProvider sp = Model.ServiceProvider;
+    ISubmodel submodel = sp.GetBinding();
+    IHostingEnvironment hostingEnvironment = Model.HostingEnvironment;
+    ServerSettings settings = Model.Settings;
+    string pathToCompanyLogo = settings.Miscellaneous.TryGetValue("CompanyLogo", out string path) ? path : string.Empty;
+
+    ViewData["Title"] = submodel.IdShort;
+    ViewData["ApiRoot"] = "/submodel";
+    ViewData["CompanyLogo"] = pathToCompanyLogo;
+    ViewData["ApiType"] = "Submodel";
+    ViewData["aasId"] = string.Empty;
+}
+
+
+<div class="starter-template">
+    <h1>@submodel.IdShort - Submodel UI</h1>
+    <p class="lead">Generic UI to discover the Submodel </p>
+</div>
+
+@await Html.PartialAsync("_Submodel", submodel)
+
+
+

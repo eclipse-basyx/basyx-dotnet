@@ -1,0 +1,184 @@
+﻿@model ISubmodelElement
+@using BaSyx.Models.Core.AssetAdministrationShell.Generics
+@using BaSyx.Models.Core.AssetAdministrationShell.Identification
+@using BaSyx.Models.Extensions
+@using Microsoft.AspNetCore.Hosting
+@inject IHostingEnvironment hostingEnvironment
+
+@if (Model != null)
+{
+    if (!Enum.TryParse<KeyElements>(Model.ModelType.Name, out KeyElements keyElements))
+    {
+        return;
+    }
+
+    switch (keyElements)
+    {
+        case KeyElements.GlobalReference:
+            break;
+        case KeyElements.FragmentReference:
+            break;
+        case KeyElements.AccessPermissionRule:
+            break;
+        case KeyElements.AnnotatedRelationshipElement:
+            break;
+        case KeyElements.BasicEvent:
+            break;
+        case KeyElements.Blob:
+            break;
+        case KeyElements.Capability:
+            break;
+        case KeyElements.ConceptDictionary:
+            break;
+        case KeyElements.DataElement:
+            break;
+        case KeyElements.File:
+            {
+                IFile file = Model.Cast<IFile>();
+                if (file == null)
+                {
+                    return;
+                }
+
+                string path = GetPath(file);
+
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>MimeType</b></div>
+                        <div class="col-sm-10">@file.MimeType</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>Path</b></div>
+                        <div class="col-sm-10">@path</div>
+                    </div>
+                </li>
+                @if (hostingEnvironment.ContentRootFileProvider.GetFileInfo(path).Exists)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            @if (file.MimeType.StartsWith("image"))
+                            {
+                                <img src="@path" style="display:block; max-width:100%; height:auto" />
+                            }
+                            else
+                            {
+                                <object data="@path" style="min-height:500px; width:100%"></object>
+                            }
+
+                        </div>
+                    </li>
+                }
+            }
+            return;
+        case KeyElements.Entity:
+            break;
+        case KeyElements.Event:
+            {
+                IEvent eventable = Model.Cast<IEvent>();
+                if (eventable == null)
+                {
+                    return;
+                }
+
+                @foreach (var element in eventable.DataElements)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            @{ string valueTypeName = element.Cast<IProperty>()?.ValueType?.ToString() ?? "ANY"; }
+                            <div class="col-sm-10"><b>@element.IdShort (@valueTypeName)</b></div>
+                        </div>
+                     </li>
+                }
+            }
+            return;
+        case KeyElements.MultiLanguageProperty:
+            break;
+        case KeyElements.Operation:
+            break;
+        case KeyElements.Property:
+            IProperty property = Model.Cast<IProperty>();
+            if (property == null)
+            {
+                return;
+            }
+
+            string propDataTypeName = property.ValueType?.ToString()?.ToUpper();
+            if (string.IsNullOrEmpty(propDataTypeName))
+            {
+                propDataTypeName = property?.ModelType?.Name;
+            }
+
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-sm-2"><b>ValueType</b></div>
+                    <div class="col-sm-10">@propDataTypeName</div>
+                </div>
+            </li>
+            return;
+        case KeyElements.Range:
+
+            IRange range = Model.Cast<IRange>();
+            if (range == null)
+            {
+                return;
+            }
+
+            string rangeDataTypeName = range.ValueType?.ToString()?.ToUpper();
+            if (string.IsNullOrEmpty(rangeDataTypeName))
+            {
+                rangeDataTypeName = range?.ModelType?.Name;
+            }
+
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-sm-2"><b>ValueType</b></div>
+                    <div class="col-sm-10">@rangeDataTypeName</div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-sm-2"><b>Min-Value</b></div>
+                    <div class="col-sm-10">@range.Min?.Value</div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-sm-2"><b>Max-Value</b></div>
+                    <div class="col-sm-10">@range.Max?.Value</div>
+                </div>
+            </li>
+            return;
+        case KeyElements.ReferenceElement:
+            break;
+        case KeyElements.RelationshipElement:
+            break;
+        case KeyElements.SubmodelElement:
+            break;
+        case KeyElements.SubmodelElementCollection:
+            break;
+        case KeyElements.View:
+            break;
+        case KeyElements.AssetAdministrationShell:
+            break;
+        case KeyElements.ConceptDescription:
+            break;
+        default:
+            break;
+    }
+}
+
+@functions 
+{
+        public string GetPath(IFile file)
+        {
+            string content = file.Value;
+            if (string.IsNullOrEmpty(content))
+                return string.Empty;
+
+            content = content.Replace('\\', '/');
+            return content;
+        }
+}
+
