@@ -1,11 +1,5 @@
-start /w Clear_Local_BaSyx_NuGet_Cache.bat
+start /w Build_BaSyx_Core.bat
 
-dotnet build basyx-core\BaSyx.Core.sln --force
+start /w Build_BaSyx_Components.bat
 
-start /w Clear_Local_BaSyx_NuGet_Cache.bat
-
-dotnet build basyx-components\BaSyx.Components.sln --force
-
-start /w Clear_Local_BaSyx_NuGet_Cache.bat
-
-dotnet build basyx-examples\BaSyx.Examples.sln --force
+start /w Build_BaSyx_Applications.bat

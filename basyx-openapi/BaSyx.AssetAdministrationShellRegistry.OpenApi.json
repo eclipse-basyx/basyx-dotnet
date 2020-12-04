@@ -1,0 +1,1192 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "BaSyx Registry HTTP REST-API",
+    "description": "The full description of the BaSyx Registry HTTP REST-API",
+    "contact": {
+      "name": "Constantin Ziesche",
+      "url": "https://www.bosch.com/de/",
+      "email": "constantin.ziesche@bosch.com"
+    },
+    "license": {
+      "name": "EPL-2.0",
+      "url": "https://www.eclipse.org/legal/epl-2.0/"
+    },
+    "version": "v1"
+  },
+  "paths": {
+    "/api/v1/registry": {
+      "get": {
+        "tags": [
+          "AssetAdministrationShellRegistry"
+        ],
+        "summary": "Retrieves all registered Asset Administration Shells within system (e.g. Station, Line, Plant, Area, etc.) defined by the Registry",
+        "operationId": "GetAllAssetAdministrationShellDescriptors",
+        "responses": {
+          "200": {
+            "description": "Returns a list of found Asset Administration Shell Descriptors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssetAdministrationShellDescriptor"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registry/{aasId}": {
+      "get": {
+        "tags": [
+          "AssetAdministrationShellRegistry"
+        ],
+        "summary": "Retrieves a specific Asset Administration Shell registration",
+        "operationId": "GetAssetAdministrationShellDescriptor",
+        "parameters": [
+          {
+            "name": "aasId",
+            "in": "path",
+            "description": "The Asset Administration Shell's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Asset Administration Shell's unique id",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested Asset Administration Shell",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetAdministrationShellDescriptor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "No Asset Administration Shell with passed id found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "AssetAdministrationShellRegistry"
+        ],
+        "summary": "Creates a new or updates an existing Asset Administration Shell registration at the Registry",
+        "operationId": "RegisterAssetAdministrationShell",
+        "parameters": [
+          {
+            "name": "aasId",
+            "in": "path",
+            "description": "The Asset Administration Shell's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Asset Administration Shell's unique id",
+              "nullable": true
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The Asset Administration Shell Descriptor",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetAdministrationShellDescriptor"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "The Asset Administration Shell's registration was successfully renewed"
+          },
+          "400": {
+            "description": "The syntax of the passed Asset Administration Shell is not valid or malformed request"
+          },
+          "404": {
+            "description": "No Asset Administration Shell with passed id found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AssetAdministrationShellRegistry"
+        ],
+        "summary": "Deletes the Asset Administration Shell registration from the Registry",
+        "operationId": "UnregisterAssetAdministrationShell",
+        "parameters": [
+          {
+            "name": "aasId",
+            "in": "path",
+            "description": "The Asset Administration Shell's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Asset Administration Shell's unique id",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "The Asset Administration Shell was deleted successfully"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "No Asset Administration Shell with passed id found"
+          }
+        }
+      }
+    },
+    "/api/v1/registry/{aasId}/submodels/{submodelId}": {
+      "put": {
+        "tags": [
+          "AssetAdministrationShellRegistry"
+        ],
+        "summary": "Creates a new or updates an existing Submodel registration at a specific Asset Administration Shell registered at the Registry",
+        "operationId": "RegisterSubmodelAtAssetAdministrationShell",
+        "parameters": [
+          {
+            "name": "aasId",
+            "in": "path",
+            "description": "The Asset Administration Shell's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Asset Administration Shell's unique id",
+              "nullable": true
+            }
+          },
+          {
+            "name": "submodelId",
+            "in": "path",
+            "description": "The Submodel's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Submodel's unique id",
+              "nullable": true
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The Submodel Descriptor",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmodelDescriptor"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The Submodel was created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmodelDescriptor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The syntax of the passed Submodel is not valid or malformed request"
+          },
+          "404": {
+            "description": "No Asset Administration Shell with passed id found"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "AssetAdministrationShellRegistry"
+        ],
+        "summary": "Retrieves the Submodel registration from a specific Asset Administration Shell registered at the Registry",
+        "operationId": "GetSubmodelDescriptorFromAssetAdministrationShell",
+        "parameters": [
+          {
+            "name": "aasId",
+            "in": "path",
+            "description": "The Asset Administration Shell's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Asset Administration Shell's unique id",
+              "nullable": true
+            }
+          },
+          {
+            "name": "submodelId",
+            "in": "path",
+            "description": "The Submodel's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Submodel's unique id",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested Submodels Descriptor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmodelDescriptor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "No Asset Administration Shell / Submodel with passed id found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AssetAdministrationShellRegistry"
+        ],
+        "summary": "Unregisters the Submodel from a specific Asset Administration Shell registered at the Registry",
+        "operationId": "DeleteSubmodelDescriptorFromAssetAdministrationShell",
+        "parameters": [
+          {
+            "name": "aasId",
+            "in": "path",
+            "description": "The Asset Administration Shell's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Asset Administration Shell's unique id",
+              "nullable": true
+            }
+          },
+          {
+            "name": "submodelId",
+            "in": "path",
+            "description": "The Submodel's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Submodel's unique id",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "The Submodel Descriptor was successfully unregistered"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "No Asset Administration Shell / Submodel with passed id found"
+          }
+        }
+      }
+    },
+    "/api/v1/registry/{aasId}/submodels": {
+      "get": {
+        "tags": [
+          "AssetAdministrationShellRegistry"
+        ],
+        "summary": "Retrieves all Submodel registrations from a specific Asset Administration Shell registered at the Registry",
+        "operationId": "GetAllSubmodelDescriptorsFromAssetAdministrationShell",
+        "parameters": [
+          {
+            "name": "aasId",
+            "in": "path",
+            "description": "The Asset Administration Shell's unique id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Asset Administration Shell's unique id",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of found Submodels Descriptors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubmodelDescriptor"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "No Asset Administration Shell with passed id found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "KeyType": {
+        "enum": [
+          "Undefined",
+          "Custom",
+          "IRI",
+          "URI",
+          "IRDI",
+          "IdShort",
+          "FragmentId"
+        ],
+        "type": "string"
+      },
+      "Identifier": {
+        "required": [
+          "id",
+          "idType"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "idType": {
+            "$ref": "#/components/schemas/KeyType"
+          }
+        }
+      },
+      "AdministrativeInformation": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "nullable": true
+          },
+          "revision": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "LangString": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "IEndpointSecurity": {
+        "type": "object"
+      },
+      "IEndpoint": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "security": {
+            "$ref": "#/components/schemas/IEndpointSecurity"
+          }
+        }
+      },
+      "ModelType": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        }
+      },
+      "AssetKind": {
+        "enum": [
+          "Type",
+          "Instance"
+        ],
+        "type": "string"
+      },
+      "KeyElements": {
+        "enum": [
+          "Undefined",
+          "GlobalReference",
+          "FragmentReference",
+          "AccessPermissionRule",
+          "AnnotatedRelationshipElement",
+          "BasicEvent",
+          "Blob",
+          "Capability",
+          "ConceptDictionary",
+          "DataElement",
+          "File",
+          "Entity",
+          "Event",
+          "MultiLanguageProperty",
+          "Operation",
+          "Property",
+          "Range",
+          "ReferenceElement",
+          "RelationshipElement",
+          "SubmodelElement",
+          "SubmodelElementCollection",
+          "View",
+          "Asset",
+          "AssetAdministrationShell",
+          "ConceptDescription",
+          "Submodel"
+        ],
+        "type": "string"
+      },
+      "Key": {
+        "required": [
+          "idType",
+          "local",
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/KeyElements"
+          },
+          "idType": {
+            "$ref": "#/components/schemas/KeyType"
+          },
+          "value": {
+            "type": "string"
+          },
+          "local": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SubmodelReference": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Key"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Reference": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Key"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "IDataSpecificationContent": {
+        "type": "object"
+      },
+      "IEmbeddedDataSpecification": {
+        "type": "object",
+        "properties": {
+          "hasDataSpecification": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "dataSpecificationContent": {
+            "$ref": "#/components/schemas/IDataSpecificationContent"
+          }
+        }
+      },
+      "Asset": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "$ref": "#/components/schemas/AssetKind"
+          },
+          "assetIdentificationModel": {
+            "$ref": "#/components/schemas/SubmodelReference"
+          },
+          "billOfMaterial": {
+            "$ref": "#/components/schemas/SubmodelReference"
+          },
+          "embeddedDataSpecifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IEmbeddedDataSpecification"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          },
+          "identification": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "administration": {
+            "$ref": "#/components/schemas/AdministrativeInformation"
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "SubmodelDescriptor": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true
+          },
+          "identification": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "administration": {
+            "$ref": "#/components/schemas/AdministrativeInformation"
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true
+          },
+          "semanticId": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IEndpoint"
+            },
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          }
+        }
+      },
+      "AssetAdministrationShellDescriptor": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true
+          },
+          "identification": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "administration": {
+            "$ref": "#/components/schemas/AdministrativeInformation"
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true
+          },
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IEndpoint"
+            },
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          },
+          "asset": {
+            "$ref": "#/components/schemas/Asset"
+          },
+          "submodels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubmodelDescriptor"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "ModelingKind": {
+        "enum": [
+          "Instance",
+          "Template"
+        ],
+        "type": "string"
+      },
+      "IConstraint": {
+        "type": "object",
+        "properties": {
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          }
+        }
+      },
+      "ISubmodelElement": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "semanticId": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "constraints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IConstraint"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ModelingKind"
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          },
+          "embeddedDataSpecifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IEmbeddedDataSpecification"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        }
+      },
+      "Submodel": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ModelingKind"
+          },
+          "semanticId": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "submodelElements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ISubmodelElement"
+            },
+            "nullable": true
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          },
+          "embeddedDataSpecifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IEmbeddedDataSpecification"
+            },
+            "nullable": true
+          },
+          "qualifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IConstraint"
+            },
+            "nullable": true
+          },
+          "identification": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "administration": {
+            "$ref": "#/components/schemas/AdministrativeInformation"
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "MessageType": {
+        "enum": [
+          "Unspecified",
+          "Debug",
+          "Information",
+          "Warning",
+          "Error",
+          "Fatal",
+          "Exception"
+        ],
+        "type": "string"
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "messageType": {
+            "$ref": "#/components/schemas/MessageType"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Result": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "isException": {
+            "type": "boolean",
+            "nullable": true,
+            "readOnly": true
+          },
+          "entity": {
+            "type": "object",
+            "nullable": true
+          },
+          "entityType": {
+            "type": "string",
+            "nullable": true
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "SubmodelElement": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true
+          },
+          "semanticId": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "qualifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IConstraint"
+            },
+            "nullable": true
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ModelingKind"
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          },
+          "embeddedDataSpecifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IEmbeddedDataSpecification"
+            },
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "ElementValue": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "object",
+            "nullable": true
+          }
+        }
+      },
+      "OperationVariable": {
+        "type": "object",
+        "properties": {
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          },
+          "value": {
+            "$ref": "#/components/schemas/ISubmodelElement"
+          }
+        }
+      },
+      "InvocationRequest": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "nullable": true
+          },
+          "inputArguments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationVariable"
+            },
+            "nullable": true
+          },
+          "inoutputArguments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationVariable"
+            },
+            "nullable": true
+          },
+          "timeout": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "OperationResult": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "isException": {
+            "type": "boolean",
+            "nullable": true,
+            "readOnly": true
+          },
+          "entity": {
+            "type": "object",
+            "nullable": true
+          },
+          "entityType": {
+            "type": "string",
+            "nullable": true
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "ExecutionState": {
+        "enum": [
+          "Initiated",
+          "Running",
+          "Completed",
+          "Canceled",
+          "Failed",
+          "Timeout"
+        ],
+        "type": "string"
+      },
+      "InvocationResponse": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "nullable": true
+          },
+          "inoutputArguments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationVariable"
+            },
+            "nullable": true
+          },
+          "outputArguments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationVariable"
+            },
+            "nullable": true
+          },
+          "operationResult": {
+            "$ref": "#/components/schemas/OperationResult"
+          },
+          "executionState": {
+            "$ref": "#/components/schemas/ExecutionState"
+          }
+        }
+      },
+      "AssetAdministrationShellReference": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Key"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "View": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true
+          },
+          "containedElements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            },
+            "nullable": true
+          },
+          "semanticId": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          }
+        }
+      },
+      "ConceptDescriptionReference": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Key"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "ConceptDictionary": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true
+          },
+          "metaData": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "conceptDescriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConceptDescriptionReference"
+            },
+            "nullable": true
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          }
+        }
+      },
+      "AssetAdministrationShell": {
+        "type": "object",
+        "properties": {
+          "idShort": {
+            "type": "string",
+            "nullable": true
+          },
+          "asset": {
+            "$ref": "#/components/schemas/Asset"
+          },
+          "submodels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Submodel"
+            },
+            "nullable": true
+          },
+          "derivedFrom": {
+            "$ref": "#/components/schemas/AssetAdministrationShellReference"
+          },
+          "views": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/View"
+            },
+            "nullable": true
+          },
+          "modelType": {
+            "$ref": "#/components/schemas/ModelType"
+          },
+          "embeddedDataSpecifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IEmbeddedDataSpecification"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "conceptDictionaries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConceptDictionary"
+            },
+            "nullable": true
+          },
+          "identification": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "administration": {
+            "$ref": "#/components/schemas/AdministrativeInformation"
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LangString"
+            },
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}
