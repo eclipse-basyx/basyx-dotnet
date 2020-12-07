@@ -76,8 +76,7 @@ namespace HelloAssetAdministrationShell
                 Asset = new Asset("HelloAsset", new BaSyxAssetIdentifier("HelloAsset", "1.0.0"))
                 {
                     Description = new LangStringSet() { new LangString("en-US", "This is an exemplary Asset reference from the Asset Administration Shell") },
-                    Kind = AssetKind.Instance,
-                    SemanticId = new Reference(new GlobalKey(KeyElements.Asset, KeyType.IRI, "urn:basys:org.eclipse.basyx:assets:HelloAsset:1.0.0"))
+                    Kind = AssetKind.Instance
                 }
             };
 
@@ -102,7 +101,6 @@ namespace HelloAssetAdministrationShell
                 Value = "/HelloAssetAdministrationShell.pdf"
             });
 
-
             helloSubmodel.SubmodelElements.Add(new Operation("HelloOperation")
             {
                 Description = new LangStringSet() { new LangString("en-US", "This is an exemplary operation returning the input argument with 'Hello' as prefix") },
@@ -115,8 +113,7 @@ namespace HelloAssetAdministrationShell
 
             var assetIdentificationSubmodel = new Submodel("AssetIdentification", new BaSyxSubmodelIdentifier("AssetIdentification", "1.0.0"))
             {
-                Kind = ModelingKind.Instance,
-                Parent = aas
+                Kind = ModelingKind.Instance
             };
 
             var productTypeProp = new Property<string>("ProductType")
