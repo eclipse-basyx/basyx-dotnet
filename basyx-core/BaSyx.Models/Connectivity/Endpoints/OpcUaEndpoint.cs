@@ -29,7 +29,7 @@ namespace BaSyx.Models.Connectivity
         [JsonConstructor]
         public OpcUaEndpoint(string address)
         {
-            address = address ?? throw new ArgumentNullException(nameof(address));
+            Address = address ?? throw new ArgumentNullException(nameof(address));
             Uri uri = new Uri(address);
             BrowsePath = uri.AbsolutePath;
             Authority = uri.Authority;

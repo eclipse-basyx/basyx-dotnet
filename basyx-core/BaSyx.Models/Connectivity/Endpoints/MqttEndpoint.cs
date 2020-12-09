@@ -28,7 +28,7 @@ namespace BaSyx.Models.Connectivity
         [JsonConstructor]
         public MqttEndpoint(string address)
         {
-            address = address ?? throw new ArgumentNullException(nameof(address));
+            Address = address ?? throw new ArgumentNullException(nameof(address));
             Uri uri = new Uri(address);
             BrokerUri = new Uri(uri.AbsoluteUri);
             Topic = uri.AbsolutePath;
