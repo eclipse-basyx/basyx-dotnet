@@ -21,17 +21,6 @@ namespace BaSyx.Core.Tests
     [TestClass]
     public class ExportTest
     {
-        [TestMethod]
-        public void Test1_ImportAASX()
-        {
-            string aasxPath = @"C:\Development\AASX\Nexo-TypePlate_v6.aasx";
-            IAssetAdministrationShell shell;
-            using (AASX aasx = new AASX(aasxPath))
-            {
-                AssetAdministrationShellEnvironment_V2_0 environment = aasx.GetEnvironment_V2_0();
-                shell = environment.AssetAdministrationShells.FirstOrDefault();
-            }
-            shell.Should().NotBeNull();
-        }
+       
     }
 }

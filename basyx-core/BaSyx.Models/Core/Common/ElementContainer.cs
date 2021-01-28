@@ -284,7 +284,7 @@ namespace BaSyx.Models.Core.Common
         public virtual IResult<IQueryableElementContainer<TElement>> RetrieveAll()
         {
             if (this.Count() == 0)
-                return new Result<IQueryableElementContainer<TElement>>(true, new EmptyMessage());
+                return new Result<IQueryableElementContainer<TElement>>(true, new ElementContainer<TElement>().AsQueryableElementContainer(), new EmptyMessage());
             else
                 return new Result<IQueryableElementContainer<TElement>>(true, this.AsQueryableElementContainer());
         }

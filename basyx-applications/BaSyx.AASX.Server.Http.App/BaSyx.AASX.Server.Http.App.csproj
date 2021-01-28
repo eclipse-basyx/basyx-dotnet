@@ -17,27 +17,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="NLog.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="NLog.config">
-      <PackagePath>contentFiles\any\$(TargetFramework)\</PackagePath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <PackageFlatten>true</PackageFlatten>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <Pack>true</Pack>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BaSyx.AAS.Server.Http" Version="1.0.0" />
     <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="1.0.0" />
     <PackageReference Include="BaSyx.Common.UI" Version="1.0.0" />
     <PackageReference Include="BaSyx.Common.UI.Swagger" Version="1.0.0" />
     <PackageReference Include="BaSyx.Models.Export" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 

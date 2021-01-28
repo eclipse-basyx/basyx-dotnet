@@ -18,6 +18,7 @@
 	<PackageReference Include="BaSyx.AAS.Server.Http" Version="1.0.0" />
 	<PackageReference Include="BaSyx.Common.UI" Version="1.0.0" />
 	<PackageReference Include="BaSyx.Common.UI.Swagger" Version="1.0.0" />
+	<PackageReference Include="BaSyx.Discovery.mDNS" Version="1.0.0" />
     <PackageReference Include="BaSyx.Utils.Client.Mqtt" Version="1.0.0" />
     <PackageReference Include="NLog" Version="4.7.0" />
   </ItemGroup>

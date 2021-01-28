@@ -108,7 +108,7 @@ namespace BaSyx.Models.Core.Common
         public string Name { get; }
        
         [JsonConstructor]
-        protected DataObjectType(string name)
+        internal DataObjectType(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
@@ -206,7 +206,8 @@ namespace BaSyx.Models.Core.Common
         {
             return DataType.GetDataTypeFromSystemType(type).DataObjectType;
         }
-    }
 
-    
+        public static implicit operator string(DataObjectType dataObjectType) => dataObjectType.ToString();
+        public static implicit operator DataObjectType(string dataObjectType) => _dataObjectTypes[dataObjectType.LowercaseFirst()];
+    }
 }

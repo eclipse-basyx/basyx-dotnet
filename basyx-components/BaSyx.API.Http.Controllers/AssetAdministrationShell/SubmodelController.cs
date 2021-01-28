@@ -18,7 +18,11 @@ using BaSyx.Models.Extensions;
 using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using BaSyx.Models.Communication;
 using System.Web;
-using System.ComponentModel;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using System.Linq;
+using System.IO;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -30,14 +34,33 @@ namespace BaSyx.API.Http.Controllers
     {
         private readonly ISubmodelServiceProvider serviceProvider;
 
+#if NETCOREAPP3_1
+        private readonly IWebHostEnvironment hostingEnvironment;
+
+         /// <summary>
+        /// The constructor for the Submodel Controller
+        /// </summary>
+        /// <param name="submodelServiceProvider">The Submodel Service Provider implementation provided by the dependency injection</param>
+        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        public SubmodelController(ISubmodelServiceProvider submodelServiceProvider, IWebHostEnvironment environment)
+        {
+            shellServiceProvider = aasServiceProvider;
+            hostingEnvironment = environment;
+        }
+#else
+        private readonly IHostingEnvironment hostingEnvironment;
+
         /// <summary>
         /// The constructor for the Submodel Controller
         /// </summary>
         /// <param name="submodelServiceProvider">The Submodel Service Provider implementation provided by the dependency injection</param>
-        public SubmodelController(ISubmodelServiceProvider submodelServiceProvider)
+        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        public SubmodelController(ISubmodelServiceProvider submodelServiceProvider, IHostingEnvironment environment)
         {
             serviceProvider = submodelServiceProvider;
+            hostingEnvironment = environment;
         }
+#endif
 
         /// <summary>
         /// Retrieves the entire Submodel
@@ -243,6 +266,46 @@ namespace BaSyx.API.Http.Controllers
 
             var result = serviceProvider.DeleteSubmodelElement(seIdShortPath);
             return result.CreateActionResult(CrudOperation.Delete);
+        }
+
+        /// <summary>
+        /// Invokes a specific operation from the Submodel synchronously or asynchronously
+        /// </summary>
+        /// <param name="idShortPathToFile">The IdShort path to the File</param>
+        /// <param name="file">The actual File to upload</param>
+        /// <returns></returns>
+        /// <response code="200">File uploaded successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Method handler not found</response>
+        [HttpPost("submodel/submodelElements/{idShortPathToFile}/upload", Name = "UploadFileContentByIdShort")]
+        [Produces("application/json")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public async Task<IActionResult> UploadFileContentByIdShort(string idShortPathToFile, IFormFile file)
+        {
+            if (string.IsNullOrEmpty(idShortPathToFile))
+                return ResultHandling.NullResult(nameof(idShortPathToFile));
+            if (file == null)
+                return ResultHandling.NullResult(nameof(file));
+
+            idShortPathToFile = HttpUtility.UrlDecode(idShortPathToFile);
+
+            var fileElementRetrieved = serviceProvider.RetrieveSubmodelElement(idShortPathToFile);
+            if(!fileElementRetrieved.Success || fileElementRetrieved.Entity == null)
+                return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
+
+            IFile fileElement = fileElementRetrieved.Entity.Cast<IFile>();
+            string fileName = fileElement.Value.TrimStart('/');
+            string filePath = Path.Combine(hostingEnvironment.ContentRootPath, fileName);
+            
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok();
         }
 
         /// <summary>

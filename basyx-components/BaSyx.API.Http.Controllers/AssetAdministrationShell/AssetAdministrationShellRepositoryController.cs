@@ -10,12 +10,15 @@
 *******************************************************************************/
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.API.Components;
 using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using BaSyx.Models.Communication;
 using System.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -27,14 +30,33 @@ namespace BaSyx.API.Http.Controllers
     {
         private readonly IAssetAdministrationShellRepositoryServiceProvider serviceProvider;
 
+#if NETCOREAPP3_1
+        private readonly IWebHostEnvironment hostingEnvironment;
+
         /// <summary>
         /// The constructor for the Asset Administration Shell Repository Controller
         /// </summary>
         /// <param name="assetAdministrationShellRepositoryServiceProvider"></param>
-        public AssetAdministrationShellRepositoryController(IAssetAdministrationShellRepositoryServiceProvider assetAdministrationShellRepositoryServiceProvider)
+        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        public AssetAdministrationShellRepositoryController(IAssetAdministrationShellRepositoryServiceProvider assetAdministrationShellRepositoryServiceProvider, IWebHostEnvironment environment)
+        {
+            shellServiceProvider = aasServiceProvider;
+            hostingEnvironment = environment;
+        }
+#else
+        private readonly IHostingEnvironment hostingEnvironment;
+
+        /// <summary>
+        /// The constructor for the Asset Administration Shell Repository Controller
+        /// </summary>
+        /// <param name="assetAdministrationShellRepositoryServiceProvider"></param>
+        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        public AssetAdministrationShellRepositoryController(IAssetAdministrationShellRepositoryServiceProvider assetAdministrationShellRepositoryServiceProvider, IHostingEnvironment environment)
         {
             serviceProvider = assetAdministrationShellRepositoryServiceProvider;
+            hostingEnvironment = environment;
         }
+#endif
 
         /// <summary>
         /// Retrieves all Asset Administration Shells from the Asset Administration Shell repository
@@ -140,7 +162,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.GetSubmodelsFromShell();
         }
 
@@ -163,7 +185,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.PutSubmodelToShell(submodelIdShort, submodel);
         }
 
@@ -186,7 +208,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.GetSubmodelFromShellByIdShort(submodelIdShort);
         }
 
@@ -206,7 +228,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.DeleteSubmodelFromShellByIdShort(submodelIdShort);
         }
 
@@ -226,7 +248,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_GetSubmodelValues(submodelIdShort);
         }
 
@@ -247,7 +269,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_GetSubmodelElements(submodelIdShort);
         }
 
@@ -273,7 +295,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_PutSubmodelElement(submodelIdShort, seIdShortPath, submodelElement);
         }
 
@@ -295,7 +317,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_GetSubmodelElementByIdShort(submodelIdShort, seIdShortPath);
         }
 
@@ -319,7 +341,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_GetSubmodelElementValueByIdShort(submodelIdShort, seIdShortPath);
         }
 
@@ -344,7 +366,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_PutSubmodelElementValueByIdShort(submodelIdShort, seIdShortPath, value);
         }
 
@@ -365,8 +387,33 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_DeleteSubmodelElementByIdShort(submodelIdShort, seIdShortPath);
+        }
+
+        /// <summary>
+        /// Invokes a specific operation from the Submodel synchronously or asynchronously
+        /// </summary>
+        /// <param name="aasId">The Asset Administration Shell's unique id</param>
+        /// <param name="submodelIdShort">Submodel's short id</param>
+        /// <param name="idShortPathToFile">The IdShort path to the File</param>
+        /// <param name="file">The actual File to upload</param>
+        /// <returns></returns>
+        /// <response code="200">File uploaded successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Submodel / Method handler not found</response>
+        [HttpPost("shells/{aasId}/aas/submodels/{submodelIdShort}/submodel/submodelElements/{idShortPathToFile}/upload", Name = "ShellRepo_UploadFileContentByIdShort")]
+        [Produces("application/json")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public async Task<IActionResult> ShellRepo_UploadFileContentByIdShort(string aasId, string submodelIdShort, string idShortPathToFile, IFormFile file)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return await service.Shell_UploadFileContentByIdShort(submodelIdShort, idShortPathToFile, file);
         }
 
         /// <summary>
@@ -391,7 +438,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_InvokeOperationByIdShort(submodelIdShort, idShortPathToOperation, invocationRequest, async);
         }
 
@@ -416,7 +463,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.IsNullOrNotFound(aasId, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
-            var service = new AssetAdministrationShellController(provider);
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_GetInvocationResultByIdShort(submodelIdShort, idShortPathToOperation, requestId);
         }
 

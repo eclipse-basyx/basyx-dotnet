@@ -54,7 +54,7 @@ namespace BaSyx.Components.Common
         public const string DEFAULT_CONTENT_ROOT = "Content";
         public const string DEFAULT_WEB_ROOT = "wwwroot";
         public const string UI_RELATIVE_PATH = "/ui";
-        public const string BROWSE_PATH = "/browse";
+        public const string FILES_PATH = "/files";
         public const string ERROR_PATH = "/error";
         public const string CONTROLLER_ASSEMBLY_NAME = "BaSyx.API.Http.Controllers";
 
@@ -372,13 +372,14 @@ namespace BaSyx.Components.Common
                 app.UseStaticFiles(new StaticFileOptions()
                 {
                     FileProvider = new PhysicalFileProvider(@path),
-                    RequestPath = new PathString("")
+                    RequestPath = new PathString(FILES_PATH),
+                    ServeUnknownFileTypes = true
                 });
 
                 app.UseDirectoryBrowser(new DirectoryBrowserOptions
                 {
                     FileProvider = new PhysicalFileProvider(@path),
-                    RequestPath = new PathString(BROWSE_PATH)
+                    RequestPath = new PathString(FILES_PATH)
                 });
             }
 
@@ -397,7 +398,7 @@ namespace BaSyx.Components.Common
                 
                 if (requestPath.Contains("submodelElements/"))
                 {
-                    Match valueMatch = Regex.Match(requestPath, "(?<=submodelElements/)(.*)(?=/value|/invoke|/invocationList)");
+                    Match valueMatch = Regex.Match(requestPath, "(?<=submodelElements/)(.*)(?=/value|/invoke|/invocationList|/upload)");
                     if(valueMatch.Success && !string.IsNullOrEmpty(valueMatch.Value))
                     {
                         string elementPath = HttpUtility.UrlEncode(valueMatch.Value);

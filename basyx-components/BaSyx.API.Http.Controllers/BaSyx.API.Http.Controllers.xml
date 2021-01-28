@@ -9,11 +9,12 @@
             The Asset Administration Shell Controller
             </summary>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.#ctor(BaSyx.API.Components.IAssetAdministrationShellServiceProvider)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.#ctor(BaSyx.API.Components.IAssetAdministrationShellServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
             <summary>
             The constructor for the Asset Administration Shell Controller
             </summary>
             <param name="assetAdministrationShellServiceProvider">The Asset Administration Shell Service Provider implementation provided by the dependency injection</param>
+            <param name="environment">The Hosting Environment provided by the dependency injection</param>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAssetAdministrationShell">
             <summary>
@@ -131,6 +132,18 @@
             <response code="204">Submodel-Element deleted successfully</response>
             <response code="404">Submodel / Submodel-Element not found</response>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_UploadFileContentByIdShort(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Invokes a specific operation from the Submodel synchronously or asynchronously
+            </summary>
+            <param name="submodelIdShort">Submodel's short id</param>
+            <param name="idShortPathToFile">The IdShort path to the File</param>
+            <param name="file">The actual File to upload</param>
+            <returns></returns>
+            <response code="200">File uploaded successfully</response>
+            <response code="400">Bad Request</response>
+            <response code="404">Submodel / Method handler not found</response>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_InvokeOperationByIdShort(System.String,System.String,BaSyx.Models.Communication.InvocationRequest,System.Boolean)">
             <summary>
             Invokes a specific operation from the Submodel synchronously or asynchronously
@@ -161,11 +174,12 @@
             The Asset Administration Shell Repository Controller
             </summary>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.#ctor(BaSyx.API.Components.IAssetAdministrationShellRepositoryServiceProvider)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.#ctor(BaSyx.API.Components.IAssetAdministrationShellRepositoryServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
             <summary>
             The constructor for the Asset Administration Shell Repository Controller
             </summary>
             <param name="assetAdministrationShellRepositoryServiceProvider"></param>
+            <param name="environment">The Hosting Environment provided by the dependency injection</param>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.GetAllAssetAdministrationShells">
             <summary>
@@ -321,6 +335,19 @@
             <response code="204">Submodel-Element deleted successfully</response>
             <response code="404">Submodel / Submodel-Element not found</response>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_UploadFileContentByIdShort(System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Invokes a specific operation from the Submodel synchronously or asynchronously
+            </summary>
+            <param name="aasId">The Asset Administration Shell's unique id</param>
+            <param name="submodelIdShort">Submodel's short id</param>
+            <param name="idShortPathToFile">The IdShort path to the File</param>
+            <param name="file">The actual File to upload</param>
+            <returns></returns>
+            <response code="200">File uploaded successfully</response>
+            <response code="400">Bad Request</response>
+            <response code="404">Submodel / Method handler not found</response>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_InvokeOperationByIdShort(System.String,System.String,System.String,BaSyx.Models.Communication.InvocationRequest,System.Boolean)">
             <summary>
             Invokes a specific operation from the Submodel synchronously or asynchronously
@@ -353,11 +380,12 @@
             The Submodel Controller
             </summary>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.#ctor(BaSyx.API.Components.ISubmodelServiceProvider)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.#ctor(BaSyx.API.Components.ISubmodelServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
             <summary>
             The constructor for the Submodel Controller
             </summary>
             <param name="submodelServiceProvider">The Submodel Service Provider implementation provided by the dependency injection</param>
+            <param name="environment">The Hosting Environment provided by the dependency injection</param>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodel">
             <summary>
@@ -441,6 +469,17 @@
             <response code="204">Submodel-Element deleted successfully</response>
             <response code="404">Submodel-Element not found</response>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.UploadFileContentByIdShort(System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Invokes a specific operation from the Submodel synchronously or asynchronously
+            </summary>
+            <param name="idShortPathToFile">The IdShort path to the File</param>
+            <param name="file">The actual File to upload</param>
+            <returns></returns>
+            <response code="200">File uploaded successfully</response>
+            <response code="400">Bad Request</response>
+            <response code="404">Method handler not found</response>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.InvokeOperationByIdShort(System.String,BaSyx.Models.Communication.InvocationRequest,System.Boolean)">
             <summary>
             Invokes a specific operation from the Submodel synchronously or asynchronously
@@ -469,11 +508,12 @@
             The Submodel Repository Controller
             </summary>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.#ctor(BaSyx.API.Components.ISubmodelRepositoryServiceProvider)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.#ctor(BaSyx.API.Components.ISubmodelRepositoryServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
             <summary>
             The constructor for the Submodel Repository Controller
             </summary>
             <param name="submodelRepositoryServiceProvider"></param>
+            <param name="environment">The Hosting Environment provided by the dependency injection</param>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsFromRepo">
             <summary>
@@ -581,6 +621,18 @@
             <returns></returns>
             <response code="204">Submodel-Element deleted successfully</response>
             <response code="404">Submodel / Submodel-Element not found</response>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_UploadFileContentByIdShort(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Invokes a specific operation from the Submodel synchronously or asynchronously
+            </summary>
+            <param name="submodelId">The Submodel's unique id</param>
+            <param name="idShortPathToFile">The IdShort path to the File</param>
+            <param name="file">The actual File to upload</param>
+            <returns></returns>
+            <response code="200">File uploaded successfully</response>
+            <response code="400">Bad Request</response>
+            <response code="404">Submodel / Method handler not found</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_InvokeOperationById(System.String,System.String,BaSyx.Models.Communication.InvocationRequest,System.Boolean)">
             <summary>

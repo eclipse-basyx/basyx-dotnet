@@ -12,6 +12,7 @@ using BaSyx.AAS.Server.Http;
 using BaSyx.API.Components;
 using BaSyx.Common.UI;
 using BaSyx.Common.UI.Swagger;
+using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings.Types;
 using NLog;
 
@@ -46,6 +47,16 @@ namespace HelloAssetAdministrationShell
 
             //Add BaSyx Web UI
             aasServer.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
+
+            aasServer.ApplicationStarted = () =>
+            {
+                shellService.StartDiscovery();
+            };
+
+            aasServer.ApplicationStopping = () =>
+            {
+                shellService.StopDiscovery();
+            };
 
             //Run HTTP-REST interface
             aasServer.Run();           

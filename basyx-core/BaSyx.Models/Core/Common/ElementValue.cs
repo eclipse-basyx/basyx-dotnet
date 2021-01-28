@@ -12,6 +12,7 @@ using BaSyx.Models.Core.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
@@ -48,7 +49,7 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
 
             try
             {
-                Value = Convert.ChangeType(Value, type);
+                Value = Convert.ChangeType(Value, type, CultureInfo.InvariantCulture);
                 return Value;
             }
             catch
@@ -76,7 +77,7 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
             {
                 try
                 {
-                    Value = Convert.ChangeType(Value, typeof(T));
+                    Value = Convert.ChangeType(Value, typeof(T), CultureInfo.InvariantCulture);
                     return (T)Value;
                 }
                 catch

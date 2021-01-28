@@ -12,6 +12,7 @@
 using BaSyx.Models.Core.AssetAdministrationShell;
 using BaSyx.Models.Core.AssetAdministrationShell.Identification;
 using BaSyx.Models.Core.AssetAdministrationShell.Semantics;
+using BaSyx.Utils.JsonHandling;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.Common
 {
-    [DataContract]
+    [DataContract, JsonConverter(typeof(ToStringConverter))]
     public class DataType : IHasSemantics, IEquatable<DataType>
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "dataObjectType")]
@@ -296,7 +297,9 @@ namespace BaSyx.Models.Core.Common
         {
             return GetDataTypeFromSystemType(type);
         }
+
+        public static implicit operator string(DataType dataType) => dataType.ToString();
+
+        public static implicit operator DataType(string dataObjectType) => new DataType(dataObjectType);
     }
-
-
 }

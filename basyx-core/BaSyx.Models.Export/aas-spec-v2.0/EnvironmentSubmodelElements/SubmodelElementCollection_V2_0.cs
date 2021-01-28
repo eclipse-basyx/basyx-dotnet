@@ -18,7 +18,7 @@ namespace BaSyx.Models.Export
 {
     public class SubmodelElementCollection_V2_0 : SubmodelElementType_V2_0, IModelType
     {
-        [JsonProperty("value"), JsonConverter(typeof(JsonSubmodelElementConverter_V1_0))]
+        [JsonProperty("value"), JsonConverter(typeof(JsonSubmodelElementConverter_V2_0))]
         [XmlArray("value")]
         [XmlArrayItem("submodelElement")]
         public List<EnvironmentSubmodelElement_V2_0> Value { get; set; }

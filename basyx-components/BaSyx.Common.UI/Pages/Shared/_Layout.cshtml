@@ -75,17 +75,20 @@
 
             var args = [];
             for (var i = 0; i < argNames.length; i++) {
+                var _valueType = argTypes.item(i).innerText;
+                var _value = argValues.item(i).value;
+
+                if (isNaN(_value) && (_valueType.includes('double') || _valueType.includes('float') || _valueType.includes('decimal'))) {
+                    _value = _value.replace(/,/g, '.')
+                }
+
                 var value = {
                     idShort: argNames.item(i).innerText,
                     modelType: {
                         name: "Property"
                     },
-                    valueType: {
-                        dataObjectType: {
-                            name: argTypes.item(i).innerText.toLowerCase()
-                        }
-                    },
-                    value: argValues.item(i).value
+                    valueType: _valueType,
+                    value: _value
                 };
                 var arg = {
                     modelType: {
@@ -108,8 +111,7 @@
                 contentType: 'application/json',
                 data: JSON.stringify(invocationRequest),
                 error: function (jqXHR, errorType, exception) {
-                    alert("Failed to execute: " + JSON.stringify(invocationRequest));
-                    alert(jqXHR.responseText + " | " + errorType + " | " + exception);
+                    alert("Failed to execute: '" + JSON.stringify(invocationRequest) + "' - Error: " + jqXHR.responseText + " | " + errorType + " | " + exception);
                 },
                 success: function (data) {
                     for (var i = 0; i < data.outputArguments.length; i++) {
@@ -133,22 +135,24 @@
         }
     </script>
     <script>
-        function SetPropertyValue(requestPath, hashedPathIdInput, value) {
+        function SetPropertyValue(requestPath, hashedPathIdInput, value, valueType) {
+            if (isNaN(value) && (valueType.includes('double') || valueType.includes('float') || valueType.includes('decimal'))) {
+                value = value.replace(/,/g, '.')
+            }
             $.ajax({
                 type: 'PUT',
                 url: requestPath + '/value',
                 contentType: 'application/json',
                 data: JSON.stringify(value),
-                error: function () {
+                error: function (jqXHR, errorType, exception) {
                     $('#' + hashedPathIdInput).css('border-color', 'red');
-                    alert("Error updating Property-Value: " + value);
+                    alert("Error updating Property-Value: '" + JSON.stringify(value) + "' - Error: " + jqXHR.responseText + " | " + errorType + " | " + exception);
                 },
                 statusCode: {
                     204: function () {
                         $('#' + hashedPathIdInput).css('border-color', 'green');
                     }
-                },
-                success: function () { }
+                }
             });
         }
     </script>

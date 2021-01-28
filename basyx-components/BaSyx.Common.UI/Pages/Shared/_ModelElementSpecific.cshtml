@@ -2,8 +2,8 @@
 @using BaSyx.Models.Core.AssetAdministrationShell.Generics
 @using BaSyx.Models.Core.AssetAdministrationShell.Identification
 @using BaSyx.Models.Extensions
+@using BaSyx.Models.Core.Common
 @using Microsoft.AspNetCore.Hosting
-@using System.IO;
 @inject IHostingEnvironment hostingEnvironment
 
 @if (Model != null)
@@ -42,6 +42,8 @@
                 }
 
                 string path = GetPath(file);
+                bool exists = hostingEnvironment.ContentRootFileProvider.GetFileInfo(path).Exists;
+                string separator = path.StartsWith("/") ? string.Empty : "/";
 
                 <li class="list-group-item">
                     <div class="row align-items-center">
@@ -52,20 +54,27 @@
                 <li class="list-group-item">
                     <div class="row align-items-center">
                         <div class="col-sm-2"><b>Path</b></div>
-                        <div class="col-sm-10">@path</div>
+                        @if (exists)
+                        {
+                            <div class="col-sm-10"><a href="@("/files" + separator + path)">@path</a></div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-10">@path</div>
+                        }
                     </div>
                 </li>
-                @if (hostingEnvironment.ContentRootFileProvider.GetFileInfo(path).Exists)
+                @if (exists)
                 {
                     <li class="list-group-item">
                         <div class="row align-items-center">
                             @if (file.MimeType.StartsWith("image"))
                             {
-                                <img src="@path" style="display:block; max-width:100%; height:auto" />
+                                <img src="@("/files" + separator + path)" style="display:block; max-width:100%; height:auto" />
                             }
                             else
                             {
-                                <object data="@path" style="min-height:500px; width:100%"></object>
+                                <object data="@("/files" + separator + path)" style="min-height:500px; width:100%"></object>
                             }
 
                         </div>
@@ -87,7 +96,7 @@
                 {
                     <li class="list-group-item">
                         <div class="row align-items-center">
-                            @{ string valueTypeName = element.Cast<IProperty>()?.ValueType?.ToString() ?? "ANY"; }
+                            @{ string valueTypeName = element.Cast<IProperty>()?.ValueType?.ToString() ?? "anyType"; }
                             <div class="col-sm-10"><b>@element.IdShort (@valueTypeName)</b></div>
                         </div>
                      </li>
@@ -105,10 +114,10 @@
                 return;
             }
 
-            string propDataTypeName = property.ValueType?.ToString()?.ToUpper();
+            string propDataTypeName = property.ValueType?.ToString();
             if (string.IsNullOrEmpty(propDataTypeName))
             {
-                propDataTypeName = property?.ModelType?.Name;
+                propDataTypeName = DataObjectType.None.ToString();
             }
 
             <li class="list-group-item">
@@ -126,10 +135,10 @@
                 return;
             }
 
-            string rangeDataTypeName = range.ValueType?.ToString()?.ToUpper();
+            string rangeDataTypeName = range.ValueType?.ToString();
             if (string.IsNullOrEmpty(rangeDataTypeName))
             {
-                rangeDataTypeName = range?.ModelType?.Name;
+                rangeDataTypeName = DataObjectType.None.ToString();
             }
 
             <li class="list-group-item">

@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using BaSyx.Models.Core.AssetAdministrationShell.Identification;
-using BaSyx.Models.Core.Common;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
@@ -22,7 +21,7 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
         /// <summary>
         /// The value of the property instance.
         /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
         LangStringSet Value { get; }
 
         /// <summary>

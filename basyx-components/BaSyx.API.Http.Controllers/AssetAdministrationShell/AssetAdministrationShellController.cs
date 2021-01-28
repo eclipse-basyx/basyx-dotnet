@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.API.Components;
@@ -17,6 +18,8 @@ using System.Linq;
 using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using BaSyx.Models.Connectivity.Descriptors;
 using BaSyx.Models.Communication;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -28,14 +31,33 @@ namespace BaSyx.API.Http.Controllers
     {
         private readonly IAssetAdministrationShellServiceProvider serviceProvider;
 
+#if NETCOREAPP3_1
+        private readonly IWebHostEnvironment hostingEnvironment;
+
         /// <summary>
         /// The constructor for the Asset Administration Shell Controller
         /// </summary>
         /// <param name="assetAdministrationShellServiceProvider">The Asset Administration Shell Service Provider implementation provided by the dependency injection</param>
-        public AssetAdministrationShellController(IAssetAdministrationShellServiceProvider assetAdministrationShellServiceProvider)
+        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        public AssetAdministrationShellController(IAssetAdministrationShellServiceProvider assetAdministrationShellServiceProvider, IWebHostEnvironment environment)
+        {
+            shellServiceProvider = aasServiceProvider;
+            hostingEnvironment = environment;
+        }
+#else
+        private readonly IHostingEnvironment hostingEnvironment;
+
+        /// <summary>
+        /// The constructor for the Asset Administration Shell Controller
+        /// </summary>
+        /// <param name="assetAdministrationShellServiceProvider">The Asset Administration Shell Service Provider implementation provided by the dependency injection</param>
+        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        public AssetAdministrationShellController(IAssetAdministrationShellServiceProvider assetAdministrationShellServiceProvider, IHostingEnvironment environment)
         {
             serviceProvider = assetAdministrationShellServiceProvider;
+            hostingEnvironment = environment;
         }
+#endif
 
         #region AssetAdminstrationShell Core Services
         /// <summary>
@@ -184,7 +206,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetSubmodelValues();
         }
 
@@ -204,7 +226,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetSubmodelElements();
         }
 
@@ -229,7 +251,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.PutSubmodelElement(seIdShortPath, submodelElement);
         }
         /// <summary>
@@ -249,7 +271,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetSubmodelElementByIdShort(seIdShortPath);
         }
 
@@ -272,7 +294,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetSubmodelElementValueByIdShort(seIdShortPath);
         }
 
@@ -296,7 +318,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.PutSubmodelElementValueByIdShort(seIdShortPath, value);
         }
 
@@ -316,8 +338,32 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.DeleteSubmodelElementByIdShort(seIdShortPath);
+        }
+
+        /// <summary>
+        /// Invokes a specific operation from the Submodel synchronously or asynchronously
+        /// </summary>
+        /// <param name="submodelIdShort">Submodel's short id</param>
+        /// <param name="idShortPathToFile">The IdShort path to the File</param>
+        /// <param name="file">The actual File to upload</param>
+        /// <returns></returns>
+        /// <response code="200">File uploaded successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Submodel / Method handler not found</response>
+        [HttpPost("aas/submodels/{submodelIdShort}/submodel/submodelElements/{idShortPathToFile}/upload", Name = "Shell_UploadFileContentByIdShort")]
+        [Produces("application/json")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public async Task<IActionResult> Shell_UploadFileContentByIdShort(string submodelIdShort, string idShortPathToFile, IFormFile file)
+        {
+            if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return await service.UploadFileContentByIdShort(idShortPathToFile, file);
         }
 
         /// <summary>
@@ -341,7 +387,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.InvokeOperationByIdShort(idShortPathToOperation, invocationRequest, async);
         }
 
@@ -365,7 +411,7 @@ namespace BaSyx.API.Http.Controllers
             if (serviceProvider.SubmodelRegistry.IsNullOrNotFound(submodelIdShort, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
-            var service = new SubmodelController(provider);
+            var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetInvocationResultByIdShort(idShortPathToOperation, requestId);
         }
         #endregion        

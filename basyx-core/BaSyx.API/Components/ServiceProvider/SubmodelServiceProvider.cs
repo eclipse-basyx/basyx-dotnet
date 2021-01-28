@@ -484,7 +484,7 @@ namespace BaSyx.API.Components
                     return new Result(true);
                 }
                 else
-                    return new Result<IValue>(false, new Message(MessageType.Error, "property not found"));
+                    return new Result<IValue>(false, new Message(MessageType.Error, "SubmodelElement not found"));
             }
             else
                 return new Result<IValue>(false, new Message(MessageType.Error, "SubmodelElementHandler not found"));

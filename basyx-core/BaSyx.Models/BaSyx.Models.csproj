@@ -14,9 +14,6 @@
     <PackageLicenseExpression>EPL-2.0</PackageLicenseExpression>
     <PackageIcon>basyxlogo.png</PackageIcon>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Core\Common\SubmodelElementContainer.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="basyxlogo.png" Pack="true" PackagePath="\" />
