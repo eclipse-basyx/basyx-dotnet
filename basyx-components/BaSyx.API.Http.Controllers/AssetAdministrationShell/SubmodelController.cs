@@ -269,7 +269,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Invokes a specific operation from the Submodel synchronously or asynchronously
+        /// Uploads the actual file to the File-SubmodelElement
         /// </summary>
         /// <param name="idShortPathToFile">The IdShort path to the File</param>
         /// <param name="file">The actual File to upload</param>

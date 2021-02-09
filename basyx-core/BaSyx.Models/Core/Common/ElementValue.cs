@@ -32,7 +32,12 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
             {
                 if (value != null)
                 {
-                    if (value.GetType() == ValueType.SystemType)
+                    if (ValueType == null)
+                    {
+                        _value = value;
+                        ValueType = new DataType(DataObjectType.None);
+                    }
+                    else if (value.GetType() == ValueType.SystemType)
                         _value = value;
                     else
                         _value = ToObject(value, ValueType.SystemType);

@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-sm-4">
                         <button onclick="@("GetPropertyValue('" + requestPath + "', '" + @inputId + "')")" id="@retrieveButtonId" type="button" class="btn btn-outline-danger">Retrieve</button>
-                        <button onclick="@("SetPropertyValue('" + requestPath + "', '" + @inputId + "', $('#" + @inputId + "').val(), '" + property.ValueType.ToString() + "' )")" id="@updateButtonId" type="button" class="btn btn-outline-success">Update</button>
+                        <button onclick="@("SetPropertyValue('" + requestPath + "', '" + @inputId + "', $('#" + @inputId + "').val(), '" + property.ValueType?.ToString() + "' )")" id="@updateButtonId" type="button" class="btn btn-outline-success">Update</button>
                         <button onclick="@("$('#" + @inputId + "').val('')")" id="@clearButtonId" type="button" class="btn btn-outline-primary">Clear</button>
                     </div>
                 </div>

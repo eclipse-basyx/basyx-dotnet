@@ -68,7 +68,12 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
 
             if (value != null)
             {
-                if (value.GetType() == valueType.SystemType)
+                if (ValueType == null)
+                {
+                    _value = value;
+                    ValueType = new DataType(DataObjectType.None);
+                }
+                else if (value.GetType() == valueType.SystemType)
                     _value = value;
                 else
                     _value = ElementValue.ToObject(value, valueType.SystemType);

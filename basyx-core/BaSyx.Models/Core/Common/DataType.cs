@@ -199,6 +199,8 @@ namespace BaSyx.Models.Core.Common
                 return typeof(TimeSpan);
             else if (dataObjectType == DataObjectType.YearMonthDuration)
                 return typeof(TimeSpan);
+            else if (dataObjectType == DataObjectType.None)
+                return typeof(object);
             else
                 return null;
         }
