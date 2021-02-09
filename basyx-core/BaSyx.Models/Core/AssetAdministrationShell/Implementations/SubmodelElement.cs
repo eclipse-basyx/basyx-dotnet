@@ -18,15 +18,12 @@ using System.Linq;
 using System.Runtime.Serialization;
 using BaSyx.Models.Core.AssetAdministrationShell.Semantics;
 using BaSyx.Models.Core.Common;
-using NLog;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
 {
     [DataContract]
     public abstract class SubmodelElement : Referable, ISubmodelElement
     {
-        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-
         public IReference SemanticId { get; set; }
 
         public List<IConstraint> Constraints { get; set; }

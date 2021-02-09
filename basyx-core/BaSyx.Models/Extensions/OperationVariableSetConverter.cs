@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using BaSyx.Utils.DependencyInjection.Abstractions;
-using BaSyx.Utils.JsonHandling;
 using Newtonsoft.Json;
 using NLog;
 using System;

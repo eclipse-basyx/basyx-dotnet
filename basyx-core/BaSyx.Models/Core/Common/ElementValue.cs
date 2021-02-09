@@ -11,6 +11,7 @@
 using BaSyx.Models.Core.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
 using System;
 using System.Globalization;
 using System.Runtime.Serialization;
@@ -20,6 +21,8 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
     [DataContract]
     public class ElementValue : IValue
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         internal object _value;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include, NullValueHandling = NullValueHandling.Include)]
         public object Value
@@ -27,8 +30,15 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
             get => _value;
             set
             {
-                ValueChanged?.Invoke(this, new ValueChangedArgs(null, value, ValueType));
-                _value = value;
+                if (value != null)
+                {
+                    if (value.GetType() == ValueType.SystemType)
+                        _value = value;
+                    else
+                        _value = ToObject(value, ValueType.SystemType);
+
+                    ValueChanged?.Invoke(this, new ValueChangedArgs(null, value, ValueType));
+                }
             }
         }
         public DataType ValueType { get; protected set; }
@@ -38,62 +48,98 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
         [JsonConstructor]
         public ElementValue(object value, DataType valueType)
         {
-            Value = value;
             ValueType = valueType;
+            Value = value;
         }
 
-        public object ToObject(Type type)
+        public static object ToObject(object value, Type type)
         {
-            if (Value == null || type == null)
+            if (value == null || type == null || (value is string s && string.IsNullOrEmpty(s)))
                 return null;
-
-            try
-            {
-                Value = Convert.ChangeType(Value, type, CultureInfo.InvariantCulture);
-                return Value;
-            }
-            catch
-            {
-                try
-                {
-                    JToken jVal = JToken.Parse(Value.ToString());
-                    object convertedVal = jVal.ToObject(type);
-                    return convertedVal;
+            else if (value.GetType() == type)
+                return value;
+            else if (type == typeof(Uri))
+                try { return new Uri(value.ToString()); } catch (Exception uriExc) { 
+                    logger.Error(uriExc, $"Cannot convert from {value?.GetType()} to {type.Name} | value: {value?.ToString()}");
+                    throw new InvalidOperationException($"Cannot convert from {value?.GetType()} to {type.Name} | value: {value?.ToString()}", uriExc);
                 }
-                catch
-                {
-                    throw new InvalidCastException("Cannot convert " + Value?.GetType() + " to " + type.Name);
-                }
-            }
-        }
-
-        public T ToObject<T>()
-        {
-            if (Value == null)
-                return default;
-            else if (Value is T)
-                return (T)Value;
             else
             {
                 try
                 {
-                    Value = Convert.ChangeType(Value, typeof(T), CultureInfo.InvariantCulture);
-                    return (T)Value;
+                    value = Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+                    return value;
                 }
-                catch
+                catch (Exception e1)
                 {
+                    logger.Warn(e1, $"Cannot change type from {value?.GetType()} to {type.Name} | value: {value?.ToString()}");
+
                     try
                     {
-                        JToken jVal = JToken.Parse(Value.ToString());
-                        T convertedVal = jVal.ToObject<T>();
+                        JToken jVal = JToken.Parse(value.ToString());
+                        object convertedVal = jVal.ToObject(type);
                         return convertedVal;
                     }
-                    catch
+                    catch (Exception e2)
                     {
-                        throw new InvalidCastException("Cannot convert " + Value?.GetType() + " to " + typeof(T).Name);
+                        logger.Error(e2, $"Cannot convert from {value?.GetType()} to {type.Name} | value: {value?.ToString()}");
+                        throw new InvalidCastException($"Cannot convert from {value?.GetType()} to {type.Name} | value: {value?.ToString()}", e2);
                     }
                 }
             }
+        }
+
+        public static T ToObject<T>(object value)
+        {
+            if (value == null || (value is string s && string.IsNullOrEmpty(s)))
+                return default;
+            else if (value is T tValue)
+                return tValue;
+            else if (typeof(T) == typeof(Uri))
+                try { return (T)Activator.CreateInstance(typeof(Uri), value.ToString()); }
+                catch (Exception uriExc)
+                {
+                    logger.Error(uriExc, $"Cannot convert from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}");
+                    throw new InvalidOperationException($"Cannot convert from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}", uriExc);
+                }
+            else
+            {
+                try
+                {
+                    value = Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                    return (T)value;
+                }
+                catch (Exception e1)
+                {
+                    logger.Warn(e1, $"Cannot change type from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}");
+
+                    try
+                    {
+                        JToken jVal = JToken.Parse(value.ToString());
+                        T convertedVal = jVal.ToObject<T>();
+                        return convertedVal;
+                    }
+                    catch (Exception e2)
+                    {
+                        logger.Error(e2, $"Cannot convert from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}");
+                        throw new InvalidCastException($"Cannot convert from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}", e2);
+                    }
+                }
+            }
+        }
+
+        public object ToObject(Type type)
+        {
+            return ToObject(Value, type);
+        }
+
+        public T ToObject<T>()
+        {
+            return ToObject<T>(Value);
+        }
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 
@@ -118,6 +164,10 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
         public static implicit operator ElementValue<TValue>(TValue value)
         {
             return new ElementValue<TValue>(value);
+        }
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 }

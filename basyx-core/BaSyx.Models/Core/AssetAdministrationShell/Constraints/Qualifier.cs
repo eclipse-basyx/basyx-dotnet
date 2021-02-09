@@ -9,7 +9,9 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using BaSyx.Models.Core.AssetAdministrationShell.Identification;
+using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using BaSyx.Models.Core.Common;
+using System;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Constraints
@@ -19,8 +21,20 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Constraints
     {
         public string Type { get; set; }
         public object Value { get; set; }
+        public DataType ValueType { get; set; }
         public IReference SemanticId { get; set; }
         public override ModelType ModelType => ModelType.Qualifier;
         public IReference ValueId { get; set; }
+
+        public T ToObject<T>()
+        {
+            return new ElementValue(Value, ValueType).ToObject<T>();
+        }
+
+        public object ToObject(Type type)
+        {
+            return new ElementValue(Value, ValueType).ToObject(type);
+        }
+
     }
 }

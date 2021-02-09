@@ -312,15 +312,23 @@ namespace BaSyx.Components.Common
             {
                 options.InvalidModelStateResponseFactory = actionContext =>
                 {
-                    ValidationProblemDetails error = actionContext.ModelState
+                    ValidationProblemDetails details = actionContext.ModelState
                         .Where(e => e.Value.Errors.Count > 0)
                         .Select(e => new ValidationProblemDetails(actionContext.ModelState)).FirstOrDefault();
 
-                    Result result = new Result(false,
-                        new Message(
-                            MessageType.Error, 
-                            $"Path '{actionContext.HttpContext.Request.Path.Value}' received invalid or malformed request: {error.Errors.Values}",
-                            actionContext.HttpContext.Response.StatusCode.ToString()));
+                    List<IMessage> messages = new List<IMessage>();
+                    messages.Add(new Message(
+                           MessageType.Error,
+                           $"Path '{actionContext.HttpContext.Request.Path.Value}' received invalid or malformed request",
+                           actionContext.HttpContext.Response.StatusCode.ToString()));
+
+                    foreach (var error in details.Errors.Values)
+                    {
+                        string joinedError = string.Join(" | ", error);
+                        messages.Add(new Message(MessageType.Error, joinedError));
+                    }
+
+                    Result result = new Result(false, messages);
 
                     return new BadRequestObjectResult(result);
                 };

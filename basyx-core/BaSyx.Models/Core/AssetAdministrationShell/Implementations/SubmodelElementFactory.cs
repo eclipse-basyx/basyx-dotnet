@@ -16,34 +16,35 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
     {
         public static SubmodelElement CreateSubmodelElement(string idShort, ModelType modelType, DataType valueType = null)
         {
-            if (modelType == ModelType.Property)
-                return new Property(idShort, valueType);
-            if (modelType == ModelType.Operation)
-                return new Operation(idShort);
-            if (modelType == ModelType.Event)
-                return new Event(idShort);
-            if (modelType == ModelType.BasicEvent)
-                return new BasicEvent(idShort);
-            else if (modelType == ModelType.Blob)
-                return new Blob(idShort);
-            else if (modelType == ModelType.File)
-                return new File(idShort);
-            else if (modelType == ModelType.MultiLanguageProperty)
-                return new MultiLanguageProperty(idShort);
-            else if (modelType == ModelType.ReferenceElement)
-                return new ReferenceElement(idShort);
-            else if (modelType == ModelType.RelationshipElement)
-                return new RelationshipElement(idShort);
-            else if (modelType == ModelType.SubmodelElementCollection)
-                return new SubmodelElementCollection(idShort);
-            else if (modelType == ModelType.AnnotatedRelationshipElement)
-                return new AnnotatedRelationshipElement(idShort);
-            else if (modelType == ModelType.Entity)
-                return new Entity(idShort);
-            if (modelType == ModelType.Range)
-                return new Range(idShort);
-            else
-                return null;
+            switch (modelType.Type)
+            {              
+                case ModelTypes.SubmodelElementCollection:
+                    return new SubmodelElementCollection(idShort);
+                case ModelTypes.Operation:
+                    return new Operation(idShort);
+                case ModelTypes.BasicEvent:
+                    return new BasicEvent(idShort);
+                case ModelTypes.RelationshipElement:
+                    return new RelationshipElement(idShort);
+                case ModelTypes.AnnotatedRelationshipElement:
+                    return new AnnotatedRelationshipElement(idShort); 
+                case ModelTypes.Property:
+                    return new Property(idShort, valueType);
+                case ModelTypes.File:
+                    return new File(idShort);
+                case ModelTypes.Blob:
+                    return new Blob(idShort);
+                case ModelTypes.ReferenceElement:
+                    return new ReferenceElement(idShort);
+                case ModelTypes.MultiLanguageProperty:
+                    return new MultiLanguageProperty(idShort);
+                case ModelTypes.Range:
+                    return new Range(idShort, valueType);
+                case ModelTypes.Entity:
+                    return new Entity(idShort);
+                default:
+                    return null;
+            }
         }
     }
 }

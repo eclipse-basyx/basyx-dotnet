@@ -8,6 +8,8 @@
 *
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
+using BaSyx.Utils.JsonHandling;
+using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
 
@@ -16,12 +18,22 @@ namespace BaSyx.Models.Core.Common
     public interface IValue
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        [JsonConverter(typeof(ToStringConverter))]
         object Value { get; set; }
         [IgnoreDataMember]
-        DataType ValueType { get; }
-        event EventHandler<ValueChangedArgs> ValueChanged;
+        DataType ValueType { get; }       
         T ToObject<T>();
         object ToObject(Type type);
+        /// <summary>
+        /// Returns the Value as string representation
+        /// </summary>
+        /// <returns></returns>
+        string ToString();
+    }
+
+    public interface IValueChanged
+    {
+        event EventHandler<ValueChangedArgs> ValueChanged;
     }
 
     public interface IValue<out T> : IValue

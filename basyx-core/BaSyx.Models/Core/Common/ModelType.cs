@@ -42,7 +42,11 @@ namespace BaSyx.Models.Core.Common
         Formula,
         Qualifier,
         ConceptDescription,
-        ConceptDictionary
+        ConceptDictionary,
+        AssetAdministrationShellRepositoryDescriptor,
+        SubmodelRepositoryDescriptor,
+        AssetAdministrationShellDescriptor,
+        SubmodelDescriptor
     }
 
     public class ModelType : DataObjectType, IEquatable<ModelType>
@@ -81,6 +85,9 @@ namespace BaSyx.Models.Core.Common
         public static readonly ModelType SubmodelDescriptor = new ModelType("SubmodelDescriptor");
 
         private static readonly Dictionary<string, ModelType> _modelTypes;
+
+        public ModelTypes Type { get; }
+
         static ModelType()
         {
             var fields = typeof(ModelType).GetFields(BindingFlags.Public | BindingFlags.Static);
@@ -89,7 +96,9 @@ namespace BaSyx.Models.Core.Common
 
         [JsonConstructor]
         protected ModelType(string name) : base(name)
-        { }
+        {
+            Type = (ModelTypes)Enum.Parse(typeof(ModelTypes), name);
+        }
 
         public static ModelType Parse(ModelTypes modelTypeEnum)
         {
@@ -175,5 +184,8 @@ namespace BaSyx.Models.Core.Common
             return !(x == y);
         }
         #endregion
+
+        public static implicit operator string(ModelType modelType) => modelType.ToString();
+        public static implicit operator ModelType(string modelType) => _modelTypes[modelType];
     }
 }

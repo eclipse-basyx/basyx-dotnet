@@ -15,13 +15,13 @@ using System.Runtime.Serialization;
 namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
 {
     [DataContract]
-    public class Event : SubmodelElement, IEvent
+    public abstract class Event : SubmodelElement, IEvent
     {
         public override ModelType ModelType => ModelType.Event;
 
-        public IElementContainer<ISubmodelElement> DataElements { get; set; }
+        public virtual IElementContainer<ISubmodelElement> DataElements { get; set; }
 
-        public Event(string idShort) : base(idShort)
+        protected Event(string idShort) : base(idShort)
         {
             DataElements = new ElementContainer<ISubmodelElement>(this);
         }

@@ -15,322 +15,701 @@
 							"name": "SubmodelElements",
 							"item": [
 								{
-									"name": "Create or Update SubmodelElement",
-									"event": [
+									"name": "General",
+									"item": [
 										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.environment.set(\"submodelElement_idShort\", pm.response.json().idShort);"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"type": "text",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"idShort\": \"{{submodelElement_idShort}}\",\n    \"modelType\": {\n        \"name\": \"Property\"\n    },\n    \"valueType\": \"string\",\n    \"value\": \"MyTestValue\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
-											"host": [
-												"{{component_endpoint}}"
-											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements",
-												"{{submodelElement_idShort}}"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Retrieve SubmodelElement by IdShort",
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
-											"host": [
-												"{{component_endpoint}}"
-											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements",
-												"{{submodelElement_idShort}}"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Retrieve all SubmodelElements",
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements",
-											"host": [
-												"{{component_endpoint}}"
-											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Update SubmodelElement Value by IdShort",
-									"request": {
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"value": "application/json",
-												"type": "text"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "\"TestStringValue\"",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}/value",
-											"host": [
-												"{{component_endpoint}}"
-											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements",
-												"{{submodelElement_idShort}}",
-												"value"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Retrieve SubmodelElement Value by IdShort",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": ""
-										},
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}/value",
-											"host": [
-												"{{component_endpoint}}"
-											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements",
-												"{{submodelElement_idShort}}",
-												"value"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Delete SubmodelElement by IdShort",
-									"request": {
-										"method": "DELETE",
-										"header": [],
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
-											"host": [
-												"{{component_endpoint}}"
-											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements",
-												"{{submodelElement_idShort}}"
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Operations",
-							"item": [
-								{
-									"name": "Invoke Operation by Id",
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"value": "application/json",
-												"type": "text"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n\t\"requestId\" : \"12345678\",\n    \"inoutputArguments\": [{\n        \"value\" : {\n\t\t\t\"idShort\" : \"HierRein\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"string\"\n                    }\n            }\n\t\t}\n    }],\n\t\"inputArguments\" : [{\n\t\t\"value\" : {\n\t\t\t\"idShort\" : \"Expression\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n\t    \t\"value\" : \"5*(3+3)\",\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"string\"\n                    }\n                }\n\t\t}\n\t},\n    {\n\t\t\"value\" : {\n\t\t\t\"idShort\" : \"ComputingTime\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n\t    \t\"value\" : 3000,\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"int\"\n                    }\n                }\n\t\t}\n\t}],\n\t\"timeout\" : 5000\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{operation_idShort}}/invoke?async=false",
-											"host": [
-												"{{component_endpoint}}"
-											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements",
-												"{{operation_idShort}}",
-												"invoke"
-											],
-											"query": [
+											"name": "Create or Update SubmodelElement",
+											"event": [
 												{
-													"key": "async",
-													"value": "false"
+													"listen": "test",
+													"script": {
+														"exec": [
+															"if(pm.response.json().idShort) {\r",
+															"    pm.environment.set(\"submodelElement_idShort\", pm.response.json().idShort);\r",
+															"}"
+														],
+														"type": "text/javascript"
+													}
 												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Invoke Operation by Id (async)",
-									"event": [
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"type": "text",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"idShort\": \"{{submodelElement_idShort}}\",\n    \"modelType\": {\n        \"name\": \"Property\"\n    },\n    \"valueType\": \"string\",\n    \"value\": \"MyTestValue\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
+										},
 										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.environment.set(\"requestId\", pm.response.json().requestId);"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"value": "application/json",
-												"type": "text"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n\t\"requestId\" : \"{{$guid}}\",\n    \"inoutputArguments\": [{\n        \"value\" : {\n\t\t\t\"idShort\" : \"HierRein\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"string\"\n                    }\n            }\n\t\t}\n    }],\n\t\"inputArguments\" : [{\n\t\t\"value\" : {\n\t\t\t\"idShort\" : \"Expression\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n\t    \t\"value\" : \"5*(3+2)\",\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"string\"\n                    }\n                }\n\t\t}\n\t},\n    {\n\t\t\"value\" : {\n\t\t\t\"idShort\" : \"ComputingTime\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n\t    \t\"value\" : 5000,\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"int\"\n                    }\n                }\n\t\t}\n\t}],\n\t\"timeout\" : 6000\n}",
-											"options": {
-												"raw": {
-													"language": "json"
+											"name": "Retrieve SubmodelElement by IdShort",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
 												}
-											}
+											},
+											"response": []
 										},
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{operation_idShort}}/invoke?async=true",
-											"host": [
-												"{{component_endpoint}}"
-											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements",
-												"{{operation_idShort}}",
-												"invoke"
-											],
-											"query": [
-												{
-													"key": "async",
-													"value": "true"
+										{
+											"name": "Retrieve all SubmodelElements",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements"
+													]
 												}
-											]
+											},
+											"response": []
+										},
+										{
+											"name": "Update SubmodelElement Value by IdShort",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "\"TestStringValue\"",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}/value",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}",
+														"value"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Retrieve SubmodelElement Value by IdShort",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": ""
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}/value",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}",
+														"value"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Delete SubmodelElement by IdShort",
+											"request": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
 										}
-									},
-									"response": []
+									]
 								},
 								{
-									"name": "Retrieve Invocation Result",
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{operation_idShort}}/invocationList/{{requestId}}",
-											"host": [
-												"{{component_endpoint}}"
+									"name": "DataElements",
+									"item": [
+										{
+											"name": "Create or Update Range",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"if(pm.response.json().idShort) {\r",
+															"    pm.environment.set(\"submodelElement_idShort\", pm.response.json().idShort);\r",
+															"}"
+														],
+														"type": "text/javascript"
+													}
+												}
 											],
-											"path": [
-												"aas",
-												"submodels",
-												"{{submodel_idShort}}",
-												"submodel",
-												"submodelElements",
-												"{{operation_idShort}}",
-												"invocationList",
-												"{{requestId}}"
-											]
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"type": "text",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"idShort\": \"{{submodelElement_idShort}}\",\n    \"modelType\": {\n        \"name\": \"Range\"\n    },\n    \"valueType\": \"int\",\n    \"min\": \"5\",\n    \"max\": \"6\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Create or Update MultiLanguageProperty",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"if(pm.response.json().idShort) {\r",
+															"    pm.environment.set(\"submodelElement_idShort\", pm.response.json().idShort);\r",
+															"}"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"type": "text",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"idShort\": \"{{submodelElement_idShort}}\",\n    \"modelType\": {\n        \"name\": \"MultiLanguageProperty\"\n    },\n    \"value\" : [\n        {\n            \"language\" : \"de\",\n            \"text\" : \"Mein Multi Language Property\"\n        },\n        {\n            \"language\" : \"en\",\n            \"text\" : \"My Multi Language Property\"\n        }\n    ]\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Create or Update Blob",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"if(pm.response.json().idShort) {\r",
+															"    pm.environment.set(\"submodelElement_idShort\", pm.response.json().idShort);\r",
+															"}"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"type": "text",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"idShort\": \"{{submodelElement_idShort}}\",\n    \"modelType\": {\n        \"name\": \"Blob\"\n    },\n    \"mimeType\": \"application/pdf\",\n    \"value\" : \"VGhpcyBpcyBteSBibG9i\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Create or Update Reference",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"if(pm.response.json().idShort) {\r",
+															"    pm.environment.set(\"submodelElement_idShort\", pm.response.json().idShort);\r",
+															"}"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"type": "text",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"idShort\": \"{{submodelElement_idShort}}\",\n    \"modelType\": {\n        \"name\": \"ReferenceElement\"\n    },\n    \"value\" : {\n        \"keys\" : [{\n            \"type\" : \"Property\",\n            \"idType\" : \"IRDI\",\n            \"value\" : \"0173-1#02-AAP906#001\",\n            \"local\": true\n        }]\n    }\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Create or Update Relationship",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"if(pm.response.json().idShort) {\r",
+															"    pm.environment.set(\"submodelElement_idShort\", pm.response.json().idShort);\r",
+															"}"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"type": "text",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"idShort\": \"{{submodelElement_idShort}}\",\n    \"modelType\": {\n        \"name\": \"RelationshipElement\"\n    },\n    \"first\" : {\n        \"keys\" : [{\n            \"type\" : \"Property\",\n            \"idType\" : \"IRDI\",\n            \"value\" : \"0173-1#02-AAP906#001\",\n            \"local\": true\n        }]\n    },\n    \"second\" : {\n        \"keys\" : [{\n            \"type\" : \"Property\",\n            \"idType\" : \"IRDI\",\n            \"value\" : \"0173-1#02-AAP906#001\",\n            \"local\": true\n        }]\n    }\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
 										}
-									},
-									"response": []
+									]
+								},
+								{
+									"name": "File",
+									"item": [
+										{
+											"name": "Create or Update FileElement",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"if(pm.response.json().idShort) {\r",
+															"    pm.environment.set(\"submodelElement_idShort\", pm.response.json().idShort);\r",
+															"}"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"type": "text",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"idShort\": \"{{submodelElement_idShort}}\",\n    \"modelType\": {\n        \"name\": \"File\"\n    },\n    \"mimeType\": \"image/png\",\n    \"value\": \"/aasx/pictures/myTestImage.png\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Retrieve FileElement by IdShort",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Upload FileContent to FileElement by IdShort",
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "formdata",
+													"formdata": [
+														{
+															"key": "file",
+															"description": "The actual file to upload",
+															"type": "file",
+															"src": []
+														}
+													]
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{submodelElement_idShort}}/upload",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{submodelElement_idShort}}",
+														"upload"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Operations",
+									"item": [
+										{
+											"name": "Invoke Operation by Id",
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n\t\"requestId\" : \"12345678\",\n    \"inoutputArguments\": [{\n        \"value\" : {\n\t\t\t\"idShort\" : \"HierRein\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"string\"\n                    }\n            }\n\t\t}\n    }],\n\t\"inputArguments\" : [{\n\t\t\"value\" : {\n\t\t\t\"idShort\" : \"Expression\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n\t    \t\"value\" : \"5*(3+3)\",\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"string\"\n                    }\n                }\n\t\t}\n\t},\n    {\n\t\t\"value\" : {\n\t\t\t\"idShort\" : \"ComputingTime\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n\t    \t\"value\" : 3000,\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"int\"\n                    }\n                }\n\t\t}\n\t}],\n\t\"timeout\" : 5000\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{operation_idShort}}/invoke?async=false",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{operation_idShort}}",
+														"invoke"
+													],
+													"query": [
+														{
+															"key": "async",
+															"value": "false"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Invoke Operation by Id (async)",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.environment.set(\"requestId\", pm.response.json().requestId);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"name": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n\t\"requestId\" : \"{{$guid}}\",\n    \"inoutputArguments\": [{\n        \"value\" : {\n\t\t\t\"idShort\" : \"HierRein\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"string\"\n                    }\n            }\n\t\t}\n    }],\n\t\"inputArguments\" : [{\n\t\t\"value\" : {\n\t\t\t\"idShort\" : \"Expression\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n\t    \t\"value\" : \"5*(3+2)\",\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"string\"\n                    }\n                }\n\t\t}\n\t},\n    {\n\t\t\"value\" : {\n\t\t\t\"idShort\" : \"ComputingTime\",\n\t\t\t\"modelType\" : {\n\t\t\t\t\"name\" : \"Property\"\n\t\t\t},\n\t    \t\"value\" : 5000,\n            \"valueType\": {\n                    \"dataObjectType\": {\n                        \"name\": \"int\"\n                    }\n                }\n\t\t}\n\t}],\n\t\"timeout\" : 6000\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{operation_idShort}}/invoke?async=true",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{operation_idShort}}",
+														"invoke"
+													],
+													"query": [
+														{
+															"key": "async",
+															"value": "true"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Retrieve Invocation Result",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/submodelElements/{{operation_idShort}}/invocationList/{{requestId}}",
+													"host": [
+														"{{component_endpoint}}"
+													],
+													"path": [
+														"aas",
+														"submodels",
+														"{{submodel_idShort}}",
+														"submodel",
+														"submodelElements",
+														"{{operation_idShort}}",
+														"invocationList",
+														"{{requestId}}"
+													]
+												}
+											},
+											"response": []
+										}
+									]
 								}
 							]
 						},
@@ -420,6 +799,34 @@
 										"aas",
 										"submodels",
 										"{{submodel_idShort}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve Submodel by IdShort - Compact",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{component_endpoint}}/aas/submodels/{{submodel_idShort}}/submodel/values",
+									"host": [
+										"{{component_endpoint}}"
+									],
+									"path": [
+										"aas",
+										"submodels",
+										"{{submodel_idShort}}",
+										"submodel",
+										"values"
 									]
 								}
 							},

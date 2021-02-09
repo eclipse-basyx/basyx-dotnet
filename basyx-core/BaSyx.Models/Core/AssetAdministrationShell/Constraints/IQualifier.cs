@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.Core.AssetAdministrationShell.Identification;
 using BaSyx.Models.Core.AssetAdministrationShell.Semantics;
+using BaSyx.Models.Core.Common;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Constraints
@@ -17,7 +18,7 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Constraints
     /// <summary>
     /// A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element.
     /// </summary>
-    public interface IQualifier : IConstraint, IHasSemantics
+    public interface IQualifier : IConstraint, IHasSemantics, IValue
     {
         /// <summary>
         /// The qualifier type describes the type of the qualifier that is applied to the element. 
@@ -25,11 +26,6 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Constraints
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "type")]
         string Type { get; }
 
-        /// <summary>
-        /// The qualifier value is the value of the qualifier. 
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        object Value { get; }
 
         /// <summary>
         /// Reference to the global unqiue id of a coded value.  

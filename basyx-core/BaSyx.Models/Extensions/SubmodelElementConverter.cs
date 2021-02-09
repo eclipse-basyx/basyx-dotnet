@@ -54,13 +54,22 @@ namespace BaSyx.Models.Extensions
             {
                 jObject = JObject.Load(reader);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                logger.Error(e, $"Unable to load JObject from type ${objectType.Name}");
                 return null;
             }
 
-            ModelType modelTypeToken = jObject.SelectToken("modelType")?.ToObject<ModelType>(serializer);
-            DataType valueTypeToken = jObject.SelectToken("valueType")?.ToObject<DataType>(serializer);
+            ModelType modelType = jObject.SelectToken("modelType")?.ToObject<ModelType>(serializer);
+            if (modelType == null)
+            {
+                logger.Error("ModelType missing: " + jObject.ToString());
+                return null;
+            }
+
+            string idShort = jObject.SelectToken("idShort")?.ToObject<string>();
+            DataType valueType = jObject.SelectToken("valueType")?.ToObject<DataType>(serializer);
+
             JToken embeddedDataSpecificationsToken = jObject.SelectToken("embeddedDataSpecifications");
             JToken conceptDescriptionToken = jObject.SelectToken("conceptDescription");
 
@@ -83,10 +92,10 @@ namespace BaSyx.Models.Extensions
                 }
                 jObject.Remove("embeddedDataSpecifications");
             }
-            if(conceptDescriptionToken != null)
+            if (conceptDescriptionToken != null)
             {
                 var dataSpecifications = conceptDescriptionToken.SelectToken("embeddedDataSpecifications")?.Children();
-                if(dataSpecifications != null)
+                if (dataSpecifications != null)
                 {
                     conceptDescription = new ConceptDescription();
                     foreach (var dataSpecificationToken in dataSpecifications)
@@ -103,26 +112,22 @@ namespace BaSyx.Models.Extensions
                 serializer.Populate(conceptDescriptionToken.CreateReader(), conceptDescription);
             }
 
-            if (modelTypeToken != null)
-            {
-                submodelElement = SubmodelElementFactory.CreateSubmodelElement(string.Empty, modelTypeToken, valueTypeToken);
-                submodelElement.EmbeddedDataSpecifications = embeddedDataSpecifications;
-                submodelElement.ConceptDescription = conceptDescription;
-            }
-            else
-            {
-                logger.Error("ModelType missing: " + jObject.ToString());
-                return null;
-            }
+            submodelElement = SubmodelElementFactory.CreateSubmodelElement(idShort, modelType, valueType);
+
             if (submodelElement == null)
             {
                 logger.Error("SubmodelElement is null: " + jObject.ToString());
                 return null;
             }
 
-            serializer.Populate(jObject.CreateReader(), submodelElement);
+            if(submodelElement.GetType().GetCustomAttribute<JsonConverterAttribute>() != null)
+                submodelElement = (SubmodelElement)serializer.Deserialize(jObject.CreateReader(), submodelElement.GetType());
+            else
+                serializer.Populate(jObject.CreateReader(), submodelElement);
 
-            return submodelElement;            
+            submodelElement.EmbeddedDataSpecifications = embeddedDataSpecifications;
+            submodelElement.ConceptDescription = conceptDescription;
+            return submodelElement;
         }
 
         public override void WriteJson(JsonWriter writer, ISubmodelElement value, JsonSerializer serializer)

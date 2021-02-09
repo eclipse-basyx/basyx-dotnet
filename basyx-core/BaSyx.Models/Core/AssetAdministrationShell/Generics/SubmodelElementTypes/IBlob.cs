@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
-using BaSyx.Models.Core.Common;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
@@ -30,6 +29,6 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
         /// The value of the BLOB instance of a blob data element.  
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        byte[] Value { get; }
+        string Value { get; }
     }
 }

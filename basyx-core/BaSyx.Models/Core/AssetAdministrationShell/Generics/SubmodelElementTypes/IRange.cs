@@ -9,6 +9,9 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using BaSyx.Models.Core.Common;
+using BaSyx.Models.Extensions;
+using BaSyx.Utils.JsonHandling;
+using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
@@ -16,18 +19,21 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
     /// <summary>
     /// A range data element is a data element that defines a range with min and max
     /// </summary>
+    [JsonConverter(typeof(RangeConverter))]
     public interface IRange : ISubmodelElement
     {
         /// <summary>
         /// The minimum value of the range. If the min value is missing then the value is assumed to be negative infinite.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "min")]
+        [JsonConverter(typeof(ToStringConverter))]
         IValue Min { get; }
 
         /// <summary>
         /// The maximum value of the range. If the max value is missing then the value is assumed to be positive infinite.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "max")]
+        [JsonConverter(typeof(ToStringConverter))]
         IValue Max { get; }
 
         /// <summary>

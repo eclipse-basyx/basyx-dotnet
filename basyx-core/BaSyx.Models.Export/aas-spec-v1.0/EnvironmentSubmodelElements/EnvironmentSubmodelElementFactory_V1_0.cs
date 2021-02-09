@@ -73,9 +73,10 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 Blob blob = new Blob(castedBlob.IdShort)
                 {
-                    MimeType = castedBlob.MimeType,
-                    Value = Convert.FromBase64String(castedBlob.Value)
+                    MimeType = castedBlob.MimeType                    
                 };
+
+                blob.SetValue(castedBlob.Value);
 
                 submodelElement = blob;
             }
@@ -100,7 +101,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             }
             else if (modelType == ModelType.Event && envSubmodelElement is Event_V1_0 castedEvent)
             {
-               Event eventable = new Event(castedEvent.IdShort);
+               Event eventable = new BasicEvent(castedEvent.IdShort);
 
                 submodelElement = eventable;
             }
@@ -213,7 +214,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             else if (modelType == ModelType.Blob && element is IBlob castedBlob)
                 environmentSubmodelElement.submodelElement = new Blob_V1_0(submodelElementType)
                 {
-                    Value = Convert.ToBase64String(castedBlob.Value),
+                    Value = castedBlob.Value,
                     MimeType = castedBlob.MimeType
                 };
             else if (modelType == ModelType.File && element is IFile castedFile)

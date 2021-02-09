@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using BaSyx.Models.Core.Common;
+using BaSyx.Utils.StringOperations;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
@@ -19,12 +20,30 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
     {
         public override ModelType ModelType => ModelType.Blob;
         public string MimeType { get; set; }
-        public byte[] Value { get; set; }
+        public string Value { get; private set; }
 
         public Blob(string idShort) : base(idShort) 
         {
             Get = element => { return new ElementValue(Value, new DataType(DataObjectType.Base64Binary)); };
-            Set = (element, value) => { Value = value.Value as byte[]; };
+            Set = (element, value) => { SetValue(value.Value as string); };
+        }
+
+        public void SetValue(byte[] bytes)
+        {
+            Value = StringOperations.Base64Encode(bytes);
+        }
+
+        public void SetValue(string value)
+        {
+            if (StringOperations.IsBase64String(value))
+                Value = value;
+            else
+                Value = StringOperations.Base64Encode(value);
+        }
+
+        public byte[] GetBytes()
+        {
+            return StringOperations.GetBytes(Value);
         }
     }
 }

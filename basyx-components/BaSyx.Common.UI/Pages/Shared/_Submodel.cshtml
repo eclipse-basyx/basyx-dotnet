@@ -70,7 +70,7 @@
                 {
                     <ul class="list-group list-group-flush">
                         @foreach (var argument in operation.InputVariables.ToElementContainer())
-                        {                            
+                        {
                             <li class="list-group-item bg-light">
                                 <div class="row align-items-center">
                                     <div class="col-sm-2 argInName @hashedRequestPath"><b>@argument.IdShort</b></div>
@@ -100,15 +100,24 @@
                         }
                     </ul>
                 }
-                
-        <div class="card-footer">
-            <button onclick="@("ExecuteOperation('" + requestPath +"', '" + hashedRequestPath + "')")" type="button" class="btn btn-success">Execute</button>            
-        </div>
+
+                <div class="card-footer">
+                    <button onclick="@("ExecuteOperation('" + requestPath +"', '" + hashedRequestPath + "')")" type="button" class="btn btn-success">Execute</button>
+                </div>
             }
             else if (submodelElementContainer.HasChildren())
             {
                 <div class="card-body">
                     @foreach (var valueChild in submodelElementContainer.Children)
+                    {
+                        @ShowSubmodelElement(new List<object>() { submodelId, valueChild })
+                    }
+                </div>
+            }
+            else if (submodelElement is IBasicEvent basicEvent && basicEvent.DataElements.HasChildren())
+            {
+                <div class="card-body">
+                    @foreach (var valueChild in basicEvent.DataElements.Children)
                     {
                         @ShowSubmodelElement(new List<object>() { submodelId, valueChild })
                     }

@@ -9,12 +9,15 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using Newtonsoft.Json;
+using NLog;
 using System;
 
 namespace BaSyx.Utils.JsonHandling
 {
     public class ToStringConverter : JsonConverter
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         public override bool CanConvert(Type objectType) => true;
         public override bool CanRead => false;
 

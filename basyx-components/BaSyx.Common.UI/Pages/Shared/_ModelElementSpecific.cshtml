@@ -15,23 +15,11 @@
 
     switch (keyElements)
     {
-        case KeyElements.GlobalReference:
-            break;
-        case KeyElements.FragmentReference:
-            break;
-        case KeyElements.AccessPermissionRule:
-            break;
         case KeyElements.AnnotatedRelationshipElement:
-            break;
-        case KeyElements.BasicEvent:
             break;
         case KeyElements.Blob:
             break;
         case KeyElements.Capability:
-            break;
-        case KeyElements.ConceptDictionary:
-            break;
-        case KeyElements.DataElement:
             break;
         case KeyElements.File:
             {
@@ -84,23 +72,33 @@
             return;
         case KeyElements.Entity:
             break;
-        case KeyElements.Event:
+        case KeyElements.BasicEvent:
             {
-                IEvent eventable = Model.Cast<IEvent>();
+                IBasicEvent eventable = Model.Cast<IBasicEvent>();
                 if (eventable == null)
                 {
                     return;
                 }
 
-                @foreach (var element in eventable.DataElements)
+                if (eventable.Observed != null)
                 {
                     <li class="list-group-item">
                         <div class="row align-items-center">
-                            @{ string valueTypeName = element.Cast<IProperty>()?.ValueType?.ToString() ?? "anyType"; }
-                            <div class="col-sm-10"><b>@element.IdShort (@valueTypeName)</b></div>
+                            <div class="col-sm-2"><b>Observed</b></div>
+                            <div class="col-sm-10">@eventable.Observed.ToStandardizedString()</div>
                         </div>
-                     </li>
+                    </li>
                 }
+
+                @*@foreach (var element in eventable.DataElements)
+                    {
+                        <li class="list-group-item">
+                            <div class="row align-items-center">
+                                @{ string valueTypeName = element.Cast<IProperty>()?.ValueType?.ToString() ?? "anyType"; }
+                                <div class="col-sm-10"><b>@element.IdShort (@valueTypeName)</b></div>
+                            </div>
+                         </li>
+                    }*@
             }
             return;
         case KeyElements.MultiLanguageProperty:
@@ -164,31 +162,23 @@
             break;
         case KeyElements.RelationshipElement:
             break;
-        case KeyElements.SubmodelElement:
-            break;
         case KeyElements.SubmodelElementCollection:
-            break;
-        case KeyElements.View:
-            break;
-        case KeyElements.AssetAdministrationShell:
-            break;
-        case KeyElements.ConceptDescription:
             break;
         default:
             break;
     }
 }
 
-@functions 
+@functions
 {
-        public string GetPath(IFile file)
-        {
-            string content = file.Value;
-            if (string.IsNullOrEmpty(content))
-                return string.Empty;
+    public string GetPath(IFile file)
+    {
+        string content = file.Value;
+        if (string.IsNullOrEmpty(content))
+            return string.Empty;
 
-            content = content.Replace('\\', '/');
-            return content;
-        }
+        content = content.Replace('\\', '/');
+        return content;
+    }
 }
 

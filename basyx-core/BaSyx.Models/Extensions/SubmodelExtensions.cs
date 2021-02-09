@@ -154,23 +154,101 @@ namespace BaSyx.Models.Extensions
             JObject jObject = new JObject();
             foreach (var smElement in submodelElements)
             {
-                if (smElement.ModelType == ModelType.SubmodelElementCollection)
+                switch (smElement.ModelType.Type)
                 {
-                    JObject subObjects = MinimizeSubmodelElements((smElement as SubmodelElementCollection).Value.Values);
-                    jObject.Add(smElement.IdShort, subObjects);
-                }
-                else
-                {
-                    if (smElement is IFile file)
-                        jObject.Add(file.IdShort, new JObject(new JProperty("mimeType", file.MimeType), new JProperty("value", file.Value)));
-                    else if (smElement is Property property)
-                    {
-                        object value = property.Value;
-                        if (value == null)
-                            value = property.Get?.Invoke(property)?.Value;
+                   case ModelTypes.SubmodelElementCollection:
+                        {
+                            ISubmodelElementCollection submodelElementCollection = smElement.Cast<ISubmodelElementCollection>();
+                            JObject subObjects = MinimizeSubmodelElements(submodelElementCollection.Value);
+                            jObject.Add(smElement.IdShort, subObjects);
+                            break;
+                        }
+                    case ModelTypes.RelationshipElement:
+                        {
+                            IRelationshipElement relationshipElement = smElement.Cast<IRelationshipElement>();
+                            jObject.Add(relationshipElement.IdShort, 
+                                new JObject(
+                                    new JProperty("first", relationshipElement.First.ToStandardizedString()), 
+                                    new JProperty("second", relationshipElement.Second.ToStandardizedString())));
+                            break;
+                        }
+                    case ModelTypes.AnnotatedRelationshipElement:
+                        {
+                            IAnnotatedRelationshipElement annotatedRelationshipElement = smElement.Cast<IAnnotatedRelationshipElement>();
+                            jObject.Add(annotatedRelationshipElement.IdShort,
+                                new JObject(
+                                    new JProperty("first", annotatedRelationshipElement.First?.ToStandardizedString()),
+                                    new JProperty("second", annotatedRelationshipElement.Second?.ToStandardizedString()),
+                                    new JProperty("annotation", annotatedRelationshipElement.Annotation?.ToStandardizedString())));
+                            break;
+                        }
+                    case ModelTypes.Property:
+                        {
+                            IProperty property = smElement.Cast<IProperty>();
+                            object value = property.ToObject<string>();
+                            if (value == null)
+                                value = property.Get?.Invoke(property)?.ToObject<string>();
 
-                        jObject.Add(property.IdShort, new JValue(value));
-                    }
+                            jObject.Add(property.IdShort, new JValue(value));
+                            break;
+                        }
+                    case ModelTypes.File:
+                        {
+                            IFile file = smElement.Cast<IFile>();
+                            jObject.Add(file.IdShort, 
+                                new JObject(
+                                    new JProperty("mimeType", file.MimeType), 
+                                    new JProperty("value", file.Value)));
+                            break;
+                        }
+                    case ModelTypes.Blob:
+                        {
+                            IBlob blob = smElement.Cast<IBlob>();
+                            jObject.Add(blob.IdShort,
+                                new JObject(
+                                    new JProperty("mimeType", blob.MimeType),
+                                    new JProperty("value", blob.Value)));
+                            break;
+                        }
+                    case ModelTypes.ReferenceElement:
+                        {
+                            IReferenceElement referenceElement = smElement.Cast<IReferenceElement>();
+                            jObject.Add(referenceElement.IdShort, new JValue(referenceElement.Value?.ToStandardizedString()));
+                            break;
+                        }
+                    case ModelTypes.MultiLanguageProperty:
+                        {
+                            IMultiLanguageProperty multiLanguageProperty = smElement.Cast<IMultiLanguageProperty>();
+                            List<JProperty> content = new List<JProperty>();
+                            foreach (var langPair in multiLanguageProperty.Value)
+                            {
+                                content.Add(new JProperty(langPair.Language, langPair.Text));
+                            }
+                            jObject.Add(multiLanguageProperty.IdShort, new JObject(content));
+                            break;
+                        }
+                    case ModelTypes.Range:
+                        {
+                            IRange range = smElement.Cast<IRange>();
+                            jObject.Add(range.IdShort,
+                                new JObject(
+                                    new JProperty("min", range.Min?.ToObject<string>()),
+                                    new JProperty("max", range.Max?.ToObject<string>())));
+                            break;
+                        }
+                    case ModelTypes.Entity:
+                        {
+                            IEntity entity = smElement.Cast<IEntity>();
+                            JObject statements = MinimizeSubmodelElements(entity.Statements);
+                            jObject.Add(entity.IdShort,
+                                new JObject(
+                                    new JProperty("statements", statements),
+                                    new JProperty("entityType", Enum.GetName(typeof(EntityType), entity.EntityType)),
+                                    new JProperty("globalAssetId",entity.Asset?.ToStandardizedString())));
+                            break;
+                        }
+                    default:
+                        break;
                 }
             }
             return jObject;

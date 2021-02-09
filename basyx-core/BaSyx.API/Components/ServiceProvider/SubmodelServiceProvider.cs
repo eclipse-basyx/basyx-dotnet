@@ -254,9 +254,7 @@ namespace BaSyx.API.Components
                         try
                         {
                             invocationResponse.ExecutionState = ExecutionState.Running;
-                            var result = await methodHandler.Invoke(operation_Retrieved.Entity, invocationRequest.InputArguments, invocationResponse.InOutputArguments, invocationResponse.OutputArguments, cancellationTokenSource.Token);
-                            invocationResponse.ExecutionState = ExecutionState.Completed;
-                            return result;
+                            return await methodHandler.Invoke(operation_Retrieved.Entity, invocationRequest.InputArguments, invocationResponse.InOutputArguments, invocationResponse.OutputArguments, cancellationTokenSource.Token);                                                        
                         }
                         catch (Exception e)
                         {
@@ -269,7 +267,11 @@ namespace BaSyx.API.Components
                     if (Task.WhenAny(runner, Task.Delay(timeout, cancellationTokenSource.Token)).Result == runner)
                     {
                         cancellationTokenSource.Cancel();
+
                         invocationResponse.OperationResult = runner.Result;
+                        if (invocationResponse.ExecutionState != ExecutionState.Failed)
+                            invocationResponse.ExecutionState = ExecutionState.Completed;
+
                         return new Result<InvocationResponse>(true, invocationResponse);
                     }
                     else
@@ -277,7 +279,7 @@ namespace BaSyx.API.Components
                         cancellationTokenSource.Cancel();
                         invocationResponse.OperationResult = new OperationResult(false, new TimeoutMessage());
                         invocationResponse.ExecutionState = ExecutionState.Timeout;
-                        return new Result<InvocationResponse>(false, invocationResponse);
+                        return new Result<InvocationResponse>(true, invocationResponse);
                     }
                 }
             }
@@ -319,9 +321,7 @@ namespace BaSyx.API.Components
                             try
                             {
                                 invocationResponse.ExecutionState = ExecutionState.Running;
-                                var result = await methodHandler.Invoke(operation_Retrieved.Entity, invocationRequest.InputArguments, invocationResponse.InOutputArguments, invocationResponse.OutputArguments, cancellationTokenSource.Token);
-                                invocationResponse.ExecutionState = ExecutionState.Completed;
-                                return result;
+                                return await methodHandler.Invoke(operation_Retrieved.Entity, invocationRequest.InputArguments, invocationResponse.InOutputArguments, invocationResponse.OutputArguments, cancellationTokenSource.Token);                                                              
                             }
                             catch (Exception e)
                             {
@@ -334,6 +334,8 @@ namespace BaSyx.API.Components
                         {
                             cancellationTokenSource.Cancel();
                             invocationResponse.OperationResult = runner.Result;
+                            if (invocationResponse.ExecutionState != ExecutionState.Failed)
+                                invocationResponse.ExecutionState = ExecutionState.Completed;
                         }
                         else
                         {

@@ -47,7 +47,7 @@ namespace BaSyx.Utils.DependencyInjection
             services.AddTransient<IProperty, Property>();
             services.AddTransient(typeof(IProperty<>), typeof(Property<>));
             services.AddTransient<IOperation, Operation>();
-            services.AddTransient<IEvent, Event>();
+            services.AddTransient<IEvent, BasicEvent>();
             services.AddTransient<ISubmodelElementCollection, SubmodelElementCollection>();
             services.AddTransient<IMultiLanguageProperty, MultiLanguageProperty>();
             services.AddTransient<IRelationshipElement, RelationshipElement>();
