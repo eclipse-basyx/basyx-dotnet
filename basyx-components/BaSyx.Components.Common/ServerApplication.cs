@@ -87,6 +87,7 @@ namespace BaSyx.Components.Common
 
             Settings = settings ?? ServerSettings.LoadSettingsFromFile("ServerSettings.xml") ?? throw new ArgumentNullException(nameof(settings));
 
+            webHostBuilderArgs ??= Environment.GetCommandLineArgs();
             WebHostBuilder = DefaultWebHostBuilder.CreateWebHostBuilder(webHostBuilderArgs, Settings);
             AppBuilderPipeline = new List<Action<IApplicationBuilder>>();
             ServiceBuilderPipeline = new List<Action<IServiceCollection>>();

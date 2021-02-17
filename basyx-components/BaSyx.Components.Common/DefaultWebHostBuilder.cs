@@ -12,6 +12,7 @@ using BaSyx.Utils.Settings.Types;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using System.Linq;
 
 namespace BaSyx.Components.Common
 {
@@ -26,7 +27,7 @@ namespace BaSyx.Components.Common
             else
                 webHostBuilder.UseEnvironment(Environments.Development);
 
-            if (settings?.ServerConfig?.Hosting?.Urls?.Count > 0)
+            if (!args.Contains("--urls") && settings?.ServerConfig?.Hosting?.Urls?.Count > 0)
                 webHostBuilder.UseUrls(settings.ServerConfig.Hosting.Urls.ToArray());
 
             return webHostBuilder;
