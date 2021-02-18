@@ -23,6 +23,9 @@ namespace BaSyx.Utils.ResultHandling
         { }
         public OperationResult(bool success, IMessage message) : base(success, message)
         { }
+        public OperationResult(IResult result) : base(result)
+        { }
+
         [JsonConstructor]
         public OperationResult(bool success, List<IMessage> messages) : base(success, messages)
         { }
