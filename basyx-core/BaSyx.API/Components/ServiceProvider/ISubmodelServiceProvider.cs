@@ -39,15 +39,15 @@ namespace BaSyx.API.Components
         void PublishUpdate(string pathToSubmodelElement, IValue value);
 
         /// <summary>
-        /// Throws an Event
+        /// Publishs an Event
         /// </summary>
-        /// <param name="publishableEvent">The event to publish</param>
+        /// <param name="eventMessage">The event to publish</param>
         /// <param name="topic">Message-Topic (default=/)</param>
         /// <param name="MessagePublished">Message-Published-Callback (default=null)</param>
         /// <param name="qosLevel">QoS Level of the event to be sent (default=2)</param>
         /// <param name="retain">Shall the event be persisted at the Message Broker? (default=false)</param>
         /// <returns></returns>
-        IResult ThrowEvent(IPublishableEvent publishableEvent, string topic, Action<IMessagePublishedEventArgs> MessagePublished, byte qosLevel, bool retain);
+        IResult PublishEvent(IEventMessage eventMessage, string topic, Action<IMessagePublishedEventArgs> MessagePublished, byte qosLevel, bool retain);
 
         /// <summary>
         /// Returns the SubmodelElementHandler for a specific SubmodelElement

@@ -29,5 +29,13 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
             IdShort = idShort;
             MetaData = new Dictionary<string, string>();
         }
+
+        public bool ShouldSerializeMetaData()
+        {
+            if (MetaData?.Count > 0)
+                return true;
+            else
+                return false;
+        }
     }
 }

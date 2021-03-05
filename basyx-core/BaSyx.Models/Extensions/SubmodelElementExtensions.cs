@@ -19,6 +19,7 @@ using NLog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace BaSyx.Models.Extensions
@@ -37,6 +38,29 @@ namespace BaSyx.Models.Extensions
         public static T Cast<T>(this IReferable referable) where T : class, IReferable
         {
             return referable as T;
+        }
+
+        public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementCollection collection)
+        {
+            if (collection != null)
+            {
+                if (!collection.AllowDuplicates || !collection.Ordered)
+                    logger.Warn($"SubmodelElementCollection {collection.IdShort} has AllowDuplicated or Ordered set to false. The next line in code could fail converting the elements to datatype IEnumerable<{typeof(T).Name}>");
+
+                return collection.Value.Select(s => s.Cast<IProperty>().ToObject<T>());
+            }
+            else
+                return null;
+        }
+
+        public static T ToEntity<T>(this ISubmodelElementCollection collection) where T : class
+        {
+            if (collection != null)
+            {
+                return new SubmodelElementCollectionOfEntity<T>(collection).Value;
+            }
+            else
+                return null;
         }
 
         public static IValue GetValue(this ISubmodelElement submodelElement)
@@ -95,6 +119,9 @@ namespace BaSyx.Models.Extensions
         public static ISubmodelElementCollection CreateSubmodelElementCollectionFromEnumerable(this IEnumerable enumerable, string idShort, BindingFlags bindingFlags)
         {
             SubmodelElementCollection smCollection = new SubmodelElementCollection(idShort);
+            smCollection.AllowDuplicates = true;
+            smCollection.Ordered = true;
+
             foreach (var item in enumerable)
             {
                 foreach (var propertyInfo in item.GetType().GetProperties(bindingFlags))
@@ -267,6 +294,9 @@ namespace BaSyx.Models.Extensions
                     else
                         seCollection = new SubmodelElementCollection(idShort);
 
+                    seCollection.AllowDuplicates = true;
+                    seCollection.Ordered = true;
+
                     seCollection.ConceptDescription = conceptDescription;
                     return seCollection;
                 }
@@ -284,6 +314,9 @@ namespace BaSyx.Models.Extensions
                         if (smElement != null)
                             smCollection.Value.Create(smElement);
                     }
+
+                    smCollection.AllowDuplicates = false;
+                    smCollection.Ordered = false;
 
                     smCollection.ConceptDescription = conceptDescription;
                     return smCollection;

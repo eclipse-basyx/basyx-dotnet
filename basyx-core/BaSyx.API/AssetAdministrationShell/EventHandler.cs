@@ -13,5 +13,5 @@ using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 
 namespace BaSyx.API.AssetAdministrationShell
 {
-    public delegate void EventDelegate(ISubmodelServiceProvider submodelServiceProvider, IPublishableEvent publishableEvent);
+    public delegate void EventDelegate(ISubmodelServiceProvider submodelServiceProvider, IEventMessage eventMessage);
 }

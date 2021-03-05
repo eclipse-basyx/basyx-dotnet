@@ -10,18 +10,24 @@
 *******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BaSyx.Utils.ResultHandling
 {
     public class MessageCollection : List<IMessage>
     {
+        public new void Add(IMessage message)
+        {
+            if(message != null)
+                base.Add(message);
+        }       
+
         public override string ToString()
         {
             string serializedMessageCollection = string.Empty;
-            if (this.Count > 0)
-                foreach (var item in this)
-                    serializedMessageCollection += item.ToString() + Environment.NewLine;
+            if (Count > 0)
+                foreach (var message in this)
+                    if (message != null)
+                        serializedMessageCollection += message.ToString() + Environment.NewLine;
 
             return serializedMessageCollection;
         }

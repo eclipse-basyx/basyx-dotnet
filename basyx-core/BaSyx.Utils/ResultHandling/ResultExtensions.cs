@@ -8,6 +8,8 @@
 *
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
+using System;
+
 namespace BaSyx.Utils.ResultHandling
 {
     public static class ResultExtensions
@@ -16,8 +18,16 @@ namespace BaSyx.Utils.ResultHandling
         {
             if(result.Entity != null)
             {
-                entity = result.GetEntity<T>();
-                return true;
+                try
+                {
+                    entity = result.GetEntity<T>();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    entity = default;
+                    return false;
+                }
             }
             else
             {

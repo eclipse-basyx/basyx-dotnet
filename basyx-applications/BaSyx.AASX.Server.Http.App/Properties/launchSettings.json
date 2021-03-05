@@ -1,8 +1,12 @@
 {
   "profiles": {
-    "BaSyx.AASX.Server.Http": {
+    "BaSyx.AASX.Server.Http.App": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\ZIC5HO\\Desktop\\SmartFunctionKitForPressing.aasx"
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:6499;http://localhost:6999"
     }
   }
 }

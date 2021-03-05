@@ -26,7 +26,7 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
         public IElementContainer<ISubmodel> Submodels { get; set; }   
         public IReference<IAssetAdministrationShell> DerivedFrom { get; set; }     
         public IElementContainer<IView> Views { get; set; }
-        public ModelType ModelType => ModelType.AssetAdministationShell;
+        public ModelType ModelType => ModelType.AssetAdministrationShell;
         public IEnumerable<IEmbeddedDataSpecification> EmbeddedDataSpecifications { get; }
         public IElementContainer<IConceptDictionary> ConceptDictionaries { get; set; }
         public IConceptDescription ConceptDescription { get; set; }

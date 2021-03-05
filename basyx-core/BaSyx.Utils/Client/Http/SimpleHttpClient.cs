@@ -12,6 +12,7 @@ using BaSyx.Utils.JsonHandling;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Settings.Sections;
 using Newtonsoft.Json;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -19,28 +20,30 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BaSyx.Utils.Client.Http
 {
-    public abstract class SimpleHttpClient : IDisposable
+    public class SimpleHttpClient : IDisposable
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         public HttpClient HttpClient { get; }
-        public HttpClientHandler HttpClientHandler { get; }
-        public JsonSerializerSettings JsonSerializerSettings { get; protected set; }
-
-        public const int DEFAULT_REQUEST_TIMEOUT = 30000;
-
-        public static HttpClientHandler DEFAULT_HTTP_CLIENT_HANDLER
+        public HttpMessageHandler HttpMessageHandler { get; }
+        public JsonSerializerSettings JsonSerializerSettings { get; set; }
+        public static SimpleHttpClientTimeoutHandler DEFAULT_HTTP_CLIENT_HANDLER
         {
             get
             {
-                return new HttpClientHandler()
+                return new SimpleHttpClientTimeoutHandler()
                 {
-                    MaxConnectionsPerServer = 100,
-                    AllowAutoRedirect = true,
-                    UseProxy = false,
-                    ServerCertificateCustomValidationCallback = Validate
+                    InnerHandler = new HttpClientHandler()
+                    {
+                        MaxConnectionsPerServer = 100,
+                        AllowAutoRedirect = true,
+                        UseProxy = false,
+                        ServerCertificateCustomValidationCallback = Validate
+                    }
                 };
             }
         }
@@ -50,25 +53,45 @@ namespace BaSyx.Utils.Client.Http
             return true;
         }
 
-        protected SimpleHttpClient(HttpClientHandler clientHandler)
-        {
-            if (clientHandler == null)
-                clientHandler = DEFAULT_HTTP_CLIENT_HANDLER;
+        public SimpleHttpClient() : this(DEFAULT_HTTP_CLIENT_HANDLER)
+        { }
 
-            HttpClientHandler = clientHandler;
-            HttpClient = new HttpClient(HttpClientHandler, true);
+        public SimpleHttpClient(HttpMessageHandler messageHandler)
+        {
+            if (messageHandler == null)
+                messageHandler = DEFAULT_HTTP_CLIENT_HANDLER;
+
+            HttpMessageHandler = messageHandler;
+            HttpClient = new HttpClient(HttpMessageHandler, true);
+
+            if (HttpMessageHandler is SimpleHttpClientTimeoutHandler)
+                HttpClient.Timeout = Timeout.InfiniteTimeSpan;
 
             JsonSerializerSettings = new DefaultJsonSerializerSettings();
         }
 
-        protected virtual void LoadProxy(ProxyConfiguration proxyConfiguration)
+        public virtual void LoadProxy(ProxyConfiguration proxyConfiguration)
         {
             if (proxyConfiguration == null)
                 return;
 
+            HttpClientHandler clientHandler;
+            if (HttpMessageHandler is SimpleHttpClientTimeoutHandler timeoutHandler)
+                clientHandler = timeoutHandler.InnerHandler as HttpClientHandler;
+            else if (HttpMessageHandler is HttpClientHandler defautHandler)
+                clientHandler = defautHandler;
+            else
+                clientHandler = null;
+
             if (proxyConfiguration.UseProxy && !string.IsNullOrEmpty(proxyConfiguration.ProxyAddress))
             {
-                HttpClientHandler.UseProxy = true;
+                if(clientHandler == null)
+                {
+                    logger.Error("Error loading proxy settings -> Client handler is null");
+                    return;
+                }
+
+                clientHandler.UseProxy = true;
                 if (!string.IsNullOrEmpty(proxyConfiguration.UserName) && !string.IsNullOrEmpty(proxyConfiguration.Password))
                 {
                     NetworkCredential credential;
@@ -77,28 +100,29 @@ namespace BaSyx.Utils.Client.Http
                     else
                         credential = new NetworkCredential(proxyConfiguration.UserName, proxyConfiguration.Password);
 
-                    HttpClientHandler.Proxy = new WebProxy(proxyConfiguration.ProxyAddress, false, null, credential);
+                    clientHandler.Proxy = new WebProxy(proxyConfiguration.ProxyAddress, false, null, credential);
                 }
                 else
-                    HttpClientHandler.Proxy = new WebProxy(proxyConfiguration.ProxyAddress);
+                    clientHandler.Proxy = new WebProxy(proxyConfiguration.ProxyAddress);
             }
             else
-                HttpClientHandler.UseProxy = false;
+                clientHandler.UseProxy = false;
         }
 
-        protected virtual IResult<HttpResponseMessage> SendRequest(HttpRequestMessage message, int timeout)
+        public virtual IResult<HttpResponseMessage> SendRequest(HttpRequestMessage message, CancellationToken ct)
         {
             try
             {
-                var task = HttpClient.SendAsync(message);
-                if (Task.WhenAny(task, Task.Delay(timeout)).Result == task)
-                {
-                    return new Result<HttpResponseMessage>(true, task.Result);
-                }
-                else
-                {
-                    return new Result<HttpResponseMessage>(false, new List<IMessage> { new Message(MessageType.Error, "Error while sending the request: timeout") });
-                }
+                HttpResponseMessage response = HttpClient.SendAsync(message, ct).Result;
+                return new Result<HttpResponseMessage>(true, response);
+            }
+            catch (TimeoutException)
+            {
+                return new Result<HttpResponseMessage>(false, new Message(MessageType.Error, "Error while sending the request: Timeout"));
+            }
+            catch (OperationCanceledException)
+            {
+                return new Result<HttpResponseMessage>(false, new Message(MessageType.Error, "Request canceled"));
             }
             catch (Exception e)
             {
@@ -106,25 +130,49 @@ namespace BaSyx.Utils.Client.Http
             }
         }
 
-        protected virtual async Task<IResult<HttpResponseMessage>> SendRequestAsync(HttpRequestMessage message)
+        public virtual async Task<IResult<HttpResponseMessage>> SendRequestAsync(HttpRequestMessage message, CancellationToken ct)
         {
             try
             {
-                using(HttpResponseMessage response = await HttpClient.SendAsync(message).ConfigureAwait(false))
-                    return new Result<HttpResponseMessage>(true, response);
+                HttpResponseMessage response = await HttpClient.SendAsync(message, ct).ConfigureAwait(false);
+                return new Result<HttpResponseMessage>(true, response);
+            }
+            catch (TimeoutException)
+            {
+                return new Result<HttpResponseMessage>(false, new Message(MessageType.Error, "Error while sending the request: Timeout"));
+            }
+            catch (OperationCanceledException)
+            {
+                return new Result<HttpResponseMessage>(false, new Message(MessageType.Error, "Request canceled"));
             }
             catch (Exception e)
             {
                 return new Result<HttpResponseMessage>(e);
             }
+        }    
+        
+        public TimeSpan GetDefaultTimeout()
+        {
+            if (HttpMessageHandler is SimpleHttpClientTimeoutHandler timeoutHandler)
+                return timeoutHandler.DefaultTimeout;
+            else
+                return HttpClient.Timeout;                
         }
 
-        protected virtual HttpRequestMessage CreateRequest(Uri uri, HttpMethod method)
+        public void SetDefaultTimeout(TimeSpan timeout)
+        {
+            if (HttpMessageHandler is SimpleHttpClientTimeoutHandler timeoutHandler)
+                timeoutHandler.DefaultTimeout = timeout;
+            else
+                HttpClient.Timeout = timeout;
+        }
+
+        public virtual HttpRequestMessage CreateRequest(Uri uri, HttpMethod method)
         {
             return new HttpRequestMessage(method, uri);
         }
 
-        protected virtual HttpRequestMessage CreateRequest(Uri uri, HttpMethod method, HttpContent content)
+        public virtual HttpRequestMessage CreateRequest(Uri uri, HttpMethod method, HttpContent content)
         {           
             var message = CreateRequest(uri, method);
             if (content != null)
@@ -132,8 +180,8 @@ namespace BaSyx.Utils.Client.Http
 
             return message;
         }
-        
-        protected virtual HttpRequestMessage CreateJsonContentRequest(Uri uri, HttpMethod method, object content)
+
+        public virtual HttpRequestMessage CreateJsonContentRequest(Uri uri, HttpMethod method, object content)
         {
             var message = CreateRequest(uri, method, () => 
             {
@@ -142,8 +190,8 @@ namespace BaSyx.Utils.Client.Http
             });
             return message;
         }
-        
-        protected virtual HttpRequestMessage CreateRequest(Uri uri, HttpMethod method, Func<HttpContent> content)
+
+        public virtual HttpRequestMessage CreateRequest(Uri uri, HttpMethod method, Func<HttpContent> content)
         {
             var message = CreateRequest(uri, method);
             if (content != null)
@@ -152,7 +200,7 @@ namespace BaSyx.Utils.Client.Http
             return message;
         }
 
-        protected virtual IResult EvaluateResponse(IResult result, HttpResponseMessage response)
+        public virtual IResult EvaluateResponse(IResult result, HttpResponseMessage response)
         {
             List<IMessage> messageList = new List<IMessage>();
             messageList.AddRange(result.Messages);
@@ -168,7 +216,7 @@ namespace BaSyx.Utils.Client.Http
                 else
                 {
                     string responseString = string.Empty;
-                    if(responseByteArray?.Length > 0)
+                    if (responseByteArray?.Length > 0)
                         responseString = Encoding.UTF8.GetString(responseByteArray);
 
                     messageList.Add(new Message(MessageType.Error, response.ReasonPhrase + " | " + responseString, ((int)response.StatusCode).ToString()));
@@ -179,7 +227,7 @@ namespace BaSyx.Utils.Client.Http
             return new Result(false, messageList);
         }
 
-        protected virtual IResult<T> EvaluateResponse<T>(IResult result, HttpResponseMessage response)
+        public virtual IResult<T> EvaluateResponse<T>(IResult result, HttpResponseMessage response)
         {
             List<IMessage> messageList = new List<IMessage>();
             messageList.AddRange(result.Messages);

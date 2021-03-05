@@ -18,7 +18,7 @@ namespace BaSyx.API.AssetAdministrationShell.Extensions
     {
         public static IAssetAdministrationShellServiceProvider CreateServiceProvider(this IAssetAdministrationShell aas, bool includeSubmodels)
         {
-            InternalAssetAdministationShellServiceProvider sp = new InternalAssetAdministationShellServiceProvider(aas);            
+            InternalAssetAdministrationShellServiceProvider sp = new InternalAssetAdministrationShellServiceProvider(aas);            
 
             if(includeSubmodels && aas.Submodels?.Count() > 0)
                 foreach (var submodel in aas.Submodels.Values)

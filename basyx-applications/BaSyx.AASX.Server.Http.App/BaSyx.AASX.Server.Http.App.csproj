@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -21,11 +21,20 @@
     <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="1.0.0" />
     <PackageReference Include="BaSyx.Common.UI" Version="1.0.0" />
     <PackageReference Include="BaSyx.Common.UI.Swagger" Version="1.0.0" />
+    <PackageReference Include="BaSyx.Discovery.mDNS" Version="1.0.0" />
     <PackageReference Include="BaSyx.Models.Export" Version="1.0.0" />
+    <PackageReference Include="BaSyx.Registry.Client.Http" Version="1.0.0" />
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="RegistryClientSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ServerSettings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

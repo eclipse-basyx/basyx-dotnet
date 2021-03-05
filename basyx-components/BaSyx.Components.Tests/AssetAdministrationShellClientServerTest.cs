@@ -224,7 +224,7 @@ namespace BaSyx.Components.Tests
         }
 
         public IResult<InvocationResponse> InvokeOperation(string submodelId, string operationIdShortPath, InvocationRequest invocationRequest)
-        {
+        {            
             return client.InvokeOperation(submodelId, operationIdShortPath, invocationRequest);
         }
 

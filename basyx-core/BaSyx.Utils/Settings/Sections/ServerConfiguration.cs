@@ -23,7 +23,7 @@ namespace BaSyx.Utils.Settings.Sections
         [XmlElement]
         public HostingConfiguration Hosting { get; set; }
         [XmlElement]
-        public string DefaultRoute { get; set; }
+        public string DefaultRoute { get; set; }      
 
         public ServerConfiguration()
         {
@@ -40,6 +40,8 @@ namespace BaSyx.Utils.Settings.Sections
         public List<string> Urls { get; set; }
         [XmlElement]
         public string ContentPath { get; set; }
+        [XmlElement]
+        public bool? EnableIPv6 { get; set; }
 
         public HostingConfiguration()
         {

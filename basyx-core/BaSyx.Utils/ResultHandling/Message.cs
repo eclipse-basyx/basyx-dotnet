@@ -33,7 +33,7 @@ namespace BaSyx.Utils.ResultHandling
         public override string ToString()
         {
             if(!string.IsNullOrEmpty(Code))
-                return string.Format(CultureInfo.CurrentCulture, "{0} | {1} - {2}", MessageType, Code, Text);
+                return string.Format(CultureInfo.CurrentCulture, "{0} | {1} | {2}", MessageType, Code, Text);
             else
                 return string.Format(CultureInfo.CurrentCulture, "{0} | {1}", MessageType, Text);
         }

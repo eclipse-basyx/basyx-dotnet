@@ -24,6 +24,8 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
                     return new Operation(idShort);
                 case ModelTypes.BasicEvent:
                     return new BasicEvent(idShort);
+                case ModelTypes.EventElement:
+                    return new EventElement(idShort);
                 case ModelTypes.RelationshipElement:
                     return new RelationshipElement(idShort);
                 case ModelTypes.AnnotatedRelationshipElement:

@@ -15,7 +15,7 @@ using System.Xml.Serialization;
 
 namespace BaSyx.Models.Export
 {    
-    public class EnvironmentAssetAdministationShell_V2_0 : EnvironmentIdentifiable_V2_0, IModelType
+    public class EnvironmentAssetAdministrationShell_V2_0 : EnvironmentIdentifiable_V2_0, IModelType
     {
         [JsonProperty("derivedFrom")]
         [XmlElement("derivedFrom")]
@@ -41,7 +41,7 @@ namespace BaSyx.Models.Export
 
         [JsonProperty("modelType")]
         [XmlIgnore]
-        public ModelType ModelType => ModelType.AssetAdministationShell;
+        public ModelType ModelType => ModelType.AssetAdministrationShell;
 
         public bool ShouldSerializeConceptDictionaries()
         {

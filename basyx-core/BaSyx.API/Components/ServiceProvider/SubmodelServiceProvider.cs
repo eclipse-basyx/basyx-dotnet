@@ -383,19 +383,28 @@ namespace BaSyx.API.Components
             }
         }              
        
-        public IResult ThrowEvent(IPublishableEvent publishableEvent, string topic = "/", Action<IMessagePublishedEventArgs> MessagePublished = null, byte qosLevel = 2, bool retain = false)
+        public IResult PublishEvent(IEventMessage eventMessage, string topic = null, Action<IMessagePublishedEventArgs> MessagePublished = null, byte qosLevel = 2, bool retain = false)
         {
             if (messageClient == null || !messageClient.IsConnected)
                 return new Result(false, new Message(MessageType.Warning, "MessageClient is not initialized or not connected"));
 
-            if (publishableEvent == null)
-                return new Result(new ArgumentNullException(nameof(publishableEvent)));
+            if (eventMessage == null)
+                return new Result(new ArgumentNullException(nameof(eventMessage)));
 
-            if (eventDelegates.TryGetValue(publishableEvent.Name, out EventDelegate eventDelegate))
-                eventDelegate.Invoke(this, publishableEvent);
+            if (eventDelegates.TryGetValue(eventMessage.SourceIdShort, out EventDelegate eventDelegate))
+                eventDelegate.Invoke(this, eventMessage);
 
-            string message = JsonConvert.SerializeObject(publishableEvent, Formatting.Indented);
-            return messageClient.Publish(topic, message, MessagePublished, qosLevel, retain);
+            try
+            {
+                string messageTopic = topic ?? eventMessage.Topic; 
+                string message = JsonConvert.SerializeObject(eventMessage, Formatting.Indented);
+                return messageClient.Publish(messageTopic, message, MessagePublished, qosLevel, retain);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error sending event message");
+                return new Result(e);
+            }
         }
 
        

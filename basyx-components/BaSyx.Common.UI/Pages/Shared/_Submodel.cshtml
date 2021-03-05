@@ -114,10 +114,10 @@
                     }
                 </div>
             }
-            else if (submodelElement is IBasicEvent basicEvent && basicEvent.DataElements.HasChildren())
+            else if (submodelElement is IEventElement eventElement && eventElement.SubmodelElements.HasChildren())
             {
                 <div class="card-body">
-                    @foreach (var valueChild in basicEvent.DataElements.Children)
+                    @foreach (var valueChild in eventElement.SubmodelElements.Children)
                     {
                         @ShowSubmodelElement(new List<object>() { submodelId, valueChild })
                     }
@@ -172,6 +172,17 @@
     public string GetRequestPath(string submodelId, string pathId)
     {
         string aasId = (string)ViewData["aasId"];
+
+        if (!string.IsNullOrEmpty(aasId))
+        {
+            aasId = System.Web.HttpUtility.UrlEncode(aasId);
+        }
+
+        if (!string.IsNullOrEmpty(submodelId))
+        {
+            submodelId = System.Web.HttpUtility.UrlEncode(submodelId);
+        }
+
         string apiType = (string)ViewData["ApiType"];
         string requestPath = string.Empty;
         if(apiType == "AssetAdministrationShell")

@@ -16,6 +16,10 @@ using BaSyx.Common.UI.Swagger;
 using BaSyx.Models.Connectivity;
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using BaSyx.Models.Export;
+using BaSyx.Registry.Client.Http;
+using BaSyx.Utils.Logging;
+using BaSyx.Utils.Settings.Types;
+using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using System;
@@ -24,144 +28,204 @@ using System.IO;
 using System.IO.Packaging;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace BaSyx.AASX.Server.Http.App
 {
     class Program
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+        private static FileSystemWatcher watcher;
+        private static AssetAdministrationShellRepositoryHttpServer repositoryServer;
+        private static AssetAdministrationShellRepositoryServiceProvider repositoryService;
+        private static List<HttpEndpoint> endpoints;
+        private static ServerSettings serverSettings;
+        private static RegistryHttpClient registryHttpClient;
+
+        public class Options
+        {
+            [Option('s', "settings", Required = false, HelpText = "Path to the ServerSettings.xml")]
+            public string SettingsFilePath { get; set; }
+
+            [Option('u', "urls", Required = false, HelpText = "Hosting Urls (semicolon separated), e.g. http://+:4999")]
+            public string Urls { get; set; }
+
+            [Option('i', "input", Required = false, HelpText = "Path to AASX-File or Folder")]
+            public string InputPath { get; set; }
+        }
 
         static void Main(string[] args)
         {
-            logger.Info("Starting AASX Hoster...");
+            logger.Info("Starting AASX Http-Server...");
 
-            if(args?.Length == 0)
+            string[] inputFiles = null;
+
+            Parser.Default.ParseArguments<Options>(args)
+                   .WithParsed<Options>(o =>
+                   {
+                       if (!string.IsNullOrEmpty(o.SettingsFilePath))
+                           serverSettings = ServerSettings.LoadSettingsFromFile(o.SettingsFilePath);
+                       else
+                           serverSettings = ServerSettings.LoadSettings();
+
+                       if (!string.IsNullOrEmpty(o.Urls))
+                       {
+                           if (o.Urls.Contains(";"))
+                           {
+                               string[] splittedUrls = o.Urls.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                               serverSettings.ServerConfig.Hosting.Urls = splittedUrls.ToList();
+                           }
+                           else
+                               serverSettings.ServerConfig.Hosting.Urls = new List<string>() { o.Urls };
+                       }
+                       if (!string.IsNullOrEmpty(o.InputPath))
+                       {
+                           if (Directory.Exists(o.InputPath))
+                           {
+                               inputFiles = Directory.GetFiles(o.InputPath, "*.aasx");
+
+                               watcher = new FileSystemWatcher(o.InputPath, "*.aasx");
+                               watcher.EnableRaisingEvents = true;
+                               watcher.Changed += Watcher_Changed;
+                           }
+                           else if (System.IO.File.Exists(o.InputPath))
+                           {
+                               inputFiles = new string[] { o.InputPath };
+                           }
+                           else
+                               throw new FileNotFoundException(o.InputPath);
+                       }
+                       else
+                           throw new ArgumentNullException(o.InputPath);
+
+                   });
+
+            if (args.Contains("--help") || args.Contains("--version"))
+                return;
+
+            if (inputFiles == null || inputFiles.Length == 0)
             {
-                logger.Error("No arguments provided --> Application is shutting down...");
+                logger.Error("No AASX-File(s) found --> Application is shutting down...");
                 return;
             }
-            if (!string.IsNullOrEmpty(args[0]) && File.Exists(args[0]))
-            {              
-                using (BaSyx.Models.Export.AASX aasx = new BaSyx.Models.Export.AASX(args[0], FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            else
+            {
+                registryHttpClient = new RegistryHttpClient();
+                repositoryServer = new AssetAdministrationShellRepositoryHttpServer(serverSettings);
+                repositoryService = new AssetAdministrationShellRepositoryServiceProvider();
+                endpoints = serverSettings.ServerConfig.Hosting.Urls.ConvertAll(c =>
                 {
-                    AssetAdministrationShellEnvironment_V2_0 environment = aasx.GetEnvironment_V2_0();
-                    if(environment == null)
-                    {
-                        logger.Error("Asset Administration Shell Environment cannot be obtained from AASX-Package " + args[0]);
-                        return;
-                    }
+                    string address = c.Replace("+", "127.0.0.1");
+                    logger.Info("Using " + address + " as base endpoint url");
+                    return new HttpEndpoint(address);
+                });
+                repositoryService.UseDefaultEndpointRegistration(endpoints);
+                repositoryServer.SetServiceProvider(repositoryService);
+                repositoryServer.ConfigureServices(services =>
+                {
+                    Assembly aasxControllerAssembly = Assembly.Load("BaSyx.API.Http.Controllers.AASX");
+                    services.AddMvc()
+                        .AddApplicationPart(aasxControllerAssembly)
+                        .AddControllersAsServices();
+                });
 
-                    logger.Info("AASX-Package successfully loaded");
+                repositoryServer.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
+                repositoryServer.AddSwagger(Interface.AssetAdministrationShellRepository);
 
-                    if (environment.AssetAdministrationShells.Count == 1)
-                    {
-                        LoadSingleAssetAdministrationShellServer(environment.AssetAdministrationShells.ElementAt(0), aasx.SupplementaryFiles, args);
-                    }
-                    else if (environment.AssetAdministrationShells.Count > 1)
-                    {
-                        LoadMultiAssetAdministrationShellServer(environment.AssetAdministrationShells, aasx.SupplementaryFiles, args);
-                    }
-                    else
-                    {
-                        logger.Error("No Asset Administration Shells found AASX-Package " + args[0]);
-                        return;
-                    }
+                for (int i = 0; i < inputFiles.Length; i++)
+                {
+                    LoadAASX(inputFiles[i]);
                 }
+
+                repositoryServer.ApplicationStopping = () =>
+                {
+                    var providers = repositoryService.GetAssetAdministrationShellServiceProviders().Entity;
+                    foreach (var shellProvider in providers)
+                    {
+                        var result = registryHttpClient
+                        .DeleteAssetAdministrationShellRegistration(shellProvider.ServiceDescriptor.Identification.Id);
+
+                        result.LogResult(logger, LogLevel.Info);
+                    }
+                };
+
+                repositoryServer.Run();
             }
-            Console.WriteLine("Press any key to exit...");
-            Console.Read();
-            logger.Info("Application shut down");
         }
 
-        private static void LoadMultiAssetAdministrationShellServer(List<IAssetAdministrationShell> assetAdministrationShells, List<PackagePart> supplementaryFiles, string[] args)
+        private static async void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
-            AssetAdministrationShellRepositoryHttpServer multiServer = new AssetAdministrationShellRepositoryHttpServer();
-            AssetAdministrationShellRepositoryServiceProvider repositoryService = new AssetAdministrationShellRepositoryServiceProvider();
+            await Task.Delay(1000);
+            LoadAASX(e.FullPath);
+        }
 
+        private static void LoadAASX(string aasxFilePath)
+        {
+            using (BaSyx.Models.Export.AASX aasx = new BaSyx.Models.Export.AASX(aasxFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                AssetAdministrationShellEnvironment_V2_0 environment = aasx.GetEnvironment_V2_0();
+                if (environment == null)
+                {
+                    logger.Error("Asset Administration Shell Environment cannot be obtained from AASX-Package " + aasxFilePath);
+                    return;
+                }
+
+                logger.Info("AASX-Package successfully loaded");
+
+                if (environment.AssetAdministrationShells.Count != 0)
+                {
+                    PackagePart thumbnailPart = aasx.GetThumbnailAsPackagePart();
+                    AddToAssetAdministrationShellRepository(environment.AssetAdministrationShells, aasx.SupplementaryFiles, thumbnailPart);
+                }
+                else
+                {
+                    logger.Error("No Asset Administration Shells found AASX-Package " + aasxFilePath);
+                    return;
+                }
+            }
+        }
+
+        private static void AddToAssetAdministrationShellRepository(List<IAssetAdministrationShell> assetAdministrationShells, List<PackagePart> supplementaryFiles, PackagePart thumbnailPart)
+        {
             foreach (var shell in assetAdministrationShells)
             {
                 var aasServiceProvider = shell.CreateServiceProvider(true);
-                repositoryService.RegisterAssetAdministrationShellServiceProvider(shell.IdShort, aasServiceProvider);
-            }
-
-            List<HttpEndpoint> endpoints;
-            if (args.Length == 2 && !string.IsNullOrEmpty(args[1]))
-            {
-                logger.Info("Using " + args[1] + " as host url");
-                endpoints = new List<HttpEndpoint>() { new HttpEndpoint(args[1]) };
-            }
-            else
-            {
-                endpoints = multiServer.Settings.ServerConfig.Hosting.Urls.ConvertAll(c =>
+                var aasServiceEndpoints = endpoints.ConvertAll(e =>
                 {
-                    string address = c.Replace("+", "127.0.0.1");
-                    logger.Info("Using " + address + " as host url");
-                    return new HttpEndpoint(address);
+                    return new HttpEndpoint(
+                        new Uri(e.Url, 
+                        new Uri("/shells/" + HttpUtility.UrlEncode(shell.Identification.Id), UriKind.Relative)));
                 });
 
+                aasServiceProvider.UseDefaultEndpointRegistration(aasServiceEndpoints);
+                repositoryService.RegisterAssetAdministrationShellServiceProvider(shell.Identification.Id, aasServiceProvider);
+
+                var result = registryHttpClient.CreateOrUpdateAssetAdministrationShellRegistration(
+                    shell.Identification.Id, aasServiceProvider.ServiceDescriptor);
+
+                result.LogResult(logger, LogLevel.Info);
             }
 
-            repositoryService.UseDefaultEndpointRegistration(endpoints);
-            multiServer.SetServiceProvider(repositoryService);
+            string aasIdName = assetAdministrationShells.First().Identification.Id;
+            foreach (char invalidChar in Path.GetInvalidFileNameChars())
+                aasIdName = aasIdName.Replace(invalidChar, '_');
 
             foreach (var file in supplementaryFiles)
             {
                 using (Stream stream = file.GetStream())
                 {
-                    logger.Info("Providing content on server: " + file.Uri);
-                    multiServer.ProvideContent(file.Uri, stream);
+                    Uri fileUri = new Uri(aasIdName + "/" + file.Uri.ToString().TrimStart('/'), UriKind.Relative);
+                    logger.Info("Providing content on server: " + fileUri);
+                    repositoryServer.ProvideContent(fileUri, stream);
                 }
             }
-            multiServer.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
-            multiServer.AddSwagger(Interface.AssetAdministrationShellRepository);
-            multiServer.RunAsync();
-        }
-
-        private static void LoadSingleAssetAdministrationShellServer(IAssetAdministrationShell assetAdministrationShell, List<PackagePart> supplementaryFiles, string[] args)
-        {
-            AssetAdministrationShellHttpServer server = new AssetAdministrationShellHttpServer();
-            IAssetAdministrationShellServiceProvider service = assetAdministrationShell.CreateServiceProvider(true);
-
-            List<HttpEndpoint> endpoints;
-            if (args.Length == 2 && !string.IsNullOrEmpty(args[1]))
-            {
-                logger.Info("Using " + args[1] + " as host url");
-                endpoints = new List<HttpEndpoint>() { new HttpEndpoint(args[1]) };
-            }
-            else
-            {
-                endpoints = server.Settings.ServerConfig.Hosting.Urls.ConvertAll(c =>
+            if (thumbnailPart != null)
+                using (Stream thumbnailStream = thumbnailPart.GetStream())
                 {
-                    string address = c.Replace("+", "127.0.0.1");
-                    logger.Info("Using " + address + " as host url");
-                    return new HttpEndpoint(address);
-                });
-
-            }
-            service.UseDefaultEndpointRegistration(endpoints);
-            server.SetServiceProvider(service);
-
-            server.ConfigureServices(services =>
-            {
-                Assembly controllerAssembly = Assembly.Load("BaSyx.API.Http.Controllers.AASX");
-                services.AddMvc()
-                    .AddApplicationPart(controllerAssembly)
-                    .AddControllersAsServices();
-            });
-
-            foreach (var file in supplementaryFiles)
-            {
-                using (Stream stream = file.GetStream())
-                {
-                    logger.Info("Providing content on server: " + file.Uri);
-                    server.ProvideContent(file.Uri, stream);
+                    Uri thumbnailUri = new Uri(aasIdName + "/" + thumbnailPart.Uri.ToString().TrimStart('/'), UriKind.Relative);
+                    repositoryServer.ProvideContent(thumbnailUri, thumbnailStream);
                 }
-            }
-            logger.Info("Server is starting up...");
-
-            server.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
-            server.AddSwagger(Interface.AssetAdministrationShell);
-            server.RunAsync();
         }
     }
 }

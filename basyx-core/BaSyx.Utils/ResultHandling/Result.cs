@@ -27,22 +27,21 @@ namespace BaSyx.Utils.ResultHandling
         public Type EntityType { get; private set; }
 
         private MessageCollection messages;
-
         public MessageCollection Messages
         {
             get
             {
-                if (this.messages == null)
-                    this.messages = new MessageCollection();
-                return this.messages;
+                if (messages == null)
+                    messages = new MessageCollection();
+                return messages;
             }
         }
         public Result(bool success) : this(success, null, null, null)
         { }
-        public Result(bool success, IMessage message) : this(success, new List<IMessage>() { message })
+        public Result(bool success, IMessage message) : this(success, new MessageCollection { message })
         { }
 
-        public Result(bool success, List<IMessage> messages) : this(success, null, null, messages)
+        public Result(bool success, IEnumerable<IMessage> messages) : this(success, null, null, messages)
         { }
 
         public Result(bool success, object entity, Type entityType) : this(success, entity, entityType, null)
@@ -55,9 +54,9 @@ namespace BaSyx.Utils.ResultHandling
         public Result(IResult result) : this(result.Success, result.Entity, result.EntityType, result.Messages)
         { }
 
-        public static List<IMessage> GetMessageListFromException(Exception e)
+        public static MessageCollection GetMessageListFromException(Exception e)
         {
-            List<IMessage> messageList = new List<IMessage>();
+            MessageCollection messageList = new MessageCollection();
 
             if (e.InnerException != null)
                 messageList.AddRange(GetMessageListFromException(e.InnerException));
@@ -69,22 +68,26 @@ namespace BaSyx.Utils.ResultHandling
 
         public static IMessage GetMessageFromException(Exception e)
         {
-            var message = new Message(MessageType.Exception, e.GetType().Name + ":" + e.Message);
-
-            return message;
+            if (e != null)
+                return new Message(MessageType.Exception, e.GetType().Name + ":" + e.Message);
+            else
+                return new Message(MessageType.Error, "Exception itself is null");
         }
         [JsonConstructor]
-        public Result(bool success, object entity, Type entityType, List<IMessage> messages)
+        public Result(bool success, object entity, Type entityType, IEnumerable<IMessage> messages)
         {
             Success = success;
 
             if (messages != null)
                 foreach (Message msg in messages)
                 {
-                    if (msg.MessageType == MessageType.Exception)
-                        IsException = true;
+                    if (msg != null)
+                    {
+                        if (msg.MessageType == MessageType.Exception)
+                            IsException = true;
 
-                    Messages.Add(msg);
+                        Messages.Add(msg);
+                    }
                 }
 
             if (entity != null && entityType != null)
@@ -102,25 +105,28 @@ namespace BaSyx.Utils.ResultHandling
                 Entity.GetType().IsAssignableFrom(typeof(T)) ||
                 Entity.GetType().GetInterfaces().Contains(typeof(T))))
                 return (T)Entity;
-            return default(T);
+            return default;
         }
         
         public override string ToString()
         {
-            string messageTxt = string.Empty;
-            for (int i = 0; i < Messages.Count; i++)
-                messageTxt += Messages[i].ToString() + " || ";
+            string messageTxt = Messages?.ToString();
+            string entityTxt = Entity?.ToString();
+            string resultTxt =  $"Success: {Success}";
 
-            string entityTxt = string.Empty;
-            if (Entity != null)
-                entityTxt = Entity.ToString();
+            if (!string.IsNullOrEmpty(entityTxt))
+                resultTxt += " | Entity: " + entityTxt;
+            if (!string.IsNullOrEmpty(messageTxt))
+                resultTxt += " | Messages: " + messageTxt;
+            return resultTxt;
+        }
 
-            var txt =  $"Success: {Success}";
-            if (entityTxt != string.Empty)
-                txt += " | Entity: " + entityTxt;
-            if (messageTxt != string.Empty)
-                txt += " | Messages: " + messageTxt;
-            return txt;
+        public bool ShouldSerializeMessages()
+        {
+            if (Messages?.Count() > 0)
+                return true;
+            else
+                return false;
         }
     }
 
@@ -128,13 +134,13 @@ namespace BaSyx.Utils.ResultHandling
     {
         [IgnoreDataMember]
         public new TEntity Entity { get; private set; }
-        public Result(bool success) : this(success, default(TEntity), new List<IMessage>())
+        public Result(bool success) : this(success, default(TEntity), new MessageCollection())
         { }
-        public Result(bool success, TEntity entity) : this(success, entity, new List<IMessage>())
+        public Result(bool success, TEntity entity) : this(success, entity, new MessageCollection())
         { }
         public Result(bool success, IMessage message) : this(success, default(TEntity), new MessageCollection { message })
         { }
-        public Result(bool success, List<IMessage> messages) : this(success, default(TEntity), messages)
+        public Result(bool success, IEnumerable<IMessage> messages) : this(success, default(TEntity), messages)
         { }
         public Result(bool success, TEntity entity, IMessage message) : this(success, entity, new MessageCollection { message })
         { }
@@ -142,7 +148,7 @@ namespace BaSyx.Utils.ResultHandling
         { }
         public Result(IResult result) : base(result)
         { }
-        public Result(bool success, TEntity entity, List<IMessage> messages) : base(success, entity, typeof(TEntity), messages)
+        public Result(bool success, TEntity entity, IEnumerable<IMessage> messages) : base(success, entity, typeof(TEntity), messages)
         {
             Entity = entity;
         }

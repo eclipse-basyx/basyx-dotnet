@@ -26,7 +26,7 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
     {
         public IReference SemanticId { get; set; }
 
-        public List<IConstraint> Constraints { get; set; }
+        public IEnumerable<IConstraint> Constraints { get; set; }
 
         public ModelingKind Kind { get; set; }
 
@@ -63,6 +63,22 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
             Constraints = new List<IConstraint>();
             MetaData = new Dictionary<string, string>();
             EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
+        }
+
+        public bool ShouldSerializeEmbeddedDataSpecifications()
+        {
+            if (EmbeddedDataSpecifications?.Count() > 0)
+                return true;
+            else
+                return false;
+        }
+
+        public bool ShouldSerializeConstraints()
+        {
+            if (Constraints?.Count() > 0)
+                return true;
+            else
+                return false;
         }
     }
 }

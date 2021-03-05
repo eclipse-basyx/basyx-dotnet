@@ -102,7 +102,7 @@ namespace BaSyx.Models.Extensions
             return jArray;
         }
 
-        private static JArray CustomizeSubmodelElement(ISubmodelElement element, string[] columns)
+        public static JArray CustomizeSubmodelElement(this ISubmodelElement element, string[] columns)
         {
             JArray jArray = new JArray();
             Type elementType = element.GetType();
@@ -149,7 +149,10 @@ namespace BaSyx.Models.Extensions
             return jObject;
         }
 
-        private static JObject MinimizeSubmodelElements(IEnumerable<ISubmodelElement> submodelElements)
+        public static JObject MinimizeSubmodelElement(this ISubmodelElement submodelElement)
+            => MinimizeSubmodelElements(new ElementContainer<ISubmodelElement>() { submodelElement });
+
+        public static JObject MinimizeSubmodelElements(this IEnumerable<ISubmodelElement> submodelElements)
         {
             JObject jObject = new JObject();
             foreach (var smElement in submodelElements)
@@ -159,8 +162,18 @@ namespace BaSyx.Models.Extensions
                    case ModelTypes.SubmodelElementCollection:
                         {
                             ISubmodelElementCollection submodelElementCollection = smElement.Cast<ISubmodelElementCollection>();
-                            JObject subObjects = MinimizeSubmodelElements(submodelElementCollection.Value);
-                            jObject.Add(smElement.IdShort, subObjects);
+                            if (submodelElementCollection.AllowDuplicates)
+                            {
+                                JObject subObjects = MinimizeSubmodelElements(submodelElementCollection.Value);
+                                IEnumerable<JToken> values = subObjects.Children<JProperty>().Select(p => p.Value);
+                                JArray arrayElements = new JArray(values);
+                                jObject.Add(smElement.IdShort, arrayElements);
+                            }
+                            else
+                            {
+                                JObject subObjects = MinimizeSubmodelElements(submodelElementCollection.Value);
+                                jObject.Add(smElement.IdShort, subObjects);
+                            }
                             break;
                         }
                     case ModelTypes.RelationshipElement:

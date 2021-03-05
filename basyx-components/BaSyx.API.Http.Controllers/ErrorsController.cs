@@ -33,6 +33,8 @@ namespace BaSyx.API.Http.Controllers
             if (exception != null)
             {
                 Result result = new Result(exception);
+                result.Messages.Add(new Message(MessageType.Exception, exception.StackTrace));
+
                 Response.StatusCode = 400;
 
                 return result;

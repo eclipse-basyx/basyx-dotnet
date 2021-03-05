@@ -19,7 +19,7 @@ namespace BaSyx.Models.Core.Common
     public enum ModelTypes
     {
         Asset,
-        AssetAdministationShell,
+        AssetAdministrationShell,
         Submodel,
         SubmodelElement,
         SubmodelElementCollection,
@@ -27,6 +27,8 @@ namespace BaSyx.Models.Core.Common
         OperationVariable,
         Event,
         BasicEvent,
+        EventElement,
+        EventMessage,
         View,
         RelationshipElement,
         AnnotatedRelationshipElement,
@@ -52,7 +54,7 @@ namespace BaSyx.Models.Core.Common
     public class ModelType : DataObjectType, IEquatable<ModelType>
     {
         public static readonly ModelType Asset = new ModelType("Asset");
-        public static readonly ModelType AssetAdministationShell = new ModelType("AssetAdministationShell");
+        public static readonly ModelType AssetAdministrationShell = new ModelType("AssetAdministrationShell");
         public static readonly ModelType Submodel = new ModelType("Submodel");
         public static readonly ModelType SubmodelElement = new ModelType("SubmodelElement");
         public static readonly ModelType SubmodelElementCollection = new ModelType("SubmodelElementCollection");
@@ -60,6 +62,8 @@ namespace BaSyx.Models.Core.Common
         public static readonly ModelType OperationVariable = new ModelType("OperationVariable");
         public static readonly ModelType Event = new ModelType("Event");
         public static readonly ModelType BasicEvent = new ModelType("BasicEvent");
+        public static readonly ModelType EventElement = new ModelType("EventElement");
+        public static readonly ModelType EventMessage = new ModelType("EventMessage");
         public static readonly ModelType View = new ModelType("View");
         public static readonly ModelType RelationshipElement = new ModelType("RelationshipElement");
         public static readonly ModelType AnnotatedRelationshipElement = new ModelType("AnnotatedRelationshipElement");

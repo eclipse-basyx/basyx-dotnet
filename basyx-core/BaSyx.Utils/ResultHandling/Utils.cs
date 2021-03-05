@@ -11,25 +11,30 @@
 using System;
 using System.Diagnostics;
 using System.Net;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace BaSyx.Utils.ResultHandling
 {
     public static class Utils
     {
-        public static bool RetryUntilSuccessOrTimeout(Func<bool> task, TimeSpan timeout, TimeSpan pause)
+        public static async Task<bool> RetryUntilSuccessOrTimeout(Func<bool> task, TimeSpan timeout, TimeSpan pause)
         {
             if (pause.TotalMilliseconds < 0)
             {
-                throw new ArgumentException("pause must be >= 0 milliseconds");
+                throw new ArgumentException("Pause must be >= 0 milliseconds");
             }
+            if (timeout.TotalMilliseconds < 0)
+            {
+                throw new ArgumentException("Timeout must be >= 0 milliseconds");
+            }
+
             var stopwatch = Stopwatch.StartNew();
             do
             {
                 if (task())
                     return true; 
 
-                Thread.Sleep((int)pause.TotalMilliseconds);
+                await Task.Delay((int)pause.TotalMilliseconds);
             }
             while (stopwatch.Elapsed < timeout);
             return false;

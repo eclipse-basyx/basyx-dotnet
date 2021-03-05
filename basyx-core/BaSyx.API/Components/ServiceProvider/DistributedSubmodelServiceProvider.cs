@@ -44,7 +44,7 @@ namespace BaSyx.API.Components
             throw new NotImplementedException();
         }
 
-        public IResult ThrowEvent(IPublishableEvent publishableEvent, string topic, Action<IMessagePublishedEventArgs> MessagePublished, byte qosLevel)
+        public IResult PublishEvent(IEventMessage eventMessage, string topic, Action<IMessagePublishedEventArgs> MessagePublished, byte qosLevel)
         {
             throw new NotImplementedException();
         }
@@ -97,7 +97,7 @@ namespace BaSyx.API.Components
         }
         
 
-        public IResult ThrowEvent(IPublishableEvent publishableEvent, string topic, Action<IMessagePublishedEventArgs> MessagePublished, byte qosLevel, bool retain)
+        public IResult PublishEvent(IEventMessage eventMessage, string topic, Action<IMessagePublishedEventArgs> MessagePublished, byte qosLevel, bool retain)
         {
             throw new NotImplementedException();
         }

@@ -19,11 +19,7 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
     {
         public override ModelType ModelType => ModelType.Event;
 
-        public virtual IElementContainer<ISubmodelElement> DataElements { get; set; }
-
         protected Event(string idShort) : base(idShort)
-        {
-            DataElements = new ElementContainer<ISubmodelElement>(this);
-        }
+        { }
     }
 }

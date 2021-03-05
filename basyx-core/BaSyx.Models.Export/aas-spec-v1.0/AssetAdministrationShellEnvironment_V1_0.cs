@@ -62,7 +62,7 @@ namespace BaSyx.Models.Export
         [JsonProperty("assetAdministrationShells")]
         [XmlArray("assetAdministrationShells")]
         [XmlArrayItem("assetAdministrationShell")]
-        public List<EnvironmentAssetAdministationShell_V1_0> EnvironmentAssetAdministationShells { get; set; }
+        public List<EnvironmentAssetAdministrationShell_V1_0> EnvironmentAssetAdministrationShells { get; set; }
 
         [JsonProperty("assets")]
         [XmlArray("assets")]
@@ -126,7 +126,7 @@ namespace BaSyx.Models.Export
             ConceptDescriptions = new List<IConceptDescription>();
             SupplementalFiles = new Dictionary<string, IFile>();
 
-            EnvironmentAssetAdministationShells = new List<EnvironmentAssetAdministationShell_V1_0>();
+            EnvironmentAssetAdministrationShells = new List<EnvironmentAssetAdministrationShell_V1_0>();
             EnvironmentAssets = new List<EnvironmentAsset_V1_0>();
             EnvironmentSubmodels = new List<EnvironmentSubmodel_V1_0>();
             EnvironmentConceptDescriptions = new List<EnvironmentConceptDescription_V1_0>();
@@ -135,12 +135,12 @@ namespace BaSyx.Models.Export
         public AssetAdministrationShellEnvironment_V1_0(params IAssetAdministrationShell[] assetAdministrationShells) : this()
         {
             foreach (var aas in assetAdministrationShells)
-                AddAssetAdministationShell(aas);
+                AddAssetAdministrationShell(aas);
 
             ConvertToEnvironment();
         }
 
-        public void AddAssetAdministationShell(IAssetAdministrationShell aas)
+        public void AddAssetAdministrationShell(IAssetAdministrationShell aas)
         {
             AssetAdministrationShells.Add(aas);
             Assets.Add(aas.Asset);
@@ -205,7 +205,7 @@ namespace BaSyx.Models.Export
             }
             foreach (var assetAdministrationShell in AssetAdministrationShells)
             {
-                EnvironmentAssetAdministationShell_V1_0 environmentAssetAdministationShell = new EnvironmentAssetAdministationShell_V1_0()
+                EnvironmentAssetAdministrationShell_V1_0 environmentAssetAdministrationShell = new EnvironmentAssetAdministrationShell_V1_0()
                 {
                     Administration = assetAdministrationShell.Administration,
                     Category = assetAdministrationShell.Category,
@@ -217,7 +217,7 @@ namespace BaSyx.Models.Export
                     Views = null,
                     ConceptDictionaries = null
                 };
-                EnvironmentAssetAdministationShells.Add(environmentAssetAdministationShell);
+                EnvironmentAssetAdministrationShells.Add(environmentAssetAdministrationShell);
             }
             foreach (var submodel in Submodels)
             {
@@ -282,7 +282,7 @@ namespace BaSyx.Models.Export
         {
             foreach (var smElement in submodelElements)
             {
-                if(smElement.Constraints?.Count > 0)
+                if(smElement.Constraints?.Count() > 0)
                     (smElement as SubmodelElement).Constraints = null;
                 if(smElement is IOperation operation)
                 {
@@ -472,7 +472,7 @@ namespace BaSyx.Models.Export
 
                 environment.Submodels.Add(submodel);
             }
-            foreach (var envAssetAdministrationShell in environment.EnvironmentAssetAdministationShells)
+            foreach (var envAssetAdministrationShell in environment.EnvironmentAssetAdministrationShells)
             {
                 AssetAdministrationShell assetAdministrationShell = new AssetAdministrationShell(envAssetAdministrationShell.IdShort, envAssetAdministrationShell.Identification)
                 {

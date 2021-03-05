@@ -11,6 +11,7 @@
 using BaSyx.API.Components;
 using BaSyx.Models.Connectivity.Descriptors;
 using BaSyx.Utils.ResultHandling;
+using System;
 using System.Threading;
 
 namespace BaSyx.Registry.Client.Http
@@ -20,13 +21,23 @@ namespace BaSyx.Registry.Client.Http
         public static IResult<IAssetAdministrationShellDescriptor> RegisterAssetAdministrationShell(this IAssetAdministrationShellServiceProvider serviceProvider) => RegisterAssetAdministrationShell(serviceProvider, null);
         public static IResult<IAssetAdministrationShellDescriptor> RegisterAssetAdministrationShell(this IAssetAdministrationShellServiceProvider serviceProvider, RegistryClientSettings settings)
         {
-            RegistryHttpClient registryHttpClient = new RegistryHttpClient(settings);
-            if (registryHttpClient.Settings?.RegistryConfig?.RepeatRegistration != null)
-                registryHttpClient.RepeatRegistration(serviceProvider.ServiceDescriptor, new CancellationTokenSource());
-
+            RegistryClientSettings registryClientSettings = settings ?? RegistryClientSettings.LoadSettings();
+            RegistryHttpClient registryHttpClient = new RegistryHttpClient(registryClientSettings);
             IResult<IAssetAdministrationShellDescriptor> result = registryHttpClient.CreateOrUpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Identification.Id, serviceProvider.ServiceDescriptor);
-
             return result;
         }
+
+        public static IResult<IAssetAdministrationShellDescriptor> RegisterAssetAdministrationShellWithRepeat(this IAssetAdministrationShellServiceProvider serviceProvider, RegistryClientSettings settings, TimeSpan interval, out CancellationTokenSource cancellationToken)
+        {
+            RegistryClientSettings registryClientSettings = settings ?? RegistryClientSettings.LoadSettings();
+            RegistryHttpClient registryHttpClient = new RegistryHttpClient(registryClientSettings);
+
+            cancellationToken = new CancellationTokenSource();
+            registryHttpClient.RepeatRegistration(serviceProvider.ServiceDescriptor, interval, cancellationToken);
+
+            IResult<IAssetAdministrationShellDescriptor> result = registryHttpClient.CreateOrUpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Identification.Id, serviceProvider.ServiceDescriptor);
+            return result;
+        }
+
     }
 }

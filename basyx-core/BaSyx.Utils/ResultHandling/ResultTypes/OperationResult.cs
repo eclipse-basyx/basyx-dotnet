@@ -27,7 +27,7 @@ namespace BaSyx.Utils.ResultHandling
         { }
 
         [JsonConstructor]
-        public OperationResult(bool success, List<IMessage> messages) : base(success, messages)
+        public OperationResult(bool success, IEnumerable<IMessage> messages) : base(success, messages)
         { }
 
         public static implicit operator Task<OperationResult>(OperationResult operationResult)

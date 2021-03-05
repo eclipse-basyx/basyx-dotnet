@@ -26,14 +26,14 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
         /// The minimum value of the range. If the min value is missing then the value is assumed to be negative infinite.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "min")]
-        [JsonConverter(typeof(ToStringConverter))]
+        [JsonConverter(typeof(RawValueConverter))]
         IValue Min { get; }
 
         /// <summary>
         /// The maximum value of the range. If the max value is missing then the value is assumed to be positive infinite.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "max")]
-        [JsonConverter(typeof(ToStringConverter))]
+        [JsonConverter(typeof(RawValueConverter))]
         IValue Max { get; }
 
         /// <summary>

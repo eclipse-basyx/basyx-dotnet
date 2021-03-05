@@ -22,6 +22,6 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Constraints
         /// A constraint is used to further qualify an element. 
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "qualifiers")]
-        List<IConstraint> Constraints { get; }
+        IEnumerable<IConstraint> Constraints { get; }
     }
 }

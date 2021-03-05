@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using Newtonsoft.Json;
 using System.Text;
+using System.Threading;
 
 namespace BaSyx.AAS.Client.Http
 {
@@ -50,27 +51,26 @@ namespace BaSyx.AAS.Client.Http
         private const string INVOCATION_LIST = "invocationList";
 
         public Uri Endpoint { get; }
-        public int RequestTimeout = DEFAULT_REQUEST_TIMEOUT;
 
-        private AssetAdministrationShellHttpClient(HttpClientHandler clientHandler) : base(clientHandler)
+        private AssetAdministrationShellHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
         {
             JsonSerializerSettings = new DependencyInjectionJsonSerializerSettings();
         }
 
-        public AssetAdministrationShellHttpClient(Uri endpoint) : this(endpoint, DEFAULT_HTTP_CLIENT_HANDLER)
+        public AssetAdministrationShellHttpClient(Uri endpoint) : this(endpoint, null)
         { }
-        public AssetAdministrationShellHttpClient(Uri endpoint, HttpClientHandler clientHandler) : this (clientHandler)
-        {
+        public AssetAdministrationShellHttpClient(Uri endpoint, HttpMessageHandler messageHandler) : this(messageHandler)
+        {           
             endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
             if (!endpoint.AbsolutePath.EndsWith(AAS))
                 Endpoint = new Uri(endpoint, AAS);
             else
                 Endpoint = endpoint;
         }
-        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor) : this(aasDescriptor, DEFAULT_HTTP_CLIENT_HANDLER)
+        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor) : this(aasDescriptor, null)
         { }
 
-        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, HttpClientHandler clientHandler) : this(clientHandler)
+        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, HttpMessageHandler messageHandler) : this(messageHandler)
         {
             aasDescriptor = aasDescriptor ?? throw new ArgumentNullException(nameof(aasDescriptor));
             IEnumerable<HttpEndpoint> httpEndpoints = aasDescriptor.Endpoints?.OfType<HttpEndpoint>();
@@ -101,113 +101,155 @@ namespace BaSyx.AAS.Client.Http
         public IResult<IAssetAdministrationShellDescriptor> RetrieveAssetAdministrationShellDescriptor()
         {
             var request = base.CreateRequest(GetUri(), HttpMethod.Get);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<IAssetAdministrationShellDescriptor>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<IAssetAdministrationShellDescriptor>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell()
         {
             var request = base.CreateRequest(GetUri(), HttpMethod.Get);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<IAssetAdministrationShell>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<IAssetAdministrationShell>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<ISubmodel> CreateOrUpdateSubmodel(ISubmodel submodel)
         {
             var request = base.CreateJsonContentRequest(GetUri(SUBMODELS, submodel.IdShort), HttpMethod.Put, submodel);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<ISubmodel>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<ISubmodel>(response, response.Entity); 
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<IElementContainer<ISubmodel>> RetrieveSubmodels()
         {
             var request = base.CreateRequest(GetUri(SUBMODELS), HttpMethod.Get);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<ElementContainer<ISubmodel>>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<ElementContainer<ISubmodel>>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<ISubmodel> RetrieveSubmodel(string submodelId)
         {
             var request = base.CreateRequest(GetUri(SUBMODELS, submodelId), HttpMethod.Get);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<ISubmodel>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<ISubmodel>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult DeleteSubmodel(string submodelId)
         {
             var request = base.CreateRequest(GetUri(SUBMODELS, submodelId), HttpMethod.Delete);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
       
         public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements(string submodelId)
         {
             var request = base.CreateRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS), HttpMethod.Get);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<ElementContainer<ISubmodelElement>>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<ElementContainer<ISubmodelElement>>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string submodelId, string seIdShortPath)
         {
             var request = base.CreateRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS, seIdShortPath), HttpMethod.Get);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<ISubmodelElement>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<ISubmodelElement>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<ISubmodelElement> CreateOrUpdateSubmodelElement(string submodelId, string rootSeIdShortPath, ISubmodelElement submodelElement)
         {
             var request = base.CreateJsonContentRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS, rootSeIdShortPath), HttpMethod.Put, submodelElement);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<ISubmodelElement>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<ISubmodelElement>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult UpdateSubmodelElementValue(string submodelId, string seIdShortPath, IValue value)
         {
             var request = base.CreateJsonContentRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS, seIdShortPath, VALUE), HttpMethod.Put, value.Value);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<IValue> RetrieveSubmodelElementValue(string submodelId, string seIdShortPath)
         {
             var request = base.CreateRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS, seIdShortPath, VALUE), HttpMethod.Get);
-            var response = base.SendRequest(request, RequestTimeout);
+            var response = base.SendRequest(request, CancellationToken.None);
             IResult result = base.EvaluateResponse(response, response.Entity);
             if (result.Success && result.Entity != null)
             {
                 string sValue = Encoding.UTF8.GetString((byte[])result.Entity);
                 object deserializedValue = JsonConvert.DeserializeObject(sValue);
+                response?.Entity?.Dispose();
                 return new Result<IValue>(result.Success, new ElementValue(deserializedValue, deserializedValue.GetType()), result.Messages);
-            }                
+            }
             else
+            {
+                response?.Entity?.Dispose();
                 return new Result<IValue>(result);
+            }
         }
 
         public IResult DeleteSubmodelElement(string submodelId, string seIdShortPath)
         {
             var request = base.CreateRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS, seIdShortPath), HttpMethod.Delete);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<InvocationResponse> InvokeOperation(string submodelId, string operationIdShortPath, InvocationRequest invocationRequest)
         {
             var request = base.CreateJsonContentRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS, operationIdShortPath, INVOKE + SYNCHRONOUS), HttpMethod.Post, invocationRequest);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<InvocationResponse>(response, response.Entity);
+
+            TimeSpan timeout = request.GetTimeout() ?? GetDefaultTimeout();
+            if (invocationRequest.Timeout.HasValue && invocationRequest.Timeout.Value > timeout.TotalMilliseconds)
+                request.SetTimeout(TimeSpan.FromMilliseconds(invocationRequest.Timeout.Value));
+
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<InvocationResponse>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
         public IResult<CallbackResponse> InvokeOperationAsync(string submodelId, string operationIdShortPath, InvocationRequest invocationRequest)
         {
             var request = base.CreateJsonContentRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS, operationIdShortPath, INVOKE + ASYNCHRONOUS), HttpMethod.Post, invocationRequest);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<CallbackResponse>(response, response.Entity);
+
+            TimeSpan timeout = request.GetTimeout() ?? GetDefaultTimeout();
+            if (invocationRequest.Timeout.HasValue && invocationRequest.Timeout.Value > timeout.TotalMilliseconds)
+                request.SetTimeout(TimeSpan.FromMilliseconds(invocationRequest.Timeout.Value));
+
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<CallbackResponse>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }
 
         public IResult<InvocationResponse> GetInvocationResult(string submodelId, string operationIdShortPath, string requestId)
         {
             var request = base.CreateRequest(GetUri(SUBMODELS, submodelId, SUBMODEL, SUBMODEL_ELEMENTS, operationIdShortPath, INVOCATION_LIST, requestId), HttpMethod.Get);
-            var response = base.SendRequest(request, RequestTimeout);
-            return base.EvaluateResponse<InvocationResponse>(response, response.Entity);
+            var response = base.SendRequest(request, CancellationToken.None);
+            var result = base.EvaluateResponse<InvocationResponse>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
         }       
     }
 }

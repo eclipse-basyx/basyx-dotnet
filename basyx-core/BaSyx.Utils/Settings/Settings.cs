@@ -78,19 +78,27 @@ namespace BaSyx.Utils.Settings
                     {
                         XDocument doc = XDocument.Load(files[i]);
                         string rootName = doc.Root.Name.LocalName;
-                        Type settingsType = assemblies
+                        IEnumerable<Type> settingsTypes = assemblies
                             .SelectMany(a => a.GetTypes())
-                            .Where(t => t.Name == rootName)?
-                            .FirstOrDefault();
+                            .Where(t => t.Name == rootName);
 
-                        if (settingsType != null)
-                        {
-                            Settings setting = LoadSettingsFromFile(files[i], settingsType);
-                            if (setting != null)
-                                SettingsCollection.Add(setting);
-                        }
-                        else
-                            logger.Info("Cannot load settings of type: " + rootName + " because type is either never used or not referenced");
+                        if(settingsTypes?.Count() > 0)
+                            foreach (var settingsType in settingsTypes)
+                            {
+                                try 
+                                {
+                                    Settings setting = LoadSettingsFromFile(files[i], settingsType);
+                                    if (setting != null)
+                                        SettingsCollection.Add(setting);
+                                    else
+                                        throw new InvalidOperationException("LoadSettingsFromFile returned null");
+                                } 
+                                catch (Exception exp)
+                                {
+                                    logger.Info(exp, "Cannot load settings of type: " + rootName + " because type is either never used or not referenced");
+                                    continue; 
+                                }
+                            }                           
                     }
                     catch (Exception e)
                     {

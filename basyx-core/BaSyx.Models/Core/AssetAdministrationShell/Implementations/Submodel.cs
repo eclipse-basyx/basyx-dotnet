@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using BaSyx.Models.Core.AssetAdministrationShell.Semantics;
 using BaSyx.Models.Core.Common;
+using System.Linq;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
 {
@@ -29,7 +30,7 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
         public ModelType ModelType => ModelType.Submodel;
         public IEnumerable<IEmbeddedDataSpecification> EmbeddedDataSpecifications { get; set; }
         public IConceptDescription ConceptDescription { get; set; }
-        public List<IConstraint> Constraints { get; set; }
+        public IEnumerable<IConstraint> Constraints { get; set; }
 
         [JsonConstructor]
         public Submodel(string idShort, Identifier identification) : base(idShort, identification)
@@ -39,6 +40,20 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
             EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
             Constraints = new List<IConstraint>();
         }
+        public bool ShouldSerializeEmbeddedDataSpecifications()
+        {
+            if (EmbeddedDataSpecifications?.Count() > 0)
+                return true;
+            else
+                return false;
+        }
 
+        public bool ShouldSerializeConstraints()
+        {
+            if (Constraints?.Count() > 0)
+                return true;
+            else
+                return false;
+        }
     }
 }

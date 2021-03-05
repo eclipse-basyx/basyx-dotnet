@@ -11,9 +11,11 @@
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using BaSyx.Models.Core.AssetAdministrationShell.Identification;
 using BaSyx.Models.Core.Common;
+using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
 {
+    [DataContract]
     public class RelationshipElement : SubmodelElement, IRelationshipElement
     {
         public override ModelType ModelType => ModelType.RelationshipElement;

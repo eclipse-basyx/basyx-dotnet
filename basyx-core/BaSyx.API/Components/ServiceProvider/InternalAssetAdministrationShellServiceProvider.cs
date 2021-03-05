@@ -9,22 +9,17 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
-using BaSyx.Models.Core.AssetAdministrationShell.Identification;
 
-namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
+namespace BaSyx.API.Components
 {
-    public class PublishableEvent : IPublishableEvent
+    internal sealed class InternalAssetAdministrationShellServiceProvider : AssetAdministrationShellServiceProvider
     {
-        public string Timestamp { get; set; }
+        internal InternalAssetAdministrationShellServiceProvider(IAssetAdministrationShell aas) : base(aas)
+        { }
 
-        public string Message { get; set; }
-
-        public string Originator { get; set; }
-
-        public IReference<IEvent> EventReference { get; set; }
-
-        public string Name { get; set; }
-
-        public string MessageId { get; set; }
+        public override IAssetAdministrationShell BuildAssetAdministrationShell()
+        {
+            return AssetAdministrationShell;
+        }
     }
 }

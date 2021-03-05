@@ -10,11 +10,14 @@
 *******************************************************************************/
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using BaSyx.Models.Core.Common;
+using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
@@ -24,8 +27,8 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
     {
         public override ModelType ModelType => ModelType.SubmodelElementCollection;
         public IElementContainer<ISubmodelElement> Value { get; set; }
-        public bool AllowDuplicates { get; set; } = false;
-        public bool Ordered { get; set; } = false;
+        public bool AllowDuplicates { get; set; } 
+        public bool Ordered { get; set; }
 
         [IgnoreDataMember, JsonIgnore]
         public IEnumerable<IElementContainer<ISubmodelElement>> Children => Value.Children;
@@ -49,9 +52,9 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
         public bool IsRoot => Value.IsRoot;
         [IgnoreDataMember, JsonIgnore]
         public IElementContainer<ISubmodelElement> ParentContainer { get => this; set { } }
-
+        [IgnoreDataMember, JsonIgnore]
         public int Count => Value.Count;
-
+        [IgnoreDataMember, JsonIgnore]
         public bool IsReadOnly => Value.IsReadOnly;
 
         [IgnoreDataMember, JsonIgnore]
@@ -61,6 +64,9 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
 
         public SubmodelElementCollection(string idShort) : base(idShort) 
         {
+            AllowDuplicates = false;
+            Ordered = false;
+
             Value = new ElementContainer<ISubmodelElement>(this.Parent, this, null);
 
             Get = element => { return new ElementValue(Value, new DataType(DataObjectType.AnyType)); };
@@ -194,7 +200,225 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
 
         public bool Remove(ISubmodelElement item)
         {
-            return Value.Remove(item);
+            return Value.Remove(item);            
+        }
+    }
+
+    [DataContract, JsonObject]
+    public class SubmodelElementCollection<T> : SubmodelElementCollection, ICollection<T>
+    {       
+        [JsonConstructor]
+        public SubmodelElementCollection(string idShort) : base(idShort)
+        {
+            AllowDuplicates = true;
+            Ordered = true;
+        }
+
+        public SubmodelElementCollection(string idShort, IEnumerable<T> enumerable) : this(idShort)
+        {
+            if(enumerable?.Count() > 0)
+            {
+                foreach (var item in enumerable)
+                {
+                    Add(item);
+                }
+            }
+        }
+
+        public SubmodelElementCollection(ISubmodelElementCollection collection) : this(collection.IdShort)
+        {
+            AllowDuplicates = collection.AllowDuplicates;
+            Ordered = collection.Ordered;
+            Category = collection.Category;
+            Constraints = collection.Constraints;
+            EmbeddedDataSpecifications = collection.EmbeddedDataSpecifications;
+            ConceptDescription = collection.ConceptDescription;
+            Kind = collection.Kind;
+            Parent = collection.Parent;
+            Description = collection.Description;
+            SemanticId = collection.SemanticId;
+            Get = collection.Get;
+            Set = collection.Set;
+
+            foreach (var element in collection.Value)
+            {
+                T value = element.Cast<IProperty>().ToObject<T>();
+                Add(value);
+            }
+        }
+
+
+
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public IElementContainer<ISubmodelElement> BaseValue { get => base.Value; set => base.Value = value; }
+
+        [IgnoreDataMember]
+        [JsonIgnore]
+        public new IEnumerable<T> Value
+        {
+            get
+            {
+                var enumerable = base.Value.Select(s => s.Cast<IProperty>().ToObject<T>());
+                return enumerable;
+            }
+            set
+            {
+                if (value?.Count() > 0)
+                {
+                    foreach (var item in value)
+                    {
+                        Add(item);
+                    }
+                }
+            }
+        }
+
+        public new T this[int index] { 
+            get => base.Value[index].Cast<IProperty>().ToObject<T>(); 
+            set => base.Value[index].Cast<IProperty>().Value = value; }
+
+        public static implicit operator List<T>(SubmodelElementCollection<T> collection)
+        {
+            return collection?.Value?.ToList();
+        }
+
+        public static implicit operator T[](SubmodelElementCollection<T> collection)
+        {
+            return collection?.Value?.ToArray();
+        }
+
+        public void Add(T item)
+        {
+            if (item == null)
+                return;
+
+            string idShort = (base.Value.Count + 1).ToString();
+            base.Value.Add(new Property<T>(idShort, item));
+        }
+
+        public bool Contains(T item)
+        {
+            if (item == null)
+                return false;
+
+            for (int i = 0; i < Count; i++)
+            {
+                if (this[i].Equals(item))
+                    return true;
+            }
+            return false;
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                array.SetValue(this[i], arrayIndex++);
+            }
+        }
+
+        public int IndexOf(T item)
+        {
+            if (item == null)
+                return -1;
+
+            for (int i = 0; i < Count; i++)
+            {
+                if (this[i].Equals(item))
+                    return i;
+            }
+            return -1;
+        }
+
+        public bool Remove(T item)
+        {
+            if (item == null)
+                return false;
+
+            var index = IndexOf(item);
+            if (index != -1)
+            {
+                RemoveAt(index);
+                return true;
+            }
+            else
+                return false;   
+        }
+
+        public void RemoveAt(int index)
+        {
+            if ((index >= 0) && (index < Count))
+            {
+                string idShort = base.Value[index]?.IdShort;
+                if (!string.IsNullOrEmpty(idShort))
+                    Remove(idShort);
+            }
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return Value.GetEnumerator();
+        }
+    }
+
+    public class SubmodelElementCollectionOfEntity<T> : SubmodelElementCollection where T : class
+    {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public IElementContainer<ISubmodelElement> BaseValue { get => base.Value; set => base.Value = value; }
+
+        [IgnoreDataMember]
+        [JsonIgnore]
+        public new T Value 
+        { 
+            get
+            {
+                T innerValue = base.Value.MinimizeSubmodelElements().ToObject<T>();
+                return innerValue;
+            } 
+            set
+            {
+                var smc = value.CreateSubmodelElementCollectionFromObject(IdShort, BindingFlags.Public | BindingFlags.Instance);
+                foreach (var element in smc.Value)
+                {
+                    base.Add(element);
+                }
+            }
+        }
+
+        [JsonConstructor]
+        public SubmodelElementCollectionOfEntity(string idShort) : base(idShort)
+        {
+            AllowDuplicates = false;
+            Ordered = false;
+        }
+
+        public SubmodelElementCollectionOfEntity(string idShort, T entity) : this(idShort, entity, BindingFlags.Public | BindingFlags.Instance)
+        { }
+
+        public SubmodelElementCollectionOfEntity(string idShort, T entity, BindingFlags bindingFlags) : base(idShort)
+        {
+            var smc = entity.CreateSubmodelElementCollectionFromObject(this.IdShort, bindingFlags);
+            foreach (var element in smc.Value)
+            {
+                base.Add(element);
+            }
+        }
+
+        public SubmodelElementCollectionOfEntity(ISubmodelElementCollection collection) : this(collection.IdShort)
+        {
+            AllowDuplicates = collection.AllowDuplicates;
+            Ordered = collection.Ordered;
+            Category = collection.Category;
+            Constraints = collection.Constraints;
+            EmbeddedDataSpecifications = collection.EmbeddedDataSpecifications;
+            ConceptDescription = collection.ConceptDescription;
+            Kind = collection.Kind;
+            Parent = collection.Parent;
+            Description = collection.Description;
+            SemanticId = collection.SemanticId;
+            Get = collection.Get;
+            Set = collection.Set;
+            BaseValue = collection.Value;
         }
     }
 }

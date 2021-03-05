@@ -22,7 +22,7 @@ namespace BaSyx.API.Components
         private IAssetAdministrationShell _assetAdministrationShell;
 
         /// <summary>
-        /// Stores the Asset Administration Shell built by the BuildAssetAdministationShell() function
+        /// Stores the Asset Administration Shell built by the BuildAssetAdministrationShell() function
         /// </summary>
         public virtual IAssetAdministrationShell AssetAdministrationShell 
         { 

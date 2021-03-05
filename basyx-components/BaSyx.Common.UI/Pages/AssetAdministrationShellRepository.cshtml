@@ -88,7 +88,7 @@
                         foreach (var submodelServiceProvider in submodelServiceProviders)
                         {
                             ISubmodel submodel = submodelServiceProvider.GetBinding();
-                            @await Html.PartialAsync("_Submodel", submodel, new ViewDataDictionary(ViewData) { {"aasId",  aas.IdShort} })
+                            @await Html.PartialAsync("_Submodel", submodel, new ViewDataDictionary(ViewData) { {"aasId",  aas.Identification.Id} })
                         }
                     }
                 </div>

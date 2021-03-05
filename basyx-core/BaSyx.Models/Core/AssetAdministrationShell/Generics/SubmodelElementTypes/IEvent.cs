@@ -8,14 +8,8 @@
 *
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
-using BaSyx.Models.Core.Common;
-using System.Runtime.Serialization;
-
 namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
 {
     public interface IEvent : ISubmodelElement
-    {
-        [IgnoreDataMember]
-        IElementContainer<ISubmodelElement> DataElements { get; }
-    }
+    { }
 }

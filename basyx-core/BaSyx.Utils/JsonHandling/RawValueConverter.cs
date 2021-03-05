@@ -11,11 +11,10 @@
 using Newtonsoft.Json;
 using NLog;
 using System;
-using System.Globalization;
 
 namespace BaSyx.Utils.JsonHandling
 {
-    public class ToStringConverter : JsonConverter
+    public class RawValueConverter : JsonConverter
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
@@ -29,24 +28,8 @@ namespace BaSyx.Utils.JsonHandling
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            string sValue;
-            if(value is double dObject)
-            {
-                sValue = dObject.ToString(CultureInfo.InvariantCulture);
-            }
-            else if(value is float fObject)
-            {
-                sValue = fObject.ToString(CultureInfo.InvariantCulture);
-            }
-            else if (value is decimal decObject)
-            {
-                sValue = decObject.ToString(CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                sValue = value.ToString();
-            }
-            writer.WriteValue(sValue);
+            dynamic rawValue = (value as dynamic)?.Value;
+            writer.WriteValue(rawValue);
         }
     }
 }
