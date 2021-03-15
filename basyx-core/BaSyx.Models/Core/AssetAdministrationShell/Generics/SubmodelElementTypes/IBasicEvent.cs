@@ -22,6 +22,6 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Generics
         /// Reference to the data or other elements that are being observed.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "observed")]
-        IReference<IReferable> Observed { get; set; }
+        IReference Observed { get; set; }
     }
 }

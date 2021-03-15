@@ -20,11 +20,11 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Implementations
     {
         public override ModelType ModelType => ModelType.BasicEvent;
 
-        public IReference<IReferable> Observed { get; set; }
+        public IReference Observed { get; set; }
         public BasicEvent(string idShort) : base(idShort)
         {
             Get = element => { return new ElementValue(Observed, new DataType(DataObjectType.AnyType)); };
-            Set = (element, value) => { Observed = value.Value as IReference<IReferable>; };
+            Set = (element, value) => { Observed = value.Value as IReference; };
         }
     }
 }

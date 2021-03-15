@@ -428,6 +428,11 @@ namespace BaSyx.Components.Common
                 return next();
             });
 
+            foreach (var appBuilder in AppBuilderPipeline)
+            {
+                appBuilder.Invoke(app);
+            }
+
             app.UseRouting();
 
             app.UseCors(
@@ -452,12 +457,7 @@ namespace BaSyx.Components.Common
             if (ApplicationStopping != null)
                 applicationLifetime.ApplicationStopping.Register(ApplicationStopping);
             if (ApplicationStopped != null)
-                applicationLifetime.ApplicationStopped.Register(ApplicationStopped);
-
-            foreach (var appBuilder in AppBuilderPipeline)
-            {
-                appBuilder.Invoke(app);
-            }
+                applicationLifetime.ApplicationStopped.Register(ApplicationStopped);            
         }
     }
 }
