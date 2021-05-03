@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -20,14 +20,12 @@ using BaSyx.Registry.Client.Http;
 using BaSyx.Utils.Logging;
 using BaSyx.Utils.Settings.Types;
 using CommandLine;
-using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -122,13 +120,6 @@ namespace BaSyx.AASX.Server.Http.App
                 });
                 repositoryService.UseDefaultEndpointRegistration(endpoints);
                 repositoryServer.SetServiceProvider(repositoryService);
-                repositoryServer.ConfigureServices(services =>
-                {
-                    Assembly aasxControllerAssembly = Assembly.Load("BaSyx.API.Http.Controllers.AASX");
-                    services.AddMvc()
-                        .AddApplicationPart(aasxControllerAssembly)
-                        .AddControllersAsServices();
-                });
 
                 repositoryServer.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
                 repositoryServer.AddSwagger(Interface.AssetAdministrationShellRepository);

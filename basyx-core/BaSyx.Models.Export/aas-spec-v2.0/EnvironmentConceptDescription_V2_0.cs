@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.Core.Common;
 using BaSyx.Models.Export.EnvironmentDataSpecifications;
+using BaSyx.Models.Export.Converter;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,7 +64,7 @@ namespace BaSyx.Models.Export
 
     public class EmbeddedDataSpecification_V2_0
     {
-        [JsonProperty("dataSpecificationContent")]
+        [JsonProperty("dataSpecificationContent"), JsonConverter(typeof(JsonDataSpecificationContentConverter_V2_0))]
         [XmlElement("dataSpecificationContent")]
         public DataSpecificationContent_V2_0 DataSpecificationContent { get; set; }
 

@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
     <Configurations>Debug;Release</Configurations>
     <Authors>Constantin Ziesche</Authors>
-    <Copyright>Copyright 2020 - Robert Bosch GmbH</Copyright>
+    <Copyright>Copyright 2021 - Robert Bosch GmbH</Copyright>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
     <RepositoryUrl>https://git.eclipse.org/r/plugins/gitiles/basyx/basyx/+/master/sdks/csnet/</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
@@ -19,11 +19,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ServerSettings.xml" />
+    <ProjectReference Include="..\BaSyx.API.Http.Controllers\BaSyx.API.Http.Controllers.csproj" />
+    <ProjectReference Include="..\BaSyx.Components.Common\BaSyx.Components.Common.csproj" />
   </ItemGroup>
+  
+  <PropertyGroup>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="ServerSettings.xml">
+    <None Include="..\..\resources\basyxlogo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <Content Include="..\..\resources\Nlog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Pack>true</Pack>
@@ -31,26 +40,18 @@
       <PackageFlatten>true</PackageFlatten>
       <PackagePath>contentFiles\any\$(TargetFramework)\</PackagePath>
     </Content>
-    <Content Update="NLog.config">
-      <PackagePath>contentFiles\any\$(TargetFramework)\</PackagePath>
-      <PackageFlatten>true</PackageFlatten>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
+    <Content Include="..\..\resources\ServerSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackageFlatten>true</PackageFlatten>
+      <PackagePath>contentFiles\any\$(TargetFramework)\</PackagePath>
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="basyxlogo.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BaSyx.API.Http.Controllers\BaSyx.API.Http.Controllers.csproj" />
-    <ProjectReference Include="..\BaSyx.Components.Common\BaSyx.Components.Common.csproj" />
-  </ItemGroup>
-
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF EXIST %25BASYX_REPO%25 ( dotnet pack &quot;$(ProjectPath)&quot; --no-build --include-source --include-symbols --output &quot;%25BASYX_REPO%25&quot; ) ELSE ( ECHO BASYX_REPO Environment Variable not found)" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Exec Command="IF EXIST %25BASYX_REPO%25 ( dotnet pack &quot;$(ProjectPath)&quot; -c Release --no-build --include-source --include-symbols --output &quot;%25BASYX_REPO%25&quot; ) ELSE ( ECHO BASYX_REPO Environment Variable not found)" />
   </Target>
 
 </Project>

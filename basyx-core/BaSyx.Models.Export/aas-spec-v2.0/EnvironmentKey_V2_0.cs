@@ -7,19 +7,19 @@ namespace BaSyx.Models.Export
     [XmlType("key")]
     public class EnvironmentKey_V2_0
     {
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
+        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include, PropertyName = "type")]
         [XmlAttribute("type")]
         public KeyElements_V2_0 Type { get; set; }
 
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
+        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include, PropertyName = "idType")]
         [XmlAttribute("idType")]
         public KeyType_V2_0 IdType { get; set; }
 
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
+        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include, PropertyName = "value")]
         [XmlText]
         public string Value { get; set; }
 
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
+        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include, PropertyName = "local")]
         [XmlAttribute("local")]
         public bool Local { get; set; }
     }

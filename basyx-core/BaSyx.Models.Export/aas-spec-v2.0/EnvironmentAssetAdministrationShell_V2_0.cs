@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -36,7 +36,8 @@ namespace BaSyx.Models.Export
         public List<View_V2_0> Views { get; set; }
 
         [JsonProperty("conceptDictionaries")]
-        [XmlElement("conceptDictionaries")]
+        [XmlArray("conceptDictionaries")]
+        [XmlArrayItem("conceptDictionary")]
         public List<ConceptDictionary_V2_0> ConceptDictionaries { get; set; }
 
         [JsonProperty("modelType")]
@@ -68,12 +69,15 @@ namespace BaSyx.Models.Export
         }
     }
 
-    public class ConceptDictionary_V2_0 : EnvironmentReferable_V2_0
+    public class ConceptDictionary_V2_0 : EnvironmentReferable_V2_0, IModelType
     {
         [JsonProperty("conceptDescriptions")]
-        [XmlArray("conceptDescriptions")]
-        [XmlArrayItem("conceptDescriptionRefs")]
+        [XmlArray("conceptDescriptionRefs")]
+        [XmlArrayItem("conceptDescriptionRef")]
         public List<EnvironmentReference_V2_0> ConceptDescriptionsRefs {get; set; }
+
+        [XmlIgnore]
+        public ModelType ModelType => ModelType.ConceptDictionary;
 
         public bool ShouldSerializeConceptDescriptionsRefs()
         {

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -32,6 +32,7 @@ namespace BaSyx.Models.Core.Common
         View,
         RelationshipElement,
         AnnotatedRelationshipElement,
+        Capability,
         DataElement,
         Property,
         File,
@@ -67,6 +68,7 @@ namespace BaSyx.Models.Core.Common
         public static readonly ModelType View = new ModelType("View");
         public static readonly ModelType RelationshipElement = new ModelType("RelationshipElement");
         public static readonly ModelType AnnotatedRelationshipElement = new ModelType("AnnotatedRelationshipElement");
+        public static readonly ModelType Capability = new ModelType("Capability");
         public static readonly ModelType DataElement = new ModelType("DataElement");
         public static readonly ModelType Property = new ModelType("Property");
         public static readonly ModelType File = new ModelType("File");

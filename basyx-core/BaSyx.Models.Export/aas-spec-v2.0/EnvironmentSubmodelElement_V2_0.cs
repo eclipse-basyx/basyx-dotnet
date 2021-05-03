@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -11,6 +11,7 @@
 
 using BaSyx.Models.Core.AssetAdministrationShell;
 using BaSyx.Models.Core.Common;
+using BaSyx.Models.Export.Converter;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Xml.Serialization;
@@ -24,6 +25,7 @@ namespace BaSyx.Models.Export
         [XmlElement(ElementName = "multiLanguageProperty", Type = typeof(MultiLanguageProperty_V2_0))]
         [XmlElement(ElementName = "file", Type = typeof(File_V2_0))]
         [XmlElement(ElementName = "blob", Type = typeof(Blob_V2_0))]
+        [XmlElement(ElementName = "capability", Type = typeof(Capability_V2_0))]
         [XmlElement(ElementName = "event", Type = typeof(Event_V2_0))]
         [XmlElement(ElementName = "basicEvent", Type = typeof(BasicEvent_V2_0))]
         [XmlElement(ElementName = "range", Type = typeof(Range_V2_0))]
@@ -46,10 +48,9 @@ namespace BaSyx.Models.Export
         [XmlElement("semanticId")]
         public EnvironmentReference_V2_0 SemanticId { get; set; }
 
-        [JsonProperty("constraints")]
-        [XmlArray("qualifier")]
-        [XmlArrayItem("qualifier")]
-        public List<EnvironmentQualifier_V2_0> Qualifier { get; set; } = new List<EnvironmentQualifier_V2_0>();
+        [JsonProperty("qualifiers"), JsonConverter(typeof(JsonQualifierConverter_V2_0))]
+        [XmlElement(ElementName = "qualifier")]
+        public List<EnvironmentConstraint_V2_0> Qualifier { get; set; } = new List<EnvironmentConstraint_V2_0>();
 
         [XmlIgnore]
         public virtual ModelType ModelType { get; }

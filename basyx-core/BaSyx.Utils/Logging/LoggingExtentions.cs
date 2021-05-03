@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -9,34 +9,35 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using BaSyx.Utils.ResultHandling;
+using Newtonsoft.Json;
 using NLog;
 using System;
-using System.Net.Http;
 using System.Text;
 
 namespace BaSyx.Utils.Logging
 {
     public static class LoggingExtentions
     {
+        public static void LogResult(this ILogger logger, IResult result, LogLevel logLevel, string additionalText = null, Exception exp = null)
+            => LogResult(result, logger, logLevel, additionalText, exp);
+
         public static void LogResult(this IResult result, ILogger logger, LogLevel logLevel, string additionalText = null, Exception exp = null)
         {
             StringBuilder logText = new StringBuilder();
-            logText.Append("Success: " + result.Success).Append(" || ");
+            logText.Append("Success: " + result.Success);
 
             if (result.Messages != null)
             {
-                for (int i = 0; i < result.Messages.Count; i++)
-                {
-                    logText.Append("Message[" + i + "] = " + result.Messages[i].Text).Append(" || ");
-                }
+                string messagesText = result.Messages.ToString();
+                logText.Append(" || ").Append("Messages: " + messagesText);                
             }
-            if (result.Entity != null && result.Entity is HttpResponseMessage response)
+            if (result.Entity != null)
             {
-                logText.Append("StatusCode: " + ((int)response.StatusCode).ToString()).Append(response.ReasonPhrase).Append(" || ");
-                logText.Append("Body: " + response.Content.ReadAsStringAsync().Result).Append(" || ");
+                string serializedEntity = JsonConvert.SerializeObject(result.Entity, Formatting.Indented);
+                logText.Append(" || ").Append("Entity:\n" + serializedEntity);
             }
             if (!string.IsNullOrEmpty(additionalText))
-                logText.Append("AdditionalText: " + additionalText).Append(" || ");
+                logText.Append(" || ").Append("AdditionalText: " + additionalText);
 
             string msg = logText.ToString();
             if (exp != null)

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -18,15 +18,15 @@ namespace BaSyx.Models.Export
 {
     public class Operation_V2_0 : SubmodelElementType_V2_0
     {
-        [JsonProperty("inputVariables"), JsonConverter(typeof(JsonOperationVariableConverter_V2_0))]
+        [JsonProperty("inputVariable"), JsonConverter(typeof(JsonOperationVariableConverter_V2_0))]
         [XmlElement(ElementName = "inputVariable")]
         public List<OperationVariable_V2_0> InputVariables { get; set; }
 
-        [JsonProperty("outputVariables")]
+        [JsonProperty("outputVariable")]
         [XmlElement(ElementName = "outputVariable"), JsonConverter(typeof(JsonOperationVariableConverter_V2_0))]
         public List<OperationVariable_V2_0> OutputVariables { get; set; }
 
-        [JsonProperty("inoutputVariables")]
+        [JsonProperty("inoutputVariable")]
         [XmlElement(ElementName = "inoutputVariable"), JsonConverter(typeof(JsonOperationVariableConverter_V2_0))]
         public List<OperationVariable_V2_0> InOutputVariables { get; set; }
 

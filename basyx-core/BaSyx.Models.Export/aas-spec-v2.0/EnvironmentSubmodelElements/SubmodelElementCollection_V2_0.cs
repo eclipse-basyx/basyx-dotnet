@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -38,6 +38,7 @@ namespace BaSyx.Models.Export
         public SubmodelElementCollection_V2_0() { }
         public SubmodelElementCollection_V2_0(SubmodelElementType_V2_0 submodelElementType) : base(submodelElementType) { }
 
+        /*
         public bool ShouldSerializeValue()
         {
             if (Value == null || Value.Count == 0)
@@ -45,5 +46,6 @@ namespace BaSyx.Models.Export
             else
                 return true;
         }
+        */
     }
 }

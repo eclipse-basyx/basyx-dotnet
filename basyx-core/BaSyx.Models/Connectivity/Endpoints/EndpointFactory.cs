@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -18,13 +18,13 @@ namespace BaSyx.Models.Connectivity
         {
             switch (uri.Scheme)
             {
-                case "https":
+                case EndpointType.HTTPS:
                 case EndpointType.HTTP:
                     HttpEndpoint httpEndpoint = new HttpEndpoint(uri);
                     httpEndpoint.Security = security;
                     return httpEndpoint;
 
-                case "mqtts":
+                case EndpointType.MQTTS:
                 case EndpointType.MQTT:
                     MqttEndpoint mqttEndpoint = new MqttEndpoint(uri);
                     mqttEndpoint.Security = security;
@@ -43,13 +43,13 @@ namespace BaSyx.Models.Connectivity
         {
             switch (endpointType.ToLower())
             {
-                case "https":
+                case EndpointType.HTTPS:
                 case EndpointType.HTTP:
                     HttpEndpoint httpEndpoint = new HttpEndpoint(address);
                     httpEndpoint.Security = security;
                     return httpEndpoint;
 
-                case "mqtts":
+                case EndpointType.MQTTS:
                 case EndpointType.MQTT:
                     Uri uri = new Uri(address);
                     MqttEndpoint mqttEndpoint = new MqttEndpoint(address);

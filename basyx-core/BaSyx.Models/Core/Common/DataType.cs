@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -207,7 +207,14 @@ namespace BaSyx.Models.Core.Common
 
         public static Type GetSystemTypeFromDataType(DataType dataType)
         {
-            return GetSystemTypeFromDataType(dataType.DataObjectType);
+            if(dataType.IsCollection)
+            {
+                Type outerTypeDefinition = typeof(List<>).GetGenericTypeDefinition();
+                Type containerType = outerTypeDefinition.MakeGenericType(dataType.SystemType);
+                return containerType;
+            }
+            else
+                return GetSystemTypeFromDataType(dataType.DataObjectType);
         }
         
         public static bool IsSimpleType(Type type)

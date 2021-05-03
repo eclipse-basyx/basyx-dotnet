@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -18,6 +18,7 @@ using System.Linq;
 using BaSyx.Models.Core.AssetAdministrationShell.Semantics;
 using BaSyx.Models.Core.Common;
 using Range = BaSyx.Models.Core.AssetAdministrationShell.Implementations.Range;
+using BaSyx.Models.Core.AssetAdministrationShell.Constraints;
 
 namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 {
@@ -91,7 +92,8 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 {
                     MimeType = castedBlob.MimeType
                 };
-                blob.SetValue(castedBlob.Value);
+                if(castedBlob.Value != null)
+                    blob.SetValue(castedBlob.Value);
 
                 submodelElement = blob;
             }
@@ -110,9 +112,13 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 AnnotatedRelationshipElement annotatedRelationshipElement = new AnnotatedRelationshipElement(castedAnnotatedRelationshipElement.IdShort)
                 {
                     First = castedAnnotatedRelationshipElement.First?.ToReference_V2_0<IReferable>(),
-                    Second = castedAnnotatedRelationshipElement.Second?.ToReference_V2_0<IReferable>(),
-                    Annotation = castedAnnotatedRelationshipElement.Annotation?.ToReference_V2_0<ISubmodelElement>()
+                    Second = castedAnnotatedRelationshipElement.Second?.ToReference_V2_0<IReferable>()                    
                 };
+
+                var annotations = castedAnnotatedRelationshipElement.Annotations?.ConvertAll(c => c.submodelElement.ToSubmodelElement(conceptDescriptions, parent));
+                if (annotations?.Count > 0)
+                    foreach (var element in annotations)
+                        annotatedRelationshipElement.Annotations.Add(element);
 
                 submodelElement = annotatedRelationshipElement;
             }
@@ -124,6 +130,12 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 };
 
                 submodelElement = referenceElement;
+            }
+            else if (modelType == ModelType.Capability && envSubmodelElement is Event_V2_0 castedCapability)
+            {
+                Capability capability = new Capability(castedCapability.IdShort);
+
+                submodelElement = capability;
             }
             else if (modelType == ModelType.Event && envSubmodelElement is Event_V2_0 castedEvent)
             {
@@ -205,7 +217,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             submodelElement.IdShort = envSubmodelElement.IdShort;
             submodelElement.Kind = envSubmodelElement.Kind;
             submodelElement.SemanticId = envSubmodelElement.SemanticId?.ToReference_V2_0();
-            submodelElement.Constraints = null;
+            submodelElement.Constraints = ConvertToConstraints(envSubmodelElement.Qualifier);
 
             string semanticId = envSubmodelElement.SemanticId?.Keys?.FirstOrDefault()?.Value;
             if (!string.IsNullOrEmpty(semanticId))
@@ -216,6 +228,75 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             }
 
             return submodelElement;
+        }
+
+        private static List<EnvironmentConstraint_V2_0> ConvertToEnvironmentConstraints(IEnumerable<IConstraint> constraints)
+        {
+            if (constraints?.Count() > 0)
+            {
+                List<EnvironmentConstraint_V2_0> envConstraints = new List<EnvironmentConstraint_V2_0>();
+                foreach (var constraint in constraints)
+                {
+                    if (constraint is Qualifier q)
+                    {
+                        EnvironmentQualifier_V2_0 envQualifier = new EnvironmentQualifier_V2_0()
+                        {
+                            Type = q.Type,
+                            Value = q.Value?.ToString(),
+                            ValueId = q.ValueId?.ToEnvironmentReference_V2_0(),
+                            ValueType = q.ValueType?.ToString()
+                        };
+                        envConstraints.Add(new EnvironmentConstraint_V2_0() { Constraint = envQualifier });
+                    }
+                    else if (constraint is Formula f)
+                    {
+                        EnvironmentFormula_V2_0 envFormula = new EnvironmentFormula_V2_0()
+                        {
+                            DependsOn = f.DependsOn?.ToList()?.ConvertAll(c => c.ToEnvironmentReference_V2_0())
+                        };
+                        envConstraints.Add(new EnvironmentConstraint_V2_0() { Constraint = envFormula });
+                    }
+                    else
+                        continue;
+                }
+                return envConstraints;
+            }
+            return null;
+        }
+
+        private static IEnumerable<IConstraint> ConvertToConstraints(List<EnvironmentConstraint_V2_0> envConstraints)
+        {
+            if(envConstraints?.Count > 0)
+            {
+                List<IConstraint> constraints = new List<IConstraint>();
+                foreach (var envConstraint in envConstraints)
+                {
+                    if (envConstraint.Constraint is EnvironmentQualifier_V2_0 q)
+                    {
+                        Qualifier qualifier = new Qualifier()
+                        {
+                            Type = q.Type,
+                            Value = q.Value,
+                            ValueId = q.ValueId?.ToReference_V2_0(),
+                        };
+                        if (string.IsNullOrEmpty(q.ValueType))
+                            qualifier.ValueType = new DataType(DataObjectType.None);
+                        constraints.Add(qualifier);
+                    }
+                    else if (envConstraint.Constraint is EnvironmentFormula_V2_0 f)
+                    {
+                        Formula formula = new Formula()
+                        {
+                            DependsOn = f.DependsOn?.ConvertAll(c => c.ToReference_V2_0())
+                        };
+                        constraints.Add(formula);
+                    }
+                    else
+                        continue;
+                }
+                return constraints;
+            }
+            return null;
         }
 
         public static EnvironmentSubmodelElement_V2_0 ToEnvironmentSubmodelElement_V2_0(this ISubmodelElement element)
@@ -235,8 +316,8 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 Description = element.Description,
                 IdShort = element.IdShort,
                 Kind = element.Kind,
-                Qualifier = null,
-                SemanticId = element.SemanticId?.ToEnvironmentReference_V2_0(),
+                Qualifier = ConvertToEnvironmentConstraints(element.Constraints),
+                SemanticId = element.SemanticId?.ToEnvironmentReference_V2_0()
             };
 
             if (modelType == ModelType.Property && element is IProperty castedProperty)
@@ -284,6 +365,8 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 (environmentSubmodelElement.submodelElement as Operation_V2_0).OutputVariables = outputs;
                 (environmentSubmodelElement.submodelElement as Operation_V2_0).InOutputVariables = inoutputs;
             }
+            else if (modelType == ModelType.Capability && element is ICapability castedCapability)
+                environmentSubmodelElement.submodelElement = new Capability_V2_0(submodelElementType) { };
             else if (modelType == ModelType.Event && element is IEvent castedEvent)
                 environmentSubmodelElement.submodelElement = new Event_V2_0(submodelElementType) { };
             else if (modelType == ModelType.BasicEvent && element is IBasicEvent castedBasicEvent)
@@ -335,13 +418,22 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 environmentSubmodelElement.submodelElement = new AnnotatedRelationshipElement_V2_0(submodelElementType)
                 {
                     First = castedAnnotatedRelationshipElement.First?.ToEnvironmentReference_V2_0(),
-                    Second = castedAnnotatedRelationshipElement.Second?.ToEnvironmentReference_V2_0(),
-                    Annotation = castedAnnotatedRelationshipElement.Annotation?.ToEnvironmentReference_V2_0()
+                    Second = castedAnnotatedRelationshipElement.Second?.ToEnvironmentReference_V2_0()
                 };
+                List<EnvironmentSubmodelElement_V2_0> environmentSubmodelElements = new List<EnvironmentSubmodelElement_V2_0>();
+                if (castedAnnotatedRelationshipElement.Annotations?.Count() > 0)
+                    foreach (var smElement in castedAnnotatedRelationshipElement.Annotations)
+                        environmentSubmodelElements.Add(smElement.ToEnvironmentSubmodelElement_V2_0());
+                (environmentSubmodelElement.submodelElement as AnnotatedRelationshipElement_V2_0).Annotations = environmentSubmodelElements;
+
             }
             else if (modelType == ModelType.SubmodelElementCollection && element is ISubmodelElementCollection castedSubmodelElementCollection)
             {
-                environmentSubmodelElement.submodelElement = new SubmodelElementCollection_V2_0(submodelElementType);
+                environmentSubmodelElement.submodelElement = new SubmodelElementCollection_V2_0(submodelElementType)
+                {
+                    AllowDuplicates = castedSubmodelElementCollection.AllowDuplicates,
+                    Ordered = castedSubmodelElementCollection.Ordered
+                };
                 List<EnvironmentSubmodelElement_V2_0> environmentSubmodelElements = new List<EnvironmentSubmodelElement_V2_0>();
                 if (castedSubmodelElementCollection.Value?.Count() > 0)
                     foreach (var smElement in castedSubmodelElementCollection.Value)
@@ -352,6 +444,6 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 return null;
 
             return environmentSubmodelElement;
-        }
+        }       
     }
 }

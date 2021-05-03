@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -8,14 +8,13 @@
 *
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
-using BaSyx.Utils.Config;
 using BaSyx.Utils.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
 
 namespace BaSyx.Utils.Client.Mqtt
 {
-    public class MqttConfig : IEventHandlerConfig
+    public class MqttConfig
     {
         [XmlElement]
         public string ClientId { get; set; }

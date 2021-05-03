@@ -10,40 +10,40 @@
 </head>
 <body>
     <header>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="#"><img src="/images/basyxlogo.png" width="200" /></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/swagger">Swagger Doc</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@ViewData["ApiRoot"]">REST-API</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="https://www.eclipse.org/legal/epl-2.0/">License</a>
-                        </li>
-                    </ul>
-                    @if (!string.IsNullOrEmpty((string)ViewData["CompanyLogo"]))
-                    {
-                        <div class="order-sm-last">
-                            <img src="@ViewData["CompanyLogo"]" width="160" />
-                        </div>
-                    }
-                    @*<form class="form-inline my-2 my-lg-0">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                        </form>
-                   *@
-                </div>
-            </nav>
-     </header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#"><img src="/images/basyxlogo.png" width="200" /></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/swagger">Swagger Doc</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@ViewData["ApiRoot"]">REST-API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.eclipse.org/legal/epl-2.0/">License</a>
+                    </li>
+                </ul>
+                @if (!string.IsNullOrEmpty((string)ViewData["CompanyLogo"]))
+                {
+                    <div class="order-sm-last">
+                        <img src="@ViewData["CompanyLogo"]" width="160" />
+                    </div>
+                }
+                @*<form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                *@
+            </div>
+        </nav>
+    </header>
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -53,7 +53,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; Robert Bosch GmbH 2020 <a href="https://www.eclipse.org/legal/epl-2.0/">License EPL-2.0</a>
+            &copy; Robert Bosch GmbH 2021 <a href="https://www.eclipse.org/legal/epl-2.0/">License EPL-2.0</a>
         </div>
     </footer>
 
@@ -102,7 +102,7 @@
             var invocationRequest = {
                 requestId: uuidv4(),
                 inputArguments: args,
-                timeout: 30000
+                timeout: 60000
             }
 
             $.ajax({
@@ -111,12 +111,19 @@
                 contentType: 'application/json',
                 data: JSON.stringify(invocationRequest),
                 error: function (jqXHR, errorType, exception) {
+                    $('buttonExecute_' + className).popover({ title: "FAILURE", content: "Execution failed exceptional", placement: "right" });
                     alert("Failed to execute: '" + JSON.stringify(invocationRequest) + "' - Error: " + jqXHR.responseText + " | " + errorType + " | " + exception);
                 },
                 success: function (data) {
                     for (var i = 0; i < data.outputArguments.length; i++) {
                         var argOutIdShort = data.outputArguments[i].value.idShort;
                         $('#argOutValue_' + className + argOutIdShort).val(JSON.stringify(data.outputArguments[i].value.value));
+                    }
+                    if (data.operationResult.success) {
+                        $('#buttonExecute_' + className).popover({ title: "SUCCESS", content: "Execution successfull", placement: "right" });
+                    }
+                    else {
+                        $('#buttonExecute_' + className).popover({ title: "FAILURE", content: "Execution failed: " + JSON.stringify(data.operationResult.messages), placement: "right" });
                     }
                 }
             });
@@ -132,6 +139,12 @@
                     $('#' + hashedPathIdInput).css('border-color', 'green');
                 }
             });
+        }
+    </script>
+    <script>
+        function ClearFields(hashedRequestPath) {
+            $('.argInValue.' + hashedRequestPath).val('');
+            $('.argOutValue.' + hashedRequestPath).val('');
         }
     </script>
     <script>

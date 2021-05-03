@@ -7,7 +7,7 @@
     <Authors>Constantin Ziesche</Authors>
     <Company>Robert Bosch GmbH</Company>
     <Description>The official BaSyx Collection of Information Model Classes for Export</Description>
-    <Copyright>Copyright 2020 - Robert Bosch GmbH</Copyright>
+    <Copyright>Copyright 2021 - Robert Bosch GmbH</Copyright>
     <PackageLicenseExpression>EPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
     <RepositoryUrl>https://git.eclipse.org/r/plugins/gitiles/basyx/basyx/+/master/sdks/csnet/</RepositoryUrl>
@@ -17,22 +17,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="basyxlogo.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="aas-spec-v1.0\**\*" />
-    <EmbeddedResource Include="aas-spec-v2.0\**\*" />
+    <EmbeddedResource Include="aas-spec-v1.0\Resources\**\*" />
+    <EmbeddedResource Include="aas-spec-v2.0\Resources\**\*" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="4.7.0" />
-    <PackageReference Include="System.IO.Packaging" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.8" />
+    <PackageReference Include="NLog" Version="4.7.9" />
+    <PackageReference Include="System.IO.Packaging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="5.0.5" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup>
     <DebugType>Full</DebugType>
   </PropertyGroup>
   
@@ -40,8 +36,15 @@
     <ProjectReference Include="..\BaSyx.Models\BaSyx.Models.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF EXIST %25BASYX_REPO%25 ( dotnet pack &quot;$(ProjectPath)&quot; --no-build --include-source --include-symbols --output &quot;%25BASYX_REPO%25&quot; ) ELSE ( ECHO BASYX_REPO Environment Variable not found)" />
+  <ItemGroup>
+    <None Include="..\..\resources\basyxlogo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Exec Command="IF EXIST %25BASYX_REPO%25 ( dotnet pack &quot;$(ProjectPath)&quot; -c Release --no-build --include-source --include-symbols --output &quot;%25BASYX_REPO%25&quot; ) ELSE ( ECHO BASYX_REPO Environment Variable not found)" />
   </Target>
 
 </Project>

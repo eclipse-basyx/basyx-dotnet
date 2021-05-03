@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -101,7 +101,7 @@ namespace BaSyx.Models.Export
             };
             JsonSettings.Converters.Add(new StringEnumConverter());
 
-            fileProvider = new ManifestEmbeddedFileProvider(typeof(AssetAdministrationShellEnvironment_V2_0).Assembly, "aas-spec-v1.0");
+            fileProvider = new ManifestEmbeddedFileProvider(typeof(AssetAdministrationShellEnvironment_V2_0).Assembly, "aas-spec-v1.0\\Resources");
 
             XmlSettings = new XmlReaderSettings();
             XmlSettings.ValidationType = ValidationType.Schema;

@@ -6,7 +6,7 @@
       <ContentPath>Content</ContentPath>
       <Urls>
         <Url>http://+:4999</Url>
-        <Url>https://+:4499</Url>
+        <!--<Url>https://+:4499</Url>-->
       </Urls>
     </Hosting>
     <DefaultRoute/>

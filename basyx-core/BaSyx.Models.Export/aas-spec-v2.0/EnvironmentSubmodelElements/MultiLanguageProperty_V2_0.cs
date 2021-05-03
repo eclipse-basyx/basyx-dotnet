@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -18,7 +18,8 @@ namespace BaSyx.Models.Export
     public class MultiLanguageProperty_V2_0 : SubmodelElementType_V2_0
     {
         [JsonProperty("value")]
-        [XmlElement("value")]
+        [XmlArray("value")]
+        [XmlArrayItem("langString")]
         public LangStringSet Value { get; set; }
 
         [JsonProperty("valueId")]

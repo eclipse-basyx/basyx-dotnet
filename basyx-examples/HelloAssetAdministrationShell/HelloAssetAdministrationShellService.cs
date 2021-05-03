@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -60,8 +60,7 @@ namespace HelloAssetAdministrationShell
         {
             if (inputArguments?.Count > 0)
             {
-                outputArguments.Add(
-                    new Property<string>("ReturnValue", "Hello '" + inputArguments["Text"].Cast<IProperty>().ToObject<string>() + "'"));
+                outputArguments["ReturnValue"].SetValue<string>("Hello '" + inputArguments["Text"].Cast<IProperty>().ToObject<string>() + "'");
                 return new OperationResult(true);
             }
             return new OperationResult(false);
@@ -71,18 +70,18 @@ namespace HelloAssetAdministrationShell
         {
             AssetAdministrationShell aas = new AssetAdministrationShell("HelloAAS", new BaSyxShellIdentifier("HelloAAS", "1.0.0"))
             {
-                Description = new LangStringSet() { new LangString("en-US", "This is an exemplary Asset Administration Shell for starters") },
+                Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset Administration Shell for starters") },
 
                 Asset = new Asset("HelloAsset", new BaSyxAssetIdentifier("HelloAsset", "1.0.0"))
                 {
-                    Description = new LangStringSet() { new LangString("en-US", "This is an exemplary Asset reference from the Asset Administration Shell") },
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset reference from the Asset Administration Shell") },
                     Kind = AssetKind.Instance
                 }
             };
 
             Submodel helloSubmodel = new Submodel("HelloSubmodel", new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0"))
             {
-                Description = new LangStringSet() { new LangString("en-US", "This is an exemplary Submodel") },
+                Description = new LangStringSet() { new LangString("enS", "This is an exemplary Submodel") },
                 Kind = ModelingKind.Instance,
                 SemanticId = new Reference(new GlobalKey(KeyElements.Submodel, KeyType.IRI, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
             };
@@ -90,20 +89,20 @@ namespace HelloAssetAdministrationShell
             helloSubmodel.SubmodelElements = new ElementContainer<ISubmodelElement>();
             helloSubmodel.SubmodelElements.Add(new Property<string>("HelloProperty", "TestValue")
             {
-                Description = new LangStringSet() { new LangString("en-US", "This is an exemplary property") },
+                Description = new LangStringSet() { new LangString("en", "This is an exemplary property") },
                 SemanticId = new Reference(new GlobalKey(KeyElements.Property, KeyType.IRI, "urn:basys:org.eclipse.basyx:dataElements:HelloProperty:1.0.0"))
             });
 
             helloSubmodel.SubmodelElements.Add(new File("HelloFile")
             {
-                Description = new LangStringSet() { new LangString("en-US", "This is an exemplary file attached to the Asset Administration Shell")},
+                Description = new LangStringSet() { new LangString("en", "This is an exemplary file attached to the Asset Administration Shell")},
                 MimeType = "application/pdf",
                 Value = "/HelloAssetAdministrationShell.pdf"
             });
 
             helloSubmodel.SubmodelElements.Add(new Operation("HelloOperation")
             {
-                Description = new LangStringSet() { new LangString("en-US", "This is an exemplary operation returning the input argument with 'Hello' as prefix") },
+                Description = new LangStringSet() { new LangString("en", "This is an exemplary operation returning the input argument with 'Hello' as prefix") },
                 InputVariables = new OperationVariableSet() { new Property<string>("Text") },
                 OutputVariables = new OperationVariableSet() { new Property<string>("ReturnValue") }
             });
@@ -133,8 +132,8 @@ namespace HelloAssetAdministrationShell
                 {
                     new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
                     {
-                        PreferredName = new LangStringSet { new LangString("EN", "identifying order number") },
-                        Definition =  new LangStringSet { new LangString("EN", "unique classifying number that enables to name an object and to order it from a supplier or manufacturer") },
+                        PreferredName = new LangStringSet { new LangString("en", "identifying order number") },
+                        Definition =  new LangStringSet { new LangString("en", "unique classifying number that enables to name an object and to order it from a supplier or manufacturer") },
                         DataType = DataTypeIEC61360.STRING
                     })
                 }

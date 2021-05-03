@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using BaSyx.Utils.AssemblyHandling;
+using BaSyx.Utils.FileHandling;
 using BaSyx.Utils.Settings.Sections;
 using Newtonsoft.Json;
 using NLog;
@@ -21,7 +22,6 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using XSerializer;
-using static BaSyx.Utils.Settings.FileWatcher;
 
 namespace BaSyx.Utils.Settings
 {
@@ -41,8 +41,7 @@ namespace BaSyx.Utils.Settings
         [XmlIgnore]
         public string FilePath { get; set; }
         [XmlIgnore]
-        public Dictionary<string, string> Miscellaneous { get; set; }
-
+        public Dictionary<string, string> Miscellaneous { get; set; } = new Dictionary<string, string>();
         [XmlElement]
         public ServiceType OperationMode { get; set; }
         [XmlElement(IsNullable = true)]
@@ -110,16 +109,12 @@ namespace BaSyx.Utils.Settings
         }
 
         protected Settings()
-        {
-            Miscellaneous = new Dictionary<string, string>();
-        }
+        { }
 
-        public virtual void ConfigureSettingsWatcher(string settingsFilePath, FileChanged settingsFileChangedHandler)
+        public virtual void ConfigureSettingsWatcher(FileSystemChanged settingsFileChangedHandler)
         {
-            fileWatcher = new FileWatcher(settingsFilePath, settingsFileChangedHandler);
-        }
-
-       
+            fileWatcher = new FileWatcher(FilePath, settingsFileChangedHandler);
+        }       
 
         public static Settings LoadSettingsFromFile(string filePath, Type settingsType)
         {
@@ -194,11 +189,9 @@ namespace BaSyx.Utils.Settings
 
     public abstract class Settings<T> : Settings where T : Settings, new()
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
         public static string FileName => typeof(T).Name + FileExtension;
-
      
-        public Settings() : base()
+        protected Settings() : base()
         { }
 
         public static T CreateSettings() => new T();

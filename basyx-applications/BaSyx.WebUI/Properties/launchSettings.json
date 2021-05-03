@@ -1,0 +1,11 @@
+﻿{
+  "profiles": {
+    "BaSyx.WebUI": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:5079",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

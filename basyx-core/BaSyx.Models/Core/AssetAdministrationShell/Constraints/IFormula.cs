@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -24,6 +24,6 @@ namespace BaSyx.Models.Core.AssetAdministrationShell.Constraints
         ///The value of the referenced elements needs to be accessible so that it can be evaluated in the formula to true or false in the corresponding logical expression it is used in.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "dependsOn")]
-        List<IReference> DependsOn { get; }
+        IEnumerable<IReference> DependsOn { get; }
     }
 }

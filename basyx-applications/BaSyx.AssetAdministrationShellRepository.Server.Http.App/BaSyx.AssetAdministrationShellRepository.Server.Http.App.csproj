@@ -4,14 +4,13 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Configurations>Debug;Release</Configurations>
     <Authors>Constantin Ziesche</Authors>
-    <Copyright>Copyright 2020 - Robert Bosch GmbH</Copyright>
+    <Copyright>Copyright 2021 - Robert Bosch GmbH</Copyright>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
     <RepositoryUrl>https://git.eclipse.org/r/plugins/gitiles/basyx/basyx/+/master/sdks/csnet/</RepositoryUrl>
     <Description>The official BaSyx Asset Administration Shell Repository Http Server Reference Implementation</Description>
     <Company>Robert Bosch GmbH</Company>
-    <PackageTags>BaSys BaSyx Asset Administration Shell Repository Server Component</PackageTags>
+    <PackageTags>BaSys BaSyx Asset Administration Shell Repository Server App</PackageTags>
     <PackageLicenseExpression>EPL-2.0</PackageLicenseExpression>
-    <PackageIcon>basyxlogo.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>   
@@ -22,9 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="NLog.config">
+    <Content Include="..\..\resources\Nlog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Update="ServerSettings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -14,7 +14,7 @@ using System.Xml.Serialization;
 
 namespace BaSyx.Models.Export
 {
-    public class EnvironmentQualifier_V2_0
+    public class EnvironmentQualifier_V2_0 : ConstraintType_V2_0
     {
         [JsonProperty("type")]
         [XmlElement("type")]
@@ -34,6 +34,6 @@ namespace BaSyx.Models.Export
 
         [JsonProperty("modelType")]
         [XmlIgnore]
-        public ModelType ModelType => ModelType.Qualifier;
+        public override ModelType ModelType => ModelType.Qualifier;
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -18,6 +18,7 @@ using BaSyx.Models.Connectivity.Descriptors;
 using BaSyx.Models.Core.AssetAdministrationShell;
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using BaSyx.Models.Core.AssetAdministrationShell.Identification;
+using BaSyx.Models.Core.AssetAdministrationShell.Identification.BaSyx;
 using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using BaSyx.Models.Core.Common;
 using BaSyx.Registry.Client.Http;
@@ -29,16 +30,16 @@ using BaSyx.Utils.Settings.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace ComplexAssetAdministrationShellScenario
 {
     class Program
     {
         static RegistryHttpClient registryClient;
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Thread.Sleep(5000);
+            await Task.Delay(5000);
             registryClient = new RegistryHttpClient();
             LoadScenario();
 
@@ -66,12 +67,12 @@ namespace ComplexAssetAdministrationShellScenario
 
             for (int i = 0; i < 3; i++)
             {
-                Submodel submodel = new Submodel("MultiSubmodel_" + i, new Identifier("http://basys40.de/submodel/MultiSubmodel/" + Guid.NewGuid().ToString(), KeyType.IRI))
+                Submodel submodel = new Submodel("MultiSubmodel_" + i, new BaSyxSubmodelIdentifier("MultiSubmodel_" + i, "1.0.0"))
                 {
                     Description = new LangStringSet()
                     {
-                       new LangString("de-DE", i + ". Teilmodell"),
-                       new LangString("en-US", i + ". Submodel")
+                       new LangString("de", i + ". Teilmodell"),
+                       new LangString("en", i + ". Submodel")
                     },
                     Administration = new AdministrativeInformation()
                     {
@@ -103,7 +104,7 @@ namespace ComplexAssetAdministrationShellScenario
             {
                 for (int i = 0; i < repositoryService.ServiceDescriptor.SubmodelDescriptors.Count(); i++)
                 {
-                    registryClient.DeleteSubmodelRegistration("http://basyx.de/shells/MultiAAS/" + i, repositoryService.ServiceDescriptor.SubmodelDescriptors[i].IdShort);
+                    registryClient.DeleteSubmodelRegistration(new BaSyxShellIdentifier("MultiAAS_" + i, "1.0.0").ToIdentifier().Id, repositoryService.ServiceDescriptor.SubmodelDescriptors[i].IdShort);
                 }
             };
 
@@ -117,7 +118,7 @@ namespace ComplexAssetAdministrationShellScenario
             for (int i = 0; i < repositoryService.ServiceDescriptor.SubmodelDescriptors.Count(); i++)
             {
                 var descriptor = repositoryService.ServiceDescriptor.SubmodelDescriptors[i];
-                registryClient.CreateOrUpdateSubmodelRegistration("http://basyx.de/shells/MultiAAS/" + i, descriptor.Identification.Id, descriptor);
+                registryClient.CreateOrUpdateSubmodelRegistration(new BaSyxShellIdentifier("MultiAAS_" + i, "1.0.0").ToIdentifier().Id, descriptor.Identification.Id, descriptor);
 
                 if(shell != null)
                     registryClient.CreateOrUpdateSubmodelRegistration(shell.Identification.Id, descriptor.Identification.Id, descriptor);
@@ -137,30 +138,30 @@ namespace ComplexAssetAdministrationShellScenario
 
             for (int i = 0; i < 3; i++)
             {
-                AssetAdministrationShell aas = new AssetAdministrationShell("MultiAAS_" + i, new Identifier("http://basyx.de/shells/MultiAAS/" + i, KeyType.IRI))
+                AssetAdministrationShell aas = new AssetAdministrationShell("MultiAAS_" + i, new BaSyxShellIdentifier("MultiAAS_" + i, "1.0.0"))
                 {
                     Description = new LangStringSet()
                     {
-                       new LangString("de-DE", i + ". VWS"),
-                       new LangString("en-US", i + ". AAS")
+                       new LangString("de", i + ". VWS"),
+                       new LangString("en", i + ". AAS")
                     },
                     Administration = new AdministrativeInformation()
                     {
                         Version = "1.0",
                         Revision = "120"
                     },
-                    Asset = new Asset("Asset_" + i, new Identifier("http://basyx.de/assets/MultiAsset/" + i, KeyType.IRI))
+                    Asset = new Asset("Asset_" + i, new BaSyxAssetIdentifier("Asset_" + i, "1.0.0"))
                     {
                         Kind = AssetKind.Instance,
                         Description = new LangStringSet()
                         {
-                              new LangString("de-DE", i + ". Asset"),
-                              new LangString("en-US", i + ". Asset")
+                              new LangString("de", i + ". Asset"),
+                              new LangString("en", i + ". Asset")
                         }
                     }
                 };
 
-                aas.Submodels.Create(new Submodel("TestSubmodel", new Identifier("http://basyx.de/submodels/" + i, KeyType.IRI))
+                aas.Submodels.Create(new Submodel("TestSubmodel", new BaSyxSubmodelIdentifier("TestSubmodel", "1.0.0"))
                 {
                     SubmodelElements =
                     {
@@ -176,7 +177,7 @@ namespace ComplexAssetAdministrationShellScenario
                 });
 
                 var aasServiceProvider = aas.CreateServiceProvider(true);
-                repositoryService.RegisterAssetAdministrationShellServiceProvider(aas.IdShort, aasServiceProvider);
+                repositoryService.RegisterAssetAdministrationShellServiceProvider(new BaSyxShellIdentifier("MultiAAS_" + i, "1.0.0").ToIdentifier().Id, aasServiceProvider);
             }
 
             List<HttpEndpoint> endpoints = multiServer.Settings.ServerConfig.Hosting.Urls.ConvertAll(c => new HttpEndpoint(c.Replace("+", "127.0.0.1")));

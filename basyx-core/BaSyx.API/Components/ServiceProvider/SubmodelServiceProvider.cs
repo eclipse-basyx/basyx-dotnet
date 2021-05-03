@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -22,6 +22,7 @@ using BaSyx.Models.Communication;
 using System.Threading.Tasks;
 using NLog;
 using System.Threading;
+using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 
 namespace BaSyx.API.Components
 {
@@ -242,6 +243,7 @@ namespace BaSyx.API.Components
 
                 InvocationResponse invocationResponse = new InvocationResponse(invocationRequest.RequestId);
                 invocationResponse.InOutputArguments = invocationRequest.InOutputArguments;
+                invocationResponse.OutputArguments = CreateOutputArguments(operation_Retrieved.Entity.OutputVariables);
 
                 int timeout = DEFAULT_TIMEOUT;
                 if (invocationRequest.Timeout.HasValue)
@@ -284,6 +286,31 @@ namespace BaSyx.API.Components
                 }
             }
             return new Result<InvocationResponse>(operation_Retrieved);
+        }
+
+        private IOperationVariableSet CreateOutputArguments(IOperationVariableSet outputVariables)
+        {
+            if (outputVariables == null)
+                return null;
+
+            OperationVariableSet variables = new OperationVariableSet();
+            if(outputVariables.Count > 0)
+            {
+                foreach (var outputVariable in outputVariables)
+                {
+                    DataType dataType;
+                    if (outputVariable.Value is IProperty property)
+                        dataType = property.ValueType;
+                    else if (outputVariable.Value is IRange range)
+                        dataType = range.ValueType;
+                    else
+                        dataType = null;
+
+                    var se = SubmodelElementFactory.CreateSubmodelElement(outputVariable.Value.IdShort, outputVariable.Value.ModelType, dataType);
+                    variables.Add(se);
+                }
+            }
+            return variables;
         }
 
         public IResult<CallbackResponse> InvokeOperationAsync(string pathToOperation, InvocationRequest invocationRequest)

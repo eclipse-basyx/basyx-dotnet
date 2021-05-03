@@ -76,7 +76,7 @@
                                     <div class="col-sm-2 argInName @hashedRequestPath"><b>@argument.IdShort</b></div>
                                     <div class="col-sm-2 argInType @hashedRequestPath">@GetValueOrModelType(argument)</div>
                                     <div class="col-sm-8">
-                                        <input id="msg" type="text" class="form-control argInValue @hashedRequestPath" name="msg" placeholder="Argument Value">
+                                        <input id="msg" type="text" class="form-control argInValue @hashedRequestPath" name="msg" placeholder="Input Argument Value">
                                     </div>
                                 </div>
                             </li>
@@ -93,7 +93,7 @@
                                     <div class="col-sm-2 argOutName @hashedRequestPath"><b>@argument.IdShort</b></div>
                                     <div class="col-sm-2 argOutType @hashedRequestPath">@GetValueOrModelType(argument)</div>
                                     <div class="col-sm-8">
-                                        <input id="argOutValue_@hashedRequestPath@argument.IdShort" type="text" class="form-control argOutValue @hashedRequestPath" name="msg" placeholder="Return Value">
+                                        <input id="argOutValue_@hashedRequestPath@argument.IdShort" type="text" class="form-control argOutValue @hashedRequestPath" name="msg" placeholder="Output Argument Value">
                                     </div>
                                 </div>
                             </li>
@@ -102,7 +102,8 @@
                 }
 
                 <div class="card-footer">
-                    <button onclick="@("ExecuteOperation('" + requestPath +"', '" + hashedRequestPath + "')")" type="button" class="btn btn-success">Execute</button>
+                    <button id="buttonExecute_@hashedRequestPath" onclick="@("ExecuteOperation('" + requestPath +"', '" + hashedRequestPath + "')")" type="button" class="btn btn-success" data-toggle="popover" data-trigger="focus">Execute</button>
+                    <button onclick="@("ClearFields('" + hashedRequestPath + "')")" type="button" class="btn btn-outline-primary">Clear</button>
                 </div>
             }
             else if (submodelElementContainer.HasChildren())

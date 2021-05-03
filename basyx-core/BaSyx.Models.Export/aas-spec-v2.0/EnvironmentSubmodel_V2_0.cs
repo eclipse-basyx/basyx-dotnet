@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -28,7 +28,7 @@ namespace BaSyx.Models.Export
         [XmlElement("semanticId")]
         public EnvironmentReference_V2_0 SemanticId { get; set; }
 
-        [JsonProperty("constraints")]
+        [JsonProperty("qualifiers"), JsonConverter(typeof(JsonQualifierConverter_V2_0))]
         [XmlArray("qualifier")]
         [XmlArrayItem("qualifier")]
         public List<EnvironmentQualifier_V2_0> Qualifier { get; set; }
@@ -57,7 +57,7 @@ namespace BaSyx.Models.Export
             else
                 return true;
         }
-
+        /*
         public bool ShouldSerializeSubmodelElements()
         {
             if (SubmodelElements == null || SubmodelElements.Count == 0)
@@ -65,5 +65,6 @@ namespace BaSyx.Models.Export
             else
                 return true;
         }
+        */
     }
 }

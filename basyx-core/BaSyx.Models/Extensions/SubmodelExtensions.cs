@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -192,7 +192,7 @@ namespace BaSyx.Models.Extensions
                                 new JObject(
                                     new JProperty("first", annotatedRelationshipElement.First?.ToStandardizedString()),
                                     new JProperty("second", annotatedRelationshipElement.Second?.ToStandardizedString()),
-                                    new JProperty("annotation", annotatedRelationshipElement.Annotation?.ToStandardizedString())));
+                                    new JProperty("annotations", MinimizeSubmodelElements(annotatedRelationshipElement.Annotations))));
                             break;
                         }
                     case ModelTypes.Property:

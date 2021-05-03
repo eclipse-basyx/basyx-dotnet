@@ -16,9 +16,55 @@
     switch (keyElements)
     {
         case KeyElements.AnnotatedRelationshipElement:
-            break;
+            {
+                IAnnotatedRelationshipElement relationship = Model.Cast<IAnnotatedRelationshipElement>();
+                if (relationship == null)
+                {
+                    return;
+                }
+
+                if (relationship.Annotation != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Value</b></div>
+                            <div class="col-sm-10">@relationship.Annotation.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                }
+                if (relationship.First != null && relationship.Second != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>First</b></div>
+                            <div class="col-sm-10">@relationship.First.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Second</b></div>
+                            <div class="col-sm-10">@relationship.Second.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                }
+            }
+            return;
         case KeyElements.Blob:
-            break;
+            {
+                IBlob blob = Model.Cast<IBlob>();
+                if (blob == null)
+                {
+                    return;
+                }
+
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>MimeType</b></div>
+                        <div class="col-sm-10">@blob.MimeType</div>
+                    </div>
+                </li>
+            }
+            return;
         case KeyElements.Capability:
             break;
         case KeyElements.File:
@@ -46,6 +92,11 @@
                         {
                             <div class="col-sm-10"><a href="@("/files" + separator + path)">@path</a></div>
                         }
+                        else if (Uri.TryCreate(path, UriKind.Absolute, out Uri result))
+                        {
+                            <div class="col-sm-10"><a href="@result.AbsoluteUri">@path</a></div>
+                            exists = true;
+                        }
                         else
                         {
                             <div class="col-sm-10">@path</div>
@@ -56,7 +107,11 @@
                 {
                     <li class="list-group-item">
                         <div class="row align-items-center">
-                            @if (file.MimeType.StartsWith("image"))
+                            @if (Uri.TryCreate(path, UriKind.Absolute, out Uri result))
+                            {
+                                <iframe src="@result.AbsoluteUri" style="min-height:500px; width:100%"></iframe>
+                            }
+                            else if (file.MimeType.StartsWith("image"))
                             {
                                 <img src="@("/files" + separator + path)" style="display:block; max-width:100%; height:auto" />
                             }
@@ -89,20 +144,30 @@
                         </div>
                     </li>
                 }
-
-                @*@foreach (var element in eventable.DataElements)
-                    {
-                        <li class="list-group-item">
-                            <div class="row align-items-center">
-                                @{ string valueTypeName = element.Cast<IProperty>()?.ValueType?.ToString() ?? "anyType"; }
-                                <div class="col-sm-10"><b>@element.IdShort (@valueTypeName)</b></div>
-                            </div>
-                         </li>
-                    }*@
             }
             return;
         case KeyElements.MultiLanguageProperty:
-            break;
+            {
+                IMultiLanguageProperty multiLanguageProperty = Model.Cast<IMultiLanguageProperty>();
+                if (multiLanguageProperty == null)
+                {
+                    return;
+                }
+
+                if (multiLanguageProperty.Value?.Count > 0)
+                {
+                    foreach (var langString in multiLanguageProperty.Value)
+                    {
+                        <li class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-sm-2"><b>@langString.Language</b></div>
+                                <div class="col-sm-10">@langString.Text</div>
+                            </div>
+                        </li>
+                    }
+                }
+            }
+            return;
         case KeyElements.Operation:
             break;
         case KeyElements.Property:
@@ -159,9 +224,49 @@
             </li>
             return;
         case KeyElements.ReferenceElement:
-            break;
+            {
+                IReferenceElement reference = Model.Cast<IReferenceElement>();
+                if (reference == null)
+                {
+                    return;
+                }
+
+                if (reference.Value != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Value</b></div>
+                            <div class="col-sm-10">@reference.Value.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                }
+            }
+            return;
         case KeyElements.RelationshipElement:
-            break;
+            {
+                IRelationshipElement relationship = Model.Cast<IRelationshipElement>();
+                if (relationship == null)
+                {
+                    return;
+                }
+
+                if (relationship.First != null && relationship.Second != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>First</b></div>
+                            <div class="col-sm-10">@relationship.First.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Second</b></div>
+                            <div class="col-sm-10">@relationship.Second.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                }
+            }
+            return;
         case KeyElements.SubmodelElementCollection:
             break;
         default:

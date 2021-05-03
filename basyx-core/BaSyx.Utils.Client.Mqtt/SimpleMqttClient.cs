@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -17,7 +17,6 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 using BaSyx.Utils.ResultHandling;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BaSyx.Utils.Client.Mqtt
 {
@@ -32,7 +31,7 @@ namespace BaSyx.Utils.Client.Mqtt
         private ManualResetEvent connectionClosedResetEvent;
         public EventHandler<EventArgs> ConnectionClosed;
 
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public SimpleMqttClient(MqttConfig config)
         {
@@ -68,9 +67,9 @@ namespace BaSyx.Utils.Client.Mqtt
         public IResult Subscribe(string topic, Action<IMessageReceivedEventArgs> messageReceivedHandler, byte qosLevel)
         {
             if (string.IsNullOrEmpty(topic))
-                return new Result(new ArgumentNullException("topic", "The topic is null or empty"));
+                return new Result(new ArgumentNullException(nameof(topic), "The topic is null or empty"));
             if (messageReceivedHandler == null)
-                return new Result(new ArgumentNullException("messageReceivedHandler", "The message received delegate cannot be null since subscribed messages cannot be received"));
+                return new Result(new ArgumentNullException(nameof(messageReceivedHandler), "The message received delegate cannot be null since subscribed messages cannot be received"));
 
             if (!topicMessageReceivedHandler.ContainsKey(topic))
                 topicMessageReceivedHandler.Add(topic, messageReceivedHandler);

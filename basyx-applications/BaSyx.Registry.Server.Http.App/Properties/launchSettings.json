@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "BaSyx.Registry.Server.Http.Component": {
+    "BaSyx.Registry.Server.Http.App": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

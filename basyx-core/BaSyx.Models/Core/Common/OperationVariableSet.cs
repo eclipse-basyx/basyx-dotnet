@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -27,7 +27,11 @@ namespace BaSyx.Models.Core.Common
 
         public void Add(ISubmodelElement submodelElement)
         {
-            base.Add(new OperationVariable() { Value = submodelElement });
+            int index = this.FindIndex(f => f.Value.IdShort == submodelElement.IdShort);
+            if (index == -1)
+                base.Add(new OperationVariable() { Value = submodelElement });
+            else
+                base[index] = new OperationVariable() { Value = submodelElement };
         }
 
         public ISubmodelElement Get(string idShort)

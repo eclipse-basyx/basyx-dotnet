@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -92,24 +92,26 @@ namespace BaSyx.Models.Export
         public static JsonSerializerSettings JsonSettings;
         public static XmlReaderSettings XmlSettings;
 
+        private static Action<ValidationEventArgs> _userValidationCallback;
+
         static AssetAdministrationShellEnvironment_V2_0()
         {
             JsonSettings = new JsonSerializerSettings()
             {
                 Formatting = Newtonsoft.Json.Formatting.Indented,
                 DefaultValueHandling = DefaultValueHandling.Include,
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,                
             };
             JsonSettings.Converters.Add(new StringEnumConverter());
 
-            fileProvider = new ManifestEmbeddedFileProvider(typeof(AssetAdministrationShellEnvironment_V2_0).Assembly, "aas-spec-v2.0");
+            fileProvider = new ManifestEmbeddedFileProvider(typeof(AssetAdministrationShellEnvironment_V2_0).Assembly, "aas-spec-v2.0\\Resources");
 
             XmlSettings = new XmlReaderSettings();
             XmlSettings.ValidationType = ValidationType.Schema;
             XmlSettings.ValidationFlags |= XmlSchemaValidationFlags.ProcessInlineSchema;
             XmlSettings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
             XmlSettings.ValidationFlags |= XmlSchemaValidationFlags.ReportValidationWarnings;
-            XmlSettings.ValidationEventHandler += new ValidationEventHandler(ValidationCallBack);
+            XmlSettings.ValidationEventHandler += new ValidationEventHandler(ValidationCallback);
 
             using (var stream = fileProvider.GetFileInfo(AAS_XSD_FILENAME).CreateReadStream())
                 XmlSettings.Schemas.Add(AAS_NAMESPACE, XmlReader.Create(stream));
@@ -147,7 +149,8 @@ namespace BaSyx.Models.Export
         public void AddAssetAdministrationShell(IAssetAdministrationShell aas)
         {
             AssetAdministrationShells.Add(aas);
-            Assets.Add(aas.Asset);
+            if (aas.Asset != null)
+                Assets.Add(aas.Asset);
             if (aas.Submodels?.Count() > 0)
             {
                 Submodels.AddRange(aas.Submodels.Values);
@@ -155,8 +158,6 @@ namespace BaSyx.Models.Export
                 {
                     ExtractAndClearConceptDescriptions(submodel.SubmodelElements);
                     ExtractSupplementalFiles(submodel.SubmodelElements);
-                    ResetConstraints(submodel.SubmodelElements);
-                    DeleteEvents(submodel.SubmodelElements);
                 }
             }
         }
@@ -250,14 +251,6 @@ namespace BaSyx.Models.Export
         }
 
 
-        private void DeleteEvents(IElementContainer<ISubmodelElement> submodelElements)
-        {
-            var eventsToDelete = submodelElements.Where(s => s.ModelType == ModelType.Event || s.ModelType == ModelType.BasicEvent).ToList();
-            foreach (var eventable in eventsToDelete)
-                submodelElements.Delete(eventable.IdShort);
-        }
-
-
         private void ExtractSupplementalFiles(IElementContainer<ISubmodelElement> submodelElements)
         {
             foreach (var smElement in submodelElements)
@@ -297,24 +290,6 @@ namespace BaSyx.Models.Export
         }
 
         public void SetContentRoot(string contentRoot) => ContentRoot = contentRoot;
-
-        private void ResetConstraints(IElementContainer<ISubmodelElement> submodelElements)
-        {
-            foreach (var smElement in submodelElements)
-            {
-                if (smElement.Constraints?.Count() > 0)
-                    (smElement as SubmodelElement).Constraints = null;
-                if (smElement is IOperation operation)
-                {
-                    if (operation.InputVariables?.Count > 0)
-                        ResetConstraints((smElement as IOperation).InputVariables.ToElementContainer());
-                    if (operation.OutputVariables?.Count > 0)
-                        ResetConstraints((smElement as IOperation).OutputVariables.ToElementContainer());
-                }
-                else if (smElement.ModelType == ModelType.SubmodelElementCollection)
-                    ResetConstraints((smElement as SubmodelElementCollection).Value);
-            }
-        }
 
         public void WriteEnvironment_V2_0(ExportType exportType, string filePath) => WriteEnvironment_V2_0(this, exportType, filePath);
 
@@ -424,11 +399,6 @@ namespace BaSyx.Models.Export
             using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 env = ReadEnvironment_V2_0(file, exportType);
 
-            if (env == null)
-                return null;
-
-            ConvertToAssetAdministrationShell(env);
-
             return env;
         }
 
@@ -442,7 +412,8 @@ namespace BaSyx.Models.Export
                     Category = envAsset.Category,
                     Description = envAsset.Description,
                     Kind = envAsset.Kind,
-                    AssetIdentificationModel = envAsset.AssetIdentificationModelReference?.ToReference_V2_0<ISubmodel>()                    
+                    AssetIdentificationModel = envAsset.AssetIdentificationModelReference?.ToReference_V2_0<ISubmodel>(),
+                    BillOfMaterial = envAsset.BillOfMaterial?.ToReference_V2_0<ISubmodel>()
                 };
                 environment.Assets.Add(asset);
             }
@@ -481,9 +452,10 @@ namespace BaSyx.Models.Export
                     SemanticId = envSubmodel.SemanticId?.ToReference_V2_0(),
                     ConceptDescription = null
                 };
-                List<ISubmodelElement> smElements = envSubmodel.SubmodelElements.ConvertAll(c => c.submodelElement?.ToSubmodelElement(environment.ConceptDescriptions, submodel));
-                foreach (var smElement in smElements)
-                    submodel.SubmodelElements.Create(smElement);
+                List<ISubmodelElement> smElements = envSubmodel.SubmodelElements?.ConvertAll(c => c.submodelElement?.ToSubmodelElement(environment.ConceptDescriptions, submodel));
+                if (smElements != null)
+                    foreach (var smElement in smElements)
+                        submodel.SubmodelElements.Create(smElement);
 
                 environment.Submodels.Add(submodel);
             }
@@ -497,27 +469,34 @@ namespace BaSyx.Models.Export
                     Description = envAssetAdministrationShell.Description
                 };
 
-                IAsset asset = environment.Assets.Find(a => a.Identification.Id == envAssetAdministrationShell.AssetReference?.Keys?.FirstOrDefault()?.Value);
+                IAsset asset = environment.Assets?.Find(a => a.Identification.Id == envAssetAdministrationShell.AssetReference?.Keys?.FirstOrDefault()?.Value);
                 assetAdministrationShell.Asset = asset;
 
-                foreach (var envSubmodelRef in envAssetAdministrationShell.SubmodelReferences)
-                {
-                    ISubmodel submodel = environment.Submodels.Find(s => s.Identification.Id == envSubmodelRef.Keys?.FirstOrDefault()?.Value);
-                    if (submodel != null)
-                        assetAdministrationShell.Submodels.Create(submodel);
-                }
+                if (envAssetAdministrationShell.SubmodelReferences != null)
+                    foreach (var envSubmodelRef in envAssetAdministrationShell.SubmodelReferences)
+                    {
+                        ISubmodel submodel = environment.Submodels?.Find(s => s.Identification.Id == envSubmodelRef.Keys?.FirstOrDefault()?.Value);
+                        if (submodel != null)
+                            assetAdministrationShell.Submodels.Create(submodel);
+                    }
 
                 environment.AssetAdministrationShells.Add(assetAdministrationShell);
             }
         }
 
-        private static void ValidationCallBack(object sender, ValidationEventArgs args)
+        public static void RegisterXmlValidationCallback(Action<ValidationEventArgs> callback)
+        {
+            _userValidationCallback = callback;
+        }
+
+        private static void ValidationCallback(object sender, ValidationEventArgs args)
         {
             if (args.Severity == XmlSeverityType.Warning)
                 logger.Warn("Validation warning: " + args.Message);
             else
                 logger.Error("Validation error: " + args.Message + " | LineNumber: " + args.Exception.LineNumber + " | LinePosition: " + args.Exception.LinePosition);
 
+            _userValidationCallback?.Invoke(args);
         }
     }
 }

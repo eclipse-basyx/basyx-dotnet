@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *******************************************************************************/
 using BaSyx.Models.Core.AssetAdministrationShell;
+using BaSyx.Models.Export.Converter;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -86,14 +87,14 @@ namespace BaSyx.Models.Export.EnvironmentDataSpecifications
 
         [JsonProperty("definition")]
         [XmlArray("definition")]
-        [XmlArrayItem("langString", Namespace = AssetAdministrationShellEnvironment_V2_0.AAS_NAMESPACE)]
+        [XmlArrayItem("langString", Namespace = AssetAdministrationShellEnvironment_V2_0.IEC61360_NAMESPACE)]
         public LangStringSet Definition { get; set; }
 
         [JsonProperty("valueFormat")]
         [XmlElement("valueFormat", Namespace = AssetAdministrationShellEnvironment_V2_0.IEC61360_NAMESPACE)]
         public string ValueFormat { get; set; }
 
-        [JsonProperty("valueList")]
+        [JsonProperty("valueList"), JsonConverter(typeof(JsonValueListConverter_V2_0))]
         [XmlArray("valueList")]
         [XmlArrayItem("valueReferencePair", Namespace = AssetAdministrationShellEnvironment_V2_0.IEC61360_NAMESPACE)]
         public List<ValueReferencePair> ValueList { get; set; }
@@ -168,6 +169,10 @@ namespace BaSyx.Models.Export.EnvironmentDataSpecifications
         [JsonProperty("valueId")]
         [XmlElement("valueId", Namespace = AssetAdministrationShellEnvironment_V2_0.IEC61360_NAMESPACE)]
         public EnvironmentReference_V2_0 ValueId { get; set; }
+
+        [JsonProperty("valueType")]
+        [XmlIgnore]
+        public string ValueType { get; set; }
     }
    
     public enum EnvironmentLevelType

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -27,7 +27,11 @@ namespace BaSyx.API.Components
             if (!string.IsNullOrEmpty(multiUrl))
             {
                 Uri uri = new Uri(multiUrl.Replace("+", "localhost"));
-                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, serverConfiguration.Hosting.EnableIPv6);
+                bool includeIPv6 = false;
+                if (serverConfiguration.Hosting.EnableIPv6.HasValue && serverConfiguration.Hosting.EnableIPv6.Value)
+                    includeIPv6 = true;
+
+                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
             else
@@ -43,7 +47,11 @@ namespace BaSyx.API.Components
             if (!string.IsNullOrEmpty(multiUrl))
             {
                 Uri uri = new Uri(multiUrl.Replace("+", "localhost"));
-                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, serverConfiguration.Hosting.EnableIPv6);
+                bool includeIPv6 = false;
+                if (serverConfiguration.Hosting.EnableIPv6.HasValue && serverConfiguration.Hosting.EnableIPv6.Value)
+                    includeIPv6 = true;
+
+                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
             else
@@ -74,7 +82,11 @@ namespace BaSyx.API.Components
             if (!string.IsNullOrEmpty(multiUrl))
             {
                 Uri uri = new Uri(multiUrl.Replace("+", "localhost"));
-                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, serverConfiguration.Hosting.EnableIPv6);
+                bool includeIPv6 = false;
+                if (serverConfiguration.Hosting.EnableIPv6.HasValue && serverConfiguration.Hosting.EnableIPv6.Value)
+                    includeIPv6 = true;
+
+                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
             else
@@ -90,7 +102,11 @@ namespace BaSyx.API.Components
             if (!string.IsNullOrEmpty(multiUrl))
             {
                 Uri uri = new Uri(multiUrl.Replace("+", "localhost"));
-                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, serverConfiguration.Hosting.EnableIPv6);
+                bool includeIPv6 = false;
+                if (serverConfiguration.Hosting.EnableIPv6.HasValue && serverConfiguration.Hosting.EnableIPv6.Value)
+                    includeIPv6 = true;
+
+                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
             else
@@ -100,9 +116,9 @@ namespace BaSyx.API.Components
             }
         }
 
-        private static List<IEndpoint> GetNetworkInterfaceBasedEndpoints(string endpointType, int port, bool? enableIPv6)
+        private static List<IEndpoint> GetNetworkInterfaceBasedEndpoints(string endpointType, int port, bool includeIPv6)
         {
-            IEnumerable<IPAddress> ipAddresses = NetworkUtils.GetIPAddresses();
+            IEnumerable<IPAddress> ipAddresses = NetworkUtils.GetIPAddresses(includeIPv6);
             List<IEndpoint> aasEndpoints = new List<IEndpoint>();
             foreach (var ipAddress in ipAddresses)
             {
@@ -112,7 +128,7 @@ namespace BaSyx.API.Components
                     aasEndpoints.Add(EndpointFactory.CreateEndpoint(endpointType, address, null));
                     logger.Info($"Using {address} as endpoint");
                 }
-                else if (enableIPv6.HasValue && enableIPv6.Value && ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+                else if (includeIPv6 && ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
                 {
                     string address = endpointType + "://[" + ipAddress.ToString() + "]:" + port;
                     aasEndpoints.Add(EndpointFactory.CreateEndpoint(endpointType, address, null));

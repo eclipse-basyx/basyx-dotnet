@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Robert Bosch GmbH
+* Copyright (c) 2020, 2021 Robert Bosch GmbH
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
@@ -29,19 +29,22 @@ namespace BaSyx.Models.Export
         public const string SPEC_RELATIONSHIP_TYPE = "http://www.admin-shell.io/aasx/relationships/aas-spec";
         public const string SUPPLEMENTAL_RELATIONSHIP_TYPE = "http://www.admin-shell.io/aasx/relationships/aas-suppl";
         public const string THUMBNAIL_RELATIONSHIP_TYPE = "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail";
+        public const string MIMETYPE = "application/asset-administration-shell-package";
 
+        public static readonly char[] InvalidFileNameChars = GetInvalidFileNameChars();
         public static readonly Uri ORIGIN_URI = new Uri("/aasx/aasx-origin", UriKind.RelativeOrAbsolute);
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+    
         public List<PackagePart> SupplementaryFiles { get; } = new List<PackagePart>();
 
-        private readonly Package aasxPackage;
+        private readonly Package _aasxPackage;
         private PackagePart originPart;
         private PackagePart specPart;
 
         public AASX(Package aasxPackage)
         {
-            this.aasxPackage = aasxPackage ?? throw new ArgumentNullException(nameof(aasxPackage));
+            _aasxPackage = aasxPackage ?? throw new ArgumentNullException(nameof(aasxPackage));
 
             LoadOrCreateOrigin();
             LoadSpec();
@@ -65,7 +68,7 @@ namespace BaSyx.Models.Export
                 {
                     try
                     {
-                        PackagePart file = aasxPackage.GetPart(relationship.TargetUri);
+                        PackagePart file = _aasxPackage.GetPart(relationship.TargetUri);
                         SupplementaryFiles.Add(file);
                     }
                     catch(Exception e)
@@ -80,13 +83,13 @@ namespace BaSyx.Models.Export
 
         private void LoadOrCreateOrigin()
         {
-            PackageRelationshipCollection relationships = aasxPackage.GetRelationshipsByType(ORIGIN_RELATIONSHIP_TYPE);
-            originPart = relationships?.Where(r => r.TargetUri == ORIGIN_URI)?.Select(p => aasxPackage.GetPart(p.TargetUri))?.FirstOrDefault();
+            PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(ORIGIN_RELATIONSHIP_TYPE);
+            originPart = relationships?.Where(r => r.TargetUri == ORIGIN_URI)?.Select(p => _aasxPackage.GetPart(p.TargetUri))?.FirstOrDefault();
             if(originPart == null)
             {
-                originPart = aasxPackage.CreatePart(ORIGIN_URI, System.Net.Mime.MediaTypeNames.Text.Plain, CompressionOption.Maximum);
+                originPart = _aasxPackage.CreatePart(ORIGIN_URI, System.Net.Mime.MediaTypeNames.Text.Plain, CompressionOption.Maximum);
                 originPart.GetStream(FileMode.Create).Dispose();
-                aasxPackage.CreateRelationship(originPart.Uri, TargetMode.Internal, ORIGIN_RELATIONSHIP_TYPE);
+                _aasxPackage.CreateRelationship(originPart.Uri, TargetMode.Internal, ORIGIN_RELATIONSHIP_TYPE);
             }
         }
 
@@ -95,7 +98,7 @@ namespace BaSyx.Models.Export
             if(originPart != null)
             {
                 PackageRelationshipCollection relationships = originPart.GetRelationshipsByType(SPEC_RELATIONSHIP_TYPE);
-                specPart = relationships?.Select(s => aasxPackage.GetPart(s.TargetUri))?.FirstOrDefault();
+                specPart = relationships?.Select(s => _aasxPackage.GetPart(s.TargetUri))?.FirstOrDefault();
             }
         }
 
@@ -106,30 +109,30 @@ namespace BaSyx.Models.Export
                 if (relationship.TargetUri == targetUri)
                         sourcePackagePart.DeleteRelationship(relationship.Id);
 
-            if (aasxPackage.PartExists(targetUri))
-                aasxPackage.DeletePart(targetUri);
+            if (_aasxPackage.PartExists(targetUri))
+                _aasxPackage.DeletePart(targetUri);
         }
         private void ClearRelationshipAndPartFromPackage(string relationshipType, Uri targetUri)
         {
-            PackageRelationshipCollection relationships = aasxPackage.GetRelationshipsByType(relationshipType);
+            PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(relationshipType);
             foreach (var relationship in relationships.ToList())
                 if (relationship.TargetUri == targetUri)
-                    aasxPackage.DeleteRelationship(relationship.Id);
+                    _aasxPackage.DeleteRelationship(relationship.Id);
 
-            if (aasxPackage.PartExists(targetUri))
-                aasxPackage.DeletePart(targetUri);
+            if (_aasxPackage.PartExists(targetUri))
+                _aasxPackage.DeletePart(targetUri);
         }
 
 
         private void ClearRelationshipsAndPartFromPackage(string relationshipType)
         {
-            PackageRelationshipCollection relationships = aasxPackage.GetRelationshipsByType(relationshipType);
+            PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(relationshipType);
             foreach (var relationship in relationships.ToList())
             {
-                aasxPackage.DeleteRelationship(relationship.Id);
+                _aasxPackage.DeleteRelationship(relationship.Id);
 
-                if(aasxPackage.PartExists(relationship.TargetUri))
-                    aasxPackage.DeletePart(relationship.TargetUri);
+                if(_aasxPackage.PartExists(relationship.TargetUri))
+                    _aasxPackage.DeletePart(relationship.TargetUri);
             }           
         }
 
@@ -140,20 +143,22 @@ namespace BaSyx.Models.Export
             {
                 sourcePackagePart.DeleteRelationship(relationship.Id);
 
-                if (aasxPackage.PartExists(relationship.TargetUri))
-                    aasxPackage.DeletePart(relationship.TargetUri);
+                if (_aasxPackage.PartExists(relationship.TargetUri))
+                    _aasxPackage.DeletePart(relationship.TargetUri);
             }
         }
 
-        public Stream GetFileAsStream(string fileName)
+        public Stream GetFileAsStream(string fileName, out string contentType)
         {
             PackagePart part = SupplementaryFiles.Find(p => p.Uri.ToString().Contains(fileName));
+            contentType = part?.ContentType;
             return part?.GetStream();
         }
 
-        public Stream GetFileAsStream(Uri relativeUri)
+        public Stream GetFileAsStream(Uri relativeUri, out string contentType)
         {
             PackagePart part = SupplementaryFiles.Find(p => p.Uri == relativeUri);
+            contentType = part?.ContentType;
             return part?.GetStream();
         }
 
@@ -163,12 +168,12 @@ namespace BaSyx.Models.Export
         /// <returns></returns>
         public Stream GetThumbnailAsStream()
         {
-            PackageRelationshipCollection relationships = aasxPackage.GetRelationshipsByType(THUMBNAIL_RELATIONSHIP_TYPE);
+            PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(THUMBNAIL_RELATIONSHIP_TYPE);
             foreach (var relationship in relationships)
             {
                 try
                 {
-                    PackagePart packagePart = aasxPackage.GetPart(relationship.TargetUri);
+                    PackagePart packagePart = _aasxPackage.GetPart(relationship.TargetUri);
                     if(packagePart != null)
                         return packagePart.GetStream(FileMode.Open, FileAccess.Read);
                 }
@@ -186,12 +191,12 @@ namespace BaSyx.Models.Export
         /// <returns></returns>
         public PackagePart GetThumbnailAsPackagePart()
         {
-            PackageRelationshipCollection relationships = aasxPackage.GetRelationshipsByType(THUMBNAIL_RELATIONSHIP_TYPE);
+            PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(THUMBNAIL_RELATIONSHIP_TYPE);
             foreach (var relationship in relationships)
             {
                 try
                 {
-                    PackagePart packagePart = aasxPackage.GetPart(relationship.TargetUri);
+                    PackagePart packagePart = _aasxPackage.GetPart(relationship.TargetUri);
                     if (packagePart != null)
                         return packagePart;
                 }
@@ -204,16 +209,55 @@ namespace BaSyx.Models.Export
             return null;
         }
 
+        public void AddCoreProperties(Action<PackageProperties> pp)
+        {
+            try
+            {
+                pp.Invoke(_aasxPackage.PackageProperties);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Unable to write to Core Properties");
+            }
+        }
+
+        public PackageProperties GetPackageProperties()
+        {
+            try
+            {
+                return _aasxPackage.PackageProperties;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Unable to retrieve Core Properties");
+                return null;
+            }
+        }
+
         public void AddThumbnail(string thumbnailPath)
+        {
+            using (FileStream fileStream = new FileStream(thumbnailPath, FileMode.Open, FileAccess.Read))
+            {
+                string contentType = GetContentType(thumbnailPath);
+                string fileName = Path.GetFileName(thumbnailPath);
+                AddThumbnail(fileStream, contentType, fileName);
+            }
+        }
+
+        public void AddThumbnail(Stream thumbnail, string contentType, string fileName)
         {
             ClearRelationshipsAndPartFromPackage(THUMBNAIL_RELATIONSHIP_TYPE);
 
-            string thumbnailUriPath = ROOT_FOLDER + Path.GetFileName(thumbnailPath);
+            string thumbnailUriPath = ROOT_FOLDER + fileName;
 
             Uri partUri = PackUriHelper.CreatePartUri(new Uri(thumbnailUriPath, UriKind.RelativeOrAbsolute));
-            PackagePart thumbnailPart = aasxPackage.CreatePart(partUri, GetContentType(thumbnailPath), CompressionOption.Maximum);
-            aasxPackage.CreateRelationship(thumbnailPart.Uri, TargetMode.Internal, THUMBNAIL_RELATIONSHIP_TYPE);
-            CopyFileToPackagePart(thumbnailPart, thumbnailPath);
+            PackagePart thumbnailPart = _aasxPackage.CreatePart(partUri, contentType, CompressionOption.Maximum);
+            _aasxPackage.CreateRelationship(thumbnailPart.Uri, TargetMode.Internal, THUMBNAIL_RELATIONSHIP_TYPE);
+            
+            using (Stream destination = thumbnailPart.GetStream())
+            {
+                thumbnail.CopyTo(destination);
+            }
         }
 
         public void AddEnvironment(Identifier aasId, string aasEnvironmentFilePath)
@@ -226,7 +270,7 @@ namespace BaSyx.Models.Export
                 throw new InvalidOperationException(aasEnvironmentFilePath + " does not exist");
         
             string aasIdName = aasId.Id;
-            foreach (char invalidChar in Path.GetInvalidFileNameChars())
+            foreach (char invalidChar in InvalidFileNameChars)
                 aasIdName = aasIdName.Replace(invalidChar, '_');
 
             string aasFilePath = AASX_FOLDER + "/" + aasIdName + "/" + aasIdName + ".aas" + Path.GetExtension(aasEnvironmentFilePath);
@@ -234,7 +278,7 @@ namespace BaSyx.Models.Export
             Uri partUri = PackUriHelper.CreatePartUri(new Uri(aasFilePath, UriKind.RelativeOrAbsolute));
             ClearRelationshipAndPartFromPackagePart(originPart, SPEC_RELATIONSHIP_TYPE, partUri);
 
-            specPart = aasxPackage.CreatePart(partUri, GetContentType(aasEnvironmentFilePath), CompressionOption.Maximum);
+            specPart = _aasxPackage.CreatePart(partUri, GetContentType(aasEnvironmentFilePath), CompressionOption.Maximum);
             originPart.CreateRelationship(specPart.Uri, TargetMode.Internal, SPEC_RELATIONSHIP_TYPE);
 
             CopyFileToPackagePart(specPart, aasEnvironmentFilePath);
@@ -248,7 +292,7 @@ namespace BaSyx.Models.Export
                 throw new ArgumentNullException(nameof(environment));
 
             string aasIdName = aasId.Id;
-            foreach (char invalidChar in Path.GetInvalidFileNameChars())
+            foreach (char invalidChar in InvalidFileNameChars)
                 aasIdName = aasIdName.Replace(invalidChar, '_');
 
             string aasFilePath = AASX_FOLDER + "/" + aasIdName + "/" + aasIdName + ".aas." + exportType.ToString().ToLower();
@@ -256,7 +300,7 @@ namespace BaSyx.Models.Export
             Uri partUri = PackUriHelper.CreatePartUri(new Uri(aasFilePath, UriKind.RelativeOrAbsolute));
             ClearRelationshipAndPartFromPackagePart(originPart, SPEC_RELATIONSHIP_TYPE, partUri);
 
-            specPart = aasxPackage.CreatePart(partUri, GetContentType(aasFilePath), CompressionOption.Maximum);
+            specPart = _aasxPackage.CreatePart(partUri, GetContentType(aasFilePath), CompressionOption.Maximum);
             originPart.CreateRelationship(specPart.Uri, TargetMode.Internal, SPEC_RELATIONSHIP_TYPE);
 
             string environmentTemp = Path.GetRandomFileName() + "." + exportType.ToString().ToLower();
@@ -352,7 +396,7 @@ namespace BaSyx.Models.Export
                 else
                     contentType = GetContentType(filePath);
 
-                PackagePart packagePart = aasxPackage.CreatePart(uri, contentType, compressionOption);
+                PackagePart packagePart = _aasxPackage.CreatePart(uri, contentType, compressionOption);
                 specPart.CreateRelationship(packagePart.Uri, TargetMode.Internal, SUPPLEMENTAL_RELATIONSHIP_TYPE);
 
                 CopyFileToPackagePart(packagePart, filePath);
@@ -361,22 +405,32 @@ namespace BaSyx.Models.Export
 
         public void AddFileToAASX(string targetUri, string filePath, CompressionOption compressionOption = CompressionOption.Maximum)
         {
-            string relativeDestination;
-            if (!targetUri.StartsWith(AASX_FOLDER))
-                relativeDestination = AASX_FOLDER + targetUri;
-            else
-                relativeDestination = targetUri;
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                string contentType = GetContentType(filePath);
+                AddStreamToAASX(targetUri, fileStream, contentType, compressionOption);              
+            }
+        }
 
-            Uri uri = PackUriHelper.CreatePartUri(new Uri(relativeDestination, UriKind.Relative));
+        public void AddStreamToAASX(string targetUri, Stream stream, string contentType, CompressionOption compressionOption = CompressionOption.Maximum)
+        {
+            //string relativeDestination;
+            //if (!targetUri.StartsWith(AASX_FOLDER))
+            //    relativeDestination = AASX_FOLDER + targetUri;
+            //else
+            //    relativeDestination = targetUri;
 
-            ClearRelationshipAndPartFromPackagePart(specPart, SUPPLEMENTAL_RELATIONSHIP_TYPE, uri);
+            Uri uri = PackUriHelper.CreatePartUri(new Uri(targetUri, UriKind.Relative));//relativeDestination
 
-            string contentType = GetContentType(filePath);
+            ClearRelationshipAndPartFromPackagePart(specPart, SUPPLEMENTAL_RELATIONSHIP_TYPE, uri);         
 
-            PackagePart packagePart = aasxPackage.CreatePart(uri, contentType, compressionOption);
+            PackagePart packagePart = _aasxPackage.CreatePart(uri, contentType, compressionOption);
             specPart.CreateRelationship(packagePart.Uri, TargetMode.Internal, SUPPLEMENTAL_RELATIONSHIP_TYPE);
 
-            CopyFileToPackagePart(packagePart, filePath);
+            using (Stream destination = packagePart.GetStream())
+            {
+                stream.CopyTo(destination);
+            }
         }
 
         private void CopyStreamToPackagePart(PackagePart packagePart, Stream stream)
@@ -409,6 +463,14 @@ namespace BaSyx.Models.Export
             return contentType;
         }
 
+        private static char[] GetInvalidFileNameChars()
+        {
+            List<char> invalidChars = Path.GetInvalidPathChars().ToList();
+            invalidChars.Add('#');
+
+            return invalidChars.ToArray();
+        }
+
         #region IDisposable Support
         private bool disposedValue = false;
 
@@ -418,7 +480,7 @@ namespace BaSyx.Models.Export
             {
                 if (disposing)
                 {
-                    aasxPackage.Close();
+                    _aasxPackage.Close();
                 }
                 disposedValue = true;
             }
