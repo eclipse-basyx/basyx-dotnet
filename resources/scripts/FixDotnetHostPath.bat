@@ -1,1 +1,0 @@
-setx DOTNET_HOST_PATH %ProgramFiles%\dotnet\dotnet.exe
