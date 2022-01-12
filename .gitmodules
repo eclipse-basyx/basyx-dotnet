@@ -1,0 +1,12 @@
+[submodule "basyx-dotnet-applications"]
+	path = basyx-dotnet-applications
+	url = https://github.com/eclipse-basyx/basyx-dotnet-applications.git
+[submodule "basyx-dotnet-examples"]
+	path = basyx-dotnet-examples
+	url = https://github.com/eclipse-basyx/basyx-dotnet-examples.git
+[submodule "basyx-dotnet-components"]
+	path = basyx-dotnet-components
+	url = https://github.com/eclipse-basyx/basyx-dotnet-components.git
+[submodule "basyx-dotnet-sdk"]
+	path = basyx-dotnet-sdk
+	url = https://github.com/eclipse-basyx/basyx-dotnet-sdk.git
