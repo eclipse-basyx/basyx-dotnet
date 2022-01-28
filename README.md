@@ -1,26 +1,17 @@
-﻿# Welcome to basyx
-In this repository you'll find the entire .NET stack of the BaSyx SDK.
+﻿# Welcome to basyx-dotnet!
 
-## Build
-1. Execute **Setup_BaSyx_NuGet_Repo.bat** only once and for all
-2. Code as you wish, if you like to modify or extend the functionalities of the SDK
-3. Execute **Build_BaSyx.bat** to build the entire SDK. 
+This is the main repository to start working with the BaSyx .NET SDK.
 
-It will generate NuGet Packages under the folder created in Setup_BaSyx_NuGet_Repo.bat called **basyx-packages**. Those packages are now available in the NuGet Package Manager in Visual Studio and to the dotnet CLI as NuGet source.
+The entire .NET SDK structured in 4 Git submodules:
+- [basyx-dotnet-sdk](https://github.com/eclipse-basyx/basyx-dotnet-sdk): Contains all the core libraries to build everything from scratch
+- [basyx-dotnet-components](https://github.com/eclipse-basyx/basyx-dotnet-components): Built on top of the core libraries providing more high-level components as well as various client and server libraries
+- [basyx-dotnet-applications](https://github.com/eclipse-basyx/basyx-dotnet-applications): Off-the-shelf components ready to be used or deployed in any sceneraio
+- [basyx-dotnet-examples](https://github.com/eclipse-basyx/basyx-dotnet-examples): Example solution to how everything workds
 
-## Use
-Cannot be easier - just use the NuGet Packages in Visual Studio. Don't forget to  initialize the NuGet package source with the help of **Setup_BaSyx_NuGet_Repo.bat**
+# Setup
 
-## Troubleshoot
-Sometimes or even more than sometimes Visual Studio uses still the old NuGet package version (if the version number is not incremented). Execute **Clear_Local_BaSyx_NuGet_Cache.bat** to solve that issue - it clears the local NuGet cache in your user's directory.
+## NuGet Package
+All tagged/released packages are available as NuGet packages on nuget.org and can be installed via NuGet Package Manager within Visual Studio.
 
-## Use Docker
-1.	Create a publish output via Visual Studio erzeugen via cmd and dotnet publish
-2.	Copy the content into a folder, e.g. basyxregistry
-3.	Use a Dockerfile with following content:
-		**FROM mcr.microsoft.com/dotnet/aspnet:3.1
-		EXPOSE 4999
-		COPY /basyxregistry .
-		ENTRYPOINT ["dotnet", "BaSyx.Registry.Server.Http.App.dll"]**
-4.	docker build -t basyxregistry .
-5.	docker run -d -p 4999:4999 -t basyxregistry
+## Build NuGet Packages on your own
+In order to build your own Nuget packages and use them in your project with the newest commits on the main-branch. Just execute **Setup_BaSyx.bat** and **Build_BaSyx.bat**. Make your Visual Studio is closed for the first time you run these scripts. It will add a new folder **basyx-dotnet-nuget-packages** and add this folder as Nuget package source to the system. To build the packages in Visual Studio don't forget to change the Solution Configuration to *Release*.
