@@ -2,7 +2,7 @@
 
 This is the main repository to start working with the BaSyx .NET SDK.
 
-The entire .NET SDK structured in 4 Git submodules:
+The entire .NET SDK is structured in 4 seperate Git submodules:
 - [basyx-dotnet-sdk](https://github.com/eclipse-basyx/basyx-dotnet-sdk): Contains all the core libraries to build everything from scratch
 - [basyx-dotnet-components](https://github.com/eclipse-basyx/basyx-dotnet-components): Built on top of the core libraries providing more high-level components as well as various client and server libraries
 - [basyx-dotnet-applications](https://github.com/eclipse-basyx/basyx-dotnet-applications): Off-the-shelf components ready to be used or deployed in any sceneraio
