@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Utils.DependencyInjec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Utils.DependencyInjection.Abstractions", "basyx-dotnet-sdk\BaSyx.Utils.DependencyInjection.Abstractions\BaSyx.Utils.DependencyInjection.Abstractions.csproj", "{B803E954-C974-493F-AA8D-55CCB8FF207A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9C2F7BA7-CAAA-4462-8B1B-029D12648221}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{355B90BE-8EF1-4803-84AA-C6AF306E3577}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.AAS.Client.Http", "basyx-dotnet-components\BaSyx.AAS.Client.Http\BaSyx.AAS.Client.Http.csproj", "{F124F0B4-D56F-4472-9E6D-803D954F13BD}"
@@ -72,8 +70,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Registry.Server.Http.App", "basyx-dotnet-applications\BaSyx.Registry.Server.Http.App\BaSyx.Registry.Server.Http.App.csproj", "{17346729-FBE0-45CD-B721-5844F9DCCF32}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.WebUI", "basyx-dotnet-applications\BaSyx.WebUI\BaSyx.WebUI.csproj", "{39C73A2D-B6E4-4979-9A38-6C3F7C1A5B6C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstructionManager", "..\..\..\..\SocialCoding\basyx-pcp\InstructionManager\InstructionManager.csproj", "{C55274D0-79A5-4E36-9750-172E9E446885}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -201,10 +197,6 @@ Global
 		{39C73A2D-B6E4-4979-9A38-6C3F7C1A5B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39C73A2D-B6E4-4979-9A38-6C3F7C1A5B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39C73A2D-B6E4-4979-9A38-6C3F7C1A5B6C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C55274D0-79A5-4E36-9750-172E9E446885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C55274D0-79A5-4E36-9750-172E9E446885}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C55274D0-79A5-4E36-9750-172E9E446885}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C55274D0-79A5-4E36-9750-172E9E446885}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -240,7 +232,6 @@ Global
 		{2D306FC3-C852-4EA2-8CA0-6CACD141465C} = {72EFDB7E-5698-40E0-8E43-D4DB75F679B9}
 		{17346729-FBE0-45CD-B721-5844F9DCCF32} = {72EFDB7E-5698-40E0-8E43-D4DB75F679B9}
 		{39C73A2D-B6E4-4979-9A38-6C3F7C1A5B6C} = {72EFDB7E-5698-40E0-8E43-D4DB75F679B9}
-		{C55274D0-79A5-4E36-9750-172E9E446885} = {9C2F7BA7-CAAA-4462-8B1B-029D12648221}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B028A9A2-E37C-44AF-8032-C8F0492BDB00}
