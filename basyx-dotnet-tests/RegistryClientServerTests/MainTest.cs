@@ -1,4 +1,5 @@
 using BaSyx.API.Clients;
+using BaSyx.API.Interfaces;
 using BaSyx.Models.AdminShell;
 using BaSyx.Models.Connectivity;
 using BaSyx.Registry.Client.Http;
@@ -8,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SimpleAssetAdministrationShell;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RegistryClientServerTests
 {
@@ -224,6 +226,66 @@ namespace RegistryClientServerTests
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(SubmodelDescriptor);
             return result;
+        }
+
+        public Task<IResult<IAssetAdministrationShellDescriptor>> CreateAssetAdministrationShellRegistrationAsync(IAssetAdministrationShellDescriptor aasDescriptor)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).CreateAssetAdministrationShellRegistrationAsync(aasDescriptor);
+        }
+
+        public Task<IResult<IAssetAdministrationShellDescriptor>> UpdateAssetAdministrationShellRegistrationAsync(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).UpdateAssetAdministrationShellRegistrationAsync(aasIdentifier, aasDescriptor);
+        }
+
+        public Task<IResult<IAssetAdministrationShellDescriptor>> RetrieveAssetAdministrationShellRegistrationAsync(string aasIdentifier)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAssetAdministrationShellRegistrationAsync(aasIdentifier);
+        }
+
+        public Task<IResult<IQueryableElementContainer<IAssetAdministrationShellDescriptor>>> RetrieveAllAssetAdministrationShellRegistrationsAsync()
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAllAssetAdministrationShellRegistrationsAsync();
+        }
+
+        public Task<IResult<IQueryableElementContainer<IAssetAdministrationShellDescriptor>>> RetrieveAllAssetAdministrationShellRegistrationsAsync(Predicate<IAssetAdministrationShellDescriptor> predicate)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAllAssetAdministrationShellRegistrationsAsync(predicate);
+        }
+
+        public Task<IResult> DeleteAssetAdministrationShellRegistrationAsync(string aasIdentifier)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).DeleteAssetAdministrationShellRegistrationAsync(aasIdentifier);
+        }
+
+        public Task<IResult<ISubmodelDescriptor>> CreateSubmodelRegistrationAsync(string aasIdentifier, ISubmodelDescriptor submodelDescriptor)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).CreateSubmodelRegistrationAsync(aasIdentifier, submodelDescriptor);
+        }
+
+        public Task<IResult<ISubmodelDescriptor>> UpdateSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).UpdateSubmodelRegistrationAsync(aasIdentifier, submodelIdentifier, submodelDescriptor);
+        }
+
+        public Task<IResult<IQueryableElementContainer<ISubmodelDescriptor>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAllSubmodelRegistrationsAsync(aasIdentifier);
+        }
+
+        public Task<IResult<IQueryableElementContainer<ISubmodelDescriptor>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier, Predicate<ISubmodelDescriptor> predicate)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAllSubmodelRegistrationsAsync(aasIdentifier, predicate);
+        }
+
+        public Task<IResult<ISubmodelDescriptor>> RetrieveSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).RetrieveSubmodelRegistrationAsync(aasIdentifier, submodelIdentifier);
+        }
+
+        public Task<IResult> DeleteSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier)
+        {
+            return ((IAssetAdministrationShellRegistryClient)Client).DeleteSubmodelRegistrationAsync(aasIdentifier, submodelIdentifier);
         }
     }
 }
