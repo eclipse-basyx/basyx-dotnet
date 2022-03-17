@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29418.71
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.API", "basyx-dotnet-sdk\BaSyx.API\BaSyx.API.csproj", "{6A4400EF-FA60-43E6-92BF-B02505ADF7D7}"
 EndProject
@@ -73,13 +73,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleSubmodel", "basyx-dot
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4FBBD33F-2754-494E-BDDA-4D200EFAE28F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubmodelClientServerTests", "basyx-dotnet-tests\SubmodelClientServerTests\SubmodelClientServerTests.csproj", "{76271A24-E411-4905-81A2-901016FC54C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubmodelClientServerTests", "basyx-dotnet-tests\SubmodelClientServerTests\SubmodelClientServerTests.csproj", "{76271A24-E411-4905-81A2-901016FC54C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaSyx.Tests.Common", "basyx-dotnet-tests\BaSyx.Tests.Common\BaSyx.Tests.Common.csproj", "{87359450-D615-4F84-890C-BA6A7EDD49DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Tests.Common", "basyx-dotnet-tests\BaSyx.Tests.Common\BaSyx.Tests.Common.csproj", "{87359450-D615-4F84-890C-BA6A7EDD49DF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Discovery.mDNS.Forwarder", "basyx-dotnet-applications\BaSyx.Discovery.mDNS.Forwarder\BaSyx.Discovery.mDNS.Forwarder.csproj", "{35F0F673-C3CA-47C1-88FB-79B588E0150A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegistryClientServerTests", "basyx-dotnet-tests\RegistryClientServerTests\RegistryClientServerTests.csproj", "{EA84E2C5-4DE6-4FE4-A20E-FED7514E5238}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminShellClientServerTests", "basyx-dotnet-tests\AdminShellClientServerTests\AdminShellClientServerTests.csproj", "{93B708E6-537D-4AF7-863D-E3A33156FCE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -223,6 +225,10 @@ Global
 		{EA84E2C5-4DE6-4FE4-A20E-FED7514E5238}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA84E2C5-4DE6-4FE4-A20E-FED7514E5238}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA84E2C5-4DE6-4FE4-A20E-FED7514E5238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93B708E6-537D-4AF7-863D-E3A33156FCE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93B708E6-537D-4AF7-863D-E3A33156FCE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93B708E6-537D-4AF7-863D-E3A33156FCE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93B708E6-537D-4AF7-863D-E3A33156FCE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -262,6 +268,7 @@ Global
 		{87359450-D615-4F84-890C-BA6A7EDD49DF} = {4FBBD33F-2754-494E-BDDA-4D200EFAE28F}
 		{35F0F673-C3CA-47C1-88FB-79B588E0150A} = {72EFDB7E-5698-40E0-8E43-D4DB75F679B9}
 		{EA84E2C5-4DE6-4FE4-A20E-FED7514E5238} = {4FBBD33F-2754-494E-BDDA-4D200EFAE28F}
+		{93B708E6-537D-4AF7-863D-E3A33156FCE8} = {4FBBD33F-2754-494E-BDDA-4D200EFAE28F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B028A9A2-E37C-44AF-8032-C8F0492BDB00}
