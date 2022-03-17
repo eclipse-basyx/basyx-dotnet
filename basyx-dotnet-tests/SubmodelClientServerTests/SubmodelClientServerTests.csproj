@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
-    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.AAS.Server.Http\BaSyx.AAS.Server.Http.csproj" />
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Submodel.Server.Http\BaSyx.Submodel.Server.Http.csproj" />
   </ItemGroup>
 

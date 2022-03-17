@@ -25,7 +25,7 @@ namespace SubmodelClientServerTests
                }
             };
             SubmodelHttpServer submodelServer = new SubmodelHttpServer(settings);
-            Submodel testSubmodel = TestSubmodel.GetSubmodel("FirstSubmodel");
+            Submodel testSubmodel = TestSubmodel.GetSubmodel("TestSubmodel");
             ISubmodelServiceProvider submodelServiceProvider = testSubmodel.CreateServiceProvider();
             submodelServer.SetServiceProvider(submodelServiceProvider);
             submodelServiceProvider.UseAutoEndpointRegistration(settings.ServerConfig);
