@@ -1,4 +1,14 @@
-﻿using BaSyx.AAS.Server.Http;
+﻿/*******************************************************************************
+* Copyright (c) 2022 Bosch Rexroth AG
+* Author: Constantin Ziesche (constantin.ziesche@bosch.com)
+*
+* This program and the accompanying materials are made available under the
+* terms of the MIT License which is available at
+* https://github.com/eclipse-basyx/basyx-dotnet/blob/main/LICENSE
+*
+* SPDX-License-Identifier: MIT
+*******************************************************************************/
+using BaSyx.AAS.Server.Http;
 using BaSyx.API.ServiceProvider;
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.Settings;
@@ -23,7 +33,7 @@ namespace AdminShellClientServerTests
                }
             };
             AssetAdministrationShellHttpServer aasServer = new AssetAdministrationShellHttpServer(settings);
-            AssetAdministrationShell testShell = TestAssetAdministrationShell.GetAssetAdministrationShell();
+            AssetAdministrationShell testShell = TestAssetAdministrationShell.GetAssetAdministrationShell("MainAdminShell");
             Submodel mainSubmodel = TestSubmodel.GetSubmodel("MainSubmodel");
             testShell.Submodels.Add(mainSubmodel);
             IAssetAdministrationShellServiceProvider aasServiceProvider = testShell.CreateServiceProvider(true);

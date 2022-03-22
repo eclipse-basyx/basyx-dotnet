@@ -1,3 +1,13 @@
+/*******************************************************************************
+* Copyright (c) 2022 Bosch Rexroth AG
+* Author: Constantin Ziesche (constantin.ziesche@bosch.com)
+*
+* This program and the accompanying materials are made available under the
+* terms of the MIT License which is available at
+* https://github.com/eclipse-basyx/basyx-dotnet/blob/main/LICENSE
+*
+* SPDX-License-Identifier: MIT
+*******************************************************************************/
 using BaSyx.API.Clients;
 using BaSyx.API.Interfaces;
 using BaSyx.Models.AdminShell;
@@ -36,7 +46,7 @@ namespace RegistryClientServerTests
             };
             Client = new RegistryHttpClient(Settings);
 
-            Shell = TestAssetAdministrationShell.GetAssetAdministrationShell();
+            Shell = TestAssetAdministrationShell.GetAssetAdministrationShell("MainAdminShell");
             ShellDescriptor = new AssetAdministrationShellDescriptor(Shell, new List<IEndpoint>() { new HttpEndpoint("http://localhost:5080/aas") });
 
             Submodel = TestSubmodel.GetSubmodel("TestSubmodel");
