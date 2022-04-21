@@ -23,7 +23,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
-using BaSyx.Submodel.Client.Http;
+using BaSyx.Clients.AdminShell.Http;
+using BaSyx.Models.Connectivity;
 
 namespace SubmodelRepoClientServerTests
 {
@@ -35,6 +36,9 @@ namespace SubmodelRepoClientServerTests
 
         private static SubmodelHttpClient Client;
         private static SubmodelRepositoryHttpClient RepoClient;
+
+        public IEndpoint Endpoint => ((IClient)RepoClient).Endpoint;
+
         static MainTest()
         {
             Server.Run();

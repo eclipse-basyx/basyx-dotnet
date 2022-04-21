@@ -8,7 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.AAS.Client.Http;
+using BaSyx.Clients.AdminShell.Http;
 using BaSyx.API.Clients;
 using BaSyx.API.Interfaces;
 using BaSyx.Models.AdminShell;
@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BaSyx.Models.Connectivity;
 
 namespace AdminShellClientServerTests
 {
@@ -32,6 +33,9 @@ namespace AdminShellClientServerTests
         private static AssetAdministrationShell AdminShell;
 
         private static AssetAdministrationShellHttpClient Client;
+
+        public IEndpoint Endpoint => ((IClient)Client).Endpoint;
+
         static MainTest()
         {
             Server.Run();   

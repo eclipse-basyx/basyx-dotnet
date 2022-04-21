@@ -8,7 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.AAS.Client.Http;
+using BaSyx.Clients.AdminShell.Http;
 using BaSyx.API.Clients;
 using BaSyx.API.Http;
 using BaSyx.API.Interfaces;
@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
+using BaSyx.Models.Connectivity;
 
 namespace AdminShellRepoClientServerTests
 {
@@ -35,6 +36,9 @@ namespace AdminShellRepoClientServerTests
 
         private static AssetAdministrationShellHttpClient Client;
         private static AssetAdministrationShellRepositoryHttpClient RepoClient;
+
+        public IEndpoint Endpoint => ((IClient)RepoClient).Endpoint;
+
         static MainTest()
         {
             Server.Run();

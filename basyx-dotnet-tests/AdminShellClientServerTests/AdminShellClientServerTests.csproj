@@ -22,11 +22,11 @@
   </ItemGroup>
 
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
-    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.AAS.Server.Http\BaSyx.AAS.Server.Http.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Clients.Http\BaSyx.Clients.Http.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.AAS.Client.Http\BaSyx.AAS.Client.Http.csproj" />
+  <ItemGroup>   
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Servers.Http\BaSyx.Servers.Http.csproj" />   
     <ProjectReference Include="..\BaSyx.Tests.Common\BaSyx.Tests.Common.csproj" />
   </ItemGroup>
 

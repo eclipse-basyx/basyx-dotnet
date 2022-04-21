@@ -10,7 +10,7 @@
 *******************************************************************************/
 using BaSyx.API.ServiceProvider;
 using BaSyx.Models.AdminShell;
-using BaSyx.Submodel.Server.Http;
+using BaSyx.Servers.AdminShell.Http;
 using BaSyx.Utils.Settings;
 using SimpleAssetAdministrationShell;
 using System.Collections.Generic;

@@ -11,7 +11,7 @@
 using BaSyx.API.Clients;
 using BaSyx.Models.AdminShell;
 using BaSyx.Models.Extensions;
-using BaSyx.Submodel.Client.Http;
+using BaSyx.Clients.AdminShell.Http;
 using BaSyx.Utils.ResultHandling;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BaSyx.Models.Connectivity;
 
 namespace SubmodelClientServerTests
 {
@@ -30,6 +31,9 @@ namespace SubmodelClientServerTests
         private static Submodel Submodel;
 
         private static SubmodelHttpClient Client;
+
+        public IEndpoint Endpoint => ((IClient)Client).Endpoint;
+
         static MainTest()
         {
             Server.Run();
