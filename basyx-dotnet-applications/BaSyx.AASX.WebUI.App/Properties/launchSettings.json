@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "BaSyx.AASX.WebUI.App": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:56797;http://localhost:56805"
+    }
+  }
+}

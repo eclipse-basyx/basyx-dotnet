@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BaSyx.API.Http.Controllers.AASX</name>
+    </assembly>
+    <members>
+        <member name="T:BaSyx.API.Http.Controllers.PackageService.FileServerController">
+            <summary>
+            The File Server Controller Controller
+            </summary>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.FileServerController.#ctor(BaSyx.API.ServiceProvider.IFileServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            Constructor for the File Server Controller
+            </summary>
+            <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
+            <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.FileServerController.GetAllAASXPackageIds">
+            <summary>
+            Returns a list of available AASX packages at the server
+            </summary>
+            <returns>Requested package list</returns>
+            <response code="200"></response>     
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.FileServerController.PostAASXPackage(System.Collections.Generic.List{System.String},Microsoft.AspNetCore.Http.IFormFile,System.String)">
+            <summary>
+            Stores the AASX package at the server
+            </summary>
+            <returns>Package Description</returns>
+            <response code="200"></response>     
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.FileServerController.GetAASXByPackageId(System.String)">
+            <summary>
+            Returns a specific AASX package from the server
+            </summary>
+            <returns>Requested AASX package</returns>
+            <response code="200"></response>     
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.FileServerController.PutAASXByPackageId(System.String)">
+            <summary>
+            Updates the AASX package at the server
+            </summary>
+            <returns></returns>
+            <response code="204"></response>     
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.FileServerController.DeleteAASXByPackageId(System.String)">
+            <summary>
+            Deletes a specific AASX package from the server
+            </summary>
+            <returns></returns>
+            <response code="204"></response>     
+        </member>
+        <member name="T:BaSyx.API.Http.Controllers.PackageService.PackageController">
+            <summary>
+            The AASX Package Controller
+            </summary>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.PackageController.#ctor(BaSyx.API.ServiceProvider.IServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            Constructor for the AASX Package Controller
+            </summary>
+            <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
+            <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.PackageController.GetAASXPackage">
+            <summary>
+            Retrieves the full AASX package for a single Asset Administration Shell
+            </summary>
+            <returns>AASX Package as download</returns>
+            <response code="200">Success</response>     
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.PackageController.GetThumbnail">
+            <summary>
+            Returns the thumbnail of the AASX package
+            </summary>
+            <returns>AASX Package as download</returns>
+            <response code="200">Success</response>     
+        </member>
+        <member name="T:BaSyx.API.Http.Controllers.PackageService.SerializationController">
+            <summary>
+            The Serialization Controller
+            </summary>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.SerializationController.#ctor(BaSyx.API.ServiceProvider.IServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            Constructor for the Serialization Controller
+            </summary>
+            <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
+            <param name="environment">The Hosting Environment provided by the dependency injection</param>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.SerializationController.GenerateSerializationByIds(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Boolean)">
+            <summary>
+            Returns an appropriate serialization based on the specified format (see SerializationFormat)
+            </summary>
+            <param name="aasIds">The Asset Administration Shells' unique ids (BASE64-URL-encoded)</param>
+            <param name="submodelIds">The Submodels' unique ids (BASE64-URL-encoded)</param>
+            <param name="includeConceptDescriptions">Include Concept Descriptions?</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,28 @@
+﻿@page
+@model BaSyx.Common.UI.Pages.SubmodelModel
+@using BaSyx.API.Http
+@using BaSyx.API.ServiceProvider;
+@using BaSyx.Models.AdminShell;
+@using BaSyx.Utils.Settings;
+
+@{
+    ISubmodelServiceProvider sp = Model.ServiceProvider;
+    ServerSettings settings = Model.Settings;
+    ISubmodel submodel = sp.GetBinding();
+
+    ViewData["Title"] = settings.UIConfig?.Title ?? submodel.IdShort;
+    ViewData["ApiRoot"] = SubmodelRoutes.SUBMODEL;
+    ViewData["ApiType"] = "Submodel";
+    ViewData["aasId"] = string.Empty;
+}
+
+
+<div class="starter-template">
+    <h1>@submodel.IdShort - Submodel UI</h1>
+    <p class="lead">Generic UI to discover the Submodel </p>
+</div>
+
+@await Html.PartialAsync("_Submodel", submodel)
+
+
+

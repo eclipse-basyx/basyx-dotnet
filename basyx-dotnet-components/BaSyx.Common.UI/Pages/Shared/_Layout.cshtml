@@ -1,0 +1,97 @@
+﻿@using BaSyx.Utils.Settings;
+@{
+    string pathBase = string.Empty;
+    if (ViewData.ContainsKey("PathBase"))
+    {
+        pathBase = (string)ViewData["PathBase"];
+    }
+
+    string AddPathBase(string url)
+    {
+        if (!string.IsNullOrEmpty(pathBase) && !url.Contains(pathBase))
+            url = pathBase + url;
+        return url;
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="icon" type="image/png" href="@pathBase/favicon.png" />
+    <link rel="stylesheet" href="@AddPathBase("/lib/bootstrap/dist/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@AddPathBase("/lib/bootstrap/dist/css/bootstrap4-toggle.min.css")" />
+    <link rel="stylesheet" href="@AddPathBase("/lib/fontawesome/css/all.css")" />
+    <link rel="stylesheet" href="@AddPathBase("/css/site.css")" />       
+</head>
+<body>
+    <header id="basyx_ui_header">
+        <nav id="basyx_ui_navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#"><img src="@AddPathBase("/images/basyxlogo.png")" width="200" /></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/eclipse-basyx/basyx-dotnet/blob/part2_api/LICENSE">License</a>
+                    </li>
+                    @if (ViewData.TryGetValue<string>("ApiRoot", out string apiRoot))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@AddPathBase(apiRoot)">REST-API</a>
+                        </li>
+                    }
+                    @if (ViewData.TryGetValue<List<Link>>("Links", out List<Link> links) && links?.Count > 0)
+                    {
+                        foreach (var link in links)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@AddPathBase(link.Url)">@link.Name</a>
+                            </li>
+                        }
+                    }
+                </ul>
+                @if(ViewData.TryGetValue<string>("CompanyLogo", out string clPath) && !string.IsNullOrEmpty(clPath))
+                {
+                    <div class="order-sm-last">
+                        <img src="@AddPathBase(clPath)" style="max-height:40px" />
+                    </div>
+                }
+                @*<form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                *@
+            </div>
+        </nav>
+    </header>
+
+    <div id="basyx_ui_main_container" class="container">
+        @RenderBody()
+    </div>
+
+    <footer id="basyx_ui_footer" class="border-top footer text-muted">
+        <div class="container">
+            &copy; Bosch Rexroth AG 2022
+        </div>
+    </footer>
+
+    <script src="@AddPathBase("/lib/jquery/dist/jquery.min.js")"></script>
+    <script src="@AddPathBase("/lib/bootstrap/dist/js/bootstrap4-toggle.min.js")"></script>
+    <script src="@AddPathBase("/lib/bootstrap/dist/js/bootstrap.bundle.min.js")"></script>
+    <script src="@AddPathBase("/js/basyx.js")"></script>
+
+    @if (ViewData.TryGetValue<bool>("BlazorSupportEnabled", out bool bsa) && bsa)
+    {
+        <script src="@AddPathBase("/_framework/blazor.server.js")"></script>
+    }
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

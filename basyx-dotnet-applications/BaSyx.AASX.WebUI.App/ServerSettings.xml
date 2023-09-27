@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ServerConfig>
+    <Hosting>
+      <!-- The ASP.NET Core hosting environment. -->
+      <Environment>Development</Environment>
+      <!-- The ContentPath determines the relative path to where your web resources are located. You need a folder named like this in the root of your project. -->
+      <ContentPath>Content</ContentPath>
+      <!-- The URLs on which your server is accessible -->
+      <Urls>
+        <Url>http://+:5079</Url>
+		    <!-- https can be used as well but don't forget to consider certicates (e.g. dotnet developer certificates) -->
+        <!-- <Url>https://+:5479</Url> -->
+      </Urls>
+    </Hosting>
+    <!-- The DefaultRoute of the server navigates /ui if the following element is left empty. You need that only in special cases. -->
+    <DefaultRoute/>
+  </ServerConfig>
+  <!-- Add whatever you like for later user -->
+  <Miscellaneous>
+    <!-- CompanyLogo is reserved for the optional Web-UI. Starting the path with /files you can access the ContentPath defined above. -->
+    <CompanyLogo>/images/MyCompanyLogo.png</CompanyLogo>
+  </Miscellaneous>
+</ServerSettings>

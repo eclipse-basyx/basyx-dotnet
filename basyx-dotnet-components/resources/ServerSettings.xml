@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ServerConfig>
+    <Hosting>
+      <!-- The ASP.NET Core hosting environment -->
+      <Environment>Development</Environment>
+      <!-- Determines the relative path where your web resources are located. Therefore you need a folder in the root of your project/output -->
+      <ContentPath>Content</ContentPath>
+      <!-- URLs where the server is accessible -->
+      <Urls>
+        <Url>http://+:5080</Url>
+        <!-- https can be used as well but don't forget to consider certificates (e.g. at least dotnet developer certificates) -->
+        <!-- <Url>https://+:5443</Url> -->
+      </Urls>
+    </Hosting>
+    <!-- Security configuration -->
+    <Security>
+      <!-- Path to the server certificate (e.g. .pfx file) -->
+      <ServerCertificatePath/>
+      <!-- Password for the certificate -->
+      <ServerCertificatePassword/>
+    </Security>
+    <!-- Default route of the server, e.g. /ui if BaSys Common UI is used -->
+    <DefaultRoute/>
+  </ServerConfig>
+  <!-- Optional Web-UI configuration -->
+  <UIConfig>
+    <!-- If the path start with /files you can access the ContentPath defined above. -->
+    <CompanyLogo>/images/MyCompanyLogo.png</CompanyLogo>
+    <Title>BaSyx Registry</Title>
+    <Links>
+      <Link name="Swagger-Doc" href="/swagger"/>
+    </Links>
+  </UIConfig>
+  <!-- Add whatever you like for later use in your code -->
+  <Miscellaneous/>
+</ServerSettings>

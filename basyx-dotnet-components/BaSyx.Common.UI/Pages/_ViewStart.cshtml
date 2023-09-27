@@ -1,0 +1,33 @@
+﻿@using BaSyx.Utils.Settings;
+@inject ServerSettings settings;
+@{    
+    if (settings.UIConfig != null)
+    {
+        if (settings.UIConfig.Links?.Count > 0)
+        {
+            ViewData.Add("Links", settings.UIConfig.Links);
+        }
+        if (settings.UIConfig.BlazorSupportEnabled.HasValue)
+        {
+            ViewData.Add("BlazorSupportEnabled", settings.UIConfig.BlazorSupportEnabled.Value);
+        }
+        if (!string.IsNullOrEmpty(settings.UIConfig.CompanyLogo))
+        {
+            ViewData.Add("CompanyLogo", settings.UIConfig.CompanyLogo);
+        }
+        else if (settings.Miscellaneous.TryGetValue("CompanyLogo", out string companyLogoPath))
+        {
+            ViewData.Add("CompanyLogo", companyLogoPath);
+        }
+        if (!string.IsNullOrEmpty(settings.UIConfig.Title))
+        {
+            ViewData.Add("Title", settings.UIConfig.Title);
+        }
+    }
+    if (!string.IsNullOrEmpty(settings.ServerConfig.PathBase))
+    {
+        ViewData.Add("PathBase", settings.ServerConfig.PathBase);
+    }
+
+    Layout = "_Layout";
+}

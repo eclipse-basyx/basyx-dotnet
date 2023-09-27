@@ -1,0 +1,28 @@
+﻿@model IReference
+@using BaSyx.Models.AdminShell
+@using BaSyx.Models.Extensions
+
+@if (Model?.First?.Value != null)
+{
+    string eClassLink = "https://www.eclasscontent.com/index.php?action=cc2prdet&language=en&version=11.1&id=&pridatt=";
+    <li class="list-group-item">
+        <div class="row align-items-center">
+            <div class="col-sm-2"><b>SemanticId</b></div>
+            @if (Model.IsEClassReference())
+            {
+                {
+                    string link = eClassLink + Uri.EscapeDataString(Model.First.Value);
+                    <div class="col-sm-10"><a target="_blank" href="@link">@Model.First.Value (eCl@ss)</a></div>
+                }
+            }
+            else if (Model.IsIsoReference())
+            {
+                <div class="col-sm-10">@Model.First.Value (CDD)</div>
+            }
+            else
+            {
+                <div class="col-sm-10">@Model.ToStandardizedString()</div>
+            }
+        </div>
+    </li>
+}

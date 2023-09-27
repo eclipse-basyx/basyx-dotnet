@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="RegistryClientSettings.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="RegistryClientSettings.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Discovery.mDNS\BaSyx.Discovery.mDNS.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.Client.Http\BaSyx.Registry.Client.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
+    <PackageReference Include="BaSyx.Discovery.mDNS" Version="2.0.0-alpha.3" />
+    <PackageReference Include="BaSyx.Registry.Client.Http" Version="2.0.0-alpha.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+  </ItemGroup>
+
+</Project>

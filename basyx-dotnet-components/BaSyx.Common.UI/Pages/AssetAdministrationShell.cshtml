@@ -1,0 +1,50 @@
+﻿@page
+@model BaSyx.Common.UI.Pages.AssetAdministrationShellModel
+@using BaSyx.API.Http
+@using BaSyx.API.ServiceProvider;
+@using BaSyx.Models.AdminShell;
+@using BaSyx.Utils.Settings;
+
+@{
+    IAssetAdministrationShellServiceProvider sp = Model.ServiceProvider;
+    ServerSettings settings = Model.Settings;
+
+    IEnumerable<ISubmodelServiceProvider> submodelServiceProviders = null;
+    var retrievedSubmodelServiceProvider = sp.SubmodelProviderRegistry.GetSubmodelServiceProviders();
+    if (retrievedSubmodelServiceProvider.Success && retrievedSubmodelServiceProvider.Entity != null)
+    {
+        submodelServiceProviders = retrievedSubmodelServiceProvider.Entity;
+    }
+
+    IAssetAdministrationShell aas = sp.GetBinding();
+    if (aas.AssetInformation != null && aas.AssetInformation.DefaultThumbnail != null)
+    {
+        ViewData["Thumbnail"] = aas.AssetInformation.DefaultThumbnail;
+    }
+
+    ViewData["Title"] = settings.UIConfig?.Title ?? aas.IdShort;
+    ViewData["ApiRoot"] = AssetAdministrationShellRoutes.AAS;
+    ViewData["ApiType"] = "AssetAdministrationShell";
+    ViewData["aasId"] = aas.Identification.Id;
+}
+
+
+<div class="starter-template">
+    <h1>@aas.IdShort - Asset Administration Shell UI</h1>
+    <p class="lead">Generic UI to discover the Asset Administration Shell </p>
+</div>
+
+@await Html.PartialAsync("_AssetAdministrationShell", aas)
+
+@await Html.PartialAsync("_Asset", aas.Asset, ViewData)
+
+@if (submodelServiceProviders?.Count() > 0)
+{
+    foreach (var submodelServiceProvider in submodelServiceProviders)
+    {
+        ISubmodel submodel = submodelServiceProvider.GetBinding();
+        @await Html.PartialAsync("_Submodel", submodel)
+    }
+}
+
+

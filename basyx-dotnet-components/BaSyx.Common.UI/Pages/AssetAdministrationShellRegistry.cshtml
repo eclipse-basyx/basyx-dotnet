@@ -1,0 +1,153 @@
+﻿@page
+@model BaSyx.Common.UI.Pages.AssetAdministrationShellRegistryModel
+@using BaSyx.API.Http
+@using BaSyx.API.Interfaces;
+@using BaSyx.Models.Connectivity;
+@using BaSyx.Models.AdminShell;
+@using BaSyx.Utils.Settings;
+@using System.Security.Cryptography;
+@using System.Text;
+@using System.Text.RegularExpressions;
+
+@{
+    IAssetAdministrationShellRegistryInterface registry = Model.ServiceProvider;
+    ServerSettings settings = Model.Settings;
+
+    IEnumerable<IAssetAdministrationShellDescriptor> shellsDescriptors = null;
+    var retrievedShellDescriptors = registry.RetrieveAllAssetAdministrationShellRegistrations();
+    if (retrievedShellDescriptors.Success && retrievedShellDescriptors.Entity != null)
+    {
+        shellsDescriptors = retrievedShellDescriptors.Entity;
+    }
+
+    ViewData["Title"] = settings.UIConfig?.Title ?? "BaSyx Registry UI";
+    ViewData["ApiRoot"] = AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTORS;
+}
+
+@functions
+    {
+
+    private static string GetHashString(string input)
+    {
+        SHA256 shaAlgorithm = SHA256.Create();
+        byte[] data = Encoding.UTF8.GetBytes(input);
+
+        byte[] bHash = shaAlgorithm.ComputeHash(data);
+
+        string hashString = string.Empty;
+        for (int i = 0; i < bHash.Length; i++)
+        {
+            hashString += bHash[i].ToString("x2");
+        }
+        var output = Regex.Replace(hashString, @"[\d-]", string.Empty);
+        return output;
+    }
+}
+
+
+<div class="starter-template">
+    <h1>Asset Administration Shell Registry UI</h1>
+    <p class="lead">Generic UI to discover the Asset Administration Shell Registry</p>
+</div>
+
+@if (shellsDescriptors?.Count() > 0)
+{
+    foreach (var aas in shellsDescriptors)
+    {
+        <div class="card border-dark mb-3">
+            <div class="card-header bg-dark">
+                <h4>
+                    <a class="text-white" data-toggle="collapse" href="#@GetHashString(aas.IdShort)">@aas.IdShort</a>
+                </h4>
+            </div>
+            <div id="@GetHashString(aas.IdShort)" class="collapse">
+                <ul class="list-group list-group-flush">
+                    @await Html.PartialAsync("_IdShort", aas.IdShort)
+                    @await Html.PartialAsync("_Identifier", aas.Identification)
+                    @await Html.PartialAsync("_Description", aas.Description)
+                </ul>
+                <div class="card-body">
+                     @*@await Html.PartialAsync("_Asset", aas.Asset)*@
+
+                    <div class="card mb-3">
+                        <div class="card-header" style="background:#4aaf6d"><h4 class="text-white">Endpoints</h4></div>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var endpoint in aas.Endpoints)
+                            {
+                                <li class="list-group-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-sm-2"><b>Endpoint (@endpoint.ProtocolInformation.EndpointProtocol)</b></div>
+                                        <div class="col-sm-10"><a target="_blank" href="@endpoint.ProtocolInformation.EndpointAddress">@endpoint.ProtocolInformation.EndpointAddress</a></div>
+                                    </div>
+                                </li>
+                                @if (((endpoint.ProtocolInformation.EndpointProtocol == Uri.UriSchemeHttp) || (endpoint.ProtocolInformation.EndpointProtocol == Uri.UriSchemeHttps))
+                                   && !string.IsNullOrEmpty(endpoint.ProtocolInformation.EndpointAddress) && endpoint.ProtocolInformation.EndpointAddress.EndsWith("/aas"))
+                                {
+                                    var httpEndpoint = endpoint.ProtocolInformation as HttpProtocol;
+                                    string uiEndpoint = httpEndpoint.Uri.GetLeftPart(UriPartial.Authority) + "/ui";
+                                    <li class="list-group-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-2"><b>Endpoint (http-UI)</b></div>
+                                            <div class="col-sm-10"><a target="_blank" href="@uiEndpoint">@uiEndpoint</a></div>
+                                        </div>
+                                    </li>
+                                    @*<div class="embed-responsive embed-responsive-16by9">
+                                            <iframe class="embed-responsive-item" src="@endpoint.Address.Replace("/aas", "/ui")"></iframe>
+                                        </div>*@
+                                }
+
+                            }
+                        </ul>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header" style="background:#ff6a00">
+                            <h4>
+                                <a class="text-white" data-toggle="collapse" href="#@GetHashString("Submodels_" + aas.IdShort)">Submodel-Descriptors</a>
+                            </h4>
+                        </div>
+                        <div id="@GetHashString("Submodels_" + aas.IdShort)" class="collapse">
+                            <div class="card-body">
+                                @foreach (var submodelDescriptor in aas.SubmodelDescriptors)
+                                {
+                                    <div class="card mb-3">
+                                        <div class="card-header" style="background:#808080">
+                                            <h4>
+                                                <a style="color:white" data-toggle="collapse" href="#@GetHashString(submodelDescriptor.IdShort)">@submodelDescriptor.IdShort</a>
+                                            </h4>
+                                        </div>
+                                        <div id="@GetHashString(submodelDescriptor.IdShort)" class="collapse">
+                                            <ul class="list-group list-group-flush">
+                                                @await Html.PartialAsync("_IdShort", submodelDescriptor.IdShort)
+                                                @await Html.PartialAsync("_Identifier", submodelDescriptor.Identification)
+                                                @await Html.PartialAsync("_Description", submodelDescriptor.Description)
+                                            </ul>
+                                            <div class="card-body">
+                                                <div class="card mb-3">
+                                                    <div class="card-header" style="background:#4aaf6d"><h4 class="text-white">Endpoints</h4></div>
+                                                    <ul class="list-group list-group-flush">
+                                                        @foreach (var endpoint in submodelDescriptor.Endpoints)
+                                                        {
+                                                            <li class="list-group-item">
+                                                                <div class="row align-items-center">
+                                                                    <div class="col-sm-2"><b>Endpoint (@endpoint.ProtocolInformation.EndpointProtocol)</b></div>
+                                                                    <div class="col-sm-10"><a target="_blank" href="@endpoint.ProtocolInformation.EndpointAddress">@endpoint.ProtocolInformation.EndpointAddress</a></div>
+                                                                </div>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+

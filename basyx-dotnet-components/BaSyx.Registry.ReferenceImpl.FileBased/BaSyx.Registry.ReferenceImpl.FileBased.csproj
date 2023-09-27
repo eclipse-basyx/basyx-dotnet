@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Constantin Ziesche</Authors>
+    <Copyright>Copyright 2022 - Bosch Rexroth AG</Copyright>
+    <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet-components</RepositoryUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <Description>The official BaSyx File-based Reference Implementation for the Registry Interface</Description>
+    <Company>Bosch Rexroth AG</Company>
+    <PackageTags>BaSys BaSyx Registry FileBased</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <PackageIcon>basyxlogo.png</PackageIcon>
+    <LangVersion>8.0</LangVersion>
+    <Configurations>Debug;Release</Configurations>
+    <Version>2.0.0-alpha.3</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\resources\basyxlogo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <Content Include="FileBasedRegistrySettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackageFlatten>true</PackageFlatten>
+      <PackagePath>contentFiles\any\$(TargetFramework)\</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-sdk\')">
+    <ProjectReference Include="..\..\basyx-dotnet-sdk\BaSyx.API\BaSyx.API.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-sdk\BaSyx.Utils.DependencyInjection\BaSyx.Utils.DependencyInjection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-sdk\')">
+    <PackageReference Include="BaSyx.API" Version="2.0.0-alpha.3" />
+    <PackageReference Include="BaSyx.Utils.DependencyInjection" Version="2.0.0-alpha.3" />
+  </ItemGroup>
+
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Exec Command="IF EXIST %25BASYX_REPO%25 ( dotnet pack &quot;$(ProjectPath)&quot; -c Release --no-build --include-source --include-symbols --output &quot;%25BASYX_REPO%25&quot; ) ELSE ( ECHO BASYX_REPO Environment Variable not found)" />
+  </Target>
+
+</Project>

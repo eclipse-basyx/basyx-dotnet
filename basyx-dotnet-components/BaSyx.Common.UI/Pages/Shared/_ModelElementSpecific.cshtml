@@ -1,0 +1,287 @@
+﻿@model ISubmodelElement
+@using BaSyx.Models.AdminShell
+@using BaSyx.Models.Extensions
+@using Microsoft.AspNetCore.Hosting
+@inject IHostingEnvironment hostingEnvironment
+
+@if (Model != null)
+{
+    if (!Enum.TryParse<KeyElements>(Model.ModelType.Name, out KeyElements keyElements))
+    {
+        return;
+    }
+
+    switch (keyElements)
+    {
+        case KeyElements.AnnotatedRelationshipElement:
+            {
+                IAnnotatedRelationshipElement relationship = Model.Cast<IAnnotatedRelationshipElement>();
+                if (relationship == null)
+                {
+                    return;
+                }
+
+                if (relationship.Annotations != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Value</b></div>
+                            <div class="col-sm-10">Count: @relationship.Annotations.Count()</div>
+                        </div>
+                    </li>
+                }
+                if (relationship.First != null && relationship.Second != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>First</b></div>
+                            <div class="col-sm-10">@relationship.First.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Second</b></div>
+                            <div class="col-sm-10">@relationship.Second.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                }
+            }
+            return;
+        case KeyElements.Blob:
+            {
+                IBlob blob = Model.Cast<IBlob>();
+                if (blob == null)
+                {
+                    return;
+                }
+
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>MimeType</b></div>
+                        <div class="col-sm-10">@blob.MimeType</div>
+                    </div>
+                </li>
+            }
+            return;
+        case KeyElements.Capability:
+            break;
+        case KeyElements.File:
+            {
+                IFileElement file = Model.Cast<IFileElement>();
+                if (file == null)
+                {
+                    return;
+                }
+
+                string path = GetPath(file);
+                bool exists = hostingEnvironment.ContentRootFileProvider.GetFileInfo(path).Exists;
+                string separator = path.StartsWith("/") ? string.Empty : "/";
+
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>MimeType</b></div>
+                        <div class="col-sm-10">@file.ContentType</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>Path</b></div>
+                        @if (exists)
+                        {
+                            <div class="col-sm-10"><a href="@("/files" + separator + path)">@path</a></div>
+                        }
+                        else if (Uri.TryCreate(path, UriKind.Absolute, out Uri result))
+                        {
+                            <div class="col-sm-10"><a href="@result.AbsoluteUri">@path</a></div>
+                            exists = true;
+                        }
+                        else
+                        {
+                            <div class="col-sm-10">@path</div>
+                        }
+                    </div>
+                </li>
+                @if (exists)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            @if (Uri.TryCreate(path, UriKind.Absolute, out Uri result))
+                            {
+                                <iframe src="@result.AbsoluteUri" style="min-height:500px; width:100%"></iframe>
+                            }
+                            else if (file.ContentType.StartsWith("image"))
+                            {
+                                <img src="@("/files" + separator + path)" style="display:block; max-width:100%; height:auto" />
+                            }
+                            else
+                            {
+                                <object data="@("/files" + separator + path)" style="min-height:500px; width:100%"></object>
+                            }
+
+                        </div>
+                    </li>
+                }
+            }
+            return;
+        case KeyElements.Entity:
+            break;
+        case KeyElements.BasicEvent:
+            {
+                IBasicEvent eventable = Model.Cast<IBasicEvent>();
+                if (eventable == null)
+                {
+                    return;
+                }
+
+                if (eventable.Observed != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Observed</b></div>
+                            <div class="col-sm-10">@eventable.Observed.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                }
+            }
+            return;
+        case KeyElements.MultiLanguageProperty:
+            {
+                IMultiLanguageProperty multiLanguageProperty = Model.Cast<IMultiLanguageProperty>();
+                if (multiLanguageProperty == null)
+                {
+                    return;
+                }
+
+                if (multiLanguageProperty.Value?.Count > 0)
+                {
+                    foreach (var langString in multiLanguageProperty.Value)
+                    {
+                        <li class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-sm-2"><b>@langString.Language</b></div>
+                                <div class="col-sm-10">@langString.Text</div>
+                            </div>
+                        </li>
+                    }
+                }
+            }
+            return;
+        case KeyElements.Operation:
+            break;
+        case KeyElements.Property:
+            IProperty property = Model.Cast<IProperty>();
+            if (property == null)
+            {
+                return;
+            }
+
+            string propDataTypeName = property.ValueType?.ToString();
+            if (string.IsNullOrEmpty(propDataTypeName))
+            {
+                propDataTypeName = DataObjectType.None.ToString();
+            }
+
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-sm-2"><b>ValueType</b></div>
+                    <div class="col-sm-10">@propDataTypeName</div>
+                </div>
+            </li>
+            return;
+        case KeyElements.Range:
+
+            IRange range = Model.Cast<IRange>();
+            if (range == null)
+            {
+                return;
+            }
+
+            string rangeDataTypeName = range.ValueType?.ToString();
+            if (string.IsNullOrEmpty(rangeDataTypeName))
+            {
+                rangeDataTypeName = DataObjectType.None.ToString();
+            }
+
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-sm-2"><b>ValueType</b></div>
+                    <div class="col-sm-10">@rangeDataTypeName</div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-sm-2"><b>Min-Value</b></div>
+                    <div class="col-sm-10">@range.Min?.Value</div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-sm-2"><b>Max-Value</b></div>
+                    <div class="col-sm-10">@range.Max?.Value</div>
+                </div>
+            </li>
+            return;
+        case KeyElements.ReferenceElement:
+            {
+                IReferenceElement reference = Model.Cast<IReferenceElement>();
+                if (reference == null)
+                {
+                    return;
+                }
+
+                if (reference.Value != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Value</b></div>
+                            <div class="col-sm-10">@reference.Value.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                }
+            }
+            return;
+        case KeyElements.RelationshipElement:
+            {
+                IRelationshipElement relationship = Model.Cast<IRelationshipElement>();
+                if (relationship == null)
+                {
+                    return;
+                }
+
+                if (relationship.First != null && relationship.Second != null)
+                {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>First</b></div>
+                            <div class="col-sm-10">@relationship.First.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2"><b>Second</b></div>
+                            <div class="col-sm-10">@relationship.Second.ToStandardizedString()</div>
+                        </div>
+                    </li>
+                }
+            }
+            return;
+        case KeyElements.SubmodelElementCollection:
+            break;
+        default:
+            break;
+    }
+}
+
+@functions
+{
+    public string GetPath(IFileElement file)
+    {
+        string content = file.Value;
+        if (string.IsNullOrEmpty(content))
+            return string.Empty;
+
+        content = content.Replace('\\', '/');
+        return content;
+    }
+}
+

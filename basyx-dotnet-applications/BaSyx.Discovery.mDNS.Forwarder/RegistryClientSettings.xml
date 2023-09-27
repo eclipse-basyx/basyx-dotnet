@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RegistryClientSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ClientConfig>
+    <RequestConfig>
+      <RequestTimeout>10000</RequestTimeout>
+    </RequestConfig>
+  </ClientConfig>
+  <RegistryConfig>
+    <RegistryUrl>https://basyx-registry.azurewebsites.net</RegistryUrl>
+  </RegistryConfig>
+  <ProxyConfig>
+    <UseProxy>true</UseProxy>
+    <ProxyAddress>http://localhost:3128</ProxyAddress>
+  </ProxyConfig>
+</RegistryClientSettings>
