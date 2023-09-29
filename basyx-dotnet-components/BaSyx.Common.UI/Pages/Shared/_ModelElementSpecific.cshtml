@@ -61,6 +61,12 @@
                         <div class="col-sm-10">@blob.ContentType</div>
                     </div>
                 </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>Value</b></div>
+                        <div class="col-sm-10">@blob.Value</div>
+                    </div>
+                </li>
             }
             return;
         case KeyType.Capability:
@@ -133,15 +139,54 @@
                     return;
                 }
 
-                if (eventable.Observed != null)
-                {
-                    <li class="list-group-item">
-                        <div class="row align-items-center">
-                            <div class="col-sm-2"><b>Observed</b></div>
-                            <div class="col-sm-10">@eventable.Observed.ToStandardizedString()</div>
-                        </div>
-                    </li>
-                }
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>Observed</b></div>
+                        <div class="col-sm-10">@eventable.Observed?.ToStandardizedString()</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>Direction</b></div>
+                        <div class="col-sm-10">@eventable.Direction</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>State</b></div>
+                        <div class="col-sm-10">@eventable.State</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>MessageTopic</b></div>
+                        <div class="col-sm-10">@eventable.MessageTopic</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>MessageBroker</b></div>
+                        <div class="col-sm-10">@eventable.MessageBroker?.ToStandardizedString()</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>LastUpdate</b></div>
+                        <div class="col-sm-10">@eventable.LastUpdate</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>MinInterval</b></div>
+                        <div class="col-sm-10">@eventable.MinInterval</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>MaxInterval</b></div>
+                        <div class="col-sm-10">@eventable.MaxInterval</div>
+                    </div>
+                </li>
             }
             return;
         case KeyType.MultiLanguageProperty:
