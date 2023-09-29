@@ -15,7 +15,7 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class BasicEventElement : SubmodelElement, IBasicEventElement
     {
-        public override ModelType ModelType => ModelType.EventElement;
+        public override ModelType ModelType => ModelType.BasicEventElement;
         public IReference Observed { get; set; }
 
         public IReference ObservableReference { get; set; }
@@ -28,8 +28,6 @@ namespace BaSyx.Models.AdminShell
 
         public IReference MessageBroker { get; set; }
 
-        public IElementContainer<ISubmodelElement> MessageBrokerElements { get; set; }
-
         public string LastUpdate { get; set; }
 
         public string MinInterval { get; set; }
@@ -38,7 +36,7 @@ namespace BaSyx.Models.AdminShell
         
         public BasicEventElement(string idShort) : base(idShort)
         {
-            MessageBrokerElements = new ElementContainer<ISubmodelElement>();
+
         }
     }
 }

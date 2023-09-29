@@ -46,9 +46,6 @@ namespace BaSyx.Models.AdminShell
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "messageBroker")]
         IReference MessageBroker { get; }
 
-        [IgnoreDataMember]
-        IElementContainer<ISubmodelElement> MessageBrokerElements { get; }
-
         /// <summary>
         /// Timestamp in UTC, when the last event was received (input direction) or sent (output direction).
         /// </summary>

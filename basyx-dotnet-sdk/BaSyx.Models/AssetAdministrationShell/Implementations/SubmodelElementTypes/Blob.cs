@@ -17,9 +17,12 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class Blob : SubmodelElement, IBlob
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Blob;
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "contentType")]
         public string ContentType { get; set; }
-        public string Value { get; private set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public new string Value { get; set; }
 
         public Blob(string idShort) : base(idShort) 
         {

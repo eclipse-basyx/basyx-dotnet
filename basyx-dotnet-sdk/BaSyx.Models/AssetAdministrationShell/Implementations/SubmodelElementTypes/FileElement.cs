@@ -16,9 +16,12 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class FileElement : SubmodelElement, IFileElement
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.File;
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "contentType")]
         public string ContentType { get; set; }
-        public string Value { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public new string Value { get; set; }
         public FileElement(string idShort) : base(idShort)
         {
             Get = element => { return new ElementValue(Value, new DataType(DataObjectType.String)); };
