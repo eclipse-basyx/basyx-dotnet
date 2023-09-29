@@ -15,17 +15,21 @@ namespace BaSyx.Models.AdminShell
     /// <summary>
     /// A property is a data element that has a single value. 
     /// </summary>
-    public interface IProperty : ISubmodelElement, IValueId
+    public interface IProperty : ISubmodelElement, IGetSet
     {
+        /// <summary>
+        /// Reference to the global unique ID of a coded value
+        /// </summary>
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
+        IReference ValueId { get; }
 
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
+        DataType ValueType { get; }
     }
 
     ///<inheritdoc cref="IProperty"/>
-    public interface IProperty<TValue> : IProperty, IValue<TValue>
+    public interface IProperty<TValue> : IProperty, IGetSet<TValue>
     {
-        [IgnoreDataMember]
-        new GetValueHandler<TValue> Get { get; }
-        [IgnoreDataMember]
-        new SetValueHandler<TValue> Set { get; }
+
     }
 }

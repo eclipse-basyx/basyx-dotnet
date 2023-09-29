@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
 using System;
 
 namespace BaSyx.Models.AdminShell
@@ -21,7 +20,7 @@ namespace BaSyx.Models.AdminShell
         public DataSpecificationAttribute(string dataSpecificationReference)
         {
             Reference = new Reference(
-                new GlobalKey(KeyElements.GlobalReference, KeyType.IRI, dataSpecificationReference));
+                new Key(KeyType.GlobalReference, dataSpecificationReference));
         }
     }
 

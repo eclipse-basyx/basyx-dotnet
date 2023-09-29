@@ -55,14 +55,10 @@ namespace MultiAssetAdministrationShell
                         Version = "1.0",
                         Revision = "120"
                     },
-                    Asset = new Asset("Asset_" + i, new BaSyxAssetIdentifier("Asset_" + i, "1.0.0"))
+                    AssetInformation = new AssetInformation()
                     {
-                        Kind = AssetKind.Instance,
-                        Description = new LangStringSet()
-                        {
-                              new LangString("de", i + ". Asset"),
-                              new LangString("en", i + ". Asset")
-                        }
+                        AssetKind = AssetKind.Instance,
+                        GlobalAssetId = new BaSyxAssetIdentifier("Asset_" + i, "1.0.0")
                     }
                 };
 
@@ -99,7 +95,7 @@ namespace MultiAssetAdministrationShell
                 });
 
                 var aasServiceProvider = aas.CreateServiceProvider(true);
-                repositoryService.RegisterAssetAdministrationShellServiceProvider(aas.Identification.Id, aasServiceProvider);
+                repositoryService.RegisterAssetAdministrationShellServiceProvider(aas.Id, aasServiceProvider);
             }
 
             repositoryService.UseAutoEndpointRegistration(server.Settings.ServerConfig);

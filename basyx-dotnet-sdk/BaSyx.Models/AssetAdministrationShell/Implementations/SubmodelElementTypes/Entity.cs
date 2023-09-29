@@ -8,6 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
@@ -21,14 +22,14 @@ namespace BaSyx.Models.AdminShell
 
         public EntityType EntityType { get; set; }
 
-        public IReference<IAsset> Asset { get; set; }
+        public Identifier GlobalAssetId { get; set; }
+
+        public IEnumerable<SpecificAssetId> SpecificAssetIds { get; set; }
 
         public Entity(string idShort) : base(idShort)
         {
+            SpecificAssetIds = new List<SpecificAssetId>();
             Statements = new ElementContainer<ISubmodelElement>(this);
-
-            Get = element => { return new ElementValue(new { Statements, EntityType, Asset }, new DataType(DataObjectType.AnyType)); };
-            Set = (element, value) => { dynamic dVal = value?.Value; Statements = dVal?.Statements; EntityType = dVal?.EntityType; Asset = dVal?.Asset; };
         }
     }
 }

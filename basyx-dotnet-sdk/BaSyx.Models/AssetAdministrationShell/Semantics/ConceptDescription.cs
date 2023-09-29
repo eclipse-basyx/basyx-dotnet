@@ -18,7 +18,7 @@ namespace BaSyx.Models.AdminShell
 
         public IEnumerable<IReference> IsCaseOf { get; set; }
 
-        public Identifier Identification { get; set; }
+        public Identifier Id { get; set; }
 
         public AdministrativeInformation Administration { get; set; }
 

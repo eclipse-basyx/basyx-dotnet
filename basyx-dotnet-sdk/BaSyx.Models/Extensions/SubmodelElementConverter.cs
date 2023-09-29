@@ -15,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using System.Runtime.Serialization;
+using System.Linq;
 
 namespace BaSyx.Models.Extensions
 {
@@ -35,10 +37,9 @@ namespace BaSyx.Models.Extensions
                     DataElementInformationTypes.Add(dataSpecificationAttribute.Reference.First.Value, type);
                 }
             }
-
         }
 
-        public override bool CanWrite => false;
+        public override bool CanWrite => true;
         public override bool CanRead => true;
 
         public override ISubmodelElement ReadJson(JsonReader reader, Type objectType, ISubmodelElement existingValue, bool hasExistingValue, JsonSerializer serializer)
@@ -64,6 +65,7 @@ namespace BaSyx.Models.Extensions
 
             string idShort = jObject.SelectToken("idShort")?.ToObject<string>();
             DataType valueType = jObject.SelectToken("valueType")?.ToObject<DataType>(serializer);
+            object value = jObject.SelectToken("value")?.ToObject<object>(serializer);
 
             JToken embeddedDataSpecificationsToken = jObject.SelectToken("embeddedDataSpecifications");
             JToken conceptDescriptionToken = jObject.SelectToken("conceptDescription");
@@ -77,7 +79,7 @@ namespace BaSyx.Models.Extensions
                 embeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
                 foreach (var dataSpecificationToken in embeddedDataSpecificationsTokenChildToken)
                 {
-                    var dataSpecReference = dataSpecificationToken.SelectToken("hasDataSpecification")?.ToObject<Reference>(serializer);
+                    var dataSpecReference = dataSpecificationToken.SelectToken("dataSpecification")?.ToObject<Reference>(serializer);
                     if (dataSpecReference != null && DataElementInformationTypes.TryGetValue(dataSpecReference.First.Value, out Type type))
                     {
                         var content = dataSpecificationToken?.ToObject(type, serializer);
@@ -95,7 +97,7 @@ namespace BaSyx.Models.Extensions
                     conceptDescription = new ConceptDescription();
                     foreach (var dataSpecificationToken in dataSpecifications)
                     {
-                        var dataSpecReference = dataSpecificationToken.SelectToken("hasDataSpecification")?.ToObject<Reference>(serializer);
+                        var dataSpecReference = dataSpecificationToken.SelectToken("dataSpecification")?.ToObject<Reference>(serializer);
                         if (dataSpecReference != null && DataElementInformationTypes.TryGetValue(dataSpecReference.First.Value, out Type type))
                         {
                             var content = dataSpecificationToken.ToObject(type, serializer);
@@ -120,6 +122,9 @@ namespace BaSyx.Models.Extensions
             else
                 serializer.Populate(jObject.CreateReader(), submodelElement);
 
+            if(value != null)
+                submodelElement.SetValue(new ElementValue(value, valueType)).Wait();
+
             submodelElement.EmbeddedDataSpecifications = embeddedDataSpecifications;
             submodelElement.ConceptDescription = conceptDescription;
             return submodelElement;
@@ -127,7 +132,36 @@ namespace BaSyx.Models.Extensions
 
         public override void WriteJson(JsonWriter writer, ISubmodelElement value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            JObject jObject = new JObject();
+
+            Type t = value.GetType();
+            foreach (var prop in t.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if(prop.CanRead)
+                {
+                    var propAttribute = prop.GetCustomAttributes(typeof(DataMemberAttribute), true)?.FirstOrDefault();
+                    var propValue = prop.GetValue(value);
+                    if(propAttribute is DataMemberAttribute memberAttribute && propValue != null)
+                    {
+                        var jToken = JToken.FromObject(propValue, serializer);
+                        if (jToken.Type == JTokenType.Array && !jToken.HasValues)
+                            continue;
+                        JProperty jProperty = new JProperty(memberAttribute.Name, jToken);
+                        jObject.Add(jProperty);
+                    }                
+                }                
+            }
+            if(value.Get != null)
+            {
+                var elementValue = value.GetValue().Result?.Value;
+                if(elementValue != null)
+                {
+                    JProperty jValue = new JProperty("value", elementValue);
+                    jObject.Add(jValue);
+                }                    
+            }
+
+            serializer.Serialize(writer, jObject);
         }
     }
 }

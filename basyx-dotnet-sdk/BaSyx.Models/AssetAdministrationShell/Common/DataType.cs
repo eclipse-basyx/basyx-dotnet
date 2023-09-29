@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-
 using BaSyx.Utils.Json;
 using Newtonsoft.Json;
 using System;
@@ -19,19 +18,10 @@ using System.Runtime.Serialization;
 namespace BaSyx.Models.AdminShell
 {
     [DataContract, JsonConverter(typeof(ToStringConverter))]
-    public class DataType : IHasSemantics, IEquatable<DataType>
+    public class DataType : IEquatable<DataType>
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "dataObjectType")]
         public DataObjectType DataObjectType { get; internal set; }
-
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "schemaType")]
-        public SchemaType? SchemaType { get; internal set; }
-
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "schema")]
-        public string Schema { get; internal set; }
-
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "semanticId")]
-        public IReference SemanticId { get; internal set; }
 
         [IgnoreDataMember]
         public Type SystemType { get; internal set; }
@@ -41,32 +31,17 @@ namespace BaSyx.Models.AdminShell
 
         internal DataType() { }
 
-
         [JsonConstructor]
         public DataType(DataObjectType dataObjectType) : this(dataObjectType, false)
         { }
 
-        public DataType(DataObjectType dataObjectType, bool isCollection) : this(dataObjectType, isCollection, null)
-        { }
-
-        public DataType(DataObjectType dataObjectType, bool isCollection, IReference semanticId) 
-            : this(dataObjectType, isCollection, semanticId, AdminShell.SchemaType.NONE, null)
-        { }
-
-        public DataType(DataObjectType dataObjectType, bool isCollection, IReference semanticId, SchemaType schemaType, string schema)
+        public DataType(DataObjectType dataObjectType, bool isCollection)
         {
             DataObjectType = dataObjectType ?? throw new ArgumentNullException(nameof(dataObjectType));
             SystemType = GetSystemTypeFromDataType(dataObjectType) ??
                 throw new ArgumentOutOfRangeException(nameof(dataObjectType), $"Unable to get system type from DataObjectType '{dataObjectType}'");
 
-            IsCollection = isCollection;
-            SemanticId = semanticId;
-
-            if (schemaType == AdminShell.SchemaType.NONE)
-                SchemaType = null;
-            else
-                SchemaType = schemaType;
-            Schema = schema;
+            IsCollection = isCollection;         
         }
 
         public override string ToString()

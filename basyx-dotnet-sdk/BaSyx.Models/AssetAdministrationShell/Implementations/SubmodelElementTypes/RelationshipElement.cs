@@ -23,8 +23,6 @@ namespace BaSyx.Models.AdminShell
 
         public RelationshipElement(string idShort) : base(idShort) 
         {
-            Get = element => { return new ElementValue(new { First, Second }, new DataType(DataObjectType.AnyType)); };
-            Set = (element, value) => { dynamic dVal = value?.Value; First = dVal?.First; Second = dVal?.Second; };
         }     
     }
 }

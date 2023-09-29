@@ -19,7 +19,7 @@ namespace BaSyx.Models.AdminShell
 
         public override Identifier ToIdentifier()
         {
-            return new Identifier(ToUrn(), KeyType.IRI);
+            return new Identifier(ToUrn());
         }        
     }
 }

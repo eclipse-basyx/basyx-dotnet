@@ -38,43 +38,41 @@ namespace BaSyx.Models.Extensions
             return referable as T;
         }
 
-        public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementCollection collection)
-        {
-            if (collection != null)
-            {
-                if (!collection.AllowDuplicates || !collection.Ordered)
-                    logger.LogWarning($"SubmodelElementCollection {collection.IdShort} has AllowDuplicated or Ordered set to false. The next line in code could fail converting the elements to datatype IEnumerable<{typeof(T).Name}>");
+        //TODO
+        //public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementCollection collection)
+        //{
+        //    if (collection != null)
+        //    {         
+        //        return collection.Value.Select(s => s.Cast<IProperty>().ToObject<T>());
+        //    }
+        //    else
+        //        return null;
+        //}
 
-                return collection.Value.Select(s => s.Cast<IProperty>().ToObject<T>());
-            }
-            else
-                return null;
-        }
-
-        public static T ToEntity<T>(this ISubmodelElementCollection collection) where T : class
-        {
-            if (collection != null)
-            {
-                return new SubmodelElementCollectionOfEntity<T>(collection).Value;
-            }
-            else
-                return null;
-        }
-
+        //public static T ToEntity<T>(this ISubmodelElementCollection collection) where T : class
+        //{
+        //    if (collection != null)
+        //    {
+        //        return new SubmodelElementCollectionOfEntity<T>(collection).Value;
+        //    }
+        //    else
+        //        return null;
+        //}
+        
+        
         public static IValue GetValue(this ISubmodelElement submodelElement)
         {
-            return submodelElement?.Get?.Invoke(submodelElement);
+            return submodelElement?.Get?.Invoke(submodelElement).Result;
         }
 
         public static T GetValue<T>(this ISubmodelElement submodelElement)
         {
-            IValue value = submodelElement?.Get?.Invoke(submodelElement);
+            IValue value = submodelElement?.Get?.Invoke(submodelElement).Result;
             if (value != null)
                 return value.ToObject<T>();
             else
                 return default;
         }
-
 
         public static void SetValue<T>(this ISubmodelElement submodelElement, T value)
         {
@@ -93,7 +91,7 @@ namespace BaSyx.Models.Extensions
         {
             submodelElement?.Set?.Invoke(submodelElement, new ElementValue(value, valueType));
         }
-
+        
         public static Task<OperationResult> Invoke(this IOperation operation, IOperationVariableSet inputArguments, IOperationVariableSet inoutputArguments, IOperationVariableSet outputArguments, CancellationToken ct)
         {
             return operation?.OnMethodCalled?.Invoke(operation, inputArguments, inoutputArguments, outputArguments, ct);
@@ -128,8 +126,6 @@ namespace BaSyx.Models.Extensions
         public static ISubmodelElementCollection CreateSubmodelElementCollectionFromEnumerable(this IEnumerable enumerable, string idShort, BindingFlags bindingFlags)
         {
             SubmodelElementCollection smCollection = new SubmodelElementCollection(idShort);
-            smCollection.AllowDuplicates = true;
-            smCollection.Ordered = true;
 
             int i = 0;
             foreach (var item in enumerable)
@@ -140,7 +136,7 @@ namespace BaSyx.Models.Extensions
                     if (enumerable is IList list)
                     {
                         p.Get = (prop) => { return new ElementValue(list[Convert.ToInt32(prop.IdShort)], item.GetType()); };
-                        p.Set = (prop, value) => { list[Convert.ToInt32(prop.IdShort)] = value.ToObject(item.GetType()); };
+                        p.Set = (prop, value) => { list[Convert.ToInt32(prop.IdShort)] = value.ToObject(item.GetType()); return Task.CompletedTask; };
                     }
                     smCollection.Add(p);
                 }
@@ -219,7 +215,7 @@ namespace BaSyx.Models.Extensions
                     var specAttribute = Attribute.GetCustomAttribute(propertyInfo, typeof(DataSpecificationIEC61360Attribute)) as DataSpecificationIEC61360Attribute;
                     se.ConceptDescription = new ConceptDescription()
                     {
-                        Identification = specAttribute.Identification,
+                        Id = specAttribute.Identification,
                         EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
                         {
                             new DataSpecificationIEC61360(specAttribute.Content)
@@ -263,7 +259,7 @@ namespace BaSyx.Models.Extensions
                         if (propertyInfo.CanRead)
                             seProp.Get = (p) => { return new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType); };
                         if (propertyInfo.CanWrite)
-                            seProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); };
+                            seProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
                     }
                     return seProp;
                 }
@@ -289,7 +285,7 @@ namespace BaSyx.Models.Extensions
                     var specAttribute = Attribute.GetCustomAttribute(propertyInfo, typeof(DataSpecificationIEC61360Attribute)) as DataSpecificationIEC61360Attribute;
                     conceptDescription = new ConceptDescription()
                     {
-                        Identification = specAttribute.Identification,
+                        Id = specAttribute.Identification,
                         EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
                         {
                             new DataSpecificationIEC61360(specAttribute.Content)
@@ -305,7 +301,7 @@ namespace BaSyx.Models.Extensions
                         if (propertyInfo.CanRead)
                             smProp.Get = (p) => { return new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType); };
                         if (propertyInfo.CanWrite)
-                            smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); };
+                            smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
                     }
 
                     smProp.ConceptDescription = conceptDescription;
@@ -319,7 +315,7 @@ namespace BaSyx.Models.Extensions
                         if (propertyInfo.CanRead)
                             smProp.Get = (p) => { return new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType); };
                         if (propertyInfo.CanWrite)
-                            smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); };
+                            smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
                     }
 
                     smProp.ConceptDescription = conceptDescription;
@@ -340,8 +336,8 @@ namespace BaSyx.Models.Extensions
                         foreach (var item in targetDic)
                         {
                             Property<string> p = new Property<string>(item.Key);
-                            p.Get = (prop) => { return targetDic[item.Key]; };
-                            p.Set = (prop, value) => { targetDic[item.Key] = value; };
+                            p.Get = (prop) => { return Task.FromResult(targetDic[item.Key]); };
+                            p.Set = (prop, value) => { targetDic[item.Key] = value; return Task.CompletedTask; };
                             smcDictionary.Add(p);
                         }
                     }
@@ -354,9 +350,6 @@ namespace BaSyx.Models.Extensions
                         seCollection = (SubmodelElementCollection)enumerable.CreateSubmodelElementCollectionFromEnumerable(idShort, bindingFlags);
                     else
                         seCollection = new SubmodelElementCollection(idShort);
-
-                    seCollection.AllowDuplicates = true;
-                    seCollection.Ordered = true;
 
                     seCollection.ConceptDescription = conceptDescription;
                     return seCollection;
@@ -375,9 +368,6 @@ namespace BaSyx.Models.Extensions
                         if (smElement != null)
                             smCollection.Value.Create(smElement);
                     }
-
-                    smCollection.AllowDuplicates = false;
-                    smCollection.Ordered = false;
 
                     smCollection.ConceptDescription = conceptDescription;
                     return smCollection;

@@ -8,15 +8,15 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.Extensions;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
-    public class BasicEventElement : Event, IBasicEventElement
+    public class BasicEventElement : SubmodelElement, IBasicEventElement
     {
         public override ModelType ModelType => ModelType.EventElement;
+        public IReference Observed { get; set; }
 
         public IReference ObservableReference { get; set; }
 
@@ -35,20 +35,10 @@ namespace BaSyx.Models.AdminShell
         public string MinInterval { get; set; }
 
         public string MaxInterval { get; set; }
-
-        public IElementContainer<ISubmodelElement> SubmodelElements { get; set; }
-
-        public BasicEventElement(string idShort) : base(idShort) 
+        
+        public BasicEventElement(string idShort) : base(idShort)
         {
             MessageBrokerElements = new ElementContainer<ISubmodelElement>();
-            SubmodelElements = new ElementContainer<ISubmodelElement>();
-
-            Get = element => 
-            {
-                string eventElements = SubmodelElements?.MinimizeSubmodelElements()?.ToString();
-                return new ElementValue(eventElements, new DataType(DataObjectType.String)); 
-            };
-            Set = (element, value) =>  { };
         }
     }
 }

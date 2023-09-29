@@ -110,7 +110,7 @@ namespace BaSyx.API.ServiceProvider
             foreach (var submodel in AssetAdministrationShell.Submodels.Values)
             {
                 var submodelServiceProvider = submodel.CreateServiceProvider();
-                RegisterSubmodelServiceProvider(submodel.Identification.Id, submodelServiceProvider);
+                RegisterSubmodelServiceProvider(submodel.Id, submodelServiceProvider);
             }
         }
 
@@ -164,18 +164,17 @@ namespace BaSyx.API.ServiceProvider
                 return new Result(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
 
             string idShort = aas.IdShort ?? _assetAdministrationShell.IdShort;
-            Identifier identifier = aas.Identification ?? _assetAdministrationShell.Identification;
+            Identifier identifier = aas.Id ?? _assetAdministrationShell.Id;
 
             AssetAdministrationShell tempShell = new AssetAdministrationShell(idShort, identifier)
             {
-                Asset = aas.Asset ?? _assetAdministrationShell.Asset,
+                AssetInformation = aas.AssetInformation ?? _assetAdministrationShell.AssetInformation,
                 Administration = aas.Administration ?? _assetAdministrationShell.Administration,
                 DerivedFrom = aas.DerivedFrom ?? _assetAdministrationShell.DerivedFrom,
                 Category = aas.Category ?? _assetAdministrationShell.Category,
                 Description = aas.Description ?? _assetAdministrationShell.Description,
                 DisplayName = aas.DisplayName ?? _assetAdministrationShell.DisplayName,
                 Submodels = _assetAdministrationShell.Submodels,
-                Views = _assetAdministrationShell.Views, 
             };
 
             _assetAdministrationShell = tempShell;
@@ -198,17 +197,15 @@ namespace BaSyx.API.ServiceProvider
             if (_assetAdministrationShell == null)
                 return new Result(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
 
-            AssetAdministrationShell tempShell = new AssetAdministrationShell(_assetAdministrationShell.IdShort, _assetAdministrationShell.Identification)
+            AssetAdministrationShell tempShell = new AssetAdministrationShell(_assetAdministrationShell.IdShort, _assetAdministrationShell.Id)
             {
                 Administration = _assetAdministrationShell.Administration,
-                Asset = _assetAdministrationShell.Asset,
                 AssetInformation = assetInformation,
                 DerivedFrom = _assetAdministrationShell.DerivedFrom,
                 Category = _assetAdministrationShell.Category,
                 Description = _assetAdministrationShell.Description,
                 DisplayName = _assetAdministrationShell.DisplayName,
                 Submodels = _assetAdministrationShell.Submodels,
-                Views = _assetAdministrationShell.Views,
             };
 
             _assetAdministrationShell = tempShell;
@@ -232,14 +229,14 @@ namespace BaSyx.API.ServiceProvider
             if (sp.Success)
                 return new Result<IReference>(false, new ConflictMessage($"Submodel with id {submodelRef.First.Value}"));
 
-            Submodel tempSubmodel = new Submodel(Guid.NewGuid().ToString(), new Identifier(submodelRef.First.Value, submodelRef.First.IdType));
+            Submodel tempSubmodel = new Submodel(Guid.NewGuid().ToString(), new Identifier(submodelRef.First.Value));
             _assetAdministrationShell.Submodels.Add(tempSubmodel);
             var tempSubmodelSp = tempSubmodel.CreateServiceProvider();
-            var result = RegisterSubmodelServiceProvider(tempSubmodel.Identification.Id, tempSubmodelSp);
+            var result = RegisterSubmodelServiceProvider(tempSubmodel.Id, tempSubmodelSp);
             if (!result.Success)
                 return new Result<IReference>(result);
 
-            var checkRetrieve = GetSubmodelServiceProvider(tempSubmodel.Identification.Id).Entity.RetrieveSubmodel();
+            var checkRetrieve = GetSubmodelServiceProvider(tempSubmodel.Id).Entity.RetrieveSubmodel();
             if (!checkRetrieve.Success)
                 return new Result<IReference>(checkRetrieve);
 

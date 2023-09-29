@@ -9,7 +9,9 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.Serialization;
+using System.Xml.Linq;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -26,11 +28,24 @@ namespace BaSyx.Models.AdminShell
         /// <summary>
         /// Unique reference in its name space. 
         /// </summary>
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "type")]
+        ReferenceType Type { get; }
+
+        /// <summary>
+        /// Expected semantic ID of the referenced model element(Reference/type= ModelReference); there typically is no semantic ID for for the referenced object of external references (Reference/type= ExternalReference).
+        /// Note 1: if Reference/referredSemanticId is
+        /// defined, the semanticId of the model element referenced should have a matching semantic ID.If this is not the case, a validator should raise a warning.
+        /// Note 2: it is recommended to use an
+        /// external reference for the semantic ID expected from the referenced model element.
+        /// </summary>
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "referredSemanticId")]
+        IReference ReferredSemanticId { get; }
+
+        /// <summary>
+        /// Unique reference in its name space. 
+        /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "keys")]
         List<IKey> Keys { get; }
-
-        [IgnoreDataMember]
-        KeyElements RefersTo { get; }
 
         /// <summary>
         /// Returns the official string representation of a Reference

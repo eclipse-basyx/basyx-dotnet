@@ -18,8 +18,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="aas-spec-v1.0\Resources\**\*" />
     <EmbeddedResource Include="aas-spec-v2.0\Resources\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="aas-spec-v3.0\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="AASX_V3_0.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="aas-spec-v3.0\Resources\AAS.xsd" />
+    <None Remove="aas-spec-v3.0\Resources\AAS_ABAC.xsd" />
+    <None Remove="aas-spec-v3.0\Resources\IEC61360.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="aas-spec-v3.0\Resources\AAS.xsd" />
+    <EmbeddedResource Include="aas-spec-v3.0\Resources\AAS_ABAC.xsd" />
+    <EmbeddedResource Include="aas-spec-v3.0\Resources\IEC61360.xsd" />
   </ItemGroup>
 
 
@@ -42,6 +61,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="AASX_V3_0.cs" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

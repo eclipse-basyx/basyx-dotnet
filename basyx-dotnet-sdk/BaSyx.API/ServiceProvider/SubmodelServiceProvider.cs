@@ -18,6 +18,7 @@ using BaSyx.Models.Connectivity;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using BaSyx.Models.Extensions;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -33,8 +34,6 @@ namespace BaSyx.API.ServiceProvider
         public const int DEFAULT_TIMEOUT = 60000;
         public ISubmodelDescriptor ServiceDescriptor { get; internal set; }
 
-        private readonly Dictionary<string, MethodCalledHandler> methodCalledHandler;
-        private readonly Dictionary<string, SubmodelElementHandler> submodelElementHandler;
         private readonly Dictionary<string, Action<IValue>> updateFunctions;
         private readonly Dictionary<string, EventDelegate> eventDelegates;
         private readonly Dictionary<string, InvocationResponse> invocationResults;
@@ -46,8 +45,6 @@ namespace BaSyx.API.ServiceProvider
         /// </summary>
         public SubmodelServiceProvider()
         {
-            methodCalledHandler = new Dictionary<string, MethodCalledHandler>();
-            submodelElementHandler = new Dictionary<string, SubmodelElementHandler>();
             updateFunctions = new Dictionary<string, Action<IValue>>();
             eventDelegates = new Dictionary<string, EventDelegate>();
             invocationResults = new Dictionary<string, InvocationResponse>();
@@ -173,43 +170,31 @@ namespace BaSyx.API.ServiceProvider
                     return;
             }
         }
-        
-        public MethodCalledHandler RetrieveMethodCalledHandler(string idShortPath)
-        {
-            if (methodCalledHandler.TryGetValue(idShortPath, out MethodCalledHandler handler))
-                return handler;
-            else
-                return null;
-        }
-       
-        public SubmodelElementHandler RetrieveSubmodelElementHandler(string idShortPath)
-        {
-            if (submodelElementHandler.TryGetValue(idShortPath, out SubmodelElementHandler elementHandler))
-                return elementHandler;
-            else
-                return null;
-        }
-      
+              
+
         public void RegisterSubmodelElementHandler(string idShortPath, SubmodelElementHandler elementHandler)
         {
-            if (!submodelElementHandler.ContainsKey(idShortPath))
-                submodelElementHandler.Add(idShortPath, elementHandler);
-            else
-                submodelElementHandler[idShortPath] = elementHandler;
-        }
+            if (_submodel == null)
+                throw new Exception(new Result<IValue>(false, new NotFoundMessage("Submodel")).ToString());
 
-        public void UnregisterSubmodelElementHandler(string idShortPath)
-        {
-            if (submodelElementHandler.ContainsKey(idShortPath))
-                submodelElementHandler.Remove(idShortPath);
+            var submodelElement = _submodel.SubmodelElements.Retrieve<SubmodelElement>(idShortPath);
+            if (!submodelElement.Success || submodelElement.Entity == null)
+                throw new Exception(new Result<IValue>(false, new NotFoundMessage($"SubmodelElement {idShortPath}")).ToString());
+
+            submodelElement.Entity.Get = elementHandler.GetValueHandler;
+            submodelElement.Entity.Set = elementHandler.SetValueHandler;
         }
 
         public void RegisterMethodCalledHandler(string pathToOperation, MethodCalledHandler handler)
         {
-            if (!methodCalledHandler.ContainsKey(pathToOperation))
-                methodCalledHandler.Add(pathToOperation, handler);
-            else
-                methodCalledHandler[pathToOperation] = handler;
+            if (_submodel == null)
+                throw new Exception(new Result<IValue>(false, new NotFoundMessage("Submodel")).ToString());
+
+            var submodelElement = _submodel.SubmodelElements.Retrieve<SubmodelElement>(pathToOperation);
+            if (!submodelElement.Success || submodelElement.Entity == null)
+                throw new Exception(new Result<IValue>(false, new NotFoundMessage($"SubmodelElement {pathToOperation}")).ToString());
+
+            submodelElement.Entity.Cast<Operation>().OnMethodCalled = handler;
         }
 
         public void RegisterEventDelegate(string pathToEvent, EventDelegate eventDelegate)
@@ -237,9 +222,7 @@ namespace BaSyx.API.ServiceProvider
             if (operation_Retrieved.Success && operation_Retrieved.Entity != null)
             {
                 MethodCalledHandler methodHandler;
-                if (methodCalledHandler.TryGetValue(pathToOperation, out MethodCalledHandler handler))
-                    methodHandler = handler;
-                else if (operation_Retrieved.Entity.OnMethodCalled != null)
+                if (operation_Retrieved.Entity.OnMethodCalled != null)
                     methodHandler = operation_Retrieved.Entity.OnMethodCalled;
                 else
                     return new Result<InvocationResponse>(false, new NotFoundMessage($"MethodHandler for {pathToOperation}"));
@@ -327,9 +310,7 @@ namespace BaSyx.API.ServiceProvider
             if (operation_Retrieved.Success && operation_Retrieved.Entity != null)
             {
                 MethodCalledHandler methodHandler;
-                if (methodCalledHandler.TryGetValue(idShortPath, out MethodCalledHandler handler))
-                    methodHandler = handler;
-                else if (operation_Retrieved.Entity.OnMethodCalled != null)
+                if (operation_Retrieved.Entity.OnMethodCalled != null)
                     methodHandler = operation_Retrieved.Entity.OnMethodCalled;
                 else
                     return new Result<InvocationResponse>(false, new NotFoundMessage($"MethodHandler for {idShortPath}"));
@@ -416,8 +397,9 @@ namespace BaSyx.API.ServiceProvider
             if (eventMessage == null)
                 return new Result(new ArgumentNullException(nameof(eventMessage)));
 
-            if (eventDelegates.TryGetValue(eventMessage.SourceIdShort, out EventDelegate eventDelegate))
-                eventDelegate.Invoke(this, eventMessage);
+            //TODO
+            //if (eventDelegates.TryGetValue(eventMessage.SourceIdShort, out EventDelegate eventDelegate))
+            //    eventDelegate.Invoke(this, eventMessage);
 
             try
             {
@@ -437,21 +419,6 @@ namespace BaSyx.API.ServiceProvider
         {
             this.messageClient = messageClient;
         }
-       
-        public virtual void SubscribeUpdates(string idShortPath, Action<IValue> updateFunction)
-        {
-            if (!updateFunctions.ContainsKey(idShortPath))
-                updateFunctions.Add(idShortPath, updateFunction);
-            else
-                updateFunctions[idShortPath] = updateFunction;
-        }
-       
-        public virtual void PublishUpdate(string idShortPath, IValue value)
-        {
-            if (updateFunctions.TryGetValue(idShortPath, out Action<IValue> updateFunction))
-                updateFunction.Invoke(value);
-
-        }
 
         public IResult<ISubmodelElement> CreateSubmodelElement(string idShortPath, ISubmodelElement submodelElement)
         {
@@ -463,7 +430,6 @@ namespace BaSyx.API.ServiceProvider
                 RegisterSubmodelElementHandler(idShortPath, new SubmodelElementHandler(submodelElement.Get, submodelElement.Set));
             return created;
         }
-
 
         public IResult<ISubmodelElement> UpdateSubmodelElement(string idShortPath, ISubmodelElement submodelElement)
         {
@@ -507,6 +473,7 @@ namespace BaSyx.API.ServiceProvider
 
             return _submodel.SubmodelElements.Retrieve(submodelElementId);
         }
+
         public IResult<IValue> RetrieveSubmodelElementValue(string submodelElementId)
         {
             if (_submodel == null)
@@ -516,10 +483,8 @@ namespace BaSyx.API.ServiceProvider
             if (!submodelElement.Success || submodelElement.Entity == null)
                 return new Result<IValue>(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
 
-            if (submodelElementHandler.TryGetValue(submodelElementId, out SubmodelElementHandler elementHandler) && elementHandler.GetValueHandler != null)
-                return new Result<IValue>(true, elementHandler.GetValueHandler.Invoke(submodelElement.Entity));
-            else if (submodelElement.Entity.Get != null)
-                return new Result<IValue>(true, submodelElement.Entity.Get.Invoke(submodelElement.Entity));
+            if (submodelElement.Entity.Get != null)
+                return new Result<IValue>(true, submodelElement.Entity.Get.Invoke(submodelElement.Entity).Result);
             else
                 return new Result<IValue>(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
         }
@@ -533,12 +498,7 @@ namespace BaSyx.API.ServiceProvider
             if (!submodelElement.Success || submodelElement.Entity == null)
                 return new Result(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
 
-            if (submodelElementHandler.TryGetValue(submodelElementId, out SubmodelElementHandler elementHandler) && elementHandler.SetValueHandler != null)
-            {
-                elementHandler.SetValueHandler.Invoke(submodelElement.Entity, value);
-                return new Result(true);
-            }
-            else if (submodelElement.Entity.Set != null)
+            if (submodelElement.Entity.Set != null)
             {
                 submodelElement.Entity.Set.Invoke(submodelElement.Entity, value);
                 return new Result(true);
@@ -556,8 +516,6 @@ namespace BaSyx.API.ServiceProvider
                 return new Result(false, new NotFoundMessage(submodelElementId));
 
             var deleted = _submodel.SubmodelElements.Delete(submodelElementId);
-            if (deleted.Success)
-                UnregisterSubmodelElementHandler(submodelElementId);
             return deleted;
         }
 
@@ -575,7 +533,7 @@ namespace BaSyx.API.ServiceProvider
                 return new Result(false, new ErrorMessage("The service provider's inner Submodel object is null"));
 
             string idShort = submodel.IdShort ?? _submodel.IdShort;
-            Identifier identifier = submodel.Identification ?? _submodel.Identification;
+            Identifier identifier = submodel.Id ?? _submodel.Id;
 
             Submodel tempSubmodel = new Submodel(idShort, identifier)
             {

@@ -15,6 +15,7 @@ using BaSyx.Utils.Client;
 using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -114,11 +115,13 @@ namespace BaSyx.API.ServiceProvider
             return new SubmodelElementHandler(
                 prop =>
                 {
-                    return _submodelClient.RetrieveSubmodelElementValue(pathToElement).Entity;
+                    var result = _submodelClient.RetrieveSubmodelElementValue(pathToElement);
+                    return Task.FromResult<IValue>(result.Entity);
                 },
                 (prop, value) =>
                 {
-                    _submodelClient.UpdateSubmodelElementValue(pathToElement, value);
+                    var result = _submodelClient.UpdateSubmodelElementValue(pathToElement, value);
+                    return Task.FromResult<IResult>(result);
                 });
         }
 

@@ -16,11 +16,17 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public abstract class Referable : IReferable
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "idShort")]
         public string IdShort { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "category")]
         public string Category { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "description")]
         public LangStringSet Description { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "displayName")]
         public LangStringSet DisplayName { get; set; }
+        [IgnoreDataMember]
         public IReferable Parent { get; set; }
+        [IgnoreDataMember]
         public Dictionary<string, string> MetaData { get; set; }
                  
         protected Referable(string idShort)

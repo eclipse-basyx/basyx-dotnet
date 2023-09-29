@@ -41,9 +41,9 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
                 Property property = new Property(castedProperty.IdShort, new DataType(dataObjectType))
                 {
-                    Value = castedProperty.Value,
                     ValueId = castedProperty.ValueId?.ToReference_V2_0()
                 };
+                property.SetValue(new ElementValue(castedProperty.Value, castedProperty.ValueType)).Wait();
 
                 submodelElement = property;
             }
@@ -85,7 +85,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 Blob blob = new Blob(castedBlob.IdShort)
                 {
-                    MimeType = castedBlob.MimeType
+                    ContentType = castedBlob.MimeType
                 };
                 if(castedBlob.Value != null)
                     blob.SetValue(castedBlob.Value);
@@ -132,15 +132,9 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
                 submodelElement = capability;
             }
-            else if (modelType == ModelType.Event && envSubmodelElement is Event_V2_0 castedEvent)
-            {
-                Event eventable = new BasicEvent(castedEvent.IdShort);
-
-                submodelElement = eventable;
-            }
             else if (modelType == ModelType.BasicEvent && envSubmodelElement is BasicEvent_V2_0 castedBasicEvent)
             {
-                BasicEvent basicEvent = new BasicEvent(castedBasicEvent.IdShort)
+                BasicEventElement basicEvent = new BasicEventElement(castedBasicEvent.IdShort)
                 {
                     Observed = castedBasicEvent.Observed.ToReference_V2_0<IReferable>()
                 };
@@ -152,7 +146,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 Entity entity = new Entity(castedEntity.IdShort)
                 {
                     EntityType = (EntityType)Enum.Parse(typeof(EntityType), castedEntity.EntityType.ToString()),
-                    Asset = castedEntity.AssetReference.ToReference_V2_0<IAsset>()
+                    GlobalAssetId = castedEntity.AssetReference?.Keys?.First()?.Value
                 };
 
                 var statements = castedEntity.Statements?.ConvertAll(c => c.submodelElement.ToSubmodelElement(conceptDescriptions, parent));
@@ -190,11 +184,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             }
             else if (modelType == ModelType.SubmodelElementCollection && envSubmodelElement is SubmodelElementCollection_V2_0 castedSubmodelElementCollection)
             {
-                SubmodelElementCollection submodelElementCollection = new SubmodelElementCollection(castedSubmodelElementCollection.IdShort)
-                {
-                    AllowDuplicates = castedSubmodelElementCollection.AllowDuplicates,
-                    Ordered = castedSubmodelElementCollection.Ordered
-                };
+                SubmodelElementCollection submodelElementCollection = new SubmodelElementCollection(castedSubmodelElementCollection.IdShort);
 
                 if (castedSubmodelElementCollection.Value?.Count > 0)
                 {
@@ -222,52 +212,18 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             if (!string.IsNullOrEmpty(semanticId))
             {
                 submodelElement.ConceptDescription =
-                    conceptDescriptions.Find(f => f.Identification.Id == semanticId);
+                    conceptDescriptions.Find(f => f.Id == semanticId);
                 submodelElement.EmbeddedDataSpecifications = submodelElement.ConceptDescription?.EmbeddedDataSpecifications;
             }
 
             return submodelElement;
         }
-
-        private static List<EnvironmentConstraint_V2_0> ConvertToEnvironmentConstraints(IEnumerable<IConstraint> constraints)
-        {
-            if (constraints?.Count() > 0)
-            {
-                List<EnvironmentConstraint_V2_0> envConstraints = new List<EnvironmentConstraint_V2_0>();
-                foreach (var constraint in constraints)
-                {
-                    if (constraint is Qualifier q)
-                    {
-                        EnvironmentQualifier_V2_0 envQualifier = new EnvironmentQualifier_V2_0()
-                        {
-                            Type = q.Type,
-                            Value = q.Value?.ToString(),
-                            ValueId = q.ValueId?.ToEnvironmentReference_V2_0(),
-                            ValueType = q.ValueType?.ToString()
-                        };
-                        envConstraints.Add(new EnvironmentConstraint_V2_0() { Constraint = envQualifier });
-                    }
-                    else if (constraint is Formula f)
-                    {
-                        EnvironmentFormula_V2_0 envFormula = new EnvironmentFormula_V2_0()
-                        {
-                            DependsOn = f.DependsOn?.ToList()?.ConvertAll(c => c.ToEnvironmentReference_V2_0())
-                        };
-                        envConstraints.Add(new EnvironmentConstraint_V2_0() { Constraint = envFormula });
-                    }
-                    else
-                        continue;
-                }
-                return envConstraints;
-            }
-            return null;
-        }
-
-        private static IEnumerable<IConstraint> ConvertToConstraints(List<EnvironmentConstraint_V2_0> envConstraints)
+        
+        private static IEnumerable<IQualifier> ConvertToConstraints(List<EnvironmentConstraint_V2_0> envConstraints)
         {
             if(envConstraints?.Count > 0)
             {
-                List<IConstraint> constraints = new List<IConstraint>();
+                List<IQualifier> qualifiers = new List<IQualifier>();
                 foreach (var envConstraint in envConstraints)
                 {
                     if (envConstraint.Constraint is EnvironmentQualifier_V2_0 q)
@@ -280,169 +236,14 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                         };
                         if (string.IsNullOrEmpty(q.ValueType))
                             qualifier.ValueType = new DataType(DataObjectType.None);
-                        constraints.Add(qualifier);
-                    }
-                    else if (envConstraint.Constraint is EnvironmentFormula_V2_0 f)
-                    {
-                        Formula formula = new Formula()
-                        {
-                            DependsOn = f.DependsOn?.ConvertAll(c => c.ToReference_V2_0())
-                        };
-                        constraints.Add(formula);
-                    }
+                        qualifiers.Add(qualifier);
+                    }                   
                     else
                         continue;
                 }
-                return constraints;
+                return qualifiers;
             }
             return null;
-        }
-
-        public static EnvironmentSubmodelElement_V2_0 ToEnvironmentSubmodelElement_V2_0(this ISubmodelElement element)
-        {
-            if (element == null)
-                return null;
-            ModelType modelType = element.ModelType;
-
-            if (modelType == null)
-                return null;
-
-            EnvironmentSubmodelElement_V2_0 environmentSubmodelElement = new EnvironmentSubmodelElement_V2_0();
-
-            SubmodelElementType_V2_0 submodelElementType = new SubmodelElementType_V2_0()
-            {
-                Category = element.Category,
-                Description = element.Description,
-                IdShort = element.IdShort,
-                Kind = element.Kind,
-                Qualifier = ConvertToEnvironmentConstraints(element.Qualifiers),
-                SemanticId = element.SemanticId?.ToEnvironmentReference_V2_0()
-            };
-
-            if (modelType == ModelType.Property && element is IProperty castedProperty)
-                environmentSubmodelElement.submodelElement = new Property_V2_0(submodelElementType)
-                {
-                    Value = castedProperty.Value?.ToString(),
-                    ValueId = castedProperty.ValueId?.ToEnvironmentReference_V2_0(),
-                    ValueType = castedProperty.ValueType?.ToString()
-                };
-            else if (modelType == ModelType.MultiLanguageProperty && element is IMultiLanguageProperty castedMultiLanguageProperty)
-            {
-                environmentSubmodelElement.submodelElement = new MultiLanguageProperty_V2_0(submodelElementType)
-                {
-                    Value = castedMultiLanguageProperty.Value,
-                    ValueId = castedMultiLanguageProperty.ValueId?.ToEnvironmentReference_V2_0()
-                };
-            }
-            else if (modelType == ModelType.Range && element is IRange castedRange)
-            {
-                environmentSubmodelElement.submodelElement = new Range_V2_0(submodelElementType)
-                {
-                    Min = castedRange.Min.ToString(),
-                    Max = castedRange.Max.ToString(),
-                    ValueType = castedRange.ValueType?.DataObjectType?.Name
-                };
-            }
-            else if (modelType == ModelType.Operation && element is IOperation castedOperation)
-            {
-                environmentSubmodelElement.submodelElement = new Operation_V2_0(submodelElementType);
-                List<OperationVariable_V2_0> inputs = new List<OperationVariable_V2_0>();
-                List<OperationVariable_V2_0> outputs = new List<OperationVariable_V2_0>();
-                List<OperationVariable_V2_0> inoutputs = new List<OperationVariable_V2_0>();
-
-                if (castedOperation.InputVariables?.Count > 0)
-                    foreach (var inputVar in castedOperation.InputVariables)
-                        inputs.Add(new OperationVariable_V2_0() { Value = inputVar.Value.ToEnvironmentSubmodelElement_V2_0() });
-                if (castedOperation.OutputVariables?.Count > 0)
-                    foreach (var outputVar in castedOperation.OutputVariables)
-                        outputs.Add(new OperationVariable_V2_0() { Value = outputVar.Value.ToEnvironmentSubmodelElement_V2_0() });
-                if (castedOperation.InOutputVariables?.Count > 0)
-                    foreach (var inoutputVar in castedOperation.InOutputVariables)
-                        inoutputs.Add(new OperationVariable_V2_0() { Value = inoutputVar.Value.ToEnvironmentSubmodelElement_V2_0() });
-
-                (environmentSubmodelElement.submodelElement as Operation_V2_0).InputVariables = inputs;
-                (environmentSubmodelElement.submodelElement as Operation_V2_0).OutputVariables = outputs;
-                (environmentSubmodelElement.submodelElement as Operation_V2_0).InOutputVariables = inoutputs;
-            }
-            else if (modelType == ModelType.Capability && element is ICapability castedCapability)
-                environmentSubmodelElement.submodelElement = new Capability_V2_0(submodelElementType) { };
-            else if (modelType == ModelType.Event && element is IEventElement castedEvent)
-                environmentSubmodelElement.submodelElement = new Event_V2_0(submodelElementType) { };
-            else if (modelType == ModelType.BasicEvent && element is IBasicEvent castedBasicEvent)
-            {
-                environmentSubmodelElement.submodelElement = new BasicEvent_V2_0(submodelElementType) 
-                { 
-                    Observed = castedBasicEvent.Observed.ToEnvironmentReference_V2_0()
-                };
-            }
-            else if (modelType == ModelType.Entity && element is IEntity castedEntity)
-            {
-                environmentSubmodelElement.submodelElement = new Entity_V2_0(submodelElementType)
-                {
-                    EntityType = (EnvironmentEntityType)Enum.Parse(typeof(EnvironmentEntityType), castedEntity.EntityType.ToString()),
-                    AssetReference = castedEntity.Asset.ToEnvironmentReference_V2_0()
-                };
-
-                List<EnvironmentSubmodelElement_V2_0> statements = new List<EnvironmentSubmodelElement_V2_0>();
-                if (castedEntity.Statements?.Count() > 0)
-                    foreach (var smElement in castedEntity.Statements)
-                        statements.Add(smElement.ToEnvironmentSubmodelElement_V2_0());
-                (environmentSubmodelElement.submodelElement as Entity_V2_0).Statements = statements;
-            }
-            else if (modelType == ModelType.Blob && element is IBlob castedBlob)
-                environmentSubmodelElement.submodelElement = new Blob_V2_0(submodelElementType)
-                {
-                    Value = castedBlob.Value,
-                    MimeType = castedBlob.MimeType
-                };
-            else if (modelType == ModelType.File && element is IFileElement castedFile)
-                environmentSubmodelElement.submodelElement = new File_V2_0(submodelElementType)
-                {
-                    MimeType = castedFile.ContentType,
-                    Value = castedFile.Value
-                };
-            else if (modelType == ModelType.ReferenceElement && element is IReferenceElement castedReferenceElement)
-                environmentSubmodelElement.submodelElement = new ReferenceElement_V2_0(submodelElementType)
-                {
-                    Value = castedReferenceElement.Value?.ToEnvironmentReference_V2_0()
-                };
-            else if (modelType == ModelType.RelationshipElement && element is IRelationshipElement castedRelationshipElement)
-                environmentSubmodelElement.submodelElement = new RelationshipElement_V2_0(submodelElementType)
-                {
-                    First = castedRelationshipElement.First?.ToEnvironmentReference_V2_0(),
-                    Second = castedRelationshipElement.Second?.ToEnvironmentReference_V2_0()
-                };
-            else if (modelType == ModelType.AnnotatedRelationshipElement && element is IAnnotatedRelationshipElement castedAnnotatedRelationshipElement)
-            {
-                environmentSubmodelElement.submodelElement = new AnnotatedRelationshipElement_V2_0(submodelElementType)
-                {
-                    First = castedAnnotatedRelationshipElement.First?.ToEnvironmentReference_V2_0(),
-                    Second = castedAnnotatedRelationshipElement.Second?.ToEnvironmentReference_V2_0()
-                };
-                List<EnvironmentSubmodelElement_V2_0> environmentSubmodelElements = new List<EnvironmentSubmodelElement_V2_0>();
-                if (castedAnnotatedRelationshipElement.Annotations?.Count() > 0)
-                    foreach (var smElement in castedAnnotatedRelationshipElement.Annotations)
-                        environmentSubmodelElements.Add(smElement.ToEnvironmentSubmodelElement_V2_0());
-                (environmentSubmodelElement.submodelElement as AnnotatedRelationshipElement_V2_0).Annotations = environmentSubmodelElements;
-
-            }
-            else if (modelType == ModelType.SubmodelElementCollection && element is ISubmodelElementCollection castedSubmodelElementCollection)
-            {
-                environmentSubmodelElement.submodelElement = new SubmodelElementCollection_V2_0(submodelElementType)
-                {
-                    AllowDuplicates = castedSubmodelElementCollection.AllowDuplicates,
-                    Ordered = castedSubmodelElementCollection.Ordered
-                };
-                List<EnvironmentSubmodelElement_V2_0> environmentSubmodelElements = new List<EnvironmentSubmodelElement_V2_0>();
-                if (castedSubmodelElementCollection.Value?.Count() > 0)
-                    foreach (var smElement in castedSubmodelElementCollection.Value)
-                        environmentSubmodelElements.Add(smElement.ToEnvironmentSubmodelElement_V2_0());
-                (environmentSubmodelElement.submodelElement as SubmodelElementCollection_V2_0).Value = environmentSubmodelElements;
-            }
-            else
-                return null;
-
-            return environmentSubmodelElement;
-        }       
+        }     
     }
 }

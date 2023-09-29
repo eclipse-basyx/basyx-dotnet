@@ -39,7 +39,7 @@ namespace AdminShellRepoClientServerTests
 
             AssetAdministrationShellRepositoryServiceProvider aasRepoServiceProvider = new AssetAdministrationShellRepositoryServiceProvider();
             IAssetAdministrationShellServiceProvider aasServiceProvider = testShell.CreateServiceProvider(true);
-            aasRepoServiceProvider.RegisterAssetAdministrationShellServiceProvider(testShell.Identification.Id, aasServiceProvider);
+            aasRepoServiceProvider.RegisterAssetAdministrationShellServiceProvider(testShell.Id, aasServiceProvider);
 
             aasRepoServer.SetServiceProvider(aasRepoServiceProvider);
             aasRepoServiceProvider.UseAutoEndpointRegistration(settings.ServerConfig);

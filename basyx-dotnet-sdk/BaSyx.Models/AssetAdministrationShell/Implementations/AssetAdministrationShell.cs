@@ -29,7 +29,7 @@ namespace BaSyx.Models.AdminShell
             {
                 if (_submodelRefs == null 
                     || _submodelRefs.Count < Submodels.Count
-                    || (Submodels.Count > 0 && Submodels.ToList().TrueForAll(sm => _submodelRefs.Any(smRef => sm.Identification.Id == smRef.First.Value))))
+                    || (Submodels.Count > 0 && Submodels.ToList().TrueForAll(sm => _submodelRefs.Any(smRef => sm.Id == smRef.First.Value))))
                 {
                     _submodelRefs = new List<IReference<ISubmodel>>();
                     foreach (var submodel in Submodels)

@@ -24,7 +24,7 @@ namespace BaSyx.Models.Export.Converter
             if (!Enum.TryParse<DataTypeIEC61360>(environmentDataSpecification.DataType.ToString(), out DataTypeIEC61360 dataType))
                 dataType = DataTypeIEC61360.UNDEFINED;
 
-            DataSpecificationIEC61360 dataSpecification = new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
+            var content = new DataSpecificationIEC61360Content()
             {
                 DataType = dataType,
                 Definition = environmentDataSpecification.Definition,
@@ -37,47 +37,32 @@ namespace BaSyx.Models.Export.Converter
                 Value = environmentDataSpecification.Value,
                 ValueFormat = environmentDataSpecification.ValueFormat,
                 ValueId = environmentDataSpecification.ValueId?.ToReference_V2_0(),
-                ValueList = environmentDataSpecification.ValueList?.ConvertAll(c => new Semantics.ValueReferencePair()
+                ValueList = new ValueList()
                 {
-                    Value = c.Value,
-                    ValueId = c.ValueId?.ToReference_V2_0()
-                }),
-                LevelTypes = environmentDataSpecification.LevelTypes?.ConvertAll(c => (LevelType)Enum.Parse(typeof(LevelType), c.ToString()))
-            });
-
-            return dataSpecification;
-        }
-
-        public static EnvironmentDataSpecificationIEC61360_V2_0 ToEnvironmentDataSpecificationIEC61360_V2_0(this DataSpecificationIEC61360Content dataSpecificationContent)
-        {
-            if (dataSpecificationContent == null)
-                return null;
-
-            if(!Enum.TryParse<EnvironmentDataTypeIEC61360>(dataSpecificationContent.DataType.ToString(), out EnvironmentDataTypeIEC61360 dataType))
-                dataType = EnvironmentDataTypeIEC61360.UNDEFINED;
-
-            EnvironmentDataSpecificationIEC61360_V2_0 environmentDataSpecification = new EnvironmentDataSpecificationIEC61360_V2_0()
-            {
-                DataType = dataType,
-                Definition = dataSpecificationContent.Definition,
-                PreferredName = dataSpecificationContent.PreferredName,
-                ShortName = dataSpecificationContent.ShortName,
-                SourceOfDefinition = dataSpecificationContent.SourceOfDefinition,
-                Symbol = dataSpecificationContent.Symbol,
-                Unit = dataSpecificationContent.Unit,
-                UnitId = dataSpecificationContent.UnitId?.ToEnvironmentReference_V2_0(),
-                Value = dataSpecificationContent.Value,
-                ValueFormat = dataSpecificationContent.ValueFormat,
-                ValueId = dataSpecificationContent.ValueId?.ToEnvironmentReference_V2_0(),
-                ValueList = dataSpecificationContent.ValueList?.ConvertAll(c => new EnvironmentDataSpecifications.ValueReferencePair()
-                {
-                    Value = c.Value,
-                    ValueId = c.ValueId?.ToEnvironmentReference_V2_0()
-                }),
-                LevelTypes = dataSpecificationContent.LevelTypes?.ConvertAll(c => (EnvironmentLevelType)Enum.Parse(typeof(EnvironmentLevelType), c.ToString()))
+                    ValueReferencePairs = environmentDataSpecification.ValueList?.ConvertAll(c => new Semantics.ValueReferencePair()
+                    {
+                        Value = c.Value,
+                        ValueId = c.ValueId?.ToReference_V2_0()
+                    })
+                }
             };
+          
+            LevelType levelType = new LevelType();
+            foreach (var envLevelType in environmentDataSpecification.LevelTypes)
+            {                
+                if (envLevelType == EnvironmentLevelType.Min)
+                    levelType.Min = true;
+                if (envLevelType == EnvironmentLevelType.Max)
+                    levelType.Max = true;
+                if (envLevelType == EnvironmentLevelType.Nom)
+                    levelType.Nom = true;
+                if (envLevelType == EnvironmentLevelType.Typ)
+                    levelType.Typ = true;
+            }
+            content.LevelType = levelType;
 
-            return environmentDataSpecification;
-        }
+            DataSpecificationIEC61360 dataSpecification = new DataSpecificationIEC61360(content);
+            return dataSpecification;
+        }    
     }
 }

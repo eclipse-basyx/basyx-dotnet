@@ -20,7 +20,7 @@ namespace BaSyx.Models.Connectivity
     [DataContract]
     public class AssetAdministrationShellDescriptor : Descriptor, IAssetAdministrationShellDescriptor
     {   
-        public IReference GlobalAssetId { get; set; }
+        public Identifier GlobalAssetId { get; set; }
         public IEnumerable<SpecificAssetId> SpecificAssetIds { get; set; }
         public IEnumerable<ISubmodelDescriptor> SubmodelDescriptors { get => _submodelDescriptors; set { _submodelDescriptors = value.ToList(); } }
         public override ModelType ModelType => ModelType.AssetAdministrationShellDescriptor;
@@ -37,7 +37,7 @@ namespace BaSyx.Models.Connectivity
         public AssetAdministrationShellDescriptor(IAssetAdministrationShell aas, IEnumerable<IEndpoint> endpoints) : this(endpoints)
         {
             IdShort = aas.IdShort;
-            Identification = aas.Identification;
+            Identification = aas.Id;
             Administration = aas.Administration;
             Description = aas.Description;       
             DisplayName = aas.DisplayName;

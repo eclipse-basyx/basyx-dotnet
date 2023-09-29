@@ -15,12 +15,12 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public abstract class Identifiable : Referable, IIdentifiable
     {
-        public Identifier Identification { get; set; }
+        public Identifier Id { get; set; }
         public AdministrativeInformation Administration { get; set; }
 
         protected Identifiable(string idShort, Identifier identification) : base(idShort)
         {
-            Identification = identification;
+            Id = identification;
         }
     }
 }

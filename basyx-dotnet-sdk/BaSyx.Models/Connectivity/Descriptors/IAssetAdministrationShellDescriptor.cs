@@ -17,7 +17,7 @@ namespace BaSyx.Models.Connectivity
     public interface IAssetAdministrationShellDescriptor : IServiceDescriptor, IModelElement
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "globalAssetId")]
-        IReference GlobalAssetId { get; }
+        Identifier GlobalAssetId { get; }
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "specificAssetIds")]
         IEnumerable<SpecificAssetId> SpecificAssetIds { get; }

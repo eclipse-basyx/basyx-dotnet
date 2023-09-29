@@ -9,8 +9,8 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using Newtonsoft.Json;
-using System;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -18,35 +18,20 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class Property : SubmodelElement, IProperty
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Property;
+
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
+        public virtual DataType ValueType { get; set; }
+
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
+        public IReference ValueId { get; set; }
 
         /// <summary>
         /// Only internal temporary storage of the current value. 
         /// Get and Set operations shall only be processed via its respective handler.
         /// </summary>
         protected object _value;
-
-        public virtual object Value
-        {
-            get
-            {
-                return Get?.Invoke(this)?.Value;
-            }            
-            set
-            {
-                if (value != null)
-                {
-                    if (value is IValue iValue)
-                        Set?.Invoke(this, iValue);
-                    else
-                        Set?.Invoke(this, new ElementValue(value, ValueType));                   
-                }
-            }
-        }
-
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
-        public virtual DataType ValueType { get; set; }
-        public IReference ValueId { get; set; }        
 
         public Property(string idShort) : this(idShort, null, null)
         { }
@@ -81,45 +66,19 @@ namespace BaSyx.Models.AdminShell
             { 
                 _value = iValue.Value;
                 OnValueChanged(new ValueChangedArgs(IdShort, _value, ValueType));
+                return Task.CompletedTask;
             };
         }
-
-        public T ToObject<T>()
-        {
-            return new ElementValue(Value, ValueType).ToObject<T>();
-        }
-
-        public object ToObject(Type type)
-        {
-            return new ElementValue(Value, ValueType).ToObject(type);
-        }        
     }
     ///<inheritdoc cref="IProperty"/>
     [DataContract]
     public class Property<TInnerType> : Property, IProperty<TInnerType>
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Property;
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
         public override DataType ValueType => typeof(TInnerType);
        
-        [JsonIgnore, IgnoreDataMember]
-        public virtual new TInnerType Value
-        {
-            get
-            {
-                if (Get != null)
-                    return Get.Invoke(this);
-                else
-                    return default;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    Set?.Invoke(this, value);                                       
-                }
-            }
-        }
-
         private GetValueHandler<TInnerType> _get;
         private SetValueHandler<TInnerType> _set;
 
@@ -131,7 +90,7 @@ namespace BaSyx.Models.AdminShell
             {
                 _get = value;
                 if (value != null)
-                    base.Get = new GetValueHandler(element => new ElementValue<TInnerType>(_get.Invoke(element)));
+                    base.Get = new GetValueHandler(async element => new ElementValue<TInnerType>(await _get.Invoke(element)));
                 else
                     base.Get = null;
             }
@@ -144,10 +103,10 @@ namespace BaSyx.Models.AdminShell
             {
                 _set = value;
                 if (value != null)
-                    base.Set = new SetValueHandler((element, iValue) =>
+                    base.Set = new SetValueHandler(async (element, iValue) =>
                     {
                         TInnerType typedValue = iValue.ToObject<TInnerType>();
-                        _set.Invoke(element, typedValue);
+                        await _set.Invoke(element, typedValue);
                         OnValueChanged(new ValueChangedArgs(IdShort, typedValue, ValueType));
                     });
                 else
@@ -160,15 +119,27 @@ namespace BaSyx.Models.AdminShell
         [JsonConstructor]
         public Property(string idShort, TInnerType value) : base(idShort, typeof(TInnerType), value) 
         {
-            _get = element =>
+            _get = async element =>
             {
                 if (base.Get != null)
-                    return base.Get.Invoke(element).ToObject<TInnerType>();
+                {
+                    var result = await base.Get.Invoke(element);
+                    return result.ToObject<TInnerType>();
+                }
                 else
                     return default;
             };
-            _set = (element, iValue) => { base.Set?.Invoke(element, new ElementValue<TInnerType>(iValue)); };
+            _set = async (element, iValue) => { await base.Set?.Invoke(element, new ElementValue<TInnerType>(iValue)); };
         }
 
+        public new async Task<TInnerType> GetValue()
+        {
+            return await Get.Invoke(this);
+        }
+
+        public async Task SetValue(TInnerType value)
+        {
+            await Set.Invoke(this, value);
+        }
     }
 }

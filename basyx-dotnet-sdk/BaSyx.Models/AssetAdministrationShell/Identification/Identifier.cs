@@ -8,9 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
@@ -23,29 +21,23 @@ namespace BaSyx.Models.AdminShell
     public class Identifier
     {
         /// <summary>
-        /// Identifier of the element. Its type is defined in idType.
+        /// The globally unique identification of the element
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = true, Name = "id")]
         [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
         [XmlText]
         public string Id { get; set; }
 
-        /// <summary>
-        /// Type of the Identifierr, e.g. IRI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. 
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = true, Name = "idType")]
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
-        [JsonConverter(typeof(StringEnumConverter))]
-        [XmlAttribute("idType")]
-        public KeyType IdType { get; set; }
-
         internal Identifier() { }
 
-        public Identifier(string id, KeyType idType)
+        public Identifier(string id)
         {
             Id = id;
-            IdType = idType;
-        }        
+        }
+
+        public static implicit operator string(Identifier identifier) => identifier.Id;
+
+        public static implicit operator Identifier(string id) => new Identifier(id);
     }
 
 }

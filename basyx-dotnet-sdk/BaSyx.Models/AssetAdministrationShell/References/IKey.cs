@@ -25,28 +25,13 @@ namespace BaSyx.Models.AdminShell
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "type")]
         [JsonConverter(typeof(StringEnumConverter))]
-        KeyElements Type { get; }
-
-        /// <summary>
-        /// Type of the key value.In case of idType = idShort local shall be true. 
-        /// In case type=GlobalReference idType shall not be IdShort. 
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "idType")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        KeyType IdType { get; }
+        KeyType Type { get; }
 
         /// <summary>
         /// The key value, for example an IRDI if the idType=IRDI. 
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
         string Value { get; }
-
-        /// <summary>
-        /// Denotes if the key references a model element of the same AAS (=true) or not (=false).
-        /// In case of local = false the key may reference a model element of another AAS or an entity outside any AAS that has a global unique id. 
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "local")]
-        bool Local { get; }
 
         /// <summary>
         /// Returns the official string representation of a Key according to Details of Asset Administration Shell (Chapter 5.2.1)

@@ -37,27 +37,23 @@ namespace BaSyx.Models.AdminShell
 
         public string Unit { get => Content.Unit; set => Content.Unit = value; }
 
-        public KeyType UnitIdKeyType { get; set; }
-
         public string UnitId { 
             get => Content.UnitId.ToStandardizedString(); 
-            set => Content.UnitId = new Reference(new GlobalKey(KeyElements.GlobalReference, UnitIdKeyType, value)); }
+            set => Content.UnitId = new Reference(new Key(KeyType.GlobalReference, value)); }
 
         public string ValueFormat { get => Content.ValueFormat; set => Content.ValueFormat = value; }
 
         public object Value { get => Content.Value; set => Content.Value = value; }
 
-        public KeyType ValueIdKeyType { get; set; }
-
         public string ValueId
         {
             get => Content.ValueId.ToStandardizedString();
-            set => Content.ValueId = new Reference(new GlobalKey(KeyElements.GlobalReference, ValueIdKeyType, value));
+            set => Content.ValueId = new Reference(new Key(KeyType.GlobalReference, value));
         }
 
-        public DataSpecificationIEC61360Attribute(string id, KeyType idType)
+        public DataSpecificationIEC61360Attribute(string id)
         {
-            Identification = new Identifier(id, idType);
+            Identification = new Identifier(id);
             Content = new DataSpecificationIEC61360Content();
         }
     }

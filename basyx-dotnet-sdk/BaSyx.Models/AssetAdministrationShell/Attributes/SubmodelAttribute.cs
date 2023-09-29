@@ -34,17 +34,17 @@ namespace BaSyx.Models.AdminShell
         public Reference SemanticId { get; }
         public ModelingKind Kind { get; set; } = ModelingKind.Instance;
 
-        public SubmodelAttribute(string idShort, string id, KeyType idType)
+        public SubmodelAttribute(string idShort, string id)
         {
             IdShort = idShort;
-            Identification = new Identifier(id, idType);
+            Identification = new Identifier(id);
         }
 
-        public SubmodelAttribute(string idShort, string id, KeyType idType, string semanticId, KeyElements semanticKeyElement, KeyType semanticKeyType)
+        public SubmodelAttribute(string idShort, string id,string semanticId)
         {
             IdShort = idShort;
-            Identification = new Identifier(id, idType);
-            SemanticId = new Reference(new Key(semanticKeyElement, semanticKeyType, semanticId, false));
+            Identification = new Identifier(id);
+            SemanticId = new Reference(new Key(KeyType.GlobalReference, semanticId));
         }
     }
 }

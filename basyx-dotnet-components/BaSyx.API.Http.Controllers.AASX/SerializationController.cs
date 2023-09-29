@@ -68,86 +68,86 @@ namespace BaSyx.API.Http.Controllers.PackageService
         [ProducesResponseType(200)]
         public IActionResult GenerateSerializationByIds([FromQuery(Name = "aasId[]")] List<string> aasIds, [FromQuery(Name = "submodelId[]")] List<string> submodelIds, [FromQuery] bool includeConceptDescriptions)
         {
-            AssetAdministrationShellEnvironment_V2_0 environment = new AssetAdministrationShellEnvironment_V2_0();
-            if (serviceProvider is IAssetAdministrationShellRepositoryServiceProvider aasRepoServiceProvider)
-            {
-                foreach (var aasId in aasIds)
-                {
-                    var retrieved_aasSP = aasRepoServiceProvider.ShellProviderRegistry.GetAssetAdministrationShellServiceProvider(aasId);
-                    if (retrieved_aasSP.Success)
-                    {
-                        var retrieved_aas = retrieved_aasSP.Entity.RetrieveAssetAdministrationShell(default);
-                        if (retrieved_aas.Success)
-                            environment.AddAssetAdministrationShell(retrieved_aas.Entity, false);
+            //AssetAdministrationShellEnvironment_V2_0 environment = new AssetAdministrationShellEnvironment_V2_0();
+            //if (serviceProvider is IAssetAdministrationShellRepositoryServiceProvider aasRepoServiceProvider)
+            //{
+            //    foreach (var aasId in aasIds)
+            //    {
+            //        var retrieved_aasSP = aasRepoServiceProvider.ShellProviderRegistry.GetAssetAdministrationShellServiceProvider(aasId);
+            //        if (retrieved_aasSP.Success)
+            //        {
+            //            var retrieved_aas = retrieved_aasSP.Entity.RetrieveAssetAdministrationShell(default);
+            //            if (retrieved_aas.Success)
+            //                environment.AddAssetAdministrationShell(retrieved_aas.Entity, false);
 
-                        var submodel = GetSubmodel(retrieved_aas.Entity, retrieved_aasSP.Entity.SubmodelProviderRegistry, submodelIds);
-                        if(submodel != null && environment.Submodels.FindIndex(s => s.Identification.Id == submodel.Identification.Id) == -1)
-                            environment.AddSubmodel(submodel);
-                    }
-                }
-            }
-            else if (serviceProvider is IAssetAdministrationShellServiceProvider aasSP)
-            {
-                var retrieved_aas = aasSP.RetrieveAssetAdministrationShell(default);
-                if (retrieved_aas.Success && aasIds.Any(a => a == retrieved_aas.Entity.Identification.Id))
-                {
-                    environment.AddAssetAdministrationShell(retrieved_aas.Entity, false);
+            //            var submodel = GetSubmodel(retrieved_aas.Entity, retrieved_aasSP.Entity.SubmodelProviderRegistry, submodelIds);
+            //            if(submodel != null && environment.Submodels.FindIndex(s => s.Id == submodel.Id) == -1)
+            //                environment.AddSubmodel(submodel);
+            //        }
+            //    }
+            //}
+            //else if (serviceProvider is IAssetAdministrationShellServiceProvider aasSP)
+            //{
+            //    var retrieved_aas = aasSP.RetrieveAssetAdministrationShell(default);
+            //    if (retrieved_aas.Success && aasIds.Any(a => a == retrieved_aas.Entity.Id))
+            //    {
+            //        environment.AddAssetAdministrationShell(retrieved_aas.Entity, false);
 
-                    var submodel = GetSubmodel(retrieved_aas.Entity, aasSP.SubmodelProviderRegistry, submodelIds);
-                    if (submodel != null && environment.Submodels.FindIndex(s => s.Identification.Id == submodel.Identification.Id) == -1)
-                        environment.AddSubmodel(submodel);
-                }
-            }
-            else if (serviceProvider is ISubmodelRepositoryServiceProvider submodelRepoSP)
-            {
-                foreach (var submodelId in submodelIds)
-                {
-                    var retrieved_submodel = submodelRepoSP.RetrieveSubmodel(submodelId);
-                    if (retrieved_submodel.Success && environment.Submodels.FindIndex(s => s.Identification.Id == retrieved_submodel.Entity.Identification.Id) == -1)
-                    {
-                        environment.AddSubmodel(retrieved_submodel.Entity);
-                    }
-                }
-            }
-            else if (serviceProvider is ISubmodelServiceProvider submodelSP)
-            {
-                var retrieved_submodel = submodelSP.RetrieveSubmodel(default);
-                if (retrieved_submodel.Success && submodelIds.Any(a => a == retrieved_submodel.Entity.Identification.Id) && environment.Submodels.FindIndex(s => s.Identification.Id == retrieved_submodel.Entity.Identification.Id) == -1)
-                {
-                    environment.AddSubmodel(retrieved_submodel.Entity);
-                }
-            }
+            //        var submodel = GetSubmodel(retrieved_aas.Entity, aasSP.SubmodelProviderRegistry, submodelIds);
+            //        if (submodel != null && environment.Submodels.FindIndex(s => s.Id == submodel.Id) == -1)
+            //            environment.AddSubmodel(submodel);
+            //    }
+            //}
+            //else if (serviceProvider is ISubmodelRepositoryServiceProvider submodelRepoSP)
+            //{
+            //    foreach (var submodelId in submodelIds)
+            //    {
+            //        var retrieved_submodel = submodelRepoSP.RetrieveSubmodel(submodelId);
+            //        if (retrieved_submodel.Success && environment.Submodels.FindIndex(s => s.Id == retrieved_submodel.Entity.Id) == -1)
+            //        {
+            //            environment.AddSubmodel(retrieved_submodel.Entity);
+            //        }
+            //    }
+            //}
+            //else if (serviceProvider is ISubmodelServiceProvider submodelSP)
+            //{
+            //    var retrieved_submodel = submodelSP.RetrieveSubmodel(default);
+            //    if (retrieved_submodel.Success && submodelIds.Any(a => a == retrieved_submodel.Entity.Id) && environment.Submodels.FindIndex(s => s.Id == retrieved_submodel.Entity.Id) == -1)
+            //    {
+            //        environment.AddSubmodel(retrieved_submodel.Entity);
+            //    }
+            //}
 
-            if (!includeConceptDescriptions)
-                environment.ConceptDescriptions.Clear();
+            //if (!includeConceptDescriptions)
+            //    environment.ConceptDescriptions.Clear();
 
-            environment.BuildEnvironment();
+            //environment.BuildEnvironment();
 
-            string acceptType = HttpContext.Request.Headers["Accept"];
-            switch (acceptType)
-            {
-                case "application/json":
-                    {
-                        return new JsonResult(environment);
-                    }
-                case "application/xml":
-                    { 
-                        var serializer = new System.Xml.Serialization.XmlSerializer(environment.GetType());
-                        using (StringWriter textWriter = new StringWriter())
-                        {
-                            serializer.Serialize(textWriter, environment);
-                            string xmlString = textWriter.ToString();
-                            return this.Content(xmlString, acceptType);
-                        }
-                    }
-                case "application/asset-administration-shell-package+xml":
-                    {
-                        string fileName = Path.GetRandomFileName() + ".aasx";
-                        return GetAASXPackage(fileName, new Identifier("root", KeyType.Custom), environment);
-                    }
-                default:
-                    break;
-            }
+            //string acceptType = HttpContext.Request.Headers["Accept"];
+            //switch (acceptType)
+            //{
+            //    case "application/json":
+            //        {
+            //            return new JsonResult(environment);
+            //        }
+            //    case "application/xml":
+            //        { 
+            //            var serializer = new System.Xml.Serialization.XmlSerializer(environment.GetType());
+            //            using (StringWriter textWriter = new StringWriter())
+            //            {
+            //                serializer.Serialize(textWriter, environment);
+            //                string xmlString = textWriter.ToString();
+            //                return this.Content(xmlString, acceptType);
+            //            }
+            //        }
+            //    case "application/asset-administration-shell-package+xml":
+            //        {
+            //            string fileName = Path.GetRandomFileName() + ".aasx";
+            //            return GetAASXPackage(fileName, new Identifier("root"), environment);
+            //        }
+            //    default:
+            //        break;
+            //}
             return BadRequest();
         }
 
@@ -169,20 +169,21 @@ namespace BaSyx.API.Http.Controllers.PackageService
             return null;
         }
 
-        private IActionResult GetAASXPackage(string fileName, Identifier id, AssetAdministrationShellEnvironment_V2_0 environment)
-        {
-            string aasxFilePath = Path.Combine(hostingEnvironment.ContentRootPath, fileName);
-            IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
+        //TODO
+        //private IActionResult GetAASXPackage(string fileName, Identifier id, AssetAdministrationShellEnvironment_V2_0 environment)
+        //{
+        //    string aasxFilePath = Path.Combine(hostingEnvironment.ContentRootPath, fileName);
+        //    IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
 
-            using (AASX aasx = new AASX(aasxFilePath))
-                aasx.AddEnvironment(id, environment, ExportType.Xml);
+        //    using (AASX_V2_0 aasx = new AASX_V2_0(aasxFilePath))
+        //        aasx.AddEnvironment(id, environment, ExportType.Xml);
       
-            var fileInfo = fileProvider.GetFileInfo(fileName);
-            var fileResult = new PhysicalFileResult(fileInfo.PhysicalPath, "application/asset-administration-shell-package+xml")
-            {
-                FileDownloadName = fileName
-            };
-            return fileResult;
-        }
+        //    var fileInfo = fileProvider.GetFileInfo(fileName);
+        //    var fileResult = new PhysicalFileResult(fileInfo.PhysicalPath, "application/asset-administration-shell-package+xml")
+        //    {
+        //        FileDownloadName = fileName
+        //    };
+        //    return fileResult;
+        //}
     }
 }

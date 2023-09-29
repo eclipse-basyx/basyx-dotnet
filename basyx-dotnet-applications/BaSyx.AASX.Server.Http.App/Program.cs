@@ -155,7 +155,7 @@ namespace BaSyx.AASX.Server.Http.App
 
         private static void LoadAASX(string aasxFilePath)
         {
-            using (BaSyx.Models.Export.AASX aasx = new BaSyx.Models.Export.AASX(aasxFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (BaSyx.Models.Export.AASX_V2_0 aasx = new BaSyx.Models.Export.AASX_V2_0(aasxFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 AssetAdministrationShellEnvironment_V2_0 environment = aasx.GetEnvironment_V2_0();
                 if (environment == null)
@@ -188,11 +188,11 @@ namespace BaSyx.AASX.Server.Http.App
                 {
                     return new Endpoint(
                         new Uri(e.Uri, 
-                        new Uri("/shells/" + HttpUtility.UrlEncode(shell.Identification.Id), UriKind.Relative)), InterfaceName.AssetAdministrationShellRepositoryInterface);
+                        new Uri("/shells/" + HttpUtility.UrlEncode(shell.Id), UriKind.Relative)), InterfaceName.AssetAdministrationShellRepositoryInterface);
                 });
 
                 aasServiceProvider.UseDefaultEndpointRegistration(aasServiceEndpoints);
-                repositoryService.RegisterAssetAdministrationShellServiceProvider(shell.Identification.Id, aasServiceProvider);
+                repositoryService.RegisterAssetAdministrationShellServiceProvider(shell.Id, aasServiceProvider);
 
                 if (serverSettings.Miscellaneous.ContainsKey("AutoRegister") && serverSettings.Miscellaneous["AutoRegister"] == "true")
                 {
@@ -202,7 +202,7 @@ namespace BaSyx.AASX.Server.Http.App
                 }
             }
 
-            string aasIdName = assetAdministrationShells.First().Identification.Id;
+            string aasIdName = assetAdministrationShells.First().Id;
             foreach (char invalidChar in Path.GetInvalidFileNameChars())
                 aasIdName = aasIdName.Replace(invalidChar, '_');
 

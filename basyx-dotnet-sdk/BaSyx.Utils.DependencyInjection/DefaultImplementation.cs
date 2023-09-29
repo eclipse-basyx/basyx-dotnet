@@ -13,7 +13,6 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 
 namespace BaSyx.Utils.DependencyInjection
 {
@@ -21,11 +20,9 @@ namespace BaSyx.Utils.DependencyInjection
     {
         public static IServiceCollection AddStandardImplementation(this IServiceCollection services)
         {
-            services.AddTransient<IAsset, Asset>();
             services.AddTransient<IAssetInformation, AssetInformation>();
             services.AddTransient<IAssetAdministrationShell, AssetAdministrationShell>();
             services.AddTransient<ISubmodel, Submodel>();
-            services.AddTransient<IView, View>();
             services.AddTransient<IConceptDictionary, ConceptDictionary>();
 
             services.AddTransient<IEndpoint, Endpoint>();
@@ -41,19 +38,16 @@ namespace BaSyx.Utils.DependencyInjection
             //services.AddTransient(typeof(IEnumerable<ISubmodelRepositoryDescriptor>), typeof(List<ISubmodelRepositoryDescriptor>));
             //services.AddTransient(typeof(IEnumerable<ISubmodelDescriptor>), typeof(List<ISubmodelDescriptor>));
             services.AddTransient(typeof(IElementContainer<IAssetAdministrationShell>), typeof(ElementContainer<IAssetAdministrationShell>));
-            services.AddTransient(typeof(IElementContainer<IAsset>), typeof(ElementContainer<IAsset>));
             services.AddTransient(typeof(IElementContainer<ISubmodel>), typeof(ElementContainer<ISubmodel>));
             services.AddTransient(typeof(IElementContainer<ISubmodelElement>), typeof(ElementContainer<ISubmodelElement>));
-            services.AddTransient(typeof(IElementContainer<IView>), typeof(ElementContainer<IView>));
             services.AddTransient(typeof(IElementContainer<IConceptDictionary>), typeof(ElementContainer<IConceptDictionary>));
 
-       
             services.AddTransient<IProperty, Property>();
             services.AddTransient(typeof(IProperty<>), typeof(Property<>));
             services.AddTransient<IOperation, Operation>();
             services.AddTransient<IOperationVariableSet, OperationVariableSet>();
             services.AddTransient<IOperationVariable, OperationVariable>();
-            services.AddTransient<IEventElement, BasicEvent>();
+            services.AddTransient<IEventElement, BasicEventElement>();
             services.AddTransient<IBasicEventElement, BasicEventElement>();
             services.AddTransient<IEventPayload, EventPayload>();
             services.AddTransient<ISubmodelElementCollection, SubmodelElementCollection>();
@@ -76,7 +70,6 @@ namespace BaSyx.Utils.DependencyInjection
 
             services.AddTransient<IReference, Reference>();
             services.AddTransient(typeof(IReference<IAssetAdministrationShell>), typeof(Reference<AssetAdministrationShell>));
-            services.AddTransient(typeof(IReference<IAsset>), typeof(Reference<Asset>));
             services.AddTransient(typeof(IReference<ISubmodel>), typeof(Reference<Submodel>));
             services.AddTransient(typeof(IReference<IConceptDescription>), typeof(Reference<ConceptDescription>));
 

@@ -18,7 +18,7 @@ namespace BaSyx.Models.Semantics
     public class DataSpecificationIEC61360 : IEmbeddedDataSpecification
     {
         public IReference DataSpecification => new Reference(
-            new GlobalKey(KeyElements.GlobalReference, KeyType.IRI, "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0"));
+            new Key(KeyType.GlobalReference, "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0"));
         [DataSpecificationContent(typeof(DataSpecificationIEC61360Content), "IEC61360")]
         public IDataSpecificationContent DataSpecificationContent { get; set; }
 

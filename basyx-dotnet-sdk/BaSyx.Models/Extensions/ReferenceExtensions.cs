@@ -26,7 +26,7 @@ namespace BaSyx.Models.Extensions
 
         public static bool IsEClassReference(this IReference reference)
         {
-            if (reference == null || reference.First == null || string.IsNullOrEmpty(reference.First.Value) || reference.First.IdType != KeyType.IRDI)
+            if (reference == null || reference.First == null || string.IsNullOrEmpty(reference.First.Value))
                 return false;
 
             if (reference.First.Value.StartsWith(eClass_ICD))
@@ -37,7 +37,7 @@ namespace BaSyx.Models.Extensions
 
         public static bool IsIsoReference(this IReference reference)
         {
-            if (reference == null || reference.First == null || string.IsNullOrEmpty(reference.First.Value) || reference.First.IdType != KeyType.IRDI)
+            if (reference == null || reference.First == null || string.IsNullOrEmpty(reference.First.Value))
                 return false;
 
             if (reference.First.Value.StartsWith(ISO_ICD))
@@ -48,7 +48,7 @@ namespace BaSyx.Models.Extensions
 
         public static bool IsGtinReference(this IReference reference)
         {
-            if (reference == null || reference.First == null || string.IsNullOrEmpty(reference.First.Value) || reference.First.IdType != KeyType.IRDI)
+            if (reference == null || reference.First == null || string.IsNullOrEmpty(reference.First.Value))
                 return false;
 
             if (reference.First.Value.StartsWith(GTIN_ICD))

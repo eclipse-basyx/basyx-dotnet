@@ -42,11 +42,11 @@ namespace BaSyx.Models.AdminShell
             ValueType = new DataType(DataObjectType.GetDataObjectType(valueObjectType));
         }
 
-        public PropertyAttribute(string idShort, DataObjectTypes valueObjectType, string semanticId, KeyElements semanticKeyElement, KeyType semanticKeyType)
+        public PropertyAttribute(string idShort, DataObjectTypes valueObjectType, string semanticId)
         {
             IdShort = idShort;
             ValueType = new DataType(DataObjectType.GetDataObjectType(valueObjectType));
-            SemanticId = new Reference(new Key(semanticKeyElement, semanticKeyType, semanticId, false));
+            SemanticId = new Reference(new Key(KeyType.GlobalReference, semanticId));
         }
     }
 }

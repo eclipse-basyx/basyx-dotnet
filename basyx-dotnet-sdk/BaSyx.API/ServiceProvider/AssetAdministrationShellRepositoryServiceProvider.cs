@@ -54,7 +54,7 @@ namespace BaSyx.API.ServiceProvider
         {
             foreach (var assetAdministrationShell in assetAdministrationShells)
             {
-                RegisterAssetAdministrationShellServiceProvider(assetAdministrationShell.Identification.Id, assetAdministrationShell.CreateServiceProvider(true));
+                RegisterAssetAdministrationShellServiceProvider(assetAdministrationShell.Id, assetAdministrationShell.CreateServiceProvider(true));
             }
             ServiceDescriptor = ServiceDescriptor ?? new AssetAdministrationShellRepositoryDescriptor(assetAdministrationShells, null);
         }
@@ -78,11 +78,11 @@ namespace BaSyx.API.ServiceProvider
             if (aas == null)
                 return new Result<IAssetAdministrationShell>(new ArgumentNullException(nameof(aas)));
             
-            var registered = RegisterAssetAdministrationShellServiceProvider(aas.Identification.Id, aas.CreateServiceProvider(true));
+            var registered = RegisterAssetAdministrationShellServiceProvider(aas.Id, aas.CreateServiceProvider(true));
             if (!registered.Success)
                 return new Result<IAssetAdministrationShell>(registered);
 
-            var retrievedShellServiceProvider = GetAssetAdministrationShellServiceProvider(aas.Identification.Id);
+            var retrievedShellServiceProvider = GetAssetAdministrationShellServiceProvider(aas.Id);
             if (retrievedShellServiceProvider.TryGetEntity(out IAssetAdministrationShellServiceProvider serviceProvider))
                 return new Result<IAssetAdministrationShell>(true, serviceProvider.GetBinding());
             else

@@ -54,7 +54,7 @@ namespace BaSyx.API.ServiceProvider
         {
             foreach (var submodel in submodels)
             {
-                RegisterSubmodelServiceProvider(submodel.Identification.Id, submodel.CreateServiceProvider());
+                RegisterSubmodelServiceProvider(submodel.Id, submodel.CreateServiceProvider());
             }
             ServiceDescriptor = ServiceDescriptor ?? new SubmodelRepositoryDescriptor(submodels, null);
         }
@@ -78,11 +78,11 @@ namespace BaSyx.API.ServiceProvider
             if (submodel == null)
                 return new Result<ISubmodel>(new ArgumentNullException(nameof(submodel)));
 
-            var registered = RegisterSubmodelServiceProvider(submodel.Identification.Id, submodel.CreateServiceProvider());
+            var registered = RegisterSubmodelServiceProvider(submodel.Id, submodel.CreateServiceProvider());
             if (!registered.Success)
                 return new Result<ISubmodel>(registered);
 
-            var retrievedSubmodelServiceProvider = GetSubmodelServiceProvider(submodel.Identification.Id);
+            var retrievedSubmodelServiceProvider = GetSubmodelServiceProvider(submodel.Id);
             if (retrievedSubmodelServiceProvider.TryGetEntity(out ISubmodelServiceProvider serviceProvider))
                 return new Result<ISubmodel>(true, serviceProvider.GetBinding());
             else

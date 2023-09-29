@@ -31,7 +31,7 @@ namespace BaSyx.API.ServiceProvider
                 foreach (var submodel in aas.Submodels.Values)
                 {
                     var submodelSp = submodel.CreateServiceProvider();
-                    sp.RegisterSubmodelServiceProvider(submodel.Identification.Id, submodelSp);
+                    sp.RegisterSubmodelServiceProvider(submodel.Id, submodelSp);
                 }
 
             return sp;

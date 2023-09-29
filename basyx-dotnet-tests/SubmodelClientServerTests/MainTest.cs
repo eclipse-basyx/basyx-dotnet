@@ -61,7 +61,7 @@ namespace SubmodelClientServerTests
 
             result.Success.Should().BeTrue();
             result.Entity.IdShort.Should().BeEquivalentTo(Submodel.IdShort);
-            result.Entity.Identification.Should().BeEquivalentTo(Submodel.Identification);
+            result.Entity.Id.Should().BeEquivalentTo(Submodel.Id);
             result.Entity.Description.Should().BeEquivalentTo(Submodel.Description);
             result.Entity.DisplayName.Should().BeEquivalentTo(Submodel.DisplayName);
             result.Entity.SemanticId.Should().BeEquivalentTo(Submodel.SemanticId);

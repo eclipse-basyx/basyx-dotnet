@@ -70,9 +70,6 @@ namespace BaSyx.Models.AdminShell
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "maxInterval")]
         string MaxInterval { get; }        
-
-        [IgnoreDataMember]
-        IElementContainer<ISubmodelElement> SubmodelElements { get; }
     }
 
     [DataContract]

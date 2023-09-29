@@ -83,9 +83,9 @@ namespace BaSyx.Models.Export.Converter
                 return new Operation_V2_0();
             if (modelType == ModelType.Capability)
                 return new Capability_V2_0();
-            if (modelType == ModelType.BasicEvent)
+            if (modelType == ModelType.BasicEventElement)
                 return new BasicEvent_V2_0();
-            if (modelType == ModelType.Event)
+            if (modelType == ModelType.EventElement)
                 return new Event_V2_0();
             if (modelType == ModelType.Entity)
                 return new Entity_V2_0();

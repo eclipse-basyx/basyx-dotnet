@@ -11,23 +11,34 @@
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
-{
+{    
     [DataContract]
     public enum KeyType
     {
-        [EnumMember(Value = "Undefined")]
         Undefined,
-        [EnumMember(Value = "Custom")]
-        Custom,
-        [EnumMember(Value = "IRI")]
-        IRI,
-        [EnumMember(Value = "URI")]
-        URI,
-        [EnumMember(Value = "IRDI")]
-        IRDI,
-        [EnumMember(Value = "IdShort")]
-        IdShort,
-        [EnumMember(Value = "FragmentId")]
-        FragmentId
+        AnnotatedRelationshipElement,
+        AssetAdministrationShell,
+        BasicEventElement,
+        Blob,
+        Capability,
+        ConceptDescription,
+        DataElement,
+        Entity,
+        EventElement,
+        File,
+        FragmentReference,
+        GlobalReference,
+        Identifiable,
+        MultiLanguageProperty,
+        Operation,
+        Property,
+        Range,
+        Referable,
+        ReferenceElement,
+        RelationshipElement,
+        Submodel,
+        SubmodelElement,
+        SubmodelElementCollection,
+        SubmodelElementList
     }
 }

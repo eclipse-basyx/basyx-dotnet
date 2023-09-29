@@ -46,7 +46,7 @@ namespace BaSyx.WebUI
             shellServer = new AssetAdministrationShellHttpServer(serverSettings);
             shellServer.WebHostBuilder.UseNLog();
 
-            string websiteHostName = Environment.ExpandEnvironmentVariables("%WEBSITE_HOSTNAME%");
+            string websiteHostName = System.Environment.ExpandEnvironmentVariables("%WEBSITE_HOSTNAME%");
             if (!(string.IsNullOrEmpty(websiteHostName) || websiteHostName == "%WEBSITE_HOSTNAME%"))
             {
                 string websiteUrl = string.Format("https://{0}", websiteHostName);
@@ -99,7 +99,7 @@ namespace BaSyx.WebUI
                                     {
                                         await response.Content.CopyToAsync(stream);
                                         Package package = Package.Open(stream, FileMode.Open, FileAccess.Read);
-                                        AASX aasx = new AASX(package);
+                                        AASX_V2_0 aasx = new AASX_V2_0(package);
                                         success = LoadAASX(aasx);
                                     }                            
                                 }
@@ -160,10 +160,10 @@ namespace BaSyx.WebUI
 
         private static IAssetAdministrationShellServiceProvider CreateDefaultShellProvider()
         {
-            IAssetAdministrationShell shell = new AssetAdministrationShell("DefaultShell", new Identifier(Guid.NewGuid().ToString(), KeyType.Custom))
+            IAssetAdministrationShell shell = new AssetAdministrationShell("DefaultShell", new Identifier(Guid.NewGuid().ToString()))
             {
-                Asset = new Asset("DefaultAsset", new Identifier(Guid.NewGuid().ToString(), KeyType.Custom)),
-                Submodels = { new BaSyx.Models.AdminShell.Submodel("DefaultSubmodel", new Identifier(Guid.NewGuid().ToString(), KeyType.Custom)) }
+                AssetInformation = new AssetInformation() { GlobalAssetId = new Identifier(Guid.NewGuid().ToString()) },
+                Submodels = { new Submodel("DefaultSubmodel", new Identifier(Guid.NewGuid().ToString())) }
             };
 
             var provider = shell.CreateServiceProvider(true);
@@ -171,7 +171,7 @@ namespace BaSyx.WebUI
             return provider;
         }
 
-        private static bool LoadAASX(AASX aasx)
+        private static bool LoadAASX(AASX_V2_0 aasx)
         {
             using (aasx)
             {
@@ -188,23 +188,8 @@ namespace BaSyx.WebUI
                 }
                 catch (Exception e1)
                 {
-                    logger.Warn(e1, "Error obtaining Asset Administration Shell from package. Trying AAS-Version 1.0 ...");
-                    try
-                    {
-                        AssetAdministrationShellEnvironment_V1_0 environment = aasx.GetEnvironment_V1_0();
-                        shell = environment.AssetAdministrationShells.FirstOrDefault();
-                        if (shell == null)
-                        {
-                            logger.Error("Asset Administration Shell cannot be obtained from AASX-Package");
-                            return false;
-                        }
-                    }
-                    catch (Exception e2)
-                    {
-                        logger.Error(e2, "Asset Administration Shell cannot be obtained from AASX-Package");
-                        return false;
-                    }
-
+                    logger.Error(e1, "Asset Administration Shell cannot be obtained from AASX-Package");
+                    return false;
                 }
 
                 logger.Info("AASX-Package successfully loaded");

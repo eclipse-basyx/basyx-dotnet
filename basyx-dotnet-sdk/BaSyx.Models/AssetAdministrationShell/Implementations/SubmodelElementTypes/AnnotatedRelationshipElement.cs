@@ -19,9 +19,6 @@ namespace BaSyx.Models.AdminShell
         public AnnotatedRelationshipElement(string idShort) : base(idShort) 
         {
             Annotations = new ElementContainer<ISubmodelElement>(this);
-
-            Get = element => { return new ElementValue(Annotations, new DataType(DataObjectType.AnyType)); };
-            Set = (element, value) => { Annotations = value.Value as IElementContainer<ISubmodelElement>; };
         }     
     }
 }

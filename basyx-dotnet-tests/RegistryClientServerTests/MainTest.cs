@@ -66,7 +66,7 @@ namespace RegistryClientServerTests
         [TestMethod]
         public void Test101_RetrieveAssetAdministrationShellRegistration()
         {
-            RetrieveAssetAdministrationShellRegistration(Shell.Identification.Id);
+            RetrieveAssetAdministrationShellRegistration(Shell.Id);
         }
 
         [TestMethod]
@@ -96,13 +96,13 @@ namespace RegistryClientServerTests
         [TestMethod]
         public void Test105_CreateSubmodelRegistration()
         {
-            CreateSubmodelRegistration(Shell.Identification.Id, SubmodelDescriptor);
+            CreateSubmodelRegistration(Shell.Id, SubmodelDescriptor);
         }
 
         [TestMethod]
         public void Test106_RetrieveSubmodelRegistration()
         {
-            RetrieveSubmodelRegistration(Shell.Identification.Id, SubmodelDescriptor.Identification.Id);
+            RetrieveSubmodelRegistration(Shell.Id, SubmodelDescriptor.Identification.Id);
         }
 
         [TestMethod]
@@ -126,7 +126,7 @@ namespace RegistryClientServerTests
                 new LangString("en", "My new description")
             };
             SubmodelDescriptor.Description = newDescription;
-            UpdateSubmodelRegistration(ShellDescriptor.Identification.Id, Submodel.Identification.Id, SubmodelDescriptor);
+            UpdateSubmodelRegistration(ShellDescriptor.Identification.Id, Submodel.Id, SubmodelDescriptor);
         }
 
         [TestMethod]

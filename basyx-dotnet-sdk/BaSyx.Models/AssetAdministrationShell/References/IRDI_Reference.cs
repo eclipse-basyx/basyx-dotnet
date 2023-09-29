@@ -17,14 +17,14 @@ namespace BaSyx.Models.AdminShell
         /// </summary>
         /// <param name="referredtype">KeyElements-Type</param>
         /// <param name="irdi">IRDI</param>
-        public IRDI_Reference(KeyElements referredtype, string irdi) : base(new GlobalKey(referredtype, KeyType.IRDI, irdi))
+        public IRDI_Reference(KeyType referredtype, string irdi) : base(new Key(referredtype, irdi))
         { }
 
         /// <summary>
         /// Creates a new IRDI-Reference with KeyElements-Type: GlobalReference
         /// </summary>
         /// <param name="irdi">IRDI</param>
-        public IRDI_Reference(string irdi) : this(KeyElements.GlobalReference, irdi)
+        public IRDI_Reference(string irdi) : this(KeyType.GlobalReference, irdi)
         { }
     }
 }

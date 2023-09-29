@@ -30,10 +30,7 @@ namespace BaSyx.Models.AdminShell
         [JsonConstructor]
         public Range(string idShort, DataType valueType) : base(idShort) 
         {
-            ValueType = valueType;
-
-            Get = element => { return new ElementValue(new { Min = Min?.Value, Max = Max?.Value}, new DataType(DataObjectType.AnyType)); };
-            Set = (element, value) => { dynamic dVal = value?.Value; Min = new ElementValue(dVal?.Min, ValueType); Max = new ElementValue(dVal?.Max, ValueType); };
+            ValueType = valueType;           
         }
     }
 }

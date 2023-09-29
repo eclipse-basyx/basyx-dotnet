@@ -37,7 +37,7 @@ namespace SubmodelRepoClientServerTests
 
             SubmodelRepositoryServiceProvider submodelRepoServiceProvider = new SubmodelRepositoryServiceProvider();
             ISubmodelServiceProvider submodelServiceProvider = mainSubmodel.CreateServiceProvider();
-            submodelRepoServiceProvider.RegisterSubmodelServiceProvider(mainSubmodel.Identification.Id, submodelServiceProvider);
+            submodelRepoServiceProvider.RegisterSubmodelServiceProvider(mainSubmodel.Id, submodelServiceProvider);
 
             submodelRepoServer.SetServiceProvider(submodelRepoServiceProvider);
             submodelRepoServiceProvider.UseAutoEndpointRegistration(settings.ServerConfig);

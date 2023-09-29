@@ -26,6 +26,10 @@ namespace BaSyx.Models.AdminShell
         SubmodelElementList,
         Operation,
         OperationVariable,
+        BasicEvent,
+        Constraint,
+        Formula,
+        Event,
         BasicEventElement,
         DataSpecificationIec61360,
         EventElement,
@@ -64,6 +68,7 @@ namespace BaSyx.Models.AdminShell
         public static readonly ModelType Event = new ModelType("Event");
         public static readonly ModelType BasicEvent = new ModelType("BasicEvent");
         public static readonly ModelType DataSpecificationIec61360 = new ModelType("DataSpecificationIec61360");
+        public static readonly ModelType BasicEventElement = new ModelType("BasicEventElement");
         public static readonly ModelType EventElement = new ModelType("EventElement");
         public static readonly ModelType EventMessage = new ModelType("EventMessage");
         public static readonly ModelType View = new ModelType("View");

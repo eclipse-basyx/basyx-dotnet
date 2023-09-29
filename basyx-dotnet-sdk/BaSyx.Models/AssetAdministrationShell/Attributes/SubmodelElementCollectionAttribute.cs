@@ -22,17 +22,12 @@ namespace BaSyx.Models.AdminShell
         {
             _submodelElementCollection = new SubmodelElementCollection(IdShort)
             {
-                AllowDuplicates = AllowDuplicates,
-                Ordered = Ordered,
                 SemanticId = SemanticId,
                 Kind = Kind,
                 Category = Category
             };
             return _submodelElementCollection;
         }
-
-        public bool Ordered { get; set; } = false;
-        public bool AllowDuplicates { get; set; } = false;
         public string IdShort { get; set; }
         public string Category { get; set; }
         public Reference SemanticId { get; set; }
@@ -45,10 +40,10 @@ namespace BaSyx.Models.AdminShell
             IdShort = idShort;
         }
 
-        public SubmodelElementCollectionAttribute(string idShort, string semanticId, KeyElements semanticKeyElement, KeyType semanticKeyType)
+        public SubmodelElementCollectionAttribute(string idShort, string semanticId)
         {
             IdShort = idShort;
-            SemanticId = new Reference(new Key(semanticKeyElement, semanticKeyType, semanticId, false));
+            SemanticId = new Reference(new Key(KeyType.GlobalReference, semanticId));
         }
     }
 }

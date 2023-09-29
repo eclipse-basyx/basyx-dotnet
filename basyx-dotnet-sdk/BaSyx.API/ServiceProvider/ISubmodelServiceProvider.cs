@@ -25,46 +25,18 @@ namespace BaSyx.API.ServiceProvider
     public interface ISubmodelServiceProvider : IServiceProvider<ISubmodel, ISubmodelDescriptor>, ISubmodelInterface
     {
         /// <summary>
-        /// Subscribe to value updates of a specific SubmodelElement
-        /// </summary>
-        /// <param name="pathToSubmodelElement">IdShort-Path to the SubmodelElement</param>
-        /// <param name="updateFunction">Callback function</param>
-        void SubscribeUpdates(string pathToSubmodelElement, Action<IValue> updateFunction);
-
-        /// <summary>
-        /// Publishes value updates to subscribers
-        /// </summary>
-        /// <param name="pathToSubmodelElement">IdShort-Path to the SubmodelElement</param>
-        /// <param name="value">New value</param>
-        void PublishUpdate(string pathToSubmodelElement, IValue value);
-
-        /// <summary>
         /// Publishs an Event
         /// </summary>
         /// <param name="eventMessage">The event to publish</param>
         /// <returns></returns>
         IResult PublishEvent(IEventPayload eventMessage);
-
-        /// <summary>
-        /// Returns the SubmodelElementHandler for a specific SubmodelElement
-        /// </summary>
-        /// <param name="pathToElement">IdShort-Path to the SubmodelElement</param>
-        /// <returns></returns>
-        SubmodelElementHandler RetrieveSubmodelElementHandler(string pathToElement);
-
+ 
         /// <summary>
         /// Registers a new SubmodelElementHandler for a specific SubmodelElement
         /// </summary>
         /// <param name="pathToElement">IdShort-Path to the SubmodelElement</param>
         /// <param name="elementHandler">SubmodelElementHandler</param>
         void RegisterSubmodelElementHandler(string pathToElement, SubmodelElementHandler elementHandler);
-
-        /// <summary>
-        /// Returns the MethodCalledHandler for a specific Operation
-        /// </summary>
-        /// <param name="pathToOperation">IdShort-Path to the Operation</param>
-        /// <returns></returns>
-        MethodCalledHandler RetrieveMethodCalledHandler(string pathToOperation);
 
         /// <summary>
         /// Registers a new MethodCalledHandler for a specific Operation

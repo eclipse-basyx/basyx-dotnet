@@ -20,13 +20,13 @@ namespace BaSyx.Models.AdminShell
     public class Reference : IReference
     {
         [IgnoreDataMember]
-        public virtual KeyElements RefersTo
+        public virtual KeyType RefersTo
         {
             get
             {
                 if (Keys?.Count > 0)
                     return Keys.Last().Type;
-                return KeyElements.Undefined;
+                return KeyType.Undefined;
             }
         }
 
@@ -43,6 +43,10 @@ namespace BaSyx.Models.AdminShell
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "keys")]
         public List<IKey> Keys { get; protected set; }
+
+        public ReferenceType Type { get; set; }
+
+        public IReference ReferredSemanticId { get; set; }
 
         [JsonConstructor]
         public Reference(params IKey[] keys)
@@ -79,7 +83,7 @@ namespace BaSyx.Models.AdminShell
     public class Reference<T> : Reference, IReference<T> where T : IReferable
     {
         [IgnoreDataMember]
-        public override KeyElements RefersTo => Key.GetKeyElementFromType(typeof(T));
+        public override KeyType RefersTo => Key.GetKeyElementFromType(typeof(T));
 
         [JsonConstructor]
         public Reference(params IKey[] keys) : base(keys)
@@ -94,14 +98,14 @@ namespace BaSyx.Models.AdminShell
 
             if (element is IIdentifiable identifiable)
             {
-                keys.Add(new ModelKey(Key.GetKeyElementFromType(identifiable.GetType()), identifiable.Identification.IdType, identifiable.Identification.Id));
+                keys.Add(new Key(Key.GetKeyElementFromType(identifiable.GetType()), identifiable.Id));
             }
             else if (element is IReferable referable)
             {
                 if (referable.Parent != null && referable.Parent is IIdentifiable parentIdentifiable)
-                    keys.Add(new ModelKey(Key.GetKeyElementFromType(parentIdentifiable.GetType()), parentIdentifiable.Identification.IdType, parentIdentifiable.Identification.Id));
+                    keys.Add(new Key(Key.GetKeyElementFromType(parentIdentifiable.GetType()), parentIdentifiable.Id));
 
-                keys.Add(new ModelKey(Key.GetKeyElementFromType(referable.GetType()), KeyType.IdShort, referable.IdShort));
+                keys.Add(new Key(Key.GetKeyElementFromType(referable.GetType()), referable.IdShort));
             }
 
             Keys = keys.ToList();

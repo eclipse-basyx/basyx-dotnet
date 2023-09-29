@@ -8,13 +8,13 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Globalization;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -146,16 +146,22 @@ namespace BaSyx.Models.AdminShell
         {
             return ToObject<T>(Value);
         }
-        public override string ToString()
+
+        public static implicit operator Task<IValue>(ElementValue value)
         {
-            return Value.ToString();
+            return Task.FromResult((IValue)value);
+        }
+
+        public static explicit operator ElementValue(Task<IValue> iValue)
+        {
+            return new ElementValue(iValue.Result.Value, iValue.Result.ValueType);
         }
     }
 
     [DataContract]
     public class ElementValue<TValue> : ElementValue, IValue<TValue>
     {
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
+        [IgnoreDataMember]
         public new TValue Value { get; set; }
 
         public ElementValue() : this(default, DataType.GetDataTypeFromSystemType(typeof(TValue)))
@@ -173,10 +179,6 @@ namespace BaSyx.Models.AdminShell
         public static implicit operator ElementValue<TValue>(TValue value)
         {
             return new ElementValue<TValue>(value);
-        }
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
+        }      
     }
 }

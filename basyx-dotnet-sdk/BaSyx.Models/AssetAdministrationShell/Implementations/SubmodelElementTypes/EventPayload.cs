@@ -22,29 +22,27 @@ namespace BaSyx.Models.AdminShell
         public string MessageId { get; set; }
         public string Payload { get; set; }
         public string Timestamp { get; set; }
-        public string Subject { get; set; }
+        public IReference SubjectId { get; set; }
         public IReference Source { get; set; }
-        public string SourceIdShort { get; set; }
         public IReference SourceSemanticId { get; set; }
         public IReference ObservableReference { get; set; }
         public IReference ObservableSemanticId { get; set; }
         public string Topic { get; set; }
 
         [JsonConstructor]
-        public EventPayload(string sourceIdShort, string subject)
+        public EventPayload(IReference source, IReference observableReference)
         {
             MessageId = Guid.NewGuid().ToString();
             Timestamp = DateTime.UtcNow.ToString();
 
-            SourceIdShort = sourceIdShort;
-            Subject = subject;
+            Source = source;
+            ObservableReference = observableReference;
         }
 
-        public EventPayload(IBasicEventElement eventElement, string subject) : this(eventElement.IdShort, subject)
+        public EventPayload(IBasicEventElement eventElement, IReference observableReference) 
+            : this(eventElement.CreateReference(), observableReference)
         {
-            Source = eventElement.CreateReference();
-            SourceSemanticId = eventElement.SemanticId;
-            ObservableReference = eventElement.ObservableReference;            
+            SourceSemanticId = eventElement.SemanticId;     
             Topic = eventElement.MessageTopic;
         }
 

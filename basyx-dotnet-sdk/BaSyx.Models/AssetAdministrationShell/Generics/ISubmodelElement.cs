@@ -10,22 +10,13 @@
 *******************************************************************************/
 using Newtonsoft.Json;
 using BaSyx.Models.Extensions;
-using System.Runtime.Serialization;
+
 
 namespace BaSyx.Models.AdminShell
 {
-    public delegate IValue GetValueHandler(ISubmodelElement submodelElement);
-    public delegate void SetValueHandler(ISubmodelElement submodelElement, IValue value);
-
-    public delegate TValue GetValueHandler<TValue>(ISubmodelElement submodelElement);
-    public delegate void SetValueHandler<TValue>(ISubmodelElement submodelElement, TValue value);
-
     [JsonConverter(typeof(SubmodelElementConverter))]
-    public interface ISubmodelElement : IHasSemantics, IQualifiable, IReferable, IHasKind, IModelElement, IHasDataSpecification, IValueChanged
+    public interface ISubmodelElement : IHasSemantics, IQualifiable, IReferable, IHasKind, IModelElement, IHasDataSpecification, IValueChanged, IGetSet
     {
-        [IgnoreDataMember]
-        GetValueHandler Get { get; }
-        [IgnoreDataMember]
-        SetValueHandler Set { get; }
+     
     }
 }

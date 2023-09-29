@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -21,7 +22,7 @@ namespace BaSyx.Models.AdminShell
         public ReferenceElement(string idShort) : base(idShort) 
         {
             Get = element => { return new ElementValue(Value, new DataType(DataObjectType.AnyType)); };
-            Set = (element, value) => { Value = value?.Value as IReference; };
+            Set = (element, value) => { Value = value?.Value as IReference; return Task.CompletedTask; };
         }
     }
 }

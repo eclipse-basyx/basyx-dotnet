@@ -34,14 +34,10 @@ namespace SimpleAssetAdministrationShell
                     Version = "1.0",
                     Revision = "120"
                 },
-                Asset = new Asset("SimpleAsset", new BaSyxAssetIdentifier("SimpleAsset", "1.0.0"))
+                AssetInformation = new AssetInformation()
                 {
-                    Kind = AssetKind.Instance,
-                    Description = new LangStringSet()
-                    {
-                          new LangString("de-DE", "Einfaches Asset"),
-                          new LangString("en-US", "Simple Asset")
-                    }
+                    AssetKind = AssetKind.Instance,
+                    GlobalAssetId = new BaSyxAssetIdentifier("SimpleAsset", "1.0.0")
                 }
             };
 

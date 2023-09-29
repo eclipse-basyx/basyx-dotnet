@@ -13,7 +13,6 @@ using BaSyx.API.ServiceProvider;
 using BaSyx.Common.UI;
 using BaSyx.Common.UI.Swagger;
 using BaSyx.Models.AdminShell;
-using BaSyx.Servers.AdminShell.Http;
 using BaSyx.Utils.Settings;
 using NLog.Web;
 using System;
@@ -52,7 +51,7 @@ namespace SimpleAssetAdministrationShell
             aasServerSettings.Miscellaneous.Add("CompanyLogo", "/images/MyCompanyLogo.png");
 
             IAssetAdministrationShellServiceProvider serviceProvider = aas.CreateServiceProvider(true);
-            serviceProvider.SubmodelProviderRegistry.RegisterSubmodelServiceProvider(testSubmodel.Identification.Id, submodelServiceProvider);
+            serviceProvider.SubmodelProviderRegistry.RegisterSubmodelServiceProvider(testSubmodel.Id, submodelServiceProvider);
             serviceProvider.UseAutoEndpointRegistration(aasServerSettings.ServerConfig);
 
             AssetAdministrationShellHttpServer aasServer = new AssetAdministrationShellHttpServer(aasServerSettings);

@@ -9,7 +9,7 @@
         <!--<Url>https://+:5143</Url>-->
       </Urls>
     </Hosting>
-    <DefaultRoute/>
+    <DefaultRoute>/ui</DefaultRoute>
   </ServerConfig>
   <Miscellaneous>
     <CompanyLogo>/images/MyCompanyLogo.png</CompanyLogo>

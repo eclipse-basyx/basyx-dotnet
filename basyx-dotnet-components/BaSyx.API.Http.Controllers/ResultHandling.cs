@@ -10,13 +10,11 @@
 *******************************************************************************/
 using BaSyx.API.ServiceProvider;
 using BaSyx.Utils.ResultHandling;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System;
 using System.Net;
 using System.Text;
-using System.Web;
 
 namespace BaSyx.API.Http.Controllers
 {

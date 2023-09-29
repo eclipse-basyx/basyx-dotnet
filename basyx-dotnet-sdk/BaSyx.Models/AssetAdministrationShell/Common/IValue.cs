@@ -13,17 +13,9 @@ using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    public interface IValueId
-    {
-        /// <summary>
-        /// Reference to the global unique ID of a coded value
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
-        IReference ValueId { get; set; }
-    }
     public interface IValue
     {
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        [IgnoreDataMember]
         object Value { get; set; }
         [IgnoreDataMember]
         DataType ValueType { get; }       
@@ -43,7 +35,7 @@ namespace BaSyx.Models.AdminShell
 
     public interface IValue<out T> : IValue
     {
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        [IgnoreDataMember]
         new T Value { get; }
     }
     public class ValueChangedArgs

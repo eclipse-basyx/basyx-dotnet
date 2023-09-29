@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Runtime.Serialization;
-using System.Xml.Linq;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -25,7 +24,7 @@ namespace BaSyx.Models.AdminShell
     /// Constraint AASd-020: The value of Qualifier/value shall be consistent with the data type as
     /// defined in Qualifier/valueType.
     /// </summary>
-    public interface IQualifier : IHasSemantics, IValueId
+    public interface IQualifier : IHasSemantics
     {
         /// <summary>
         /// The qualifier kind describes the kind of qualifier that is applied to the element.
@@ -38,6 +37,22 @@ namespace BaSyx.Models.AdminShell
         /// The qualifier type describes the type of the qualifier that is applied to the element. 
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "type")]
-        string Type { get; }      
+        string Type { get; }
+
+        /// <summary>
+        /// The qualifier value is the value of the qualifier.
+        /// </summary>
+        object Value { get; }
+
+        /// <summary>
+        /// Reference to the global unique ID of a coded value
+        /// </summary>
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
+        IReference ValueId { get; }
+
+        /// <summary>
+        /// Data type of the qualifier value
+        /// </summary>
+        DataType ValueType { get; }
     }
 }

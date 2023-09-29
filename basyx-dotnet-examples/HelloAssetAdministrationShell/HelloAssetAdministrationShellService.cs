@@ -13,6 +13,7 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Models.Extensions;
 using BaSyx.Models.Semantics;
 using BaSyx.Utils.ResultHandling;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,30 +32,31 @@ namespace HelloAssetAdministrationShell
             helloSubmodelServiceProvider.RegisterMethodCalledHandler("HelloOperation", HelloOperationHandler);
             helloSubmodelServiceProvider.RegisterSubmodelElementHandler("HelloProperty",
                 new SubmodelElementHandler(HelloSubmodelElementGetHandler, HelloSubmodelElementSetHandler));
-            this.RegisterSubmodelServiceProvider(AssetAdministrationShell.Submodels["HelloSubmodel"].Identification.Id, helloSubmodelServiceProvider);
+            this.RegisterSubmodelServiceProvider(AssetAdministrationShell.Submodels["HelloSubmodel"].Id, helloSubmodelServiceProvider);
 
             assetIdentificationSubmodelProvider = new SubmodelServiceProvider();
             assetIdentificationSubmodelProvider.BindTo(AssetAdministrationShell.Submodels["AssetIdentification"]);
             assetIdentificationSubmodelProvider.UseInMemorySubmodelElementHandler();
-            this.RegisterSubmodelServiceProvider(AssetAdministrationShell.Submodels["AssetIdentification"].Identification.Id, assetIdentificationSubmodelProvider);
+            this.RegisterSubmodelServiceProvider(AssetAdministrationShell.Submodels["AssetIdentification"].Id, assetIdentificationSubmodelProvider);
         }
 
-        private void HelloSubmodelElementSetHandler(ISubmodelElement submodelElement, IValue value)
+        private async Task HelloSubmodelElementSetHandler(ISubmodelElement submodelElement, IValue value)
         {
-            AssetAdministrationShell.Submodels["HelloSubmodel"].SubmodelElements["HelloProperty"].Cast<IProperty>().Value = value.Value;
+            await AssetAdministrationShell.Submodels["HelloSubmodel"].SubmodelElements["HelloProperty"].Cast<IProperty>().SetValue(value);
         }
 
-        private IValue HelloSubmodelElementGetHandler(ISubmodelElement submodelElement)
+        private async Task<IValue> HelloSubmodelElementGetHandler(ISubmodelElement submodelElement)
         {
-            var localProperty = AssetAdministrationShell.Submodels["HelloSubmodel"].SubmodelElements["HelloProperty"].Cast<IProperty>();
-            return new ElementValue(localProperty.Value, localProperty.ValueType);
+            await Task.Delay(10000);            
+            string svalue = "TestValue_" + DateTime.Now.ToString();
+            return new ElementValue<string>(svalue);
         }
 
         private Task<OperationResult> HelloOperationHandler(IOperation operation, IOperationVariableSet inputArguments, IOperationVariableSet inoutputArguments, IOperationVariableSet outputArguments, CancellationToken cancellationToken)
         {
             if (inputArguments?.Count > 0)
             {
-                outputArguments["ReturnValue"].SetValue<string>("Hello '" + inputArguments["Text"].Cast<IProperty>().ToObject<string>() + "'");
+                outputArguments["ReturnValue"].SetValue<string>("Hello '" + inputArguments["Text"].Cast<IProperty>().GetValue<string>() + "'");
                 return new OperationResult(true);
             }
             return new OperationResult(false);
@@ -66,10 +68,10 @@ namespace HelloAssetAdministrationShell
             {
                 Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset Administration Shell for starters") },
 
-                Asset = new Asset("HelloAsset", new BaSyxAssetIdentifier("HelloAsset", "1.0.0"))
-                {
-                    Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset reference from the Asset Administration Shell") },
-                    Kind = AssetKind.Instance
+                AssetInformation = new AssetInformation()
+                {                    
+                    AssetKind = AssetKind.Instance,
+                    GlobalAssetId = new BaSyxAssetIdentifier("HelloAsset", "1.0.0")
                 }
             };
 
@@ -77,84 +79,104 @@ namespace HelloAssetAdministrationShell
             {
                 Description = new LangStringSet() { new LangString("enS", "This is an exemplary Submodel") },
                 Kind = ModelingKind.Instance,
-                SemanticId = new Reference(new GlobalKey(KeyElements.Submodel, KeyType.IRI, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
+                SemanticId = new Reference(new Key(KeyType.GlobalReference, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
             };
 
-            helloSubmodel.SubmodelElements = new ElementContainer<ISubmodelElement>();
-            helloSubmodel.SubmodelElements.Add(new Property<string>("HelloProperty", "TestValue")
+            helloSubmodel.SubmodelElements = new ElementContainer<ISubmodelElement>
             {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary property") },
-                SemanticId = new Reference(new GlobalKey(KeyElements.Property, KeyType.IRI, "urn:basys:org.eclipse.basyx:dataElements:HelloProperty:1.0.0"))
-            });
-
-            helloSubmodel.SubmodelElements.Add(new FileElement("HelloFile")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary file attached to the Asset Administration Shell")},
-                ContentType = "application/pdf",
-                Value = "/HelloAssetAdministrationShell.pdf"
-            });
-
-            helloSubmodel.SubmodelElements.Add(new Operation("HelloOperation")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary operation returning the input argument with 'Hello' as prefix") },
-                InputVariables = new OperationVariableSet() { new Property<string>("Text") },
-                OutputVariables = new OperationVariableSet() { new Property<string>("ReturnValue") }
-            });
-
-            helloSubmodel.SubmodelElements.Add(new Operation("HelloOperation2")
-            {
-                Description = new LangStringSet() { new LangString("en", "This operation does nothing") }
-            });
-
-            helloSubmodel.SubmodelElements.Add(new Operation("Calculate")
-            {
-                Description = new LangStringSet()
+                new Property<string>("HelloProperty")
                 {
-                    new LangString("DE", "Taschenrechner mit simulierter langer Rechenzeit zum Testen von asynchronen Aufrufen"),
-                    new LangString("EN", "Calculator with simulated long-running computing time for testing asynchronous calls")
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary property") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn()))
                 },
-                InputVariables = new OperationVariableSet()
+
+                new Property<string>("HelloPropertyInternal", "TestValue")
                 {
-                    new Property<string>("Expression")
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary property with internal storage") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn()))
+                },
+                new MultiLanguageProperty("HelloMultiLanguageProperty")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary MultiLanguageProperty") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloMultiLanguageProperty", "1.0.0").ToUrn())),
+                    Value = new LangStringSet()
                     {
-                        Description = new LangStringSet()
-                        {
-                            new LangString("DE", "Ein mathematischer Ausdruck (z.B. 5*9)"),
-                            new LangString("EN", "A mathematical expression (e.g. 5*9)")
-                        }
-                    },
-                    new Property<int>("ComputingTime")
-                    {
-                        Description = new LangStringSet()
-                        {
-                            new LangString("DE", "Die Bearbeitungszeit in Millisekunden"),
-                            new LangString("EN", "The computation time in milliseconds")
-                        }
+                        new LangString("en", "This is a label in English"),
+                        new LangString("de", "Das ist ein Bezeichner in deutsch")
                     }
                 },
-                OutputVariables = new OperationVariableSet()
+                new BaSyx.Models.AdminShell.Range("HelloRange")
                 {
-                    new Property<double>("Result")
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary HelloRange") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloRange", "1.0.0").ToUrn())),
+                    
                 },
-                OnMethodCalled = async (op, inArgs, inOutArgs, outArgs, cancellationToken) =>
+                new FileElement("HelloFile")
                 {
-                    string expression = inArgs["Expression"]?.GetValue<string>();
-                    int? computingTime = inArgs["ComputingTime"]?.GetValue<int>();
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary file attached to the Asset Administration Shell") },
+                    ContentType = "application/pdf",
+                    Value = "/HelloAssetAdministrationShell.pdf"
+                },
+                new Operation("HelloOperation")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary operation returning the input argument with 'Hello' as prefix") },
+                    InputVariables = new OperationVariableSet() { new Property<string>("Text") },
+                    OutputVariables = new OperationVariableSet() { new Property<string>("ReturnValue") }
+                },
+                new Operation("HelloOperation2")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This operation does nothing") }
+                },
+                new Operation("Calculate")
+                {
+                    Description = new LangStringSet()
+                    {
+                        new LangString("DE", "Taschenrechner mit simulierter langer Rechenzeit zum Testen von asynchronen Aufrufen"),
+                        new LangString("EN", "Calculator with simulated long-running computing time for testing asynchronous calls")
+                    },
+                    InputVariables = new OperationVariableSet()
+                    {
+                        new Property<string>("Expression")
+                        {
+                            Description = new LangStringSet()
+                            {
+                                new LangString("DE", "Ein mathematischer Ausdruck (z.B. 5*9)"),
+                                new LangString("EN", "A mathematical expression (e.g. 5*9)")
+                            }
+                        },
+                        new Property<int>("ComputingTime")
+                        {
+                            Description = new LangStringSet()
+                            {
+                                new LangString("DE", "Die Bearbeitungszeit in Millisekunden"),
+                                new LangString("EN", "The computation time in milliseconds")
+                            }
+                        }
+                    },
+                    OutputVariables = new OperationVariableSet()
+                    {
+                        new Property<double>("Result")
+                    },
+                    OnMethodCalled = async (op, inArgs, inOutArgs, outArgs, cancellationToken) =>
+                    {
+                        string expression = inArgs["Expression"]?.GetValue<string>();
+                        int? computingTime = inArgs["ComputingTime"]?.GetValue<int>();
 
-                    inOutArgs["HierRein"]?.SetValue("DaWiederRaus");
+                        inOutArgs["HierRein"]?.SetValue("DaWiederRaus");
 
-                    if (computingTime.HasValue)
-                        await Task.Delay(computingTime.Value, cancellationToken);
+                        if (computingTime.HasValue)
+                            await Task.Delay(computingTime.Value, cancellationToken);
 
-                    if (cancellationToken.IsCancellationRequested)
-                        return new OperationResult(false, new Message(MessageType.Information, "Cancellation was requested"));
+                        if (cancellationToken.IsCancellationRequested)
+                            return new OperationResult(false, new Message(MessageType.Information, "Cancellation was requested"));
 
-                    double value = CalulcateExpression(expression);
+                        double value = CalulcateExpression(expression);
 
-                    outArgs.Add(new Property<double>("Result", value));
-                    return new OperationResult(true);
+                        outArgs.Add(new Property<double>("Result", value));
+                        return new OperationResult(true);
+                    }
                 }
-            });
+            };
 
             aas.Submodels = new ElementContainer<ISubmodel>();
             aas.Submodels.Add(helloSubmodel);
@@ -164,19 +186,17 @@ namespace HelloAssetAdministrationShell
                 Kind = ModelingKind.Instance
             };
 
-            var productTypeProp = new Property<string>("ProductType")
+            var productTypeProp = new Property<string>("ProductType", "HelloAsset_ProductType")
             {
                 SemanticId = new Reference(
-                  new GlobalKey(
-                      KeyElements.ConceptDescription,
-                      KeyType.IRDI,
-                      "0173-1#02-AAO057#002")),
-                Value = "HelloAsset_ProductType"
+                  new Key(
+                      KeyType.ConceptDescription,
+                      "0173-1#02-AAO057#002"))
             };
 
             ConceptDescription orderNumberCD = new ConceptDescription()
             {
-                Identification = new Identifier("0173-1#02-AAO689#001", KeyType.IRDI),
+                Id = new Identifier("0173-1#02-AAO689#001"),
                 EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
                 {
                     new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
@@ -188,10 +208,9 @@ namespace HelloAssetAdministrationShell
                 }
             };
 
-            var orderNumber = new Property<string>("OrderNumber")
+            var orderNumber = new Property<string>("OrderNumber", "HelloAsset_OrderNumber")
             {
                 SemanticId = orderNumberCD.CreateReference(),
-                Value = "HelloAsset_OrderNumber",
                 ConceptDescription = orderNumberCD
             };
 
@@ -200,8 +219,6 @@ namespace HelloAssetAdministrationShell
             assetIdentificationSubmodel.SubmodelElements.Add(productTypeProp);
             assetIdentificationSubmodel.SubmodelElements.Add(orderNumber);
             assetIdentificationSubmodel.SubmodelElements.Add(serialNumber);
-
-            (aas.Asset as Asset).AssetIdentificationModel = new Reference<ISubmodel>(assetIdentificationSubmodel);
 
             aas.Submodels.Add(assetIdentificationSubmodel);
 

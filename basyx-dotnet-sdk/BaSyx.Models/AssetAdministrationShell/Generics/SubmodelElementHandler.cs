@@ -9,9 +9,39 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
+    public delegate Task<IValue> GetValueHandler(ISubmodelElement submodelElement);
+    public delegate Task SetValueHandler(ISubmodelElement submodelElement, IValue value);
+
+    public delegate Task<TValue> GetValueHandler<TValue>(ISubmodelElement submodelElement);
+    public delegate Task SetValueHandler<TValue>(ISubmodelElement submodelElement, TValue value);
+
+    public interface IGetSet
+    {
+        [IgnoreDataMember]
+        GetValueHandler Get { get; }
+        [IgnoreDataMember]
+        SetValueHandler Set { get; }
+
+        Task<IValue> GetValue();
+        Task SetValue(IValue value);
+    }
+
+    public interface IGetSet<T> : IGetSet
+    {
+        [IgnoreDataMember]
+        new GetValueHandler<T> Get { get; }
+        [IgnoreDataMember]
+        new SetValueHandler<T> Set { get; }
+
+        new Task<T> GetValue();
+        Task SetValue(T value);
+    }
+
     public class SubmodelElementHandler
     {
         public GetValueHandler GetValueHandler { get; private set; }

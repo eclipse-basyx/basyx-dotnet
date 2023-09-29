@@ -8,30 +8,26 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
-    public class Qualifier : Constraint, IQualifier
+    public class Qualifier : IQualifier
     {
+        public QualifierKind Kind { get; set; }
         public string Type { get; set; }
         public object Value { get; set; }
+        public IReference ValueId { get; set; }
         public DataType ValueType { get; set; }
         public IReference SemanticId { get; set; }
-        public override ModelType ModelType => ModelType.Qualifier;
-        public IReference ValueId { get; set; }
+        public IEnumerable<IReference> SupplementalSemanticIds { get; set; }
+        public ModelType ModelType => ModelType.Qualifier;
 
-        public T ToObject<T>()
+        public Qualifier()
         {
-            return new ElementValue(Value, ValueType).ToObject<T>();
+            SupplementalSemanticIds = new List<IReference>();
         }
-
-        public object ToObject(Type type)
-        {
-            return new ElementValue(Value, ValueType).ToObject(type);
-        }
-
     }
 }

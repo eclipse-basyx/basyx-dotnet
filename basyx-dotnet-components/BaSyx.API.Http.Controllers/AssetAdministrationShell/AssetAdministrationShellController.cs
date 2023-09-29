@@ -199,13 +199,13 @@ namespace BaSyx.API.Http.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult Shell_GetSubmodel(string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
+        public async Task<IActionResult> Shell_GetSubmodel(string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
         {
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.GetSubmodel(level, content, extent);
+            return await service.GetSubmodel(level, content, extent);
         }
 
         /// <inheritdoc cref="SubmodelController.PutSubmodel(JObject, RequestLevel, RequestContent, RequestExtent)"/>

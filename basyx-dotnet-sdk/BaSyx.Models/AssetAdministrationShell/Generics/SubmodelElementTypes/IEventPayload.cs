@@ -21,12 +21,6 @@ namespace BaSyx.Models.AdminShell
         IReference Source { get; }
 
         /// <summary>
-        /// IdShort of the source EventElement
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "sourceIdShort")]
-        string SourceIdShort { get; set; }
-
-        /// <summary>
         /// semanticId of the source event element, if available
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "sourceSemanticId")]

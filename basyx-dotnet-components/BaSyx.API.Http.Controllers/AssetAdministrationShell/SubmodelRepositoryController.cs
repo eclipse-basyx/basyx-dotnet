@@ -88,7 +88,7 @@ namespace BaSyx.API.Http.Controllers
             if (submodel == null)
                 return ResultHandling.NullResult(nameof(submodel));
 
-            string submodelId = ResultHandling.Base64UrlEncode(submodel.Identification.Id);
+            string submodelId = ResultHandling.Base64UrlEncode(submodel.Id);
 
             var result = serviceProvider.CreateSubmodel(submodel);
             return result.CreateActionResult(CrudOperation.Create, SubmodelRepositoryRoutes.SUBMODELS + "/ " + submodelId);
@@ -136,10 +136,10 @@ namespace BaSyx.API.Http.Controllers
 
             submodelIdentifier = ResultHandling.Base64UrlDecode(submodelIdentifier);
 
-            if (submodelIdentifier != submodel.Identification.Id)
+            if (submodelIdentifier != submodel.Id)
             {
                 Result badRequestResult = new Result(false,
-                    new Message(MessageType.Error, $"Passed path parameter {submodelIdentifier} does not equal the Submodel's Id {submodel.Identification.Id}", "400"));
+                    new Message(MessageType.Error, $"Passed path parameter {submodelIdentifier} does not equal the Submodel's Id {submodel.Id}", "400"));
 
                 return badRequestResult.CreateActionResult(CrudOperation.Create, "submodels/" + submodelIdentifier);
             }
@@ -176,13 +176,13 @@ namespace BaSyx.API.Http.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult SubmodelRepo_GetSubmodel(string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
+        public async Task<IActionResult> SubmodelRepo_GetSubmodel(string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
         {
             if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.GetSubmodel(level, content, extent);
+            return await service.GetSubmodel(level, content, extent);
         }
 
         /// <inheritdoc cref="SubmodelController.PutSubmodel(JObject, RequestLevel, RequestContent, RequestExtent)"/>

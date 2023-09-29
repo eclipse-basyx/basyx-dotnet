@@ -72,11 +72,11 @@
             <div id="@GetHashString(aas.IdShort)" class="collapse">
                 <ul class="list-group list-group-flush">
                     @await Html.PartialAsync("_IdShort", aas.IdShort)
-                    @await Html.PartialAsync("_Identifier", aas.Identification)
+                    @await Html.PartialAsync("_Identifier", aas.Id)
                     @await Html.PartialAsync("_Description", aas.Description)
                 </ul>
                 <div class="card-body">
-                    @await Html.PartialAsync("_Asset", aas.Asset, ViewData)
+                    @await Html.PartialAsync("_Asset", aas.AssetInformation, ViewData)
                     @{
                         IEnumerable<ISubmodelServiceProvider> submodelServiceProviders = null;
                         var retrievedSubmodelServiceProvider = shellServiceProvider.SubmodelProviderRegistry.GetSubmodelServiceProviders();
@@ -91,7 +91,7 @@
                         foreach (var submodelServiceProvider in submodelServiceProviders)
                         {
                             ISubmodel submodel = submodelServiceProvider.GetBinding();
-                            @await Html.PartialAsync("_Submodel", submodel, new ViewDataDictionary(ViewData) { { "aasId", aas.Identification.Id } })
+                            @await Html.PartialAsync("_Submodel", submodel, new ViewDataDictionary(ViewData) { { "aasId", aas.Id } })
                         }
                     }
                 </div>

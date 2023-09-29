@@ -18,11 +18,11 @@ namespace BaSyx.Models.AdminShell
             {              
                 case ModelTypes.SubmodelElementCollection:
                     return new SubmodelElementCollection(idShort);
+                case ModelTypes.SubmodelElementList:
+                    return new SubmodelElementList(idShort);
                 case ModelTypes.Operation:
                     return new Operation(idShort);
-                case ModelTypes.BasicEvent:
-                    return new BasicEvent(idShort);
-                case ModelTypes.EventElement:
+                case ModelTypes.BasicEventElement:
                     return new BasicEventElement(idShort);
                 case ModelTypes.RelationshipElement:
                     return new RelationshipElement(idShort);

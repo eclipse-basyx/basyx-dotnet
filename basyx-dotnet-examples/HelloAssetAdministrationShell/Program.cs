@@ -16,6 +16,7 @@ using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings;
 using NLog;
 using NLog.Web;
+using BaSyx.Models.AdminShell;
 
 namespace HelloAssetAdministrationShell
 {
@@ -27,6 +28,10 @@ namespace HelloAssetAdministrationShell
         static void Main(string[] args)
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
+
+            Identifier id = new Identifier("test");
+
+            string test = (string)id;
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");

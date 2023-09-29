@@ -86,13 +86,12 @@ namespace AdminShellClientServerTests
         {
             AssetInformation assetInfo = new AssetInformation()
             {
-                Kind = AssetKind.Instance,
-                BillOfMaterial = Submodel.CreateReference(),
-                DefaultThumbnail = new FileElement("MyThumbnail") { Value = "/test/path/to/thumbnail.jpg"},
-                GlobalAssetId = new Reference(new Key(KeyElements.GlobalReference, KeyType.IRI, AdminShell.Asset.Identification.Id, false)),
-                SpecificAssetIds = new List<IdentifierKeyValuePair>()
+                AssetKind = AssetKind.Instance,
+                DefaultThumbnail = new Resource() { ContentType = "image/jpg", Path = "/test/path/to/thumbnail.jpg"},
+                GlobalAssetId = AdminShell.AssetInformation.GlobalAssetId,
+                SpecificAssetIds = new List<SpecificAssetId>()
                 {
-                    new IdentifierKeyValuePair() { Key = "MyInventoryNumber", Value = "123" }
+                    new SpecificAssetId() { Name = "MyInventoryNumber", Value = "123" }
                 }
             };
             AdminShell.AssetInformation = assetInfo;
@@ -104,11 +103,7 @@ namespace AdminShellClientServerTests
             result.Entity.Should().BeEquivalentTo(AdminShell, options =>
             {
                 options
-                .Excluding(p => p.Submodels)
-                .Excluding(p => p.AssetInformation.DefaultThumbnail.EmbeddedDataSpecifications)
-                .Excluding(p => p.AssetInformation.DefaultThumbnail.Parent)
-                .Excluding(p => p.AssetInformation.DefaultThumbnail.Get)
-                .Excluding(p => p.AssetInformation.DefaultThumbnail.Set);
+                .Excluding(p => p.Submodels);
                 return options;
             });
         }
@@ -120,11 +115,6 @@ namespace AdminShellClientServerTests
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(AdminShell.AssetInformation, options =>
             {
-                options
-                .Excluding(p => p.DefaultThumbnail.EmbeddedDataSpecifications)
-                .Excluding(p => p.DefaultThumbnail.Parent)
-                .Excluding(p => p.DefaultThumbnail.Get)
-                .Excluding(p => p.DefaultThumbnail.Set);
                 return options;
             });
         }
@@ -169,7 +159,7 @@ namespace AdminShellClientServerTests
 
             result.Success.Should().BeTrue();
             result.Entity.IdShort.Should().BeEquivalentTo(Submodel.IdShort);
-            result.Entity.Identification.Should().BeEquivalentTo(Submodel.Identification);
+            result.Entity.Id.Should().BeEquivalentTo(Submodel.Id);
             result.Entity.Description.Should().BeEquivalentTo(Submodel.Description);
             result.Entity.DisplayName.Should().BeEquivalentTo(Submodel.DisplayName);
             result.Entity.SemanticId.Should().BeEquivalentTo(Submodel.SemanticId);
@@ -340,7 +330,7 @@ namespace AdminShellClientServerTests
         [TestMethod]
         public void Test112_DeleteSubmodelReference()
         {
-            var result = DeleteSubmodelReference(Submodel.Identification.Id);
+            var result = DeleteSubmodelReference(Submodel.Id);
             result.Success.Should().BeTrue();
         }
 
@@ -348,112 +338,112 @@ namespace AdminShellClientServerTests
 
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestContent content = RequestContent.Normal, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return Client.RetrieveSubmodel(Submodel.Identification.Id, level, content, extent);
+            return Client.RetrieveSubmodel(Submodel.Id, level, content, extent);
         }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
         {
-            return Client.UpdateSubmodel(Submodel.Identification.Id, submodel);
+            return Client.UpdateSubmodel(Submodel.Id, submodel);
         }
 
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return Client.CreateSubmodelElement(Submodel.Identification.Id, rootIdShortPath, submodelElement);
+            return Client.CreateSubmodelElement(Submodel.Id, rootIdShortPath, submodelElement);
         }
 
         public IResult DeleteSubmodelElement(string idShortPath)
         {
-            return Client.DeleteSubmodelElement(Submodel.Identification.Id, idShortPath);
+            return Client.DeleteSubmodelElement(Submodel.Id, idShortPath);
         }
 
         public IResult<InvocationResponse> GetInvocationResult(string idShortPath, string requestId)
         {
-            return Client.GetInvocationResult(AdminShell.Submodels["MainSubmodel"].Identification.Id, idShortPath, requestId);
+            return Client.GetInvocationResult(AdminShell.Submodels["MainSubmodel"].Id, idShortPath, requestId);
         }
 
         public IResult<InvocationResponse> InvokeOperation(string idShortPath, InvocationRequest invocationRequest, bool async)
         {
-            return Client.InvokeOperation(AdminShell.Submodels["MainSubmodel"].Identification.Id, idShortPath, invocationRequest, async);
+            return Client.InvokeOperation(AdminShell.Submodels["MainSubmodel"].Id, idShortPath, invocationRequest, async);
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)
         {
-            return Client.RetrieveSubmodelElement(Submodel.Identification.Id, idShortPath);
+            return Client.RetrieveSubmodelElement(Submodel.Id, idShortPath);
         }
 
         public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements()
         {
-            return Client.RetrieveSubmodelElements(Submodel.Identification.Id);
+            return Client.RetrieveSubmodelElements(Submodel.Id);
         }
 
         public IResult<IValue> RetrieveSubmodelElementValue(string idShortPath)
         {
-            return Client.RetrieveSubmodelElementValue(Submodel.Identification.Id, idShortPath);
+            return Client.RetrieveSubmodelElementValue(Submodel.Id, idShortPath);
         }
 
         public IResult<ISubmodelElement> UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return Client.UpdateSubmodelElement(Submodel.Identification.Id, rootIdShortPath, submodelElement);
+            return Client.UpdateSubmodelElement(Submodel.Id, rootIdShortPath, submodelElement);
         }
 
         public IResult UpdateSubmodelElementValue(string idShortPath, IValue value)
         {
-            return Client.UpdateSubmodelElementValue(Submodel.Identification.Id, idShortPath, value);
+            return Client.UpdateSubmodelElementValue(Submodel.Id, idShortPath, value);
         }
 
         public Task<IResult<ISubmodel>> RetrieveSubmodelAsync(RequestLevel level = RequestLevel.Deep, RequestContent content = RequestContent.Normal, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return Client.RetrieveSubmodelAsync(Submodel.Identification.Id, level, content, extent);
+            return Client.RetrieveSubmodelAsync(Submodel.Id, level, content, extent);
         }
 
         public Task<IResult> UpdateSubmodelAsync(ISubmodel submodel)
         {
-            return Client.UpdateSubmodelAsync(Submodel.Identification.Id, submodel);
+            return Client.UpdateSubmodelAsync(Submodel.Id, submodel);
         }
 
         public Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return Client.CreateSubmodelElementAsync(Submodel.Identification.Id, rootIdShortPath, submodelElement);
+            return Client.CreateSubmodelElementAsync(Submodel.Id, rootIdShortPath, submodelElement);
         }
 
         public Task<IResult<ISubmodelElement>> UpdateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return Client.UpdateSubmodelElementAsync(Submodel.Identification.Id, rootIdShortPath, submodelElement);
+            return Client.UpdateSubmodelElementAsync(Submodel.Id, rootIdShortPath, submodelElement);
         }
 
         public Task<IResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElementsAsync()
         {
-            return Client.RetrieveSubmodelElementsAsync(Submodel.Identification.Id);
+            return Client.RetrieveSubmodelElementsAsync(Submodel.Id);
         }
 
         public Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string idShortPath)
         {
-            return Client.RetrieveSubmodelElementAsync(Submodel.Identification.Id, idShortPath);
+            return Client.RetrieveSubmodelElementAsync(Submodel.Id, idShortPath);
         }
 
         public Task<IResult<IValue>> RetrieveSubmodelElementValueAsync(string idShortPath)
         {
-            return Client.RetrieveSubmodelElementValueAsync(Submodel.Identification.Id, idShortPath);
+            return Client.RetrieveSubmodelElementValueAsync(Submodel.Id, idShortPath);
         }
 
         public Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, IValue value)
         {
-            return Client.UpdateSubmodelElementValueAsync(Submodel.Identification.Id, idShortPath, value);
+            return Client.UpdateSubmodelElementValueAsync(Submodel.Id, idShortPath, value);
         }
 
         public Task<IResult> DeleteSubmodelElementAsync(string idShortPath)
         {
-            return Client.DeleteSubmodelElementAsync(Submodel.Identification.Id, idShortPath);
+            return Client.DeleteSubmodelElementAsync(Submodel.Id, idShortPath);
         }
 
         public Task<IResult<InvocationResponse>> InvokeOperationAsync(string idShortPath, InvocationRequest invocationRequest, bool async = false)
         {
-            return Client.InvokeOperationAsync(AdminShell.Submodels["MainSubmodel"].Identification.Id, idShortPath, invocationRequest, async);
+            return Client.InvokeOperationAsync(AdminShell.Submodels["MainSubmodel"].Id, idShortPath, invocationRequest, async);
         }
 
         public Task<IResult<InvocationResponse>> GetInvocationResultAsync(string idShortPath, string requestId)
         {
-            return Client.GetInvocationResultAsync(AdminShell.Submodels["MainSubmodel"].Identification.Id, idShortPath, requestId);
+            return Client.GetInvocationResultAsync(AdminShell.Submodels["MainSubmodel"].Id, idShortPath, requestId);
         }
 
         #endregion

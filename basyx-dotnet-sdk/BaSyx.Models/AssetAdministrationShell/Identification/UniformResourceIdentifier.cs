@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -20,7 +19,7 @@ namespace BaSyx.Models.AdminShell
 
         public override Identifier ToIdentifier()
         {
-            return new Identifier(ToUri(), KeyType.IRI);
+            return new Identifier(ToUri());
         }
     }
 }

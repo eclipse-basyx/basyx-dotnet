@@ -23,6 +23,7 @@ using System.Linq;
 using System.IO;
 using Newtonsoft.Json;
 using BaSyx.Utils.DependencyInjection;
+using BaSyx.Utils.Json;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -77,13 +78,13 @@ namespace BaSyx.API.Http.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult GetSubmodel([FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
+        public async Task<IActionResult> GetSubmodel([FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
         {
             var result = serviceProvider.RetrieveSubmodel(level, content, extent);
 
             if (result != null && result.Entity != null && content == RequestContent.Value)
             {
-                JObject minimizedSubmodel = result.Entity.MinimizeSubmodel();
+                JObject minimizedSubmodel = await result.Entity.MinimizeSubmodelAsync();
                 return new JsonResult(minimizedSubmodel);
             }
 
@@ -379,6 +380,7 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(operationRequest));
 
             var opRequest = operationRequest.ToObject<InvocationRequest>(_serializer);
+            _serializer.Context = new System.Runtime.Serialization.StreamingContext().AddData("serializationMode", "full");
 
             IResult<InvocationResponse> result = serviceProvider.InvokeOperation(idShortPath, opRequest, async);
             return result.CreateActionResult(CrudOperation.Invoke);

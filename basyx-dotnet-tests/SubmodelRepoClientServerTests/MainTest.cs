@@ -44,7 +44,7 @@ namespace SubmodelRepoClientServerTests
             Server.Run();
             MainSubmodel = TestSubmodel.GetSubmodel("MainSubmodel");
             TestingSubmodel = TestSubmodel.GetSubmodel("TestSubmodel");
-            string basePath = SubmodelRepositoryRoutes.SUBMODEL_BYID.Replace("{submodelIdentifier}", MainSubmodel.Identification.Id.Base64UrlEncode());
+            string basePath = SubmodelRepositoryRoutes.SUBMODEL_BYID.Replace("{submodelIdentifier}", StringOperations.Base64UrlEncode(MainSubmodel.Id));
             Client = new SubmodelHttpClient(new Uri(Server.ServerUrl + basePath));
             RepoClient = new SubmodelRepositoryHttpClient(new Uri(Server.ServerUrl));
         }
@@ -56,7 +56,7 @@ namespace SubmodelRepoClientServerTests
             var result = CreateSubmodel(TestingSubmodel);
             result.Success.Should().BeTrue();
             result.Entity.IdShort.Should().BeEquivalentTo(TestingSubmodel.IdShort);
-            result.Entity.Identification.Should().BeEquivalentTo(TestingSubmodel.Identification);
+            result.Entity.Id.Should().BeEquivalentTo(TestingSubmodel.Id);
             result.Entity.Description.Should().BeEquivalentTo(TestingSubmodel.Description);
             result.Entity.DisplayName.Should().BeEquivalentTo(TestingSubmodel.DisplayName);
             result.Entity.SemanticId.Should().BeEquivalentTo(TestingSubmodel.SemanticId);
@@ -83,13 +83,13 @@ namespace SubmodelRepoClientServerTests
                 new LangString("en", "My new description")
             };
             TestingSubmodel.Description = newDescription;
-            var result = UpdateSubmodel(TestingSubmodel.Identification.Id, TestingSubmodel);
+            var result = UpdateSubmodel(TestingSubmodel.Id, TestingSubmodel);
             result.Success.Should().BeTrue();
 
-            var retrieved = RetrieveSubmodel(TestingSubmodel.Identification.Id);
+            var retrieved = RetrieveSubmodel(TestingSubmodel.Id);
             retrieved.Success.Should().BeTrue();
             retrieved.Entity.IdShort.Should().BeEquivalentTo(TestingSubmodel.IdShort);
-            retrieved.Entity.Identification.Should().BeEquivalentTo(TestingSubmodel.Identification);
+            retrieved.Entity.Id.Should().BeEquivalentTo(TestingSubmodel.Id);
             retrieved.Entity.Description.Should().BeEquivalentTo(TestingSubmodel.Description);
             retrieved.Entity.DisplayName.Should().BeEquivalentTo(TestingSubmodel.DisplayName);
             retrieved.Entity.SemanticId.Should().BeEquivalentTo(TestingSubmodel.SemanticId);
@@ -99,19 +99,19 @@ namespace SubmodelRepoClientServerTests
         [TestMethod]
         public void Test004_RetrieveSubmodel()
         {
-            var retrievedMain = RetrieveSubmodel(MainSubmodel.Identification.Id);
+            var retrievedMain = RetrieveSubmodel(MainSubmodel.Id);
             retrievedMain.Success.Should().BeTrue();
             retrievedMain.Entity.IdShort.Should().BeEquivalentTo(MainSubmodel.IdShort);
-            retrievedMain.Entity.Identification.Should().BeEquivalentTo(MainSubmodel.Identification);
+            retrievedMain.Entity.Id.Should().BeEquivalentTo(MainSubmodel.Id);
             retrievedMain.Entity.Description.Should().BeEquivalentTo(MainSubmodel.Description);
             retrievedMain.Entity.DisplayName.Should().BeEquivalentTo(MainSubmodel.DisplayName);
             retrievedMain.Entity.SemanticId.Should().BeEquivalentTo(MainSubmodel.SemanticId);
             retrievedMain.Entity.Kind.Should().Be(MainSubmodel.Kind);
 
-            var retrievedTest = RetrieveSubmodel(TestingSubmodel.Identification.Id);
+            var retrievedTest = RetrieveSubmodel(TestingSubmodel.Id);
             retrievedTest.Success.Should().BeTrue();
             retrievedTest.Entity.IdShort.Should().BeEquivalentTo(TestingSubmodel.IdShort);
-            retrievedTest.Entity.Identification.Should().BeEquivalentTo(TestingSubmodel.Identification);
+            retrievedTest.Entity.Id.Should().BeEquivalentTo(TestingSubmodel.Id);
             retrievedTest.Entity.Description.Should().BeEquivalentTo(TestingSubmodel.Description);
             retrievedTest.Entity.DisplayName.Should().BeEquivalentTo(TestingSubmodel.DisplayName);
             retrievedTest.Entity.SemanticId.Should().BeEquivalentTo(TestingSubmodel.SemanticId);
@@ -121,10 +121,10 @@ namespace SubmodelRepoClientServerTests
         [TestMethod]
         public void Test005_DeleteSubmodel()
         {
-            var deleted = DeleteSubmodel(TestingSubmodel.Identification.Id);
+            var deleted = DeleteSubmodel(TestingSubmodel.Id);
             deleted.Success.Should().BeTrue();
 
-            var retrieved = RetrieveSubmodel(TestingSubmodel.Identification.Id);
+            var retrieved = RetrieveSubmodel(TestingSubmodel.Id);
             retrieved.Success.Should().BeFalse();
         }
 

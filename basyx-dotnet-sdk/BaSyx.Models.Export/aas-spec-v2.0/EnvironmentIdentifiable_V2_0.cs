@@ -24,10 +24,7 @@ namespace BaSyx.Models.Export
             get { return _identifier; }
             set
             {
-                if (value.IdType == KeyType.URI)
-                    _identifier = new Identifier(value.Id, KeyType.IRI);
-                else
-                    _identifier = new Identifier(value.Id, value.IdType);
+               _identifier = new Identifier(value.Id);
             }
         }
         [JsonProperty("administration", Order = -1)]

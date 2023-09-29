@@ -23,79 +23,60 @@ namespace BaSyx.Models.AdminShell
         [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
         [JsonConverter(typeof(StringEnumConverter))]
         [XmlAttribute("type")]
-        public KeyElements Type { get; set; }
-
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
-        [JsonConverter(typeof(StringEnumConverter))]
-        [XmlAttribute("idType")]
-        public KeyType IdType { get; set; }
+        public KeyType Type { get; set; }
 
         [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
         [XmlText]
         public string Value { get; set; }
 
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
-        [XmlAttribute("local")]
-        public bool Local { get; set; }
-
         internal Key() { }
 
         [JsonConstructor]
-        public Key(KeyElements type, KeyType idType, string value, bool local)
+        public Key(KeyType type, string value)
         {
             Type = type;
-            IdType = idType;
             Value = value;
-            Local = local;
         }
 
-        public static KeyElements GetKeyElementFromType(Type type)
+        public static KeyType GetKeyElementFromType(Type type)
         {
-            if (typeof(IAsset).IsAssignableFrom(type))
-                return KeyElements.Asset;
-            else if (typeof(IAssetAdministrationShell).IsAssignableFrom(type))
-                return KeyElements.AssetAdministrationShell;
+            if (typeof(IAssetAdministrationShell).IsAssignableFrom(type))
+                return KeyType.AssetAdministrationShell;
             else if (typeof(ISubmodel).IsAssignableFrom(type))
-                return KeyElements.Submodel;
-            else if (typeof(IView).IsAssignableFrom(type))
-                return KeyElements.View;
+                return KeyType.Submodel;
             else if (typeof(IProperty).IsAssignableFrom(type))
-                return KeyElements.Property;
+                return KeyType.Property;
             else if (typeof(IOperation).IsAssignableFrom(type))
-                return KeyElements.Operation;
-            else if (typeof(IEventElement).IsAssignableFrom(type))
-                return KeyElements.Event;
+                return KeyType.Operation;
             else if (typeof(IConceptDescription).IsAssignableFrom(type))
-                return KeyElements.ConceptDescription;
+                return KeyType.ConceptDescription;
             else if (typeof(IReferenceElement).IsAssignableFrom(type))
-                return KeyElements.ReferenceElement;
+                return KeyType.ReferenceElement;
             else if (typeof(IRange).IsAssignableFrom(type))
-                return KeyElements.Range;
+                return KeyType.Range;
             else if (typeof(IOperation).IsAssignableFrom(type))
-                return KeyElements.Operation;
+                return KeyType.Operation;
             else if (typeof(IRelationshipElement).IsAssignableFrom(type))
-                return KeyElements.RelationshipElement;
-            else if (typeof(IAnnotatedRelationshipElement).IsAssignableFrom(type))
-                return KeyElements.AnnotatedRelationshipElement;
+                return KeyType.RelationshipElement;
             else if (typeof(IEventElement).IsAssignableFrom(type))
-                return KeyElements.Event;
-            else if (typeof(IBasicEvent).IsAssignableFrom(type))
-                return KeyElements.BasicEvent;
+                return KeyType.EventElement;
+            else if (typeof(IBasicEventElement).IsAssignableFrom(type))
+                return KeyType.BasicEventElement;
             else if (typeof(IFileElement).IsAssignableFrom(type))
-                return KeyElements.File;
+                return KeyType.File;
             else if (typeof(IBlob).IsAssignableFrom(type))
-                return KeyElements.Blob;
+                return KeyType.Blob;
             else if (typeof(ISubmodelElementCollection).IsAssignableFrom(type))
-                return KeyElements.SubmodelElementCollection;
+                return KeyType.SubmodelElementCollection;
             else if (typeof(IEntity).IsAssignableFrom(type))
-                return KeyElements.Entity;
+                return KeyType.Entity;
             else
                 throw new InvalidOperationException("Cannot convert type " + type.FullName + "to referable element");
         }
 
         public string ToStandardizedString()
         {
-            return string.Format("({0})({1})[{2}]{3}", Type, Local ? "local" : "no-local", IdType, Value);
+            return string.Format("({0}){1}", Type, Value);
         }
 
         #region IEquatable
@@ -110,9 +91,7 @@ namespace BaSyx.Models.AdminShell
                 return true;
             }
 
-            return this.IdType.Equals(other.IdType)
-                && this.Local.Equals(other.Local)
-                && this.Type.Equals(other.Type)
+            return this.Type.Equals(other.Type)
                 && this.Value.Equals(other.Type);
         }
         public override bool Equals(object obj)
@@ -135,9 +114,8 @@ namespace BaSyx.Models.AdminShell
             unchecked
             {
                 var result = 0;
-                result = (result * 397) ^ IdType.GetHashCode();
                 result = (result * 397) ^ Type.GetHashCode();
-                result = (result * 397) ^ (Local ? 1 : 0);
+                result = (result * 397) ^ Value.GetHashCode();
                 return result;
             }
         }
@@ -159,9 +137,7 @@ namespace BaSyx.Models.AdminShell
                 return false;
             }
 
-            return x.IdType == y.IdType
-                && x.Local == y.Local
-                && x.Type == y.Type
+            return x.Type == y.Type
                 && x.Value == y.Value;
         }
         public static bool operator !=(Key x, Key y)
@@ -174,8 +150,7 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class Key<T> : Key
     {
-        public Key(KeyType idType, string value, bool local) : base(GetKeyElementFromType(typeof(T)), idType, value, local)
+        public Key(string value) : base(GetKeyElementFromType(typeof(T)), value)
         { }       
     }
-
 }

@@ -17,7 +17,6 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Registry.Client.Http;
 using BaSyx.Registry.ReferenceImpl.FileBased;
 using BaSyx.Registry.Server.Http;
-using BaSyx.Servers.AdminShell.Http;
 using BaSyx.Utils.Settings;
 using NLog.Web;
 using System;
@@ -87,7 +86,7 @@ namespace ComplexAssetAdministrationShellScenario
                 };
 
                 var submodelServiceProvider = submodel.CreateServiceProvider();
-                repositoryService.RegisterSubmodelServiceProvider(submodel.Identification.Id, submodelServiceProvider);
+                repositoryService.RegisterSubmodelServiceProvider(submodel.Id, submodelServiceProvider);
             }
 
             repositoryService.UseAutoEndpointRegistration(multiServer.Settings.ServerConfig);
@@ -144,14 +143,10 @@ namespace ComplexAssetAdministrationShellScenario
                         Version = "1.0",
                         Revision = "120"
                     },
-                    Asset = new Asset("Asset_" + i, new BaSyxAssetIdentifier("Asset_" + i, "1.0.0"))
+                    AssetInformation = new AssetInformation()
                     {
-                        Kind = AssetKind.Instance,
-                        Description = new LangStringSet()
-                        {
-                              new LangString("de", i + ". Asset"),
-                              new LangString("en", i + ". Asset")
-                        }
+                        AssetKind = AssetKind.Instance,
+                        GlobalAssetId = new BaSyxAssetIdentifier("Asset_" + i, "1.0.0")
                     }
                 };
 
@@ -225,7 +220,7 @@ namespace ComplexAssetAdministrationShellScenario
             aasServerSettings.ServerConfig.Hosting.Urls.Add("https://localhost:5411");
 
             IAssetAdministrationShellServiceProvider aasServiceProvider = aas.CreateServiceProvider(true);
-            aasServiceProvider.SubmodelProviderRegistry.RegisterSubmodelServiceProvider(testSubmodel.Identification.Id, submodelServiceProvider);
+            aasServiceProvider.SubmodelProviderRegistry.RegisterSubmodelServiceProvider(testSubmodel.Id, submodelServiceProvider);
             aasServiceProvider.UseAutoEndpointRegistration(aasServerSettings.ServerConfig);
 
             AssetAdministrationShellHttpServer aasServer = new AssetAdministrationShellHttpServer(aasServerSettings);
@@ -235,12 +230,12 @@ namespace ComplexAssetAdministrationShellScenario
             aasServer.ApplicationStarted = () =>
             {
                 registryClient.CreateAssetAdministrationShellRegistration(new AssetAdministrationShellDescriptor(aas, aasServiceProvider.ServiceDescriptor.Endpoints));
-                registryClient.CreateSubmodelRegistration(aas.Identification.Id, new SubmodelDescriptor(testSubmodel, submodelServiceProvider.ServiceDescriptor.Endpoints));
+                registryClient.CreateSubmodelRegistration(aas.Id, new SubmodelDescriptor(testSubmodel, submodelServiceProvider.ServiceDescriptor.Endpoints));
             };
 
             aasServer.ApplicationStopping = () => 
             { 
-                registryClient.DeleteAssetAdministrationShellRegistration(aas.Identification.Id); 
+                registryClient.DeleteAssetAdministrationShellRegistration(aas.Id); 
             };
 
             aasServer.AddBaSyxUI(PageNames.AssetAdministrationShellServer);

@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace BaSyx.Models.Extensions
 {
@@ -39,10 +40,10 @@ namespace BaSyx.Models.Extensions
 
         #region Create Submodel from Type
         public static ISubmodel CreateSubmodelFromType(this Type type)
-            => CreateSubmodelFromType(type, type.Name, new Identifier(type.FullName, KeyType.Custom), DEFAULT_BINDING_FLAGS, null);
+            => CreateSubmodelFromType(type, type.Name, new Identifier(type.FullName), DEFAULT_BINDING_FLAGS, null);
 
         public static ISubmodel CreateSubmodelFromType(this Type type, BindingFlags bindingFlags)
-            => CreateSubmodelFromType(type, type.Name, new Identifier(type.FullName, KeyType.Custom), bindingFlags, null);
+            => CreateSubmodelFromType(type, type.Name, new Identifier(type.FullName), bindingFlags, null);
 
         public static ISubmodel CreateSubmodelFromType(this Type type, string idShort, Identifier identification)
             => CreateSubmodelFromType(type, idShort, identification, DEFAULT_BINDING_FLAGS, null);
@@ -60,7 +61,7 @@ namespace BaSyx.Models.Extensions
                 if (!string.IsNullOrEmpty(idShort) && idShort != type.Name)
                     submodel.IdShort = idShort;
                 if (identification != null && identification.Id != type.FullName)
-                    submodel.Identification = identification;
+                    submodel.Id = identification;
             }
             else
             {
@@ -134,21 +135,21 @@ namespace BaSyx.Models.Extensions
             return jArray;
         }
 
-        public static JObject MinimizeSubmodel(this ISubmodel submodel)
+        public static async Task<JObject> MinimizeSubmodelAsync(this ISubmodel submodel)
         {
             JObject jObject = new JObject();
             if (submodel.SubmodelElements?.Count() > 0)
             {
-                JObject submodelElementsObject = MinimizeSubmodelElements(submodel.SubmodelElements.Values);
+                JObject submodelElementsObject = await MinimizeSubmodelElementsAsync(submodel.SubmodelElements.Values);
                 jObject.Merge(submodelElementsObject, JsonMergeSettings);
             }
             return jObject;
         }
 
-        public static JObject MinimizeSubmodelElement(this ISubmodelElement submodelElement)
-            => MinimizeSubmodelElements(new ElementContainer<ISubmodelElement>() { submodelElement });
+        public static async Task<JObject> MinimizeSubmodelElementAsync(this ISubmodelElement submodelElement)
+            => await MinimizeSubmodelElementsAsync(new ElementContainer<ISubmodelElement>() { submodelElement });
 
-        public static JObject MinimizeSubmodelElements(this IEnumerable<ISubmodelElement> submodelElements)
+        public static async Task<JObject> MinimizeSubmodelElementsAsync(this IEnumerable<ISubmodelElement> submodelElements)
         {
             JObject jObject = new JObject();
             foreach (var smElement in submodelElements)
@@ -158,18 +159,8 @@ namespace BaSyx.Models.Extensions
                    case ModelTypes.SubmodelElementCollection:
                         {
                             ISubmodelElementCollection submodelElementCollection = smElement.Cast<ISubmodelElementCollection>();
-                            if (submodelElementCollection.AllowDuplicates)
-                            {
-                                JObject subObjects = MinimizeSubmodelElements(submodelElementCollection.Value);
-                                IEnumerable<JToken> values = subObjects.Children<JProperty>().Select(p => p.Value);
-                                JArray arrayElements = new JArray(values);
-                                jObject.Add(smElement.IdShort, arrayElements);
-                            }
-                            else
-                            {
-                                JObject subObjects = MinimizeSubmodelElements(submodelElementCollection.Value);
-                                jObject.Add(smElement.IdShort, subObjects);
-                            }
+                            JObject subObjects = await MinimizeSubmodelElementsAsync(submodelElementCollection.Value);
+                            jObject.Add(smElement.IdShort, subObjects);
                             break;
                         }
                     case ModelTypes.RelationshipElement:
@@ -188,15 +179,15 @@ namespace BaSyx.Models.Extensions
                                 new JObject(
                                     new JProperty("first", annotatedRelationshipElement.First?.ToStandardizedString()),
                                     new JProperty("second", annotatedRelationshipElement.Second?.ToStandardizedString()),
-                                    new JProperty("annotations", MinimizeSubmodelElements(annotatedRelationshipElement.Annotations))));
+                                    new JProperty("annotations", await MinimizeSubmodelElementsAsync(annotatedRelationshipElement.Annotations))));
                             break;
                         }
                     case ModelTypes.Property:
                         {
                             IProperty property = smElement.Cast<IProperty>();
-                            object value = property.ToObject<string>();
+                            object value = (await property.GetValue()).ToObject<string>();
                             if (value == null)
-                                value = property.Get?.Invoke(property)?.ToObject<string>();
+                                value = (await property.Get?.Invoke(property))?.ToObject<string>();
 
                             jObject.Add(property.IdShort, new JValue(value));
                             break;
@@ -215,7 +206,7 @@ namespace BaSyx.Models.Extensions
                             IBlob blob = smElement.Cast<IBlob>();
                             jObject.Add(blob.IdShort,
                                 new JObject(
-                                    new JProperty("mimeType", blob.MimeType),
+                                    new JProperty("mimeType", blob.ContentType),
                                     new JProperty("value", blob.Value)));
                             break;
                         }
@@ -248,12 +239,12 @@ namespace BaSyx.Models.Extensions
                     case ModelTypes.Entity:
                         {
                             IEntity entity = smElement.Cast<IEntity>();
-                            JObject statements = MinimizeSubmodelElements(entity.Statements);
+                            JObject statements = await MinimizeSubmodelElementsAsync(entity.Statements);
                             jObject.Add(entity.IdShort,
                                 new JObject(
                                     new JProperty("statements", statements),
                                     new JProperty("entityType", Enum.GetName(typeof(EntityType), entity.EntityType)),
-                                    new JProperty("globalAssetId",entity.Asset?.ToStandardizedString())));
+                                    new JProperty("globalAssetId",entity.GlobalAssetId)));
                             break;
                         }
                     default:

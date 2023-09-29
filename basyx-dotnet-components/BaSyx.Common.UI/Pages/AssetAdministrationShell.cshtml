@@ -25,7 +25,7 @@
     ViewData["Title"] = settings.UIConfig?.Title ?? aas.IdShort;
     ViewData["ApiRoot"] = AssetAdministrationShellRoutes.AAS;
     ViewData["ApiType"] = "AssetAdministrationShell";
-    ViewData["aasId"] = aas.Identification.Id;
+    ViewData["aasId"] = (string)aas.Id;
 }
 
 
@@ -36,7 +36,7 @@
 
 @await Html.PartialAsync("_AssetAdministrationShell", aas)
 
-@await Html.PartialAsync("_Asset", aas.Asset, ViewData)
+@await Html.PartialAsync("_Asset", aas.AssetInformation, ViewData)
 
 @if (submodelServiceProviders?.Count() > 0)
 {

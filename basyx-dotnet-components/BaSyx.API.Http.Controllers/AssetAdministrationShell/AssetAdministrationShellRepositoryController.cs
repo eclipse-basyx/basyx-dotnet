@@ -94,7 +94,7 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(aas));
 
             var deserialized = aas.ToObject<IAssetAdministrationShell>(_serializer);
-            string aasIdentifier = ResultHandling.Base64UrlEncode(deserialized.Identification.Id);
+            string aasIdentifier = ResultHandling.Base64UrlEncode(deserialized.Id);
 
             var result = serviceProvider.CreateAssetAdministrationShell(deserialized);
             return result.CreateActionResult(CrudOperation.Create, AssetAdministrationShellRepositoryRoutes.SHELLS_AAS.Replace("{aasIdentifier}", aasIdentifier));
@@ -143,10 +143,10 @@ namespace BaSyx.API.Http.Controllers
             aasIdentifier = ResultHandling.Base64UrlDecode(aasIdentifier);
             var deserialized = aas.ToObject<IAssetAdministrationShell>(_serializer);
 
-            if (aasIdentifier != deserialized.Identification.Id)
+            if (aasIdentifier != deserialized.Id)
             {
                 Result badRequestResult = new Result(false,
-                    new Message(MessageType.Error, $"Passed path parameter {aasIdentifier} does not equal the Asset Administration Shells's id {deserialized.Identification.Id}", "400"));
+                    new Message(MessageType.Error, $"Passed path parameter {aasIdentifier} does not equal the Asset Administration Shells's id {deserialized.Id}", "400"));
 
                 return badRequestResult.CreateActionResult(CrudOperation.Create, $"shells/{aasIdentifier}");
             }
@@ -284,13 +284,13 @@ namespace BaSyx.API.Http.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_GetSubmodel(string aasIdentifier, string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
+        public async Task<IActionResult> ShellRepo_GetSubmodel(string aasIdentifier, string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
         {
             if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_GetSubmodel(submodelIdentifier, level, content, extent);
+            return await service.Shell_GetSubmodel(submodelIdentifier, level, content, extent);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodel(string, JObject, RequestLevel, RequestContent, RequestExtent)"/>
