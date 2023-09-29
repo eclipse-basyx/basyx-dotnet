@@ -107,9 +107,51 @@ namespace HelloAssetAdministrationShell
                 },
                 new BaSyx.Models.AdminShell.Range("HelloRange")
                 {
-                    Description = new LangStringSet() { new LangString("en", "This is an exemplary HelloRange") },
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary Range") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloRange", "1.0.0").ToUrn())),
-                    
+                    ValueType = new DataType(DataObjectType.Int32),
+                    Min = new ElementValue<int>(3),
+                    Max = new ElementValue<int>(5)
+                },
+                new RelationshipElement("HelloRelationshipElement")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary RelationshipElement") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloRelationshipElement", "1.0.0").ToUrn())),
+                    First = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()), 
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
+                    Second = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())),
+                },
+                new ReferenceElement("HelloReferenceElement")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary ReferenceElement") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloReferenceElement", "1.0.0").ToUrn())),
+                    Value = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn()))
+                },
+                new Capability("HelloCapability")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary Capability") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloCapability", "1.0.0").ToUrn())),
+                },
+                new BasicEventElement("HelloBasicEventElement")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary BasicEventElement") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),
+                    Observed = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
+                    Direction = EventDirection.Output,
+                    State = EventState.On,
+                    MessageTopic = "boschrexroth/helloBasicEventElement",
+                    LastUpdate = DateTime.UtcNow.ToString(),
+                    MinInterval = "PT3S"                    
+                },
+                new Blob("HelloBlob")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary Blob") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloBlob", "1.0.0").ToUrn())),
+                    ContentType = "application/octet-stream"      ,
+                    Value = "decaf"
                 },
                 new FileElement("HelloFile")
                 {
