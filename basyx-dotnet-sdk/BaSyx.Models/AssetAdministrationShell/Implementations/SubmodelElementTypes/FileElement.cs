@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -18,14 +17,16 @@ namespace BaSyx.Models.AdminShell
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.File;
+
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "contentType")]
         public string ContentType { get; set; }
+
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
         public new string Value { get; set; }
+
         public FileElement(string idShort) : base(idShort)
         {
-            Get = element => { return new ElementValue(Value, new DataType(DataObjectType.String)); };
-            Set = (element, value) => { Value = value.Value as string; return Task.CompletedTask; };
+
         }
     }
 }

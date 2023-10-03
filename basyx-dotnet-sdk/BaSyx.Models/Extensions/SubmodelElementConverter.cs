@@ -45,7 +45,7 @@ namespace BaSyx.Models.Extensions
         public override ISubmodelElement ReadJson(JsonReader reader, Type objectType, ISubmodelElement existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             JObject jObject;
-
+            
             try
             {
                 jObject = JObject.Load(reader);
@@ -140,14 +140,42 @@ namespace BaSyx.Models.Extensions
                 if(prop.CanRead)
                 {
                     var propAttribute = prop.GetCustomAttributes(typeof(DataMemberAttribute), true)?.FirstOrDefault();
-                    var propValue = prop.GetValue(value);
+                    if (propAttribute == null)
+                        continue;
+
+                    object propValue;
+                    try
+                    {
+                        propValue = prop.GetValue(value);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "Error retrieving value");
+                        continue;
+                    }
+                    
                     if(propAttribute is DataMemberAttribute memberAttribute && propValue != null)
                     {
-                        var jToken = JToken.FromObject(propValue, serializer);
-                        if (jToken.Type == JTokenType.Array && !jToken.HasValues)
-                            continue;
-                        JProperty jProperty = new JProperty(memberAttribute.Name, jToken);
-                        jObject.Add(jProperty);
+                        JToken jToken;
+                        switch (memberAttribute.Name)
+                        {
+                            default:
+                                if(propValue is IValue iValue && iValue.Value != null) 
+                                {
+                                    JProperty jValue = new JProperty(memberAttribute.Name, iValue.Value.ToString());
+                                    jObject.Add(jValue);
+                                    continue;
+                                }
+                                else
+                                {
+                                    jToken = JToken.FromObject(propValue, serializer);
+                                    if (jToken.Type == JTokenType.Array && !jToken.HasValues)
+                                        continue;
+                                    JProperty jProperty = new JProperty(memberAttribute.Name, jToken);
+                                    jObject.Add(jProperty);
+                                }                               
+                                break;
+                        }                                                
                     }                
                 }                
             }
@@ -156,7 +184,10 @@ namespace BaSyx.Models.Extensions
                 var elementValue = value.GetValue().Result?.Value;
                 if(elementValue != null)
                 {
-                    JProperty jValue = new JProperty("value", elementValue);
+                    string sValue = elementValue.ToString();
+                    if (elementValue is bool)
+                        sValue = sValue.ToLower();
+                    JProperty jValue = new JProperty("value", sValue);
                     jObject.Add(jValue);
                 }                    
             }

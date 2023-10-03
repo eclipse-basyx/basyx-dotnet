@@ -52,5 +52,13 @@ namespace BaSyx.Models.AdminShell
             else
                 return false;
         }
+
+        public bool ShouldSerializeDisplayName()
+        {
+            if (DisplayName?.Count > 0)
+                return true;
+            else
+                return false;
+        }
     }
 }

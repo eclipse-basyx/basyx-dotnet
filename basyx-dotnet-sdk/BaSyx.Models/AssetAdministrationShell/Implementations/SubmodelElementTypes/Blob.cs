@@ -10,7 +10,6 @@
 *******************************************************************************/
 using BaSyx.Utils.Extensions;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -19,15 +18,15 @@ namespace BaSyx.Models.AdminShell
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Blob;
+
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "contentType")]
         public string ContentType { get; set; }
+
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
         public new string Value { get; set; }
 
         public Blob(string idShort) : base(idShort) 
         {
-            Get = element => { return new ElementValue(Value, new DataType(DataObjectType.Base64Binary)); };
-            Set = (element, value) => { SetValue(value.Value as string); return Task.CompletedTask; };
         }
 
         public void SetValue(byte[] bytes)

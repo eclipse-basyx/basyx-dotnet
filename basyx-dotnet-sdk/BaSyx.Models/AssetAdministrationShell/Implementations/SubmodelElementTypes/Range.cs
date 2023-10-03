@@ -8,20 +8,23 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.Extensions;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
-    [JsonConverter(typeof(RangeConverter))]
     public class Range : SubmodelElement, IRange
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Range;
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
         public IReference ValueId { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "min")]
         public IValue Min { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "max")]
         public IValue Max { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
         public DataType ValueType { get; set; }
 
         public Range(string idShort) : this(idShort, null) 

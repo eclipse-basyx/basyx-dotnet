@@ -81,7 +81,7 @@ namespace HelloAssetAdministrationShell
                 Kind = ModelingKind.Instance,
                 SemanticId = new Reference(new Key(KeyType.GlobalReference, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
             };
-
+            string myTestProperty = "MyTestString";
             helloSubmodel.SubmodelElements = new ElementContainer<ISubmodelElement>
             {
                 new Property<string>("HelloProperty")
@@ -94,6 +94,13 @@ namespace HelloAssetAdministrationShell
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary property with internal storage") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn()))
+                },
+                 new Property<string>("HelloPropertyLocal", "TestValue")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary property with internal storage") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())),
+                    Get = (prop) => { return Task.FromResult(myTestProperty + ": " + DateTime.Now.ToString()); },
+                    Set = (prop, val) => { myTestProperty = val; return Task.CompletedTask; }
                 },
                 new MultiLanguageProperty("HelloMultiLanguageProperty")
                 {
@@ -168,6 +175,28 @@ namespace HelloAssetAdministrationShell
                 new Operation("HelloOperation2")
                 {
                     Description = new LangStringSet() { new LangString("en", "This operation does nothing") }
+                },
+                new SubmodelElementCollection("HelloSubmodelElementCollection")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary SubmodelElementCollection") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementCollection", "1.0.0").ToUrn())),
+                    Value =
+                    {
+                        new Property<int>("MySubIntValue", 4),
+                        new Property<bool>("MySubBoolValue", true),
+                        new Property<float>("MySubFloatValue", 3.4f)
+                    }
+                },
+                new SubmodelElementList("HelloSubmodelElementList")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary SubmodelElementList") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
+                    Value =
+                    {
+                        new Property<int>("MySubIntValue", 4),
+                        new Property<bool>("MySubBoolValue", true),
+                        new Property<float>("MySubFloatValue", 3.4f)
+                    }
                 },
                 new Operation("Calculate")
                 {

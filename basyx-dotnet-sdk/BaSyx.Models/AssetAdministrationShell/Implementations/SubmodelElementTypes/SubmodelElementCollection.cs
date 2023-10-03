@@ -14,15 +14,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
     [DataContract, JsonObject]
     public class SubmodelElementCollection : SubmodelElement, ISubmodelElementCollection, IElementContainer<ISubmodelElement>
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.SubmodelElementCollection;
-        public IElementContainer<ISubmodelElement> Value { get; set; }
+
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public new IElementContainer<ISubmodelElement> Value { get; set; }
 
         [IgnoreDataMember, JsonIgnore]
         public IEnumerable<IElementContainer<ISubmodelElement>> Children => Value.Children;
@@ -59,9 +61,6 @@ namespace BaSyx.Models.AdminShell
         public SubmodelElementCollection(string idShort) : base(idShort) 
         {
             Value = new ElementContainer<ISubmodelElement>(this.Parent, this, null);
-
-            Get = element => { return new ElementValue(Value, typeof(ElementContainer<ISubmodelElement>)); };
-            Set = (element, value) => { Value = (IElementContainer<ISubmodelElement>)value.Value; return Task.CompletedTask; };
         }
 
         public event EventHandler<ElementContainerEventArgs<ISubmodelElement>> OnCreated

@@ -125,7 +125,7 @@ ShowSubmodelElement = @<text>@{
                     <div class="card-body">
                         @foreach (var valueChild in submodelElementContainer.Children)
                         {
-                            @ShowSubmodelElement(new List<object>() { submodelId, valueChild })
+                            @ShowSubmodelElement(new List<object>() { item[0], valueChild })
                         }
                     </div>
                 }

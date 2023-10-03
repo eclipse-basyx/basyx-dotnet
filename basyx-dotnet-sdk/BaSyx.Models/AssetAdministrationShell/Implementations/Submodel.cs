@@ -45,9 +45,17 @@ namespace BaSyx.Models.AdminShell
                 return false;
         }
 
-        public bool ShouldSerializeConstraints()
+        public bool ShouldSerializeQualifiers()
         {
             if (Qualifiers?.Count() > 0)
+                return true;
+            else
+                return false;
+        }
+
+        public bool ShouldSerializeSupplementalSemanticIds()
+        {
+            if (SupplementalSemanticIds?.Count() > 0)
                 return true;
             else
                 return false;

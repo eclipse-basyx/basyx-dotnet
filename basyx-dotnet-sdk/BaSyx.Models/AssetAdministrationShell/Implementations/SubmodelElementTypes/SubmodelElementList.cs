@@ -8,24 +8,22 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
     [DataContract, JsonObject]
     public class SubmodelElementList : SubmodelElement, ISubmodelElementList, IElementContainer<ISubmodelElement>
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.SubmodelElementList;
-        public IElementContainer<ISubmodelElement> Value { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public new IElementContainer<ISubmodelElement> Value { get; set; }
         public bool OrderRelevant { get; set; }
         public IReference SemanticIdListElement { get; set; }
         public ModelType TypeValueListElement { get; set; }
@@ -66,9 +64,6 @@ namespace BaSyx.Models.AdminShell
         public SubmodelElementList(string idShort) : base(idShort) 
         {
             Value = new ElementContainer<ISubmodelElement>(this.Parent, this, null);
-
-            Get = element => { return new ElementValue(Value, typeof(ElementContainer<ISubmodelElement>)); };
-            Set = (element, value) => { Value = (IElementContainer<ISubmodelElement>)value.Value; return Task.CompletedTask; };
         }
 
         public event EventHandler<ElementContainerEventArgs<ISubmodelElement>> OnCreated

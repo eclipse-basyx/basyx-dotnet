@@ -9,20 +9,21 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
     public class MultiLanguageProperty : SubmodelElement, IMultiLanguageProperty
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.MultiLanguageProperty;
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
         public IReference ValueId { get; set; }
-        public LangStringSet Value { get; set; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public new LangStringSet Value { get; set; }
         public MultiLanguageProperty(string idShort) : base(idShort)
         {
-            Get = element => { return new ElementValue(Value, new DataType(DataObjectType.LangString, true)); };
-            Set = (element, value) => { Value = value?.Value as LangStringSet; return Task.CompletedTask; };
+
         }
     }
 }

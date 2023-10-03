@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using System.Runtime.Serialization;
 using System.Threading;

@@ -16,14 +16,19 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class Entity : SubmodelElement, IEntity
     {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Entity;
 
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "statements")]
         public IElementContainer<ISubmodelElement> Statements { get; set; }
 
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "entityType")]
         public EntityType EntityType { get; set; }
 
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "globalAssetId")]
         public Identifier GlobalAssetId { get; set; }
 
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "specificAssetIds")]
         public IEnumerable<SpecificAssetId> SpecificAssetIds { get; set; }
 
         public Entity(string idShort) : base(idShort)

@@ -8,6 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using BaSyx.Models.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,7 @@ namespace BaSyx.Models.AdminShell
         SubmodelDescriptor
     }
 
+    [JsonConverter(typeof(ModelTypeConverter))]
     public class ModelType : DataObjectType, IEquatable<ModelType>
     {
         public static readonly ModelType Asset = new ModelType("Asset");
