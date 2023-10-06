@@ -43,7 +43,7 @@ namespace BaSyx.Utils.DependencyInjection
             services.AddTransient(typeof(IElementContainer<IConceptDictionary>), typeof(ElementContainer<IConceptDictionary>));
 
             services.AddTransient<IProperty, Property>();
-            services.AddTransient(typeof(IProperty<>), typeof(Property<>));
+            //services.AddTransient(typeof(IProperty<>), typeof(Property<>));
             services.AddTransient<IOperation, Operation>();
             services.AddTransient<IOperationVariableSet, OperationVariableSet>();
             services.AddTransient<IOperationVariable, OperationVariable>();

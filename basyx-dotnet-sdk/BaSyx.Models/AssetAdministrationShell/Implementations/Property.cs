@@ -16,7 +16,7 @@ namespace BaSyx.Models.AdminShell
 {
     ///<inheritdoc cref="IProperty"/>
     [DataContract]
-    public class Property : SubmodelElement, IProperty
+    public class Property : SubmodelElement<PropertyValue>, IProperty
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Property;
@@ -43,7 +43,7 @@ namespace BaSyx.Models.AdminShell
         public Property(string idShort, DataType valueType, object value) : base(idShort)
         {
             ValueType = valueType;
-
+            
             if (value != null)
             {
                 if (ValueType == null)
@@ -59,7 +59,7 @@ namespace BaSyx.Models.AdminShell
 
             Get = element  => 
             { 
-                return new ElementValue(_value, ValueType); 
+                return new PropertyValue(new ElementValue(_value, ValueType)); 
             };
 
             Set = (element, iValue) => 
@@ -72,40 +72,40 @@ namespace BaSyx.Models.AdminShell
     }
     ///<inheritdoc cref="IProperty"/>
     [DataContract]
-    public class Property<TInnerType> : Property, IProperty<TInnerType>
+    public class Property<TInnerType> : Property
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Property;
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
-        public override DataType ValueType => typeof(TInnerType);
-       
-        private GetValueHandler<TInnerType> _get;
-        private SetValueHandler<TInnerType> _set;
+        public new DataType ValueType => typeof(TInnerType);
+
+        private GetTypedValueHandler<TInnerType> _get;
+        private SetTypedValueHandler<TInnerType> _set;
 
         [JsonIgnore, IgnoreDataMember]
-        public new GetValueHandler<TInnerType> Get 
+        public new GetTypedValueHandler<TInnerType> Get 
         {
             get => _get;
             set
             {
                 _get = value;
                 if (value != null)
-                    base.Get = new GetValueHandler(async element => new ElementValue<TInnerType>(await _get.Invoke(element)));
+                    base.Get = new GetValueScopeHandler<PropertyValue>(async element => new PropertyValue<TInnerType>(await _get.Invoke(element)));
                 else
                     base.Get = null;
             }
         }
         [JsonIgnore, IgnoreDataMember]
-        public new SetValueHandler<TInnerType> Set 
+        public new SetTypedValueHandler<TInnerType> Set 
         {
             get => _set;
             set
             {
                 _set = value;
                 if (value != null)
-                    base.Set = new SetValueHandler(async (element, iValue) =>
+                    base.Set = new SetValueScopeHandler<PropertyValue>(async (element, iValue) =>
                     {
-                        TInnerType typedValue = iValue.ToObject<TInnerType>();
+                        TInnerType typedValue = iValue.Value.ToObject<TInnerType>();
                         await _set.Invoke(element, typedValue);
                         OnValueChanged(new ValueChangedArgs(IdShort, typedValue, ValueType));
                     });
@@ -124,22 +124,12 @@ namespace BaSyx.Models.AdminShell
                 if (base.Get != null)
                 {
                     var result = await base.Get.Invoke(element);
-                    return result.ToObject<TInnerType>();
+                    return result.Value.ToObject<TInnerType>();
                 }
                 else
                     return default;
             };
-            _set = async (element, iValue) => { await base.Set?.Invoke(element, new ElementValue<TInnerType>(iValue)); };
-        }
-
-        public new async Task<TInnerType> GetValue()
-        {
-            return await Get.Invoke(this);
-        }
-
-        public async Task SetValue(TInnerType value)
-        {
-            await Set.Invoke(this, value);
+            _set = async (element, iValue) => { await base.Set?.Invoke(element, new PropertyValue(new ElementValue<TInnerType>(iValue))); };
         }
     }
 }

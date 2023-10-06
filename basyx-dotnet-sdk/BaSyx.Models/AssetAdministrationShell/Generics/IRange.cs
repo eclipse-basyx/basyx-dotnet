@@ -12,15 +12,15 @@ using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    public interface ISubmodelElement : IHasSemantics, IQualifiable, IReferable, IHasKind, IModelElement, IHasDataSpecification, IValueChanged, IGetSet
-    {
-        [IgnoreDataMember]
-        ValueScope Value { get; }
-    }
-
-    public interface ISubmodelElement<TValueScope> : ISubmodelElement where TValueScope: ValueScope
-    {
-        [IgnoreDataMember]
-        new TValueScope Value { get; }
+    /// <summary>
+    /// A range data element is a data element that defines a range with min and max
+    /// </summary>
+    public interface IRange : ISubmodelElement<RangeValue>
+    {      
+        /// <summary>
+        /// Data type of the min und max.
+        /// </summary>
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
+        DataType ValueType { get; set; }
     }
 }

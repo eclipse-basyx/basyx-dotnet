@@ -64,7 +64,6 @@ namespace BaSyx.API.Http.Controllers
             hostingEnvironment = environment;
         }
 #endif
-
         /// <summary>
         /// Returns the Submodel
         /// </summary>
@@ -78,16 +77,63 @@ namespace BaSyx.API.Http.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
-        public async Task<IActionResult> GetSubmodel([FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult GetSubmodel([FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
         {
             var result = serviceProvider.RetrieveSubmodel(level, content, extent);
 
-            if (result != null && result.Entity != null && content == RequestContent.Value)
+            string json = JsonConvert.SerializeObject(result.Entity, new DefaultJsonSerializerSettings()
             {
-                JObject minimizedSubmodel = await result.Entity.MinimizeSubmodelAsync();
-                return new JsonResult(minimizedSubmodel);
-            }
+                Converters = { new FullDataConverter() }
+            });
+            return Content(json, "application/json");
+        }
 
+        /// <summary>
+        /// Returns the Submodel's metadata elements
+        /// </summary>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="content">Determines the request or response kind of the resource</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodel</response>
+        /// <response code="404">Submodel not found</response>       
+        [HttpGet(SubmodelRoutes.SUBMODEL + OutputModifier.METADATA, Name = "GetSubmodelMetaData")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Submodel), 200)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult GetSubmodelMetaData([FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
+        {
+            var result = serviceProvider.RetrieveSubmodel(level, content, extent);
+
+            string json = JsonConvert.SerializeObject(result.Entity, new DefaultJsonSerializerSettings()
+            {
+                Converters = { new SubmodelElementConverter() }
+            });
+            return Content(json, "application/json");                    
+        }
+
+        /// <summary>
+        /// Returns the Submodel's ValueOnly representation
+        /// </summary>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="content">Determines the request or response kind of the resource</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodel</response>
+        /// <response code="404">Submodel not found</response>       
+        [HttpGet(SubmodelRoutes.SUBMODEL + OutputModifier.VALUE, Name = "GetSubmodelValue")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Submodel), 200)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public async Task<IActionResult> GetSubmodelValue([FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
+        {
+            var result = serviceProvider.RetrieveSubmodelElements();
+
+            if(result.Success && result.Entity != null)
+            {
+                JObject jObject = await result.Entity.MinimizeSubmodelElementsAsync();
+                return new OkObjectResult(jObject);
+            }
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
@@ -214,7 +260,7 @@ namespace BaSyx.API.Http.Controllers
             {
                 var result = serviceProvider.RetrieveSubmodelElementValue(idShortPath);
                 if (result.Success && result.Entity != null)
-                    return new OkObjectResult(result.Entity.Value);
+                    return new OkObjectResult(result.Entity);
                 else
                     return result.CreateActionResult(CrudOperation.Retrieve);
             }
@@ -279,20 +325,21 @@ namespace BaSyx.API.Http.Controllers
             if (requestBody == null)
                 return ResultHandling.NullResult(nameof(requestBody));
 
-            //Todo: Check dataType conformity, e.g. define long Property and send string as value update
-            if(content == RequestContent.Value)
-            {
-                JValue jValue = (JValue)requestBody;
-                ElementValue elementValue = new ElementValue(jValue.Value, jValue.Value.GetType());
-                var result = serviceProvider.UpdateSubmodelElementValue(idShortPath, elementValue);
-                return result.CreateActionResult(CrudOperation.Update);
-            }
-            else
-            {
-                ISubmodelElement submodelElement = requestBody.ToObject<ISubmodelElement>(_serializer);
-                var result = serviceProvider.UpdateSubmodelElement(idShortPath, submodelElement);
-                return result.CreateActionResult(CrudOperation.Update);
-            }
+            //TODO Check dataType conformity, e.g. define long Property and send string as value update
+            //if(content == RequestContent.Value)
+            //{
+            //    JValue jValue = (JValue)requestBody;
+            //    ElementValue elementValue = new ElementValue(jValue.Value, jValue.Value.GetType());
+            //    var result = serviceProvider.UpdateSubmodelElementValue(idShortPath, elementValue);
+            //    return result.CreateActionResult(CrudOperation.Update);
+            //}
+            //else
+            //{
+            //    ISubmodelElement submodelElement = requestBody.ToObject<ISubmodelElement>(_serializer);
+            //    var result = serviceProvider.UpdateSubmodelElement(idShortPath, submodelElement);
+            //    return result.CreateActionResult(CrudOperation.Update);
+            //}
+            return BadRequest(StatusCodes.Status400BadRequest);
         }
 
         /// <summary>
@@ -380,7 +427,6 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(operationRequest));
 
             var opRequest = operationRequest.ToObject<InvocationRequest>(_serializer);
-            _serializer.Context = new System.Runtime.Serialization.StreamingContext().AddData("serializationMode", "full");
 
             IResult<InvocationResponse> result = serviceProvider.InvokeOperation(idShortPath, opRequest, async);
             return result.CreateActionResult(CrudOperation.Invoke);

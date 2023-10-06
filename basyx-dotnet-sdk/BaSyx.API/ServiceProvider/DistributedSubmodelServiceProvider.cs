@@ -31,7 +31,7 @@ namespace BaSyx.API.ServiceProvider
             submodelClient = submodelClientFactory.CreateSubmodelClient(serviceDescriptor);            
         }
 
-        public void SubscribeUpdates(string propertyId, Action<IValue> updateFunction)
+        public void SubscribeUpdates(string propertyId, Action<ValueScope> updateFunction)
         {
             throw new NotImplementedException();
         }
@@ -124,7 +124,7 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.RetrieveSubmodelElement(submodelElementId);
         }
 
-        public IResult<IValue> RetrieveSubmodelElementValue(string submodelElementId)
+        public IResult<ValueScope> RetrieveSubmodelElementValue(string submodelElementId)
         {
             return submodelClient.RetrieveSubmodelElementValue(submodelElementId);
         }
@@ -139,7 +139,7 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.GetInvocationResult(operationId, requestId);
         }
 
-        public IResult UpdateSubmodelElementValue(string submodelElementId, IValue value)
+        public IResult UpdateSubmodelElementValue(string submodelElementId, ValueScope value)
         {
             return submodelClient.UpdateSubmodelElementValue(submodelElementId, value);
         }

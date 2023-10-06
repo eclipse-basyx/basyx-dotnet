@@ -76,6 +76,12 @@
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodel(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodel(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelMetaData(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetaData(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelValue(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelValue(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutSubmodel(System.String,Newtonsoft.Json.Linq.JObject,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodel(Newtonsoft.Json.Linq.JObject,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
@@ -232,6 +238,28 @@
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodel(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
             Returns the Submodel
+            </summary>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="content">Determines the request or response kind of the resource</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">Requested Submodel</response>
+            <response code="404">Submodel not found</response>       
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetaData(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns the Submodel's metadata elements
+            </summary>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="content">Determines the request or response kind of the resource</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">Requested Submodel</response>
+            <response code="404">Submodel not found</response>       
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelValue(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns the Submodel's ValueOnly representation
             </summary>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="content">Determines the request or response kind of the resource</param>
@@ -424,6 +452,12 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodel(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodel(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelMetaData(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetaData(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelValue(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelValue(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PutSubmodel(System.String,Newtonsoft.Json.Linq.JObject,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodel(Newtonsoft.Json.Linq.JObject,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestContent,BaSyx.Models.AdminShell.RequestExtent)"/>

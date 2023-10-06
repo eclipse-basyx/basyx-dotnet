@@ -57,41 +57,43 @@ namespace BaSyx.Models.Extensions
         //    }
         //    else
         //        return null;
-        //}
-        
-        
-        public static IValue GetValue(this ISubmodelElement submodelElement)
+        //}                       
+
+        public static async Task<TValueScope> GetValueScope<TValueScope>(this ISubmodelElement sme) where TValueScope : ValueScope
         {
-            return submodelElement?.Get?.Invoke(submodelElement).Result;
+            var scope = await sme.GetValueScope().ConfigureAwait(false);
+            return (TValueScope)scope;
         }
 
-        public static T GetValue<T>(this ISubmodelElement submodelElement)
+        public static async Task<T> GetValue<T>(this ISubmodelElement sme)
         {
-            IValue value = submodelElement?.Get?.Invoke(submodelElement).Result;
-            if (value != null)
-                return value.ToObject<T>();
-            else
-                return default;
+            var scope = await sme.GetValueScope().ConfigureAwait(false);
+            return scope.GetValue<T>();
         }
 
-        public static void SetValue<T>(this ISubmodelElement submodelElement, T value)
+        public static T GetValue<T>(this ValueScope valueScope)
         {
-            if (typeof(IValue).IsAssignableFrom(typeof(T)))
-                submodelElement?.Set?.Invoke(submodelElement, value as IValue);
-            else
-                submodelElement?.Set?.Invoke(submodelElement, new ElementValue<T>(value));
+            if(valueScope is PropertyValue propValue)
+            {
+                return propValue.Value.ToObject<T>();
+            }
+            return default(T);
         }
 
-        public static void SetValue(this ISubmodelElement submodelElement, IValue value)
+        public static async Task SetValue(this ISubmodelElement sme, ValueScope valueScope)
         {
-            submodelElement?.Set?.Invoke(submodelElement, value);
+            await sme.SetValueScope(valueScope).ConfigureAwait(false);
         }
 
-        public static void SetValue(this ISubmodelElement submodelElement, object value, DataType valueType)
+        public static async Task SetValue<T>(this ISubmodelElement sme, T value)
         {
-            submodelElement?.Set?.Invoke(submodelElement, new ElementValue(value, valueType));
+            if(sme.ModelType == ModelType.Property)
+            {
+                PropertyValue<T> propertyValue = new PropertyValue<T>(value);
+                await sme.SetValueScope(propertyValue).ConfigureAwait(false);
+            }            
         }
-        
+
         public static Task<OperationResult> Invoke(this IOperation operation, IOperationVariableSet inputArguments, IOperationVariableSet inoutputArguments, IOperationVariableSet outputArguments, CancellationToken ct)
         {
             return operation?.OnMethodCalled?.Invoke(operation, inputArguments, inoutputArguments, outputArguments, ct);
@@ -135,8 +137,8 @@ namespace BaSyx.Models.Extensions
                     Property p = new Property($"{i}", item.GetType());
                     if (enumerable is IList list)
                     {
-                        p.Get = (prop) => { return new ElementValue(list[Convert.ToInt32(prop.IdShort)], item.GetType()); };
-                        p.Set = (prop, value) => { list[Convert.ToInt32(prop.IdShort)] = value.ToObject(item.GetType()); return Task.CompletedTask; };
+                        p.Get = (prop) => { return new PropertyValue(new ElementValue(list[Convert.ToInt32(prop.IdShort)], item.GetType())); };
+                        p.Set = (prop, value) => { list[Convert.ToInt32(prop.IdShort)] = value.Value.ToObject(item.GetType()); return Task.CompletedTask; };
                     }
                     smCollection.Add(p);
                 }
@@ -257,7 +259,7 @@ namespace BaSyx.Models.Extensions
                     if (target != null)
                     {
                         if (propertyInfo.CanRead)
-                            seProp.Get = (p) => { return new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType); };
+                            seProp.Get = (p) => { return new PropertyValue(new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType)); };
                         if (propertyInfo.CanWrite)
                             seProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
                     }
@@ -299,7 +301,7 @@ namespace BaSyx.Models.Extensions
                     if (target != null)
                     {
                         if (propertyInfo.CanRead)
-                            smProp.Get = (p) => { return new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType); };
+                            smProp.Get = (p) => { return new PropertyValue(new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType)); };
                         if (propertyInfo.CanWrite)
                             smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
                     }
@@ -313,7 +315,7 @@ namespace BaSyx.Models.Extensions
                     if (target != null)
                     {
                         if (propertyInfo.CanRead)
-                            smProp.Get = (p) => { return new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType); };
+                            smProp.Get = (p) => { return new PropertyValue(new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType)); };
                         if (propertyInfo.CanWrite)
                             smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
                     }

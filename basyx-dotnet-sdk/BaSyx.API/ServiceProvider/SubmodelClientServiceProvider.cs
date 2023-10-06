@@ -90,7 +90,7 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.RetrieveSubmodelElements();
         }
 
-        public IResult<IValue> RetrieveSubmodelElementValue(string idShortPath)
+        public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
         {
             return _submodelClient.RetrieveSubmodelElementValue(idShortPath);
         }   
@@ -105,7 +105,7 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.UpdateSubmodelElement(rootIdShortPath, submodelElement);
         }
 
-        public IResult UpdateSubmodelElementValue(string idShortPath, IValue value)
+        public IResult UpdateSubmodelElementValue(string idShortPath, ValueScope value)
         {
             return _submodelClient.UpdateSubmodelElementValue(idShortPath, value);
         }
@@ -116,7 +116,7 @@ namespace BaSyx.API.ServiceProvider
                 prop =>
                 {
                     var result = _submodelClient.RetrieveSubmodelElementValue(pathToElement);
-                    return Task.FromResult<IValue>(result.Entity);
+                    return Task.FromResult<ValueScope>(result.Entity);
                 },
                 (prop, value) =>
                 {

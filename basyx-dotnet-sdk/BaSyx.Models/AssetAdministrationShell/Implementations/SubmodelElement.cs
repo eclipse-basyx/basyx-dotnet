@@ -35,11 +35,41 @@ namespace BaSyx.Models.AdminShell
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public abstract ModelType ModelType { get; }
 
+        private GetValueScopeHandler _get;
+        private SetValueScopeHandler _set;
+        internal ValueScope _valueScope;
+
         [IgnoreDataMember]
-        public virtual GetValueHandler Get { get; set; }
+        public virtual GetValueScopeHandler Get
+        {
+            get
+            {
+                if (_get == null)
+                    _get = new GetValueScopeHandler(element => Task.FromResult(_valueScope));
+                return _get;
+            }
+            set
+            {
+                _get = value;
+            }
+        }
         [IgnoreDataMember]
-        public virtual SetValueHandler Set { get; set; }
-        internal object Value { get; set; }
+        public virtual SetValueScopeHandler Set
+        {
+            get
+            {
+                if (_set == null)
+                    _set = new SetValueScopeHandler((element, valueScope) => { _valueScope = valueScope; return Task.CompletedTask; });
+                return _set;
+            }
+            set
+            {
+                _set = value;
+            }
+        }
+
+        [IgnoreDataMember]
+        public ValueScope Value { get => Get(this).Result; set => Set(this, value); }
 
         public IEnumerable<IEmbeddedDataSpecification> EmbeddedDataSpecifications { get; set; }
 
@@ -49,7 +79,7 @@ namespace BaSyx.Models.AdminShell
             get => conceptDescription;
             set
             {
-                if(value != null && value.EmbeddedDataSpecifications?.Count() > 0)
+                if (value != null && value.EmbeddedDataSpecifications?.Count() > 0)
                 {
                     conceptDescription = value;
 
@@ -64,7 +94,7 @@ namespace BaSyx.Models.AdminShell
 
         [JsonConstructor]
         protected SubmodelElement(string idShort) : base(idShort)
-        {            
+        {
             Qualifiers = new List<IQualifier>();
             MetaData = new Dictionary<string, string>();
             EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
@@ -92,13 +122,68 @@ namespace BaSyx.Models.AdminShell
             ValueChanged?.Invoke(this, e);
         }
 
-        public virtual Task<IValue> GetValue()
+        public virtual async Task<ValueScope> GetValueScope()
         {
-            return Get?.Invoke(this);
+            return await Get(this).ConfigureAwait(false);
         }
-        public virtual async Task SetValue(IValue value)
+        public virtual async Task SetValueScope(ValueScope value)
         {
-            await Set?.Invoke(this, value);
+            await Set(this, value).ConfigureAwait(false);
         }
+    }
+
+    [DataContract]
+    public abstract class SubmodelElement<TValueScope> : SubmodelElement, ISubmodelElement<TValueScope> where TValueScope : ValueScope
+    {
+        private GetValueScopeHandler<TValueScope> _get;
+        private SetValueScopeHandler<TValueScope> _set;
+
+        [IgnoreDataMember]
+        public new virtual GetValueScopeHandler<TValueScope> Get 
+        {
+            get
+            {
+                if (_get == null)
+                {
+                    _get = new GetValueScopeHandler<TValueScope>(element => Task.FromResult((TValueScope)_valueScope));
+                    base.Get = new GetValueScopeHandler(async element => await _get(this));
+                }
+                return _get;
+            }
+            set
+            {
+                _get = value;
+                if (value != null)
+                    base.Get = new GetValueScopeHandler(async element => await _get(this));
+                else
+                    base.Get = null;
+            }
+        }
+        [IgnoreDataMember]
+        public new virtual SetValueScopeHandler<TValueScope> Set 
+        {
+            get
+            {
+                if (_set == null)
+                {
+                    _set = new SetValueScopeHandler<TValueScope>((element, valueScope) => { _valueScope = valueScope; return Task.CompletedTask; });
+                    base.Set = new SetValueScopeHandler(async (element, valueScope) => await _set(element, (TValueScope)valueScope));
+                }                    
+                return _set;
+            }
+            set
+            {
+                _set = value;
+                if (value != null)
+                    base.Set = new SetValueScopeHandler(async (element, valueScope) => await _set(element, (TValueScope)valueScope));                    
+                else
+                    base.Set = null;
+            }
+        }
+        [IgnoreDataMember]
+        public new TValueScope Value { get => Get(this).Result; set => Set(this, value); }
+
+        protected SubmodelElement(string idShort) : base(idShort) { }
+
     }
 }

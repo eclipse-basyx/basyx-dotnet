@@ -116,7 +116,7 @@ namespace BaSyx.Clients.AdminShell.Http
             return RetrieveSubmodelElementAsync(idShortPath).GetAwaiter().GetResult();
         }
 
-        public IResult<IValue> RetrieveSubmodelElementValue(string idShortPath)
+        public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
         {
             return RetrieveSubmodelElementValueAsync(idShortPath).GetAwaiter().GetResult();
         }      
@@ -136,7 +136,7 @@ namespace BaSyx.Clients.AdminShell.Http
             return GetInvocationResultAsync(idShortPath, requestId).GetAwaiter().GetResult();
         }
 
-        public IResult UpdateSubmodelElementValue(string idShortPath, IValue value)
+        public IResult UpdateSubmodelElementValue(string idShortPath, ValueScope value)
         {
             return UpdateSubmodelElementValueAsync(idShortPath, value).GetAwaiter().GetResult();
         }
@@ -211,29 +211,30 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<IValue>> RetrieveSubmodelElementValueAsync(string idShortPath)
+        public async Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(string idShortPath)
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, idShortPath, RequestContent.Value);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             IResult result = await base.EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();
-            if (result.Success && result.Entity != null)
-            {
-                string sValue = Encoding.UTF8.GetString((byte[])result.Entity);
-                if (!string.IsNullOrEmpty(sValue))
-                {
-                    object deserializedValue = JsonConvert.DeserializeObject(sValue);
-                    return new Result<IValue>(result.Success, new ElementValue(deserializedValue, deserializedValue?.GetType()), result.Messages);
-                }
-            }
-            return new Result<IValue>(result);
+            //TODO
+            //if (result.Success && result.Entity != null)
+            //{
+            //    string sValue = Encoding.UTF8.GetString((byte[])result.Entity);
+            //    if (!string.IsNullOrEmpty(sValue))
+            //    {
+            //        object deserializedValue = JsonConvert.DeserializeObject(sValue);
+            //        return new Result<ValueScope>(result.Success, new ElementValue(deserializedValue, deserializedValue?.GetType()), result.Messages);
+            //    }
+            //}
+            return new Result<ValueScope>(result);
         }
 
-        public async Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, IValue value)
+        public async Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, ValueScope value)
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, idShortPath, RequestContent.Value);
-            var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, value.Value);
+            var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, value);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();

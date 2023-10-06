@@ -40,23 +40,25 @@ namespace HelloAssetAdministrationShell
             this.RegisterSubmodelServiceProvider(AssetAdministrationShell.Submodels["AssetIdentification"].Id, assetIdentificationSubmodelProvider);
         }
 
-        private async Task HelloSubmodelElementSetHandler(ISubmodelElement submodelElement, IValue value)
+        private async Task HelloSubmodelElementSetHandler(ISubmodelElement submodelElement, ValueScope value)
         {
-            await AssetAdministrationShell.Submodels["HelloSubmodel"].SubmodelElements["HelloProperty"].Cast<IProperty>().SetValue(value);
+            await AssetAdministrationShell.Submodels["HelloSubmodel"].SubmodelElements["HelloProperty"].Cast<IProperty>().SetValueScope(value);
         }
 
-        private async Task<IValue> HelloSubmodelElementGetHandler(ISubmodelElement submodelElement)
+        private async Task<ValueScope> HelloSubmodelElementGetHandler(ISubmodelElement submodelElement)
         {
             await Task.Delay(10000);            
             string svalue = "TestValue_" + DateTime.Now.ToString();
-            return new ElementValue<string>(svalue);
+            return new PropertyValue(new ElementValue<string>(svalue));
         }
 
-        private Task<OperationResult> HelloOperationHandler(IOperation operation, IOperationVariableSet inputArguments, IOperationVariableSet inoutputArguments, IOperationVariableSet outputArguments, CancellationToken cancellationToken)
+        private async Task<OperationResult> HelloOperationHandler(IOperation operation, IOperationVariableSet inputArguments, IOperationVariableSet inoutputArguments, IOperationVariableSet outputArguments, CancellationToken cancellationToken)
         {
             if (inputArguments?.Count > 0)
             {
-                outputArguments["ReturnValue"].SetValue<string>("Hello '" + inputArguments["Text"].Cast<IProperty>().GetValue<string>() + "'");
+                var inputValue = await inputArguments["Text"].GetValue<string>();
+                var propValue = new PropertyValue<string>("Hello '" + inputValue + "'");
+                await outputArguments["ReturnValue"].SetValueScope(propValue);
                 return new OperationResult(true);
             }
             return new OperationResult(false);
@@ -117,8 +119,11 @@ namespace HelloAssetAdministrationShell
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary Range") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloRange", "1.0.0").ToUrn())),
                     ValueType = new DataType(DataObjectType.Int32),
-                    Min = new ElementValue<int>(3),
-                    Max = new ElementValue<int>(5)
+                    Value = new RangeValue()
+                    {
+                        Min = new ElementValue<int>(3),
+                        Max = new ElementValue<int>(5)
+                    }
                 },
                 new RelationshipElement("HelloRelationshipElement")
                 {
@@ -193,7 +198,15 @@ namespace HelloAssetAdministrationShell
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
                     Value =
                     {
-                        new Property<int>("MySubIntValue", 4),
+                        new Property<int>("MySubIntValue")
+                        {
+                            Get = (prop) =>
+                            {
+                                Random random = new Random();
+                                int val = random.Next(1, 500);
+                                return Task.FromResult(val);
+                            }
+                        },
                         new Property<bool>("MySubBoolValue", true),
                         new Property<float>("MySubFloatValue", 3.4f)
                     }
@@ -230,10 +243,10 @@ namespace HelloAssetAdministrationShell
                     },
                     OnMethodCalled = async (op, inArgs, inOutArgs, outArgs, cancellationToken) =>
                     {
-                        string expression = inArgs["Expression"]?.GetValue<string>();
-                        int? computingTime = inArgs["ComputingTime"]?.GetValue<int>();
+                        string expression = await inArgs["Expression"]?.GetValue<string>();
+                        int? computingTime = await inArgs["ComputingTime"]?.GetValue<int>();
 
-                        inOutArgs["HierRein"]?.SetValue("DaWiederRaus");
+                        await inOutArgs["HierRein"]?.SetValue("DaWiederRaus");
 
                         if (computingTime.HasValue)
                             await Task.Delay(computingTime.Value, cancellationToken);

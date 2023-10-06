@@ -34,7 +34,7 @@ namespace BaSyx.API.ServiceProvider
         public const int DEFAULT_TIMEOUT = 60000;
         public ISubmodelDescriptor ServiceDescriptor { get; internal set; }
 
-        private readonly Dictionary<string, Action<IValue>> updateFunctions;
+        private readonly Dictionary<string, Action<ValueScope>> updateFunctions;
         private readonly Dictionary<string, EventDelegate> eventDelegates;
         private readonly Dictionary<string, InvocationResponse> invocationResults;
         
@@ -45,7 +45,7 @@ namespace BaSyx.API.ServiceProvider
         /// </summary>
         public SubmodelServiceProvider()
         {
-            updateFunctions = new Dictionary<string, Action<IValue>>();
+            updateFunctions = new Dictionary<string, Action<ValueScope>>();
             eventDelegates = new Dictionary<string, EventDelegate>();
             invocationResults = new Dictionary<string, InvocationResponse>();
         }
@@ -175,11 +175,11 @@ namespace BaSyx.API.ServiceProvider
         public void RegisterSubmodelElementHandler(string idShortPath, SubmodelElementHandler elementHandler)
         {
             if (_submodel == null)
-                throw new Exception(new Result<IValue>(false, new NotFoundMessage("Submodel")).ToString());
+                throw new Exception(new Result(false, new NotFoundMessage("Submodel")).ToString());
 
             var submodelElement = _submodel.SubmodelElements.Retrieve<SubmodelElement>(idShortPath);
             if (!submodelElement.Success || submodelElement.Entity == null)
-                throw new Exception(new Result<IValue>(false, new NotFoundMessage($"SubmodelElement {idShortPath}")).ToString());
+                throw new Exception(new Result(false, new NotFoundMessage($"SubmodelElement {idShortPath}")).ToString());
 
             submodelElement.Entity.Get = elementHandler.GetValueHandler;
             submodelElement.Entity.Set = elementHandler.SetValueHandler;
@@ -188,11 +188,11 @@ namespace BaSyx.API.ServiceProvider
         public void RegisterMethodCalledHandler(string pathToOperation, MethodCalledHandler handler)
         {
             if (_submodel == null)
-                throw new Exception(new Result<IValue>(false, new NotFoundMessage("Submodel")).ToString());
+                throw new Exception(new Result(false, new NotFoundMessage("Submodel")).ToString());
 
             var submodelElement = _submodel.SubmodelElements.Retrieve<SubmodelElement>(pathToOperation);
             if (!submodelElement.Success || submodelElement.Entity == null)
-                throw new Exception(new Result<IValue>(false, new NotFoundMessage($"SubmodelElement {pathToOperation}")).ToString());
+                throw new Exception(new Result(false, new NotFoundMessage($"SubmodelElement {pathToOperation}")).ToString());
 
             submodelElement.Entity.Cast<Operation>().OnMethodCalled = handler;
         }
@@ -474,22 +474,22 @@ namespace BaSyx.API.ServiceProvider
             return _submodel.SubmodelElements.Retrieve(submodelElementId);
         }
 
-        public IResult<IValue> RetrieveSubmodelElementValue(string submodelElementId)
+        public IResult<ValueScope> RetrieveSubmodelElementValue(string submodelElementId)
         {
             if (_submodel == null)
-                return new Result<IValue>(false, new NotFoundMessage("Submodel"));
+                return new Result<ValueScope>(false, new NotFoundMessage("Submodel"));
 
             var submodelElement = _submodel.SubmodelElements.Retrieve<ISubmodelElement>(submodelElementId);
             if (!submodelElement.Success || submodelElement.Entity == null)
-                return new Result<IValue>(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
+                return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
 
             if (submodelElement.Entity.Get != null)
-                return new Result<IValue>(true, submodelElement.Entity.Get.Invoke(submodelElement.Entity).Result);
+                return new Result<ValueScope>(true, submodelElement.Entity.Get.Invoke(submodelElement.Entity).Result);
             else
-                return new Result<IValue>(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
+                return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
         }
 
-        public IResult UpdateSubmodelElementValue(string submodelElementId, IValue value)
+        public IResult UpdateSubmodelElementValue(string submodelElementId, ValueScope value)
         {
             if (_submodel == null)
                 return new Result(false, new NotFoundMessage("Submodel"));

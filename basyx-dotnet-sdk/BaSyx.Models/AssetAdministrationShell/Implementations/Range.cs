@@ -8,28 +8,31 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    /// <summary>
-    /// A property is a data element that has a single value. 
-    /// </summary>
-    public interface IProperty : ISubmodelElement, IGetSet
+    [DataContract]
+    public class Range : SubmodelElement<RangeValue>, IRange
     {
-        /// <summary>
-        /// Reference to the global unique ID of a coded value
-        /// </summary>
+        [IgnoreDataMember]
+        public new RangeValue Value { get => base.Value; set => base.Value = value; }
+
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
+        public override ModelType ModelType => ModelType.Range;
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
-        IReference ValueId { get; }
-
+        public IReference ValueId { get; set; }       
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
-        DataType ValueType { get; }
-    }
+        public DataType ValueType { get; set; }
 
-    ///<inheritdoc cref="IProperty"/>
-    public interface IProperty<TValue> : IProperty, IGetSet<TValue>
-    {
+        public Range(string idShort) : this(idShort, null) 
+        { }
 
+        [JsonConstructor]
+        public Range(string idShort, DataType valueType) : base(idShort) 
+        {
+            ValueType = valueType;           
+        }
     }
 }

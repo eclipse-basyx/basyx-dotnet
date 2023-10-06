@@ -12,15 +12,18 @@ using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    public interface ISubmodelElement : IHasSemantics, IQualifiable, IReferable, IHasKind, IModelElement, IHasDataSpecification, IValueChanged, IGetSet
+    /// <summary>
+    /// A property is a data element that has a single value. 
+    /// </summary>
+    public interface IProperty : ISubmodelElement<PropertyValue>, IGetSet
     {
-        [IgnoreDataMember]
-        ValueScope Value { get; }
-    }
+        /// <summary>
+        /// Reference to the global unique ID of a coded value
+        /// </summary>
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
+        IReference ValueId { get; }
 
-    public interface ISubmodelElement<TValueScope> : ISubmodelElement where TValueScope: ValueScope
-    {
-        [IgnoreDataMember]
-        new TValueScope Value { get; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
+        DataType ValueType { get; }
     }
 }

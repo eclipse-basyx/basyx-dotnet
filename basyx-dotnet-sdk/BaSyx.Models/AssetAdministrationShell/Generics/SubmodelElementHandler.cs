@@ -14,39 +14,42 @@ using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
-    public delegate Task<IValue> GetValueHandler(ISubmodelElement submodelElement);
-    public delegate Task SetValueHandler(ISubmodelElement submodelElement, IValue value);
+    public delegate Task<ValueScope> GetValueScopeHandler(ISubmodelElement submodelElement);
+    public delegate Task SetValueScopeHandler(ISubmodelElement submodelElement, ValueScope value);
 
-    public delegate Task<TValue> GetValueHandler<TValue>(ISubmodelElement submodelElement);
-    public delegate Task SetValueHandler<TValue>(ISubmodelElement submodelElement, TValue value);
+    public delegate Task<TValueScope> GetValueScopeHandler<TValueScope>(ISubmodelElement submodelElement) where TValueScope : ValueScope;
+    public delegate Task SetValueScopeHandler<TValueScope>(ISubmodelElement submodelElement, TValueScope valueScope) where TValueScope : ValueScope;
+
+    public delegate Task<IValue> GetTypedValueHandler<IValue>(ISubmodelElement submodelElement);
+    public delegate Task SetTypedValueHandler<IValue>(ISubmodelElement submodelElement, IValue value);
 
     public interface IGetSet
     {
         [IgnoreDataMember]
-        GetValueHandler Get { get; }
+        GetValueScopeHandler Get { get; }
         [IgnoreDataMember]
-        SetValueHandler Set { get; }
+        SetValueScopeHandler Set { get; }
 
-        Task<IValue> GetValue();
-        Task SetValue(IValue value);
+        Task<ValueScope> GetValueScope();
+        Task SetValueScope(ValueScope value);
     }
 
-    public interface IGetSet<T> : IGetSet
+    public interface IGetSet<TValueScope> : IGetSet where TValueScope : ValueScope
     {
         [IgnoreDataMember]
-        new GetValueHandler<T> Get { get; }
+        new GetValueScopeHandler<TValueScope> Get { get; }
         [IgnoreDataMember]
-        new SetValueHandler<T> Set { get; }
+        new SetValueScopeHandler<TValueScope> Set { get; }
 
-        new Task<T> GetValue();
-        Task SetValue(T value);
+        new Task<TValueScope> GetValueScope();
+        Task SetValueScope(TValueScope value);
     }
 
     public class SubmodelElementHandler
     {
-        public GetValueHandler GetValueHandler { get; private set; }
-        public SetValueHandler SetValueHandler { get; private set; }
-        public SubmodelElementHandler(GetValueHandler getHandler, SetValueHandler setHandler)
+        public GetValueScopeHandler GetValueHandler { get; private set; }
+        public SetValueScopeHandler SetValueHandler { get; private set; }
+        public SubmodelElementHandler(GetValueScopeHandler getHandler, SetValueScopeHandler setHandler)
         {
             GetValueHandler = getHandler;
             SetValueHandler = setHandler;
@@ -55,9 +58,9 @@ namespace BaSyx.Models.AdminShell
         public SubmodelElementHandler(MethodInfo getMethodInfo, MethodInfo setMethodInfo, object target)
         {
             if(getMethodInfo != null)
-                GetValueHandler = (GetValueHandler)getMethodInfo.CreateDelegate(typeof(GetValueHandler), target);
+                GetValueHandler = (GetValueScopeHandler)getMethodInfo.CreateDelegate(typeof(GetValueScopeHandler), target);
             if(setMethodInfo != null)
-                SetValueHandler = (SetValueHandler)setMethodInfo.CreateDelegate(typeof(SetValueHandler), target);
+                SetValueHandler = (SetValueScopeHandler)setMethodInfo.CreateDelegate(typeof(SetValueScopeHandler), target);
         }
     }
 

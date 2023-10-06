@@ -41,9 +41,9 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
                 Property property = new Property(castedProperty.IdShort, new DataType(dataObjectType))
                 {
-                    ValueId = castedProperty.ValueId?.ToReference_V2_0()
+                    ValueId = castedProperty.ValueId?.ToReference_V2_0(),
+                    Value = new PropertyValue(new ElementValue(castedProperty.Value, castedProperty.ValueType))
                 };
-                property.SetValue(new ElementValue(castedProperty.Value, castedProperty.ValueType)).Wait();
 
                 submodelElement = property;
             }
@@ -64,8 +64,9 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
                 Range range = new Range(castedRange.IdShort)
                 {
-                    Min = new ElementValue(castedRange.Min, new DataType(dataObjectType)),
-                    Max = new ElementValue(castedRange.Max, new DataType(dataObjectType)),
+                    Value = new RangeValue(
+                        min : new ElementValue(castedRange.Min, new DataType(dataObjectType)), 
+                        max: new ElementValue(castedRange.Max, new DataType(dataObjectType))),
                     ValueType = new DataType(dataObjectType)
                 };
 

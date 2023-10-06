@@ -185,11 +185,8 @@ namespace BaSyx.Models.Extensions
                     case ModelTypes.Property:
                         {
                             IProperty property = smElement.Cast<IProperty>();
-                            object value = (await property.GetValue()).ToObject<string>();
-                            if (value == null)
-                                value = (await property.Get?.Invoke(property))?.ToObject<string>();
-
-                            jObject.Add(property.IdShort, new JValue(value));
+                            var valueScope = await property.GetValueScope<PropertyValue>();
+                            jObject.Add(property.IdShort, new JValue(valueScope.Value.Value));
                             break;
                         }
                     case ModelTypes.File:
@@ -197,7 +194,7 @@ namespace BaSyx.Models.Extensions
                             IFileElement file = smElement.Cast<IFileElement>();
                             jObject.Add(file.IdShort, 
                                 new JObject(
-                                    new JProperty("mimeType", file.ContentType), 
+                                    new JProperty("contentType", file.ContentType), 
                                     new JProperty("value", file.Value)));
                             break;
                         }
@@ -206,7 +203,7 @@ namespace BaSyx.Models.Extensions
                             IBlob blob = smElement.Cast<IBlob>();
                             jObject.Add(blob.IdShort,
                                 new JObject(
-                                    new JProperty("mimeType", blob.ContentType),
+                                    new JProperty("contentType", blob.ContentType),
                                     new JProperty("value", blob.Value)));
                             break;
                         }
@@ -232,8 +229,8 @@ namespace BaSyx.Models.Extensions
                             IRange range = smElement.Cast<IRange>();
                             jObject.Add(range.IdShort,
                                 new JObject(
-                                    new JProperty("min", range.Min?.ToObject<string>()),
-                                    new JProperty("max", range.Max?.ToObject<string>())));
+                                    new JProperty("min", range.Value.Min?.ToObject<string>()),
+                                    new JProperty("max", range.Value.Max?.ToObject<string>())));
                             break;
                         }
                     case ModelTypes.Entity:

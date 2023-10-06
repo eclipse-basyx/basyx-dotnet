@@ -284,13 +284,13 @@ namespace BaSyx.API.Http.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
-        public async Task<IActionResult> ShellRepo_GetSubmodel(string aasIdentifier, string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult ShellRepo_GetSubmodel(string aasIdentifier, string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestContent content = default, [FromQuery] RequestExtent extent = default)
         {
             if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return await service.Shell_GetSubmodel(submodelIdentifier, level, content, extent);
+            return service.Shell_GetSubmodel(submodelIdentifier, level, content, extent);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodel(string, JObject, RequestLevel, RequestContent, RequestExtent)"/>

@@ -8,31 +8,34 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+
+using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using System.Xml.Linq;
 
 namespace BaSyx.Models.AdminShell
 {
-    /// <summary>
-    /// A range data element is a data element that defines a range with min and max
-    /// </summary>
-    public interface IRange : ISubmodelElement
+    public class RangeValue : ValueScope
     {
+        public override ModelType ModelType => ModelType.Range;
+
         /// <summary>
         /// The minimum value of the range. If the min value is missing then the value is assumed to be negative infinite.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "min")]
-        IValue Min { get; }
+        public IValue Min { get; set; }
 
         /// <summary>
         /// The maximum value of the range. If the max value is missing then the value is assumed to be positive infinite.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "max")]
-        IValue Max { get; }
+        public IValue Max { get; set; }
 
-        /// <summary>
-        /// Data type of the min und max.
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueType")]
-        DataType ValueType { get; set; }
+        public RangeValue() { }
+        public RangeValue(IValue min, IValue max)
+        {
+            Min = min;
+            Max = max;
+        }
     }
 }

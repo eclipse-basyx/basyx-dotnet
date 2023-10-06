@@ -29,10 +29,6 @@ namespace HelloAssetAdministrationShell
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
 
-            Identifier id = new Identifier("test");
-
-            string test = (string)id;
-
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
 

@@ -122,8 +122,9 @@ namespace BaSyx.Models.Extensions
             else
                 serializer.Populate(jObject.CreateReader(), submodelElement);
 
-            if(value != null)
-                submodelElement.SetValue(new ElementValue(value, valueType)).Wait();
+            //TODO
+            //if(value != null)
+            //    submodelElement.SetValue(new ElementValue(value, valueType)).Wait();
 
             submodelElement.EmbeddedDataSpecifications = embeddedDataSpecifications;
             submodelElement.ConceptDescription = conceptDescription;
@@ -132,12 +133,18 @@ namespace BaSyx.Models.Extensions
 
         public override void WriteJson(JsonWriter writer, ISubmodelElement value, JsonSerializer serializer)
         {
+            JObject jObject = CreateSerializationObject(value, serializer);
+            serializer.Serialize(writer, jObject);
+        }
+
+        public virtual JObject CreateSerializationObject(ISubmodelElement value, JsonSerializer serializer)
+        {
             JObject jObject = new JObject();
 
             Type t = value.GetType();
             foreach (var prop in t.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                if(prop.CanRead)
+                if (prop.CanRead)
                 {
                     var propAttribute = prop.GetCustomAttributes(typeof(DataMemberAttribute), true)?.FirstOrDefault();
                     if (propAttribute == null)
@@ -153,14 +160,14 @@ namespace BaSyx.Models.Extensions
                         logger.LogError(e, "Error retrieving value");
                         continue;
                     }
-                    
-                    if(propAttribute is DataMemberAttribute memberAttribute && propValue != null)
+
+                    if (propAttribute is DataMemberAttribute memberAttribute && propValue != null)
                     {
                         JToken jToken;
                         switch (memberAttribute.Name)
                         {
                             default:
-                                if(propValue is IValue iValue && iValue.Value != null) 
+                                if (propValue is IValue iValue && iValue.Value != null)
                                 {
                                     JProperty jValue = new JProperty(memberAttribute.Name, iValue.Value.ToString());
                                     jObject.Add(jValue);
@@ -173,26 +180,13 @@ namespace BaSyx.Models.Extensions
                                         continue;
                                     JProperty jProperty = new JProperty(memberAttribute.Name, jToken);
                                     jObject.Add(jProperty);
-                                }                               
+                                }
                                 break;
-                        }                                                
-                    }                
-                }                
-            }
-            if(value.Get != null)
-            {
-                var elementValue = value.GetValue().Result?.Value;
-                if(elementValue != null)
-                {
-                    string sValue = elementValue.ToString();
-                    if (elementValue is bool)
-                        sValue = sValue.ToLower();
-                    JProperty jValue = new JProperty("value", sValue);
-                    jObject.Add(jValue);
-                }                    
-            }
-
-            serializer.Serialize(writer, jObject);
+                        }
+                    }
+                }
+            }            
+            return jObject;
         }
     }
 }
