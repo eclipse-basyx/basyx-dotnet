@@ -101,6 +101,9 @@
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathValueOnly(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathMetadata(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PostSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
@@ -143,7 +146,7 @@
             <returns></returns>
             <response code="200">Requested Asset Administration Shells</response>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.PostAssetAdministrationShell(Newtonsoft.Json.Linq.JObject)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.PostAssetAdministrationShell(BaSyx.Models.AdminShell.IAssetAdministrationShell)">
             <summary>
             Creates a new Asset Administration Shell
             </summary>
@@ -161,7 +164,7 @@
             <response code="200">Returns the requested Asset Administration Shell</response>
             <response code="404">No Asset Administration Shell found</response>           
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.PutAssetAdministrationShellById(System.String,Newtonsoft.Json.Linq.JObject)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.PutAssetAdministrationShellById(System.String,BaSyx.Models.AdminShell.IAssetAdministrationShell)">
             <summary>
             Updates an existing Asset Administration Shell
             </summary>

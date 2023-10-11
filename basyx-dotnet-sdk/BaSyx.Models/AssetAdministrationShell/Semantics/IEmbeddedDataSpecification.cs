@@ -8,13 +8,10 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.Extensions;
-using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    [JsonConverter(typeof(DataSpecificationConverter))]
     public interface IEmbeddedDataSpecification
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "dataSpecification")]

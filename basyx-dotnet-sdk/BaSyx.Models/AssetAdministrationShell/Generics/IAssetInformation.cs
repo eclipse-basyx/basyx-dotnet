@@ -8,8 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -21,7 +19,6 @@ namespace BaSyx.Models.AdminShell
         /// Denotes whether the Asset is of kind “Type” or “Instance”. 
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "assetKind")]
-        [JsonConverter(typeof(StringEnumConverter))]
         AssetKind AssetKind { get; }
 
         /// <summary>

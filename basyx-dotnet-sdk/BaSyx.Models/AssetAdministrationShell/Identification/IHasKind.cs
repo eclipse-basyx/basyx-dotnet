@@ -8,9 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
@@ -24,7 +21,6 @@ namespace BaSyx.Models.AdminShell
         ///Kind of the element: either type or instance (Default Value = Instance )
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "kind")]
-        [JsonConverter(typeof(StringEnumConverter))]
         ModelingKind Kind { get; }
     }
 }

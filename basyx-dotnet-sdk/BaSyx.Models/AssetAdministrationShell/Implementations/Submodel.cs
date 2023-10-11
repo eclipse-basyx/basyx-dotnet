@@ -8,7 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
+
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Linq;
@@ -28,7 +28,6 @@ namespace BaSyx.Models.AdminShell
         public IEnumerable<IQualifier> Qualifiers { get; set; }
         
 
-        [JsonConstructor]
         public Submodel(string idShort, Identifier identification) : base(idShort, identification)
         {
             SubmodelElements = new ElementContainer<ISubmodelElement>(this);

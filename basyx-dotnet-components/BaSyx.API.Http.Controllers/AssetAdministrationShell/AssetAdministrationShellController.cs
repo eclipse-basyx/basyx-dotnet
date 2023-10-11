@@ -15,7 +15,6 @@ using BaSyx.Utils.ResultHandling;
 using BaSyx.API.ServiceProvider;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using System.Text.Json;
 
 namespace BaSyx.API.Http.Controllers

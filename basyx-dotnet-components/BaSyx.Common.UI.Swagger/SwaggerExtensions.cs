@@ -123,7 +123,6 @@ namespace BaSyx.Common.UI.Swagger
                     if(interfaceType != Interface.All)
                         c.DocumentFilter<ControllerSelector>(interfaceType);
                 });
-                services.AddSwaggerGenNewtonsoftSupport();
             });
 
             serverApp.Configure(app =>

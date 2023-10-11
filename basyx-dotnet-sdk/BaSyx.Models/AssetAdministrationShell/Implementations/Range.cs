@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
@@ -29,7 +28,6 @@ namespace BaSyx.Models.AdminShell
         public Range(string idShort) : this(idShort, null) 
         { }
 
-        [JsonConstructor]
         public Range(string idShort, DataType valueType) : base(idShort) 
         {
             ValueType = valueType;           

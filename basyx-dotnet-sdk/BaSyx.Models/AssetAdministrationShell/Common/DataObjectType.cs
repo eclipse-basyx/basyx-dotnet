@@ -9,7 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Utils.Extensions;
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,8 +106,7 @@ namespace BaSyx.Models.AdminShell
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "name")]
         public string Name { get; }
-       
-        [JsonConstructor]
+               
         internal DataObjectType(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));

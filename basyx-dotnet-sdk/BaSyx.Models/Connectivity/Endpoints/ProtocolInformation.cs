@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -41,7 +40,6 @@ namespace BaSyx.Models.Connectivity
         [IgnoreDataMember]
         public Uri Uri { get; }
 
-        [JsonConstructor]
         public ProtocolInformation(string endpointAddress)
         {
             EndpointAddress = endpointAddress ?? throw new ArgumentNullException(nameof(endpointAddress));

@@ -8,7 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
+
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -17,7 +17,6 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class LangStringSet : List<LangString>
     {
-        [JsonConstructor]
         public LangStringSet(IEnumerable<LangString> langStrings) : base(langStrings) { }
        
         public LangStringSet() { }

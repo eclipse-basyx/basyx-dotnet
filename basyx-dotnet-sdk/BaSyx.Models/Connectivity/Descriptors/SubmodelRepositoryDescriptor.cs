@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Linq;
@@ -29,7 +28,6 @@ namespace BaSyx.Models.Connectivity
             _submodelDescriptors = new List<ISubmodelDescriptor>();
         }
      
-        [JsonConstructor]
         public SubmodelRepositoryDescriptor(IEnumerable<ISubmodel> submodels, IEnumerable<IEndpoint> endpoints) : this(endpoints)
         {
             if (submodels?.Count() > 0)

@@ -20,13 +20,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.Linq;
 using System.IO;
-using BaSyx.Utils.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using BaSyx.Utils.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
 namespace BaSyx.API.Http.Controllers

@@ -9,9 +9,9 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Utils.ResultHandling;
-using Newtonsoft.Json;
 using System;
 using System.Text;
+using System.Text.Json;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.Logging
             }
             if (result.Entity != null)
             {
-                string serializedEntity = JsonConvert.SerializeObject(result.Entity, Formatting.Indented);
+                string serializedEntity = JsonSerializer.Serialize(result.Entity);
                 logText.Append(" || ").Append("Entity:\n" + serializedEntity);
             }
             if (!string.IsNullOrEmpty(additionalText))

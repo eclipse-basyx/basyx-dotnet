@@ -14,12 +14,8 @@ using Microsoft.AspNetCore.Hosting;
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.API.ServiceProvider;
-using System.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
-using BaSyx.Utils.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -31,7 +27,6 @@ namespace BaSyx.API.Http.Controllers
     {
         private readonly IAssetAdministrationShellRepositoryServiceProvider serviceProvider;
 
-        private static JsonSerializer _serializer = JsonSerializer.Create(new DependencyInjectionJsonSerializerSettings());
 
 #if NETCOREAPP3_1
         private readonly IWebHostEnvironment hostingEnvironment;
@@ -87,16 +82,15 @@ namespace BaSyx.API.Http.Controllers
         [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS, Name = "PostAssetAdministrationShell")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        [ProducesResponseType(typeof(BaSyx.Models.AdminShell.AssetAdministrationShell), 201)]
-        public IActionResult PostAssetAdministrationShell([FromBody] JObject aas)
+        [ProducesResponseType(typeof(AssetAdministrationShell), 201)]
+        public IActionResult PostAssetAdministrationShell([FromBody] IAssetAdministrationShell aas)
         {
             if (aas == null)
                 return ResultHandling.NullResult(nameof(aas));
 
-            var deserialized = aas.ToObject<IAssetAdministrationShell>(_serializer);
-            string aasIdentifier = ResultHandling.Base64UrlEncode(deserialized.Id);
+            string aasIdentifier = ResultHandling.Base64UrlEncode(aas.Id);
 
-            var result = serviceProvider.CreateAssetAdministrationShell(deserialized);
+            var result = serviceProvider.CreateAssetAdministrationShell(aas);
             return result.CreateActionResult(CrudOperation.Create, AssetAdministrationShellRepositoryRoutes.SHELLS_AAS.Replace("{aasIdentifier}", aasIdentifier));
         }
 
@@ -132,8 +126,8 @@ namespace BaSyx.API.Http.Controllers
         [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, Name = "PutAssetAdministrationShellById")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        [ProducesResponseType(typeof(BaSyx.Models.AdminShell.AssetAdministrationShell), 201)]
-        public IActionResult PutAssetAdministrationShellById(string aasIdentifier, [FromBody] JObject aas)
+        [ProducesResponseType(typeof(AssetAdministrationShell), 201)]
+        public IActionResult PutAssetAdministrationShellById(string aasIdentifier, [FromBody] IAssetAdministrationShell aas)
         {
             if (string.IsNullOrEmpty(aasIdentifier))
                 return ResultHandling.NullResult(nameof(aasIdentifier));
@@ -141,17 +135,16 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(aas));
 
             aasIdentifier = ResultHandling.Base64UrlDecode(aasIdentifier);
-            var deserialized = aas.ToObject<IAssetAdministrationShell>(_serializer);
 
-            if (aasIdentifier != deserialized.Id)
+            if (aasIdentifier != aas.Id)
             {
                 Result badRequestResult = new Result(false,
-                    new Message(MessageType.Error, $"Passed path parameter {aasIdentifier} does not equal the Asset Administration Shells's id {deserialized.Id}", "400"));
+                    new Message(MessageType.Error, $"Passed path parameter {aasIdentifier} does not equal the Asset Administration Shells's id {aas.Id}", "400"));
 
                 return badRequestResult.CreateActionResult(CrudOperation.Create, $"shells/{aasIdentifier}");
             }
 
-            var result = serviceProvider.CreateAssetAdministrationShell(deserialized);
+            var result = serviceProvider.CreateAssetAdministrationShell(aas);
             return result.CreateActionResult(CrudOperation.Create, $"shells/{aasIdentifier}");
         }
 

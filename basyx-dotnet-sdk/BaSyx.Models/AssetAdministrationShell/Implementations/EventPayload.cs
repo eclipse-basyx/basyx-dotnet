@@ -9,7 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.Extensions;
-using Newtonsoft.Json;
+
 using System;
 using System.Runtime.Serialization;
 
@@ -29,7 +29,6 @@ namespace BaSyx.Models.AdminShell
         public IReference ObservableSemanticId { get; set; }
         public string Topic { get; set; }
 
-        [JsonConstructor]
         public EventPayload(IReference source, IReference observableReference)
         {
             MessageId = Guid.NewGuid().ToString();

@@ -8,11 +8,8 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace BaSyx.Models.AdminShell
 {

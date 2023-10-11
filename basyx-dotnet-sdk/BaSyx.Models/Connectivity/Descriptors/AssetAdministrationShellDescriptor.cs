@@ -9,10 +9,8 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Collections;
 using System.Linq;
 
 namespace BaSyx.Models.Connectivity
@@ -27,7 +25,6 @@ namespace BaSyx.Models.Connectivity
 
         private List<ISubmodelDescriptor> _submodelDescriptors;
 
-        [JsonConstructor]
         public AssetAdministrationShellDescriptor(IEnumerable<IEndpoint> endpoints) : base (endpoints)
         {
             _submodelDescriptors = new List<ISubmodelDescriptor>();

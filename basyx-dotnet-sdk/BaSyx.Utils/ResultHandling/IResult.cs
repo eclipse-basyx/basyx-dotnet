@@ -8,8 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Utils.Json;
-using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
 
@@ -34,7 +32,6 @@ namespace BaSyx.Utils.ResultHandling
     public interface IResult<out TEntity> : IResult
     {
         [DataMember(Name = "entity", EmitDefaultValue = false, IsRequired = false)]
-        [JsonConverter(typeof(CustomTypeSerializer))]
         new TEntity Entity { get; }
     }
 }

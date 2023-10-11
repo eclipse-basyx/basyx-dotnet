@@ -8,11 +8,9 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Utils.Json;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Settings;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -20,6 +18,7 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +29,7 @@ namespace BaSyx.Utils.Client.Http
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<SimpleHttpClient>();
         public HttpClient HttpClient { get; }
         public HttpMessageHandler HttpMessageHandler { get; }
-        public JsonSerializerSettings JsonSerializerSettings { get; set; }
+        public JsonSerializerOptions JsonSerializerOptions { get; set; }
         public static SimpleHttpClientTimeoutHandler DEFAULT_HTTP_CLIENT_HANDLER
         {
             get
@@ -67,7 +66,7 @@ namespace BaSyx.Utils.Client.Http
             if (HttpMessageHandler is SimpleHttpClientTimeoutHandler)
                 HttpClient.Timeout = Timeout.InfiniteTimeSpan;
 
-            JsonSerializerSettings = new DefaultJsonSerializerSettings();
+            JsonSerializerOptions = new JsonSerializerOptions();
         }
 
         public virtual void LoadProxy(ProxyConfiguration proxyConfiguration)
@@ -169,7 +168,7 @@ namespace BaSyx.Utils.Client.Http
         {
             var message = CreateRequest(uri, method, () => 
             {
-                var serialized = JsonConvert.SerializeObject(content, JsonSerializerSettings);
+                var serialized = JsonSerializer.Serialize(content, JsonSerializerOptions);
                 return new StringContent(serialized, Encoding.UTF8, "application/json");
             });
             return message;
@@ -225,13 +224,13 @@ namespace BaSyx.Utils.Client.Http
             List<IMessage> messageList = new List<IMessage>(result.Messages);
 
             if (response != null)
-            {
-                string responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            {               
                 if (response.IsSuccessStatusCode)
                 {
                     try
                     {
-                        T requestResult = JsonConvert.DeserializeObject<T>(responseString, JsonSerializerSettings);
+                        var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                        T requestResult = await JsonSerializer.DeserializeAsync<T>(stream, JsonSerializerOptions).ConfigureAwait(false);
 
                         messageList.Add(new Message(MessageType.Information, response.ReasonPhrase, ((int)response.StatusCode).ToString()));
                         return new Result<T>(true, requestResult, messageList);
@@ -244,7 +243,7 @@ namespace BaSyx.Utils.Client.Http
                 }
                 else
                 {
-                    messageList.Add(new Message(MessageType.Error, response.ReasonPhrase + " | " + responseString, ((int)response.StatusCode).ToString()));
+                    messageList.Add(new Message(MessageType.Error, response.ReasonPhrase, ((int)response.StatusCode).ToString()));
                     return new Result<T>(false, messageList);
                 }
             }

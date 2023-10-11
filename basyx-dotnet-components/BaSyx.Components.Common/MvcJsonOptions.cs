@@ -22,17 +22,6 @@ namespace BaSyx.Components.Common
 {
     public static class MvcJsonOptions
     {
-        public static MvcNewtonsoftJsonOptions GetDefaultMvcJsonOptions(this MvcNewtonsoftJsonOptions options, IServiceCollection services)
-        {
-            options.SerializerSettings.ContractResolver = new DependencyInjectionContractResolver(new DependencyInjectionExtension(services));
-            options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
-            options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-            options.SerializerSettings.Converters.Add(new FullDataConverter());
-            options.AllowInputFormatterExceptionMessages = true;
-
-            return options;
-        }
-
         public static JsonOptions GetDefaultJsonOptions(this JsonOptions options, IServiceCollection services)
         {
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull | JsonIgnoreCondition.WhenWritingDefault;

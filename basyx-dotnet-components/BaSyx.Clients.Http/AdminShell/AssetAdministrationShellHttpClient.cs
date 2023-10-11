@@ -16,16 +16,16 @@ using System;
 using System.Net.Http;
 using BaSyx.Models.Connectivity;
 using System.Linq;
-using BaSyx.Utils.DependencyInjection;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.API.Http;
-using BaSyx.Clients.AdminShell.Http;
+using BaSyx.Models.Extensions;
+using BaSyx.Utils.DependencyInjection;
+using System.Text.Json;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -40,7 +40,11 @@ namespace BaSyx.Clients.AdminShell.Http
 
         private AssetAdministrationShellHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
         {
-            JsonSerializerSettings = new DependencyInjectionJsonSerializerSettings();
+            var options = new DefaultJsonSerializerOptions();
+            var services = DefaultImplementation.GetStandardServiceCollection();
+            options.AddDependencyInjection(new DependencyInjectionExtension(services));
+            options.AddFullSubmodelElementConverter();
+            JsonSerializerOptions = options.Build();
         }
 
         public AssetAdministrationShellHttpClient(Uri endpoint) : this(endpoint, null)
@@ -367,7 +371,7 @@ namespace BaSyx.Clients.AdminShell.Http
                 string sValue = Encoding.UTF8.GetString((byte[])result.Entity);
                 if (!string.IsNullOrEmpty(sValue))
                 {
-                    object deserializedValue = JsonConvert.DeserializeObject(sValue);
+                    object deserializedValue = JsonSerializer.Deserialize<object>(sValue);
                     return new Result<IValue>(result.Success, new ElementValue(deserializedValue, deserializedValue?.GetType()), result.Messages);
                 }
             }

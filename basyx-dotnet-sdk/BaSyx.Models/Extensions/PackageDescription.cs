@@ -8,19 +8,19 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
     public class PackageDescription
     {
-        [DataMember(Name = "aasIds"), JsonProperty("aasIds"), XmlIgnore]
+        [DataMember(Name = "aasIds"), XmlIgnore]
         public List<string> AdminShellIds { get; set; } = new List<string>();
 
-        [DataMember(Name = "packageId"), JsonProperty("packageId"), XmlIgnore]
+        [DataMember(Name = "packageId"), XmlIgnore]
         public string PackageId { get; set; }
 
         [IgnoreDataMember, JsonIgnore, XmlIgnore]

@@ -8,7 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
+
 using System.Globalization;
 
 namespace BaSyx.Utils.ResultHandling
@@ -21,7 +21,6 @@ namespace BaSyx.Utils.ResultHandling
 
         public Message(MessageType messageType, string text) : this(messageType, text, null)
         { }
-        [JsonConstructor]
         public Message(MessageType messageType, string text, string code)
         {
             MessageType = messageType;

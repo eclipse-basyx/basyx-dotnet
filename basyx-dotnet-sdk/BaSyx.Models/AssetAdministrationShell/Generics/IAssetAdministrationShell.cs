@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 
@@ -22,7 +21,7 @@ namespace BaSyx.Models.AdminShell
         /// <summary>
         /// The reference to the Asset Administration Shell, which the Asset Administration Shell was derived from.
         /// </summary>
-        [JsonProperty, DataMember(EmitDefaultValue = false, IsRequired = false, Name = "derivedFrom")]
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "derivedFrom")]
         IReference<IAssetAdministrationShell> DerivedFrom { get; }
 
         /// <summary>

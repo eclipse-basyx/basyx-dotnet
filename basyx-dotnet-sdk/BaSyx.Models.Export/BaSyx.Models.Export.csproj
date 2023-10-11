@@ -45,6 +45,7 @@
   <ItemGroup>
     <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.11" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

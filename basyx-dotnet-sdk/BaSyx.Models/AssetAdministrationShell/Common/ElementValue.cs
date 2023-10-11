@@ -9,8 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Globalization;
 using System.Runtime.Serialization;
@@ -24,7 +22,7 @@ namespace BaSyx.Models.AdminShell
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<ElementValue>();
 
         internal object _value;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include, NullValueHandling = NullValueHandling.Include)]
+
         public object Value
         {
             get => _value;
@@ -54,7 +52,6 @@ namespace BaSyx.Models.AdminShell
             : this(value, DataType.GetDataTypeFromSystemType(value.GetType()))
         { }
 
-        [JsonConstructor]
         public ElementValue(object value, DataType valueType)
         {
             ValueType = valueType;
@@ -82,18 +79,7 @@ namespace BaSyx.Models.AdminShell
                 catch (Exception e1)
                 {
                     logger.LogWarning(e1, $"Cannot change type from {value?.GetType()} to {type.Name} | value: {value?.ToString()}");
-
-                    try
-                    {
-                        JToken jVal = JToken.Parse(value.ToString());
-                        object convertedVal = jVal.ToObject(type);
-                        return convertedVal;
-                    }
-                    catch (Exception e2)
-                    {
-                        logger.LogError(e2, $"Cannot convert from {value?.GetType()} to {type.Name} | value: {value?.ToString()}");
-                        throw new InvalidCastException($"Cannot convert from {value?.GetType()} to {type.Name} | value: {value?.ToString()}", e2);
-                    }
+                    throw new InvalidCastException($"Cannot change type from {value?.GetType()} to {type.Name} | value: {value?.ToString()}", e1);
                 }
             }
         }

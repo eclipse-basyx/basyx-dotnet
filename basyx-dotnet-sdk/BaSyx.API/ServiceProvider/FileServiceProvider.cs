@@ -11,11 +11,11 @@
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling;
 using Microsoft.Extensions.FileProviders;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BaSyx.API.ServiceProvider
@@ -44,7 +44,7 @@ namespace BaSyx.API.ServiceProvider
 
             string packageDescriptionFileName = packageDescription.PackageId + ".json";
             IFileInfo packageDescriptionFileInfo = _fileProvider.GetFileInfo(packageDescriptionFileName);
-            string packageDescriptionJsonContent = JsonConvert.SerializeObject(packageDescription, Formatting.Indented);
+            string packageDescriptionJsonContent = JsonSerializer.Serialize(packageDescription);
 
             using (FileStream fileStream = new FileStream(packageDescriptionFileInfo.PhysicalPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
@@ -73,7 +73,7 @@ namespace BaSyx.API.ServiceProvider
                         using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                         {
                             string content = await reader.ReadToEndAsync();
-                            PackageDescription packageDescription = JsonConvert.DeserializeObject<PackageDescription>(content);
+                            PackageDescription packageDescription = JsonSerializer.Deserialize<PackageDescription>(content);
                             packageDescriptions.Add(packageDescription);
                         }
                     }
@@ -95,7 +95,7 @@ namespace BaSyx.API.ServiceProvider
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
                     string content = await reader.ReadToEndAsync();
-                    PackageDescription packageDescription = JsonConvert.DeserializeObject<PackageDescription>(content);
+                    PackageDescription packageDescription = JsonSerializer.Deserialize<PackageDescription>(content);
                     return new Result<PackageDescription>(true, packageDescription);
                 }
             }

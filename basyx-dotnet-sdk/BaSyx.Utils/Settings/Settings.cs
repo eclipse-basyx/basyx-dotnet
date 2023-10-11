@@ -12,12 +12,11 @@ using BaSyx.Utils.Assembly;
 using BaSyx.Utils.Extensions;
 using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -154,7 +153,7 @@ namespace BaSyx.Utils.Settings
                     settings.FilePath = filePath;
 
                     if(logger.IsEnabled(LogLevel.Debug))
-                        logger.LogDebug("Settings loaded: " + JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented));
+                        logger.LogDebug("Settings loaded: " + JsonSerializer.Serialize(settings));
 
                     return settings;
                 }

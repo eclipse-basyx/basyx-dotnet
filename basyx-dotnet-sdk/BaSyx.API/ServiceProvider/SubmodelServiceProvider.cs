@@ -13,12 +13,12 @@ using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Client;
 using System.Collections.Generic;
 using System;
-using Newtonsoft.Json;
 using BaSyx.Models.Connectivity;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using BaSyx.Models.Extensions;
+using System.Text.Json;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -415,7 +415,7 @@ namespace BaSyx.API.ServiceProvider
 
             try
             {
-                string message = JsonConvert.SerializeObject(eventMessage, Formatting.Indented);
+                string message = JsonSerializer.Serialize(eventMessage);
                 return await messageClient.PublishAsync(eventMessage.Topic, message).ConfigureAwait(false);
             }
             catch (Exception e)

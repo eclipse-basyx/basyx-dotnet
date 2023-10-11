@@ -11,7 +11,6 @@
 using BaSyx.Components.Common.Abstractions;
 using BaSyx.Utils.Assembly;
 using BaSyx.Utils.DependencyInjection;
-using BaSyx.Utils.Json;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Settings;
 using Microsoft.AspNetCore.Builder;
@@ -25,13 +24,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -318,8 +316,6 @@ namespace BaSyx.Components.Common
             services
                 .AddMvc(options =>
                 {
-                    //options.InputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonInputFormatter>();
-                    //options.OutputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonOutputFormatter>();
                     options.RespectBrowserAcceptHeader = true;
                 })
                 .AddApplicationPart(ControllerAssembly)
@@ -328,10 +324,6 @@ namespace BaSyx.Components.Common
                 {
                     options.GetDefaultJsonOptions(services);
                 });
-                //.AddNewtonsoftJson(options =>
-                //{
-                //    options.GetDefaultMvcJsonOptions(services);
-                //});
 
             services.AddRazorPages(opts =>
             {
@@ -403,18 +395,11 @@ namespace BaSyx.Components.Common
             {
                 context.HttpContext.Response.ContentType = "application/json";
 
-                JsonSerializerSettings settings;
-                var options = context.HttpContext.RequestServices.GetService<MvcNewtonsoftJsonOptions>();
-                if (options == null)
-                    settings = new DefaultJsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-                else
-                    settings = options.SerializerSettings;
-
                 Result result = new Result(false, 
                     new Message(MessageType.Error, "Path: " + context.HttpContext.Request.Path.Value, 
                     context.HttpContext.Response.StatusCode.ToString()));
                               
-                string resultMessage = JsonConvert.SerializeObject(result, settings);
+                string resultMessage = JsonSerializer.Serialize(result);
 
                 await context.HttpContext.Response.WriteAsync(resultMessage);
             });

@@ -10,17 +10,17 @@
 *******************************************************************************/
 using BaSyx.API.Interfaces;
 using BaSyx.Models.Connectivity;
-using BaSyx.Models.AdminShell;
 using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Generic;
+using BaSyx.Models.Extensions;
+using System.Text.Json;
 
 namespace BaSyx.Registry.ReferenceImpl.FileBased
 {
@@ -31,12 +31,16 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
         public const string SubmodelFolder = "Submodels";
         
         public FileBasedRegistrySettings Settings { get; }
-        public JsonSerializerSettings JsonSerializerSettings { get; }
+        public JsonSerializerOptions JsonSerializerOptions { get; }
         public string FolderPath { get; }
         public FileBasedRegistry(FileBasedRegistrySettings settings = null)
         {
             Settings = settings ?? FileBasedRegistrySettings.LoadSettings();
-            JsonSerializerSettings = new DependencyInjectionJsonSerializerSettings();
+            var options = new DefaultJsonSerializerOptions();
+            var services = DefaultImplementation.GetStandardServiceCollection();
+            options.AddDependencyInjection(new DependencyInjectionExtension(services));
+            options.AddFullSubmodelElementConverter();
+            JsonSerializerOptions = options.Build();
 
             FolderPath = Settings.Miscellaneous["FolderPath"];
             if (!Path.IsPathRooted(FolderPath))
@@ -100,7 +104,7 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
                 }
                 aasDescriptor.SubmodelDescriptors = new List<ISubmodelDescriptor>();
 
-                string aasDescriptorContent = JsonConvert.SerializeObject(aasDescriptor, JsonSerializerSettings);
+                string aasDescriptorContent = JsonSerializer.Serialize(aasDescriptor, JsonSerializerOptions);
                 string aasFilePath = Path.Combine(aasDirectoryPath, aasIdHash) + ".json";
                 File.WriteAllText(aasFilePath, aasDescriptorContent);
 
@@ -133,7 +137,7 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
             try
             {
                 string submodelDirectory = Path.Combine(aasDirectoryPath, SubmodelFolder);
-                string submodelContent = JsonConvert.SerializeObject(submodelDescriptor, JsonSerializerSettings);
+                string submodelContent = JsonSerializer.Serialize(submodelDescriptor, JsonSerializerOptions);
                 if (!Directory.Exists(submodelDirectory))
                     Directory.CreateDirectory(submodelDirectory);
 
@@ -215,7 +219,7 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
                 try
                 {
                     string aasContent = File.ReadAllText(aasFilePath);
-                    IAssetAdministrationShellDescriptor descriptor = JsonConvert.DeserializeObject<IAssetAdministrationShellDescriptor>(aasContent, JsonSerializerSettings);
+                    IAssetAdministrationShellDescriptor descriptor = JsonSerializer.Deserialize<IAssetAdministrationShellDescriptor>(aasContent, JsonSerializerOptions);
 
                     var submodelDescriptors = RetrieveAllSubmodelRegistrations(aasId);
                     if(submodelDescriptors.Success && submodelDescriptors.Entity?.Count() > 0)
@@ -286,7 +290,7 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
                 try
                 {
                     string aasContent = File.ReadAllText(aasFilePath);
-                    IAssetAdministrationShellDescriptor aasDescriptor = JsonConvert.DeserializeObject<IAssetAdministrationShellDescriptor>(aasContent, JsonSerializerSettings);
+                    IAssetAdministrationShellDescriptor aasDescriptor = JsonSerializer.Deserialize<IAssetAdministrationShellDescriptor>(aasContent, JsonSerializerOptions);
 
                     var submodelDescriptors = RetrieveAllSubmodelRegistrations(aasDescriptor.Identification.Id);
                     if (submodelDescriptors.Success && submodelDescriptors.Entity != null)
@@ -322,7 +326,7 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
                     try
                     {
                         string submodelContent = File.ReadAllText(submodelPath);
-                        ISubmodelDescriptor descriptor = JsonConvert.DeserializeObject<ISubmodelDescriptor>(submodelContent, JsonSerializerSettings);
+                        ISubmodelDescriptor descriptor = JsonSerializer.Deserialize<ISubmodelDescriptor>(submodelContent, JsonSerializerOptions);
                         return new Result<ISubmodelDescriptor>(true, descriptor);
                     }
                     catch (Exception e)
@@ -363,7 +367,7 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
                         foreach (var file in files)
                         {
                             string submodelContent = File.ReadAllText(file);
-                            ISubmodelDescriptor descriptor = JsonConvert.DeserializeObject<ISubmodelDescriptor>(submodelContent, JsonSerializerSettings);
+                            ISubmodelDescriptor descriptor = JsonSerializer.Deserialize<ISubmodelDescriptor>(submodelContent, JsonSerializerOptions);
                             if (descriptor != null)
                                 submodelDescriptors.Add(descriptor);
                             else

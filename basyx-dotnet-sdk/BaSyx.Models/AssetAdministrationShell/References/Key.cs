@@ -8,8 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
@@ -20,18 +18,14 @@ namespace BaSyx.Models.AdminShell
     [XmlType("key")]
     public class Key : IKey, IEquatable<Key>
     {
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
-        [JsonConverter(typeof(StringEnumConverter))]
         [XmlAttribute("type")]
         public KeyType Type { get; set; }
 
-        [JsonProperty(Required = Required.Always, DefaultValueHandling = DefaultValueHandling.Include)]
         [XmlText]
         public string Value { get; set; }
 
         internal Key() { }
 
-        [JsonConstructor]
         public Key(KeyType type, string value)
         {
             Type = type;

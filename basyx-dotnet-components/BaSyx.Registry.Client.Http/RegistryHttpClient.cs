@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using BaSyx.API.Http;
 using BaSyx.Utils.Extensions;
 using BaSyx.API.Clients;
+using BaSyx.Models.Extensions;
 
 namespace BaSyx.Registry.Client.Http
 {
@@ -54,7 +55,11 @@ namespace BaSyx.Registry.Client.Http
         { }
         public RegistryHttpClient(RegistryClientSettings registryClientSettings, HttpMessageHandler messageHandler) : base(messageHandler)
         {
-            JsonSerializerSettings = new DependencyInjectionJsonSerializerSettings();
+            var options = new DefaultJsonSerializerOptions();
+            var services = DefaultImplementation.GetStandardServiceCollection();
+            options.AddDependencyInjection(new DependencyInjectionExtension(services));
+            options.AddFullSubmodelElementConverter();
+            JsonSerializerOptions = options.Build();
             Settings = registryClientSettings ?? RegistryClientSettings.LoadSettings() ?? throw new NullReferenceException("Settings is null");
             LoadSettings(Settings);
         }

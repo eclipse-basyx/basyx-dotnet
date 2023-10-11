@@ -9,15 +9,15 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Utils.ResultHandling;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    [DataContract, JsonObject]
+    [DataContract]
     public class SubmodelElementCollection : SubmodelElement, ISubmodelElementCollection, IElementContainer<ISubmodelElement>
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]

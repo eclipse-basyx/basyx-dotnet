@@ -8,7 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,8 +25,6 @@ namespace BaSyx.Utils.ResultHandling
         { }
         public OperationResult(IResult result) : base(result)
         { }
-
-        [JsonConstructor]
         public OperationResult(bool success, IEnumerable<IMessage> messages) : base(success, messages)
         { }
 

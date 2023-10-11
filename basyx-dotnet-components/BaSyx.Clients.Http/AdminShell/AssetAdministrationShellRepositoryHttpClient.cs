@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using BaSyx.API.Http;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
+using BaSyx.Models.Extensions;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -36,7 +37,11 @@ namespace BaSyx.Clients.AdminShell.Http
 
         private AssetAdministrationShellRepositoryHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
         {
-            JsonSerializerSettings = new DependencyInjectionJsonSerializerSettings();
+            var options = new DefaultJsonSerializerOptions();
+            var services = DefaultImplementation.GetStandardServiceCollection();
+            options.AddDependencyInjection(new DependencyInjectionExtension(services));
+            options.AddFullSubmodelElementConverter();
+            JsonSerializerOptions = options.Build();
         }
 
         public AssetAdministrationShellRepositoryHttpClient(Uri endpoint) : this(endpoint, null)
