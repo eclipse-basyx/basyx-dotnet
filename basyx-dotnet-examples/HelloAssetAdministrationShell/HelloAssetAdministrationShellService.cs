@@ -56,7 +56,7 @@ namespace HelloAssetAdministrationShell
         {
             if (inputArguments?.Count > 0)
             {
-                var inputValue = await inputArguments["Text"].GetValue<string>();
+                var inputValue = await inputArguments["Text"].GetValueAsync<string>();
                 var propValue = new PropertyValue<string>("Hello '" + inputValue + "'");
                 await outputArguments["ReturnValue"].SetValueScope(propValue);
                 return new OperationResult(true);
@@ -177,10 +177,6 @@ namespace HelloAssetAdministrationShell
                     InputVariables = new OperationVariableSet() { new Property<string>("Text") },
                     OutputVariables = new OperationVariableSet() { new Property<string>("ReturnValue") }
                 },
-                new Operation("HelloOperation2")
-                {
-                    Description = new LangStringSet() { new LangString("en", "This operation does nothing") }
-                },
                 new SubmodelElementCollection("HelloSubmodelElementCollection")
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary SubmodelElementCollection") },
@@ -205,6 +201,11 @@ namespace HelloAssetAdministrationShell
                                 Random random = new Random();
                                 int val = random.Next(1, 500);
                                 return Task.FromResult(val);
+                            },
+                            Set = (prop, val) =>
+                            {
+                                int myVal = val;
+                                return Task.CompletedTask;
                             }
                         },
                         new Property<bool>("MySubBoolValue", true),
@@ -240,13 +241,19 @@ namespace HelloAssetAdministrationShell
                     OutputVariables = new OperationVariableSet()
                     {
                         new Property<double>("Result")
+                        {
+                            DisplayName =
+                            {
+                                new LangString("de", "Berechnetes Ergebnis"),
+                                new LangString("en", "Calculated result")
+                            },
+                            SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("Result", "1.0.0").ToUrn()))
+                        }
                     },
                     OnMethodCalled = async (op, inArgs, inOutArgs, outArgs, cancellationToken) =>
                     {
-                        string expression = await inArgs["Expression"]?.GetValue<string>();
-                        int? computingTime = await inArgs["ComputingTime"]?.GetValue<int>();
-
-                        await inOutArgs["HierRein"]?.SetValue("DaWiederRaus");
+                        string expression = await inArgs["Expression"]?.GetValueAsync<string>();
+                        int? computingTime = await inArgs["ComputingTime"]?.GetValueAsync<int>();                        
 
                         if (computingTime.HasValue)
                             await Task.Delay(computingTime.Value, cancellationToken);
@@ -256,7 +263,7 @@ namespace HelloAssetAdministrationShell
 
                         double value = CalulcateExpression(expression);
 
-                        outArgs.Add(new Property<double>("Result", value));
+                        outArgs["Result"].SetValue(value);
                         return new OperationResult(true);
                     }
                 }

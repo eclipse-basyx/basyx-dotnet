@@ -42,15 +42,12 @@ namespace BaSyx.Models.AdminShell
     {
         public string IdShort { get; }
 
-        public object Value { get; }
+        public ValueScope ValueScope { get; }
 
-        public DataType ValueType { get; }
-
-        public ValueChangedArgs(string idShort, object value, DataType valueType)
+        public ValueChangedArgs(string idShort, ValueScope valueScope)
         {
             IdShort = idShort;
-            Value = value;
-            ValueType = valueType;
+            ValueScope = valueScope;
         }
     }
 

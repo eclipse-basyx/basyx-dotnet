@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling;
 using Newtonsoft.Json;
@@ -29,6 +28,7 @@ namespace BaSyx.Models.AdminShell
         public TElement Value { get; set;  }
         public string Path { get; set; }
         public bool IsRoot => ParentContainer == null;
+        [JsonIgnore]
         public IReferable Parent { get; set; }
         public IElementContainer<TElement> ParentContainer { get; set; }
 

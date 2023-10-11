@@ -133,10 +133,10 @@ namespace SimpleAssetAdministrationShell
                        },
                        OnMethodCalled = async (op, inArgs, inOutArgs, outArgs, cancellationToken) =>
                        {
-                           string expression = inArgs["Expression"]?.GetValue<string>();
-                           int? computingTime = inArgs["ComputingTime"]?.GetValue<int>();
+                           string expression = inArgs["Expression"]?.GetValueAsync<string>();
+                           int? computingTime = inArgs["ComputingTime"]?.GetValueAsync<int>();
 
-                           inOutArgs["HierRein"]?.SetValue("DaWiederRaus");
+                           inOutArgs["HierRein"]?.SetValueAsync("DaWiederRaus");
 
                            if(computingTime.HasValue)
                             await Task.Delay(computingTime.Value, cancellationToken);

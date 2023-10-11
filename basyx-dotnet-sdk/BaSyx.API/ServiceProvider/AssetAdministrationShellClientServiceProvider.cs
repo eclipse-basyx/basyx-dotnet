@@ -53,7 +53,7 @@ namespace BaSyx.API.ServiceProvider
         public AssetAdministrationShellClientServiceProvider(IAssetAdministrationShellClient shellClient)
         {
             _shellClient = shellClient;
-            var shell_retrieved = _shellClient.RetrieveAssetAdministrationShell(default);
+            var shell_retrieved = _shellClient.RetrieveAssetAdministrationShell();
             if (!shell_retrieved.Success)
                 throw new Exception("Could not retrieve shell to create service provider: " + shell_retrieved.Messages?.ToString());
             _serviceDescriptor = new AssetAdministrationShellDescriptor(shell_retrieved.Entity, new List<IEndpoint>() { _shellClient.Endpoint });
@@ -65,7 +65,7 @@ namespace BaSyx.API.ServiceProvider
 
         public virtual IAssetAdministrationShell GetBinding()
         {
-            IAssetAdministrationShell shell = RetrieveAssetAdministrationShell(default).Entity;
+            IAssetAdministrationShell shell = RetrieveAssetAdministrationShell().Entity;
 
             foreach (var submodelServiceProvider in SubmodelServiceProviders)
             {
@@ -75,9 +75,9 @@ namespace BaSyx.API.ServiceProvider
             return shell;
         }
 
-        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(RequestContent content)
+        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell()
         {
-            return _shellClient.RetrieveAssetAdministrationShell(content);
+            return _shellClient.RetrieveAssetAdministrationShell();
         }
 
         public IResult UpdateAssetAdministrationShell(IAssetAdministrationShell aas)

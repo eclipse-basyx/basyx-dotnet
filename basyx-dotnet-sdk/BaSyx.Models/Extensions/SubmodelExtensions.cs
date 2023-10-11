@@ -185,7 +185,7 @@ namespace BaSyx.Models.Extensions
                     case ModelTypes.Property:
                         {
                             IProperty property = smElement.Cast<IProperty>();
-                            var valueScope = await property.GetValueScope<PropertyValue>();
+                            var valueScope = await property.GetValueScopeAsync<PropertyValue>();
                             jObject.Add(property.IdShort, new JValue(valueScope.Value.Value));
                             break;
                         }

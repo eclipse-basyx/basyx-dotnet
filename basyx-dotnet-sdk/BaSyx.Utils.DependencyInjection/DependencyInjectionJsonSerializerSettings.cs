@@ -30,5 +30,5 @@ namespace BaSyx.Utils.DependencyInjection
             ServiceProvider = serviceProviderFactory.CreateServiceProvider(Services);
             ContractResolver = new DependencyInjectionContractResolver(new DependencyInjectionExtension(Services));
         }        
-    }
+    }   
 }

@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
@@ -21,7 +20,7 @@ namespace BaSyx.Models.AdminShell
         /// <summary>
         /// The globally unique identification of the element. 
         /// </summary>
-        [JsonProperty(Order = -1), DataMember(Order = 1, EmitDefaultValue = false, IsRequired = false, Name = "id")]
+        [DataMember(Order = 1, EmitDefaultValue = false, IsRequired = false, Name = "id")]
         Identifier Id { get; }
 
         /// <summary>

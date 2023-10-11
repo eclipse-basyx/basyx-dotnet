@@ -12,6 +12,7 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -85,6 +86,7 @@ namespace BaSyx.Models.AdminShell
         IEnumerable<TElement> Values { get; }
         IElementContainer<TElement> ParentContainer { get; set; }
 
+        [JsonIgnore]
         IReferable Parent { get; set; }
         TElement Value { get; set; }
         string Path { get; set; }

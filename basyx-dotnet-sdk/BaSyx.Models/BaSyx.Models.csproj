@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\resources\basyxlogo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

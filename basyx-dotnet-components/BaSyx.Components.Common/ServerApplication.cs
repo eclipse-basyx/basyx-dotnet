@@ -318,16 +318,20 @@ namespace BaSyx.Components.Common
             services
                 .AddMvc(options =>
                 {
-                    options.InputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonInputFormatter>();
-                    options.OutputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonOutputFormatter>();
+                    //options.InputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonInputFormatter>();
+                    //options.OutputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonOutputFormatter>();
                     options.RespectBrowserAcceptHeader = true;
                 })
                 .AddApplicationPart(ControllerAssembly)
                 .AddControllersAsServices()
-                .AddNewtonsoftJson(options =>
+                .AddJsonOptions(options =>
                 {
-                    options.GetDefaultMvcJsonOptions(services);
+                    options.GetDefaultJsonOptions(services);
                 });
+                //.AddNewtonsoftJson(options =>
+                //{
+                //    options.GetDefaultMvcJsonOptions(services);
+                //});
 
             services.AddRazorPages(opts =>
             {

@@ -8,19 +8,21 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     public interface ISubmodelElement : IHasSemantics, IQualifiable, IReferable, IHasKind, IModelElement, IHasDataSpecification, IValueChanged, IGetSet
     {
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         ValueScope Value { get; }
     }
 
     public interface ISubmodelElement<TValueScope> : ISubmodelElement where TValueScope: ValueScope
     {
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         new TValueScope Value { get; }
     }
 }

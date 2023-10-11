@@ -8,18 +8,18 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
     public class Reference : IReference
     {
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public virtual KeyType RefersTo
         {
             get
@@ -30,7 +30,7 @@ namespace BaSyx.Models.AdminShell
             }
         }
 
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public IKey First
         {
             get
@@ -46,6 +46,7 @@ namespace BaSyx.Models.AdminShell
 
         public ReferenceType Type { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IReference ReferredSemanticId { get; set; }
 
         [JsonConstructor]
@@ -82,7 +83,7 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class Reference<T> : Reference, IReference<T> where T : IReferable
     {
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public override KeyType RefersTo => Key.GetKeyElementFromType(typeof(T));
 
         [JsonConstructor]

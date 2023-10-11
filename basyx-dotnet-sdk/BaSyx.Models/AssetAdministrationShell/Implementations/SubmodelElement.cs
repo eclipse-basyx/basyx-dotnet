@@ -8,12 +8,12 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -39,7 +39,7 @@ namespace BaSyx.Models.AdminShell
         private SetValueScopeHandler _set;
         internal ValueScope _valueScope;
 
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public virtual GetValueScopeHandler Get
         {
             get
@@ -53,13 +53,18 @@ namespace BaSyx.Models.AdminShell
                 _get = value;
             }
         }
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public virtual SetValueScopeHandler Set
         {
             get
             {
                 if (_set == null)
-                    _set = new SetValueScopeHandler((element, valueScope) => { _valueScope = valueScope; return Task.CompletedTask; });
+                    _set = new SetValueScopeHandler((element, valueScope) => 
+                    { 
+                        _valueScope = valueScope;
+                        OnValueChanged(new ValueChangedArgs(IdShort, valueScope));
+                        return Task.CompletedTask; 
+                    });
                 return _set;
             }
             set
@@ -68,12 +73,14 @@ namespace BaSyx.Models.AdminShell
             }
         }
 
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public ValueScope Value { get => Get(this).Result; set => Set(this, value); }
 
         public IEnumerable<IEmbeddedDataSpecification> EmbeddedDataSpecifications { get; set; }
 
         private IConceptDescription conceptDescription;
+
+        [JsonIgnore, IgnoreDataMember]
         public IConceptDescription ConceptDescription
         {
             get => conceptDescription;
@@ -138,7 +145,7 @@ namespace BaSyx.Models.AdminShell
         private GetValueScopeHandler<TValueScope> _get;
         private SetValueScopeHandler<TValueScope> _set;
 
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public new virtual GetValueScopeHandler<TValueScope> Get 
         {
             get
@@ -159,7 +166,7 @@ namespace BaSyx.Models.AdminShell
                     base.Get = null;
             }
         }
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public new virtual SetValueScopeHandler<TValueScope> Set 
         {
             get
@@ -180,7 +187,8 @@ namespace BaSyx.Models.AdminShell
                     base.Set = null;
             }
         }
-        [IgnoreDataMember]
+
+        [JsonIgnore, IgnoreDataMember]
         public new TValueScope Value { get => Get(this).Result; set => Set(this, value); }
 
         protected SubmodelElement(string idShort) : base(idShort) { }

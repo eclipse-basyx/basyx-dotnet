@@ -10,6 +10,7 @@
 *******************************************************************************/
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -24,9 +25,9 @@ namespace BaSyx.Models.AdminShell
         public LangStringSet Description { get; set; }
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "displayName")]
         public LangStringSet DisplayName { get; set; }
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public IReferable Parent { get; set; }
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         public Dictionary<string, string> MetaData { get; set; }
                  
         protected Referable(string idShort)

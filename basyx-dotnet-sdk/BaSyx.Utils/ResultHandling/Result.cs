@@ -8,23 +8,24 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Utils.ResultHandling
 {
     public class Result : IResult
     {
-        public bool Success { get; private set; }
+        public bool Success { get; set; }
 
+        [JsonIgnore]
         public bool? IsException { get; }
-
-        public object Entity { get; private set; }
-
-        public Type EntityType { get; private set; }
+        [JsonIgnore]
+        public object Entity { get; set; }
+        [JsonIgnore]
+        public Type EntityType { get; set; }
 
         private MessageCollection messages;
         public MessageCollection Messages
@@ -35,6 +36,7 @@ namespace BaSyx.Utils.ResultHandling
                     messages = new MessageCollection();
                 return messages;
             }
+            set { messages = value; }
         }
         public Result(bool success) : this(success, null, null, null)
         { }

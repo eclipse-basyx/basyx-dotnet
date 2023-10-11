@@ -323,7 +323,7 @@ namespace AdminShellRepoClientServerTests
         public void Test105_RetrieveSubmodelElement()
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubSubFloat");
-            result.Entity.GetValue<float>().Should().Be(3.3f);
+            result.Entity.GetValueAsync<float>().Should().Be(3.3f);
         }
 
         [TestMethod]
@@ -347,7 +347,7 @@ namespace AdminShellRepoClientServerTests
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection");
             result.Success.Should().BeTrue();
-            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValue<int>().Should().Be(6);
+            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValueAsync<int>().Should().Be(6);
         }
 
         [TestMethod]
@@ -379,7 +379,7 @@ namespace AdminShellRepoClientServerTests
 
             var result = InvokeOperation("Calculate", request, false);
             result.Success.Should().BeTrue();
-            result.Entity.OutputArguments["Result"].GetValue<double>().Should().Be(24);
+            result.Entity.OutputArguments["Result"].GetValueAsync<double>().Should().Be(24);
 
         }
 
@@ -403,7 +403,7 @@ namespace AdminShellRepoClientServerTests
 
             var handleResult = GetInvocationResult("Calculate", request.RequestId);
             handleResult.Success.Should().BeTrue();
-            handleResult.Entity.OutputArguments["Result"].GetValue<double>().Should().Be(24);
+            handleResult.Entity.OutputArguments["Result"].GetValueAsync<double>().Should().Be(24);
         }
 
         [TestMethod]

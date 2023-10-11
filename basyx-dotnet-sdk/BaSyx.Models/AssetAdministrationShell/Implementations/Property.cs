@@ -8,9 +8,8 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -26,48 +25,31 @@ namespace BaSyx.Models.AdminShell
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
         public IReference ValueId { get; set; }
-
-        /// <summary>
-        /// Only internal temporary storage of the current value. 
-        /// Get and Set operations shall only be processed via its respective handler.
-        /// </summary>
-        protected object _value;
-
+    
         public Property(string idShort) : this(idShort, null, null)
         { }
 
+        [JsonConstructor]
         public Property(string idShort, DataType valueType) : this(idShort, valueType, null)
         { }
-
-        [JsonConstructor]
+        
         public Property(string idShort, DataType valueType, object value) : base(idShort)
         {
             ValueType = valueType;
             
             if (value != null)
-            {
+            {                
                 if (ValueType == null)
                 {
-                    _value = value;
-                    ValueType = new DataType(DataObjectType.None);
+                    var elementValue = new ElementValue(value);
+                    _valueScope = new PropertyValue(elementValue);
+                    ValueType = elementValue.ValueType;
                 }
                 else if (value.GetType() == valueType.SystemType)
-                    _value = value;
+                    _valueScope = new PropertyValue(new ElementValue(value, valueType));
                 else
-                    _value = ElementValue.ToObject(value, valueType.SystemType);
+                    _valueScope = new PropertyValue(new ElementValue(ElementValue.ToObject(value, valueType.SystemType)));
             }
-
-            Get = element  => 
-            { 
-                return new PropertyValue(new ElementValue(_value, ValueType)); 
-            };
-
-            Set = (element, iValue) => 
-            { 
-                _value = iValue.Value;
-                OnValueChanged(new ValueChangedArgs(IdShort, _value, ValueType));
-                return Task.CompletedTask;
-            };
         }
     }
     ///<inheritdoc cref="IProperty"/>
@@ -103,11 +85,11 @@ namespace BaSyx.Models.AdminShell
             {
                 _set = value;
                 if (value != null)
-                    base.Set = new SetValueScopeHandler<PropertyValue>(async (element, iValue) =>
+                    base.Set = new SetValueScopeHandler<PropertyValue>(async (element, propValue) =>
                     {
-                        TInnerType typedValue = iValue.Value.ToObject<TInnerType>();
+                        TInnerType typedValue = propValue.Value.ToObject<TInnerType>();
                         await _set.Invoke(element, typedValue);
-                        OnValueChanged(new ValueChangedArgs(IdShort, typedValue, ValueType));
+                        OnValueChanged(new ValueChangedArgs(IdShort, propValue));
                     });
                 else
                     base.Set = null;
@@ -129,7 +111,10 @@ namespace BaSyx.Models.AdminShell
                 else
                     return default;
             };
-            _set = async (element, iValue) => { await base.Set?.Invoke(element, new PropertyValue(new ElementValue<TInnerType>(iValue))); };
+            _set = async (element, iValue) => 
+            { 
+                await base.Set?.Invoke(element, new PropertyValue(new ElementValue<TInnerType>(iValue))); 
+            };
         }
     }
 }

@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -21,6 +22,7 @@ namespace BaSyx.Models.AdminShell
         public LangStringSet Description { get; set; }
         public LangStringSet DisplayName { get; set; }
 
+        [JsonIgnore]
         public IReferable Parent { get; set; }
 
         public Dictionary<string, string> MetaData { get; set; }

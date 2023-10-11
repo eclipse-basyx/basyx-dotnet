@@ -144,7 +144,7 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.UpdateSubmodelElementValue(submodelElementId, value);
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level, RequestContent content, RequestExtent extent)
+        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level, RequestExtent extent)
         {
             throw new NotImplementedException();
         }

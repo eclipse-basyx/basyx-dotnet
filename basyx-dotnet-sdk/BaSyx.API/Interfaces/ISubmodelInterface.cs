@@ -15,7 +15,7 @@ namespace BaSyx.API.Interfaces
 {
     public interface ISubmodelInterface
     {
-        IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = default, RequestContent content = default, RequestExtent extent = default);
+        IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = default, RequestExtent extent = default);
 
         IResult UpdateSubmodel(ISubmodel submodel);
 

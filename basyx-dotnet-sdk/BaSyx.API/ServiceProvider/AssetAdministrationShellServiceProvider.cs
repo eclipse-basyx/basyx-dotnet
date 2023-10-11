@@ -150,7 +150,7 @@ namespace BaSyx.API.ServiceProvider
                 return new Result(false, new NotFoundMessage(submodelIdentifier));
         }
 
-        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(RequestContent content)
+        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell()
         {
             if (_assetAdministrationShell == null)
                 return new Result<IAssetAdministrationShell>(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));

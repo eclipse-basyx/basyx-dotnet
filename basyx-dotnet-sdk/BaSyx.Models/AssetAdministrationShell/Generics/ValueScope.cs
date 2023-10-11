@@ -9,14 +9,14 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-using BaSyx.Models.Extensions;
-using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 
 namespace BaSyx.Models.AdminShell
 {
-    [JsonConverter(typeof(ValueScopeConverter))]
     public abstract class ValueScope
     { 
         public abstract ModelType ModelType { get; }
+
+        public abstract JsonValue ToJson();
     }
 }

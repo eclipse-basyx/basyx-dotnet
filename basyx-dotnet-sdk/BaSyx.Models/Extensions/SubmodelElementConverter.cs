@@ -56,78 +56,58 @@ namespace BaSyx.Models.Extensions
                 return null;
             }
 
-            ModelType modelType = jObject.SelectToken("modelType")?.ToObject<ModelType>(serializer);
+            ModelType modelType = (string)jObject.SelectToken("modelType");
             if (modelType == null)
             {
                 logger.LogError("ModelType missing: " + jObject.ToString());
                 return null;
             }
 
-            string idShort = jObject.SelectToken("idShort")?.ToObject<string>();
-            DataType valueType = jObject.SelectToken("valueType")?.ToObject<DataType>(serializer);
-            object value = jObject.SelectToken("value")?.ToObject<object>(serializer);
+            string idShort = (string)jObject.SelectToken("idShort");
+            DataType valueType = (string)jObject.SelectToken("valueType");
+            object value = (object)jObject.SelectToken("value");
 
-            JToken embeddedDataSpecificationsToken = jObject.SelectToken("embeddedDataSpecifications");
-            JToken conceptDescriptionToken = jObject.SelectToken("conceptDescription");
+            SubmodelElement submodelElement = new Property(idShort, valueType); 
+            //SubmodelElementFactory.CreateSubmodelElement(idShort, modelType, valueType);
+            //if (submodelElement == null)
+            //{
+            //    logger.LogError("SubmodelElement is null: " + jObject.ToString());
+            //    return null;
+            //}
 
-            SubmodelElement submodelElement;
-            List<IEmbeddedDataSpecification> embeddedDataSpecifications = null;
-            ConceptDescription conceptDescription = null;
-            var embeddedDataSpecificationsTokenChildToken = embeddedDataSpecificationsToken?.Children();
-            if (embeddedDataSpecificationsTokenChildToken != null)
-            {
-                embeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
-                foreach (var dataSpecificationToken in embeddedDataSpecificationsTokenChildToken)
-                {
-                    var dataSpecReference = dataSpecificationToken.SelectToken("dataSpecification")?.ToObject<Reference>(serializer);
-                    if (dataSpecReference != null && DataElementInformationTypes.TryGetValue(dataSpecReference.First.Value, out Type type))
-                    {
-                        var content = dataSpecificationToken?.ToObject(type, serializer);
-                        if (content != null)
-                            embeddedDataSpecifications.Add((IEmbeddedDataSpecification)content);
-                    }
-                }
-                jObject.Remove("embeddedDataSpecifications");
-            }
-            if (conceptDescriptionToken != null)
-            {
-                var dataSpecifications = conceptDescriptionToken.SelectToken("embeddedDataSpecifications")?.Children();
-                if (dataSpecifications != null)
-                {
-                    conceptDescription = new ConceptDescription();
-                    foreach (var dataSpecificationToken in dataSpecifications)
-                    {
-                        var dataSpecReference = dataSpecificationToken.SelectToken("dataSpecification")?.ToObject<Reference>(serializer);
-                        if (dataSpecReference != null && DataElementInformationTypes.TryGetValue(dataSpecReference.First.Value, out Type type))
-                        {
-                            var content = dataSpecificationToken.ToObject(type, serializer);
-                            if (content != null)
-                                (conceptDescription.EmbeddedDataSpecifications as List<IEmbeddedDataSpecification>).Add((IEmbeddedDataSpecification)content);
-                        }
-                    }
-                }
-                serializer.Populate(conceptDescriptionToken.CreateReader(), conceptDescription);
-            }
+            //JToken embeddedDataSpecificationsToken = jObject.SelectToken("embeddedDataSpecifications");            
+            //List<IEmbeddedDataSpecification> embeddedDataSpecifications = null;           
+            //var embeddedDataSpecificationsTokenChildToken = embeddedDataSpecificationsToken?.Children();
+            //if (embeddedDataSpecificationsTokenChildToken != null)
+            //{
+            //    embeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
+            //    foreach (var dataSpecificationToken in embeddedDataSpecificationsTokenChildToken)
+            //    {
+            //        var dataSpecReference = dataSpecificationToken.SelectToken("dataSpecification")?.ToObject<Reference>(serializer);
+            //        if (dataSpecReference != null && DataElementInformationTypes.TryGetValue(dataSpecReference.First.Value, out Type type))
+            //        {
+            //            var content = dataSpecificationToken?.ToObject(type, serializer);
+            //            if (content != null)
+            //                embeddedDataSpecifications.Add((IEmbeddedDataSpecification)content);
+            //        }
+            //    }
+            //    jObject.Remove("embeddedDataSpecifications");
+            //}           
 
-            submodelElement = SubmodelElementFactory.CreateSubmodelElement(idShort, modelType, valueType);
+            //if(submodelElement.GetType().GetCustomAttribute<JsonConverterAttribute>() != null)
+            //    submodelElement = (SubmodelElement)serializer.Deserialize(jObject.CreateReader(), submodelElement.GetType());
+            //else
+            //    serializer.Populate(jObject.CreateReader(), submodelElement);
 
-            if (submodelElement == null)
-            {
-                logger.LogError("SubmodelElement is null: " + jObject.ToString());
-                return null;
-            }
-
-            if(submodelElement.GetType().GetCustomAttribute<JsonConverterAttribute>() != null)
-                submodelElement = (SubmodelElement)serializer.Deserialize(jObject.CreateReader(), submodelElement.GetType());
-            else
-                serializer.Populate(jObject.CreateReader(), submodelElement);
-
-            //TODO
             //if(value != null)
-            //    submodelElement.SetValue(new ElementValue(value, valueType)).Wait();
-
-            submodelElement.EmbeddedDataSpecifications = embeddedDataSpecifications;
-            submodelElement.ConceptDescription = conceptDescription;
+            //{
+            //    if(modelType == ModelType.Property)
+            //    {
+            //        PropertyValue propertyValue = new PropertyValue(new ElementValue(value, valueType));
+            //        submodelElement.SetValueScope(propertyValue).Wait();
+            //    }
+            //}
+            //submodelElement.EmbeddedDataSpecifications = embeddedDataSpecifications;
             return submodelElement;
         }
 

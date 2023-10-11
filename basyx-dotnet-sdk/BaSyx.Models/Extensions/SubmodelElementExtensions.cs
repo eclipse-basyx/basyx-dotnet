@@ -57,15 +57,25 @@ namespace BaSyx.Models.Extensions
         //    }
         //    else
         //        return null;
-        //}                       
+        //}
+        //
+        public static TValueScope GetValueScope<TValueScope>(this ISubmodelElement sme) where TValueScope : ValueScope
+        {
+            return GetValueScopeAsync<TValueScope>(sme).Result;
+        }
 
-        public static async Task<TValueScope> GetValueScope<TValueScope>(this ISubmodelElement sme) where TValueScope : ValueScope
+        public static async Task<TValueScope> GetValueScopeAsync<TValueScope>(this ISubmodelElement sme) where TValueScope : ValueScope
         {
             var scope = await sme.GetValueScope().ConfigureAwait(false);
             return (TValueScope)scope;
         }
 
-        public static async Task<T> GetValue<T>(this ISubmodelElement sme)
+        public static T GetValue<T>(this ISubmodelElement sme)
+        {
+            return GetValueAsync<T>(sme).Result;
+        }
+
+        public static async Task<T> GetValueAsync<T>(this ISubmodelElement sme)
         {
             var scope = await sme.GetValueScope().ConfigureAwait(false);
             return scope.GetValue<T>();
@@ -80,12 +90,16 @@ namespace BaSyx.Models.Extensions
             return default(T);
         }
 
-        public static async Task SetValue(this ISubmodelElement sme, ValueScope valueScope)
+        public static void SetValue<T>(this ISubmodelElement sme, ValueScope valueScope) => SetValueAsync(sme, valueScope).Wait();
+
+        public static async Task SetValueAsync(this ISubmodelElement sme, ValueScope valueScope)
         {
             await sme.SetValueScope(valueScope).ConfigureAwait(false);
         }
 
-        public static async Task SetValue<T>(this ISubmodelElement sme, T value)
+        public static void SetValue<T>(this ISubmodelElement sme, T value) => SetValueAsync<T>(sme, value).Wait();
+
+        public static async Task SetValueAsync<T>(this ISubmodelElement sme, T value)
         {
             if(sme.ModelType == ModelType.Property)
             {

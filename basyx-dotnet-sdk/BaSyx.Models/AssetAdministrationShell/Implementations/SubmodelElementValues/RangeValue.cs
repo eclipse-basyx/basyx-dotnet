@@ -11,6 +11,7 @@
 
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using System.Text.Json.Nodes;
 using System.Xml.Linq;
 
 namespace BaSyx.Models.AdminShell
@@ -36,6 +37,11 @@ namespace BaSyx.Models.AdminShell
         {
             Min = min;
             Max = max;
+        }
+
+        public override JsonValue ToJson()
+        {
+            return JsonValue.Create(new { Min = Min.Value, Max = Max.Value });
         }
     }
 }

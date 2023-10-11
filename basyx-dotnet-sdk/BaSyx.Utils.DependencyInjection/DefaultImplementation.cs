@@ -13,6 +13,7 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 
 namespace BaSyx.Utils.DependencyInjection
 {
@@ -30,6 +31,13 @@ namespace BaSyx.Utils.DependencyInjection
             services.AddTransient<IAssetAdministrationShellDescriptor, AssetAdministrationShellDescriptor>();
             services.AddTransient<ISubmodelRepositoryDescriptor, SubmodelRepositoryDescriptor>();
             services.AddTransient<ISubmodelDescriptor, SubmodelDescriptor>();
+
+            services.AddTransient(typeof(IEnumerable<IReference>), typeof(List<IReference>));
+            services.AddTransient(typeof(IEnumerable<IQualifier>), typeof(List<IQualifier>));
+            services.AddTransient(typeof(IEnumerable<IEmbeddedDataSpecification>), typeof(List<IEmbeddedDataSpecification>));
+            services.AddTransient(typeof(IEnumerable<IReference<ISubmodel>>), typeof(List<IReference<ISubmodel>>));
+            services.AddTransient(typeof(IEnumerable<SpecificAssetId>), typeof(List<SpecificAssetId>));
+            services.AddTransient(typeof(IQualifier), typeof(Qualifier));
 
             services.AddTransient(typeof(IElementContainer<>), typeof(ElementContainer<>));
             services.AddTransient(typeof(IQueryableElementContainer<>), typeof(QueryableElementContainer<>));
@@ -69,9 +77,9 @@ namespace BaSyx.Utils.DependencyInjection
             services.AddTransient<IMessage, Message>();
 
             services.AddTransient<IReference, Reference>();
-            services.AddTransient(typeof(IReference<IAssetAdministrationShell>), typeof(Reference<AssetAdministrationShell>));
-            services.AddTransient(typeof(IReference<ISubmodel>), typeof(Reference<Submodel>));
-            services.AddTransient(typeof(IReference<IConceptDescription>), typeof(Reference<ConceptDescription>));
+            services.AddTransient(typeof(IReference<IAssetAdministrationShell>), typeof(Reference<IAssetAdministrationShell>));
+            services.AddTransient(typeof(IReference<ISubmodel>), typeof(Reference<ISubmodel>));
+            services.AddTransient(typeof(IReference<IConceptDescription>), typeof(Reference<IConceptDescription>));
 
             return services;
         }

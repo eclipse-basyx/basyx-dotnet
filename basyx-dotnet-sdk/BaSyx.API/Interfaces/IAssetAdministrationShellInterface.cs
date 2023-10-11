@@ -16,7 +16,7 @@ namespace BaSyx.API.Interfaces
 {
     public interface IAssetAdministrationShellInterface
     {
-        IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(RequestContent content);
+        IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell();
 
         IResult UpdateAssetAdministrationShell(IAssetAdministrationShell aas);
 

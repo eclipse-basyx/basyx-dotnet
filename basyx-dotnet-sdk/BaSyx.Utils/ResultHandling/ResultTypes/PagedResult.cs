@@ -8,21 +8,26 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Runtime.Serialization;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-namespace BaSyx.Models.AdminShell
+namespace BaSyx.Utils.ResultHandling.ResultTypes
 {
-    public enum RequestContent : int
+    public class PagedResult
     {
-        [EnumMember(Value = "normal")]
-        Normal = 0,
-        [EnumMember(Value = "trimmed")]
-        Trimmed = 1,
-        [EnumMember(Value = "value")]
-        Value = 2,
-        [EnumMember(Value = "reference")]
-        Reference = 3,
-        [EnumMember(Value = "path")]
-        Path = 4
+        [JsonPropertyName("paging_metadata")]
+        public PagingMetadata PagingMetadata { get; set; }
+
+        public object Result { get; set; }
+    }
+
+    public class PagedResult<T> : PagedResult
+    {
+        public new T Result { get; set; }
+    }
+
+    public class PagingMetadata
+    {
+        public string Cursor { get; set; }
     }
 }

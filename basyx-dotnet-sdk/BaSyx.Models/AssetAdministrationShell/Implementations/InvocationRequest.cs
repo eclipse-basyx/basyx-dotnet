@@ -8,8 +8,9 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
+
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -28,6 +29,7 @@ namespace BaSyx.Models.AdminShell
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "timeout")]
         public int? Timeout { get; set; }
 
+        [JsonConstructor]
         public InvocationRequest(string requestId)
         {
             RequestId = requestId;

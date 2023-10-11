@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -27,6 +28,14 @@ namespace BaSyx.Models.AdminShell
         public AssetInformation()
         {
             SpecificAssetIds = new List<SpecificAssetId>();
+        }
+
+        public bool ShouldSerializeSpecificAssetIds()
+        {
+            if (SpecificAssetIds?.Count() > 0)
+                return true;
+            else
+                return false;
         }
     }
 }

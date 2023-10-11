@@ -227,7 +227,7 @@ namespace BaSyx.API.ServiceProvider
                 else
                     return new Result<InvocationResponse>(false, new NotFoundMessage($"MethodHandler for {pathToOperation}"));
 
-                InvocationResponse invocationResponse = new InvocationResponse(invocationRequest.RequestId);
+                InvocationResponse invocationResponse = new InvocationResponse(invocationRequest.RequestId, false);
                 invocationResponse.InOutputArguments = invocationRequest.InOutputArguments;
                 invocationResponse.OutputArguments = CreateOutputArguments(operation_Retrieved.Entity.OutputVariables);
 
@@ -256,7 +256,8 @@ namespace BaSyx.API.ServiceProvider
                     {
                         cancellationTokenSource.Cancel();
 
-                        invocationResponse.ExecutionResult = runner.Result;
+                        invocationResponse.Success = runner.Result.Success;
+                        invocationResponse.Messages = runner.Result.Messages;
                         if (invocationResponse.ExecutionState != ExecutionState.Failed)
                             invocationResponse.ExecutionState = ExecutionState.Completed;
 
@@ -265,7 +266,8 @@ namespace BaSyx.API.ServiceProvider
                     else
                     {
                         cancellationTokenSource.Cancel();
-                        invocationResponse.ExecutionResult = new OperationResult(false, new TimeoutMessage());
+                        invocationResponse.Success = false;
+                        invocationResponse.Messages.Add(new TimeoutMessage());                        
                         invocationResponse.ExecutionState = ExecutionState.Timeout;
                         return new Result<InvocationResponse>(true, invocationResponse);
                     }
@@ -293,6 +295,14 @@ namespace BaSyx.API.ServiceProvider
                         dataType = null;
 
                     var se = SubmodelElementFactory.CreateSubmodelElement(outputVariable.Value.IdShort, outputVariable.Value.ModelType, dataType);
+                    se.Description = outputVariable.Value.Description;
+                    se.DisplayName = outputVariable.Value.DisplayName;
+                    se.SemanticId = outputVariable.Value.SemanticId;
+                    se.SupplementalSemanticIds = outputVariable.Value.SupplementalSemanticIds;
+                    se.Category = outputVariable.Value.Category;
+                    se.Kind = outputVariable.Value.Kind;
+                    se.EmbeddedDataSpecifications = outputVariable.Value.EmbeddedDataSpecifications;
+                    se.Qualifiers = outputVariable.Value.Qualifiers;
                     variables.Add(se);
                 }
             }
@@ -317,7 +327,7 @@ namespace BaSyx.API.ServiceProvider
              
                 Task invocationTask = Task.Run(async() =>
                 {
-                    InvocationResponse invocationResponse = new InvocationResponse(invocationRequest.RequestId);
+                    InvocationResponse invocationResponse = new InvocationResponse(invocationRequest.RequestId, false);
                     invocationResponse.InOutputArguments = invocationRequest.InOutputArguments;
                     SetInvocationResult(idShortPath, invocationRequest.RequestId, ref invocationResponse);
 
@@ -344,20 +354,22 @@ namespace BaSyx.API.ServiceProvider
                         if (await Task.WhenAny(runner, Task.Delay(timeout, cancellationTokenSource.Token)) == runner)
                         {
                             cancellationTokenSource.Cancel();
-                            invocationResponse.ExecutionResult = runner.Result;
+                            invocationResponse.Success = runner.Result.Success;
+                            invocationResponse.Messages = runner.Result.Messages;
                             if (invocationResponse.ExecutionState != ExecutionState.Failed)
                                 invocationResponse.ExecutionState = ExecutionState.Completed;
                         }
                         else
                         {
                             cancellationTokenSource.Cancel();
-                            invocationResponse.ExecutionResult = new OperationResult(false, new TimeoutMessage());
+                            invocationResponse.Success = false;
+                            invocationResponse.Messages.Add(new TimeoutMessage());
                             invocationResponse.ExecutionState = ExecutionState.Timeout;
                         }
                     }
                 });
 
-                InvocationResponse callbackResponse = new InvocationResponse(invocationRequest.RequestId);
+                InvocationResponse callbackResponse = new InvocationResponse(invocationRequest.RequestId, true);
                 return new Result<InvocationResponse>(true, callbackResponse);
             }
             return new Result<InvocationResponse>(operation_Retrieved);
@@ -479,14 +491,23 @@ namespace BaSyx.API.ServiceProvider
             if (_submodel == null)
                 return new Result<ValueScope>(false, new NotFoundMessage("Submodel"));
 
-            var submodelElement = _submodel.SubmodelElements.Retrieve<ISubmodelElement>(submodelElementId);
-            if (!submodelElement.Success || submodelElement.Entity == null)
+            var submodelElement = _submodel.SubmodelElements[submodelElementId];
+            if (submodelElement == null)
                 return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
 
-            if (submodelElement.Entity.Get != null)
-                return new Result<ValueScope>(true, submodelElement.Entity.Get.Invoke(submodelElement.Entity).Result);
+            if (submodelElement.Get != null)
+                return new Result<ValueScope>(true, submodelElement.Get.Invoke(submodelElement).Result);
             else
                 return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
+
+            //var submodelElement = _submodel.SubmodelElements.Retrieve<ISubmodelElement>(submodelElementId);
+            //if (!submodelElement.Success || submodelElement.Entity == null)
+            //    return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
+
+            //if (submodelElement.Entity.Get != null)
+            //    return new Result<ValueScope>(true, submodelElement.Entity.Get.Invoke(submodelElement.Entity).Result);
+            //else
+            //    return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
         }
 
         public IResult UpdateSubmodelElementValue(string submodelElementId, ValueScope value)
@@ -519,7 +540,7 @@ namespace BaSyx.API.ServiceProvider
             return deleted;
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level, RequestContent content, RequestExtent extent)
+        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level, RequestExtent extent)
         {
             if (_submodel == null)
                 return new Result<ISubmodel>(false, new ErrorMessage("The service provider's inner Submodel object is null"));

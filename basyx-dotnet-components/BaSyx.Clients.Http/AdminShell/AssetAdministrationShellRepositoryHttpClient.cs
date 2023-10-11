@@ -66,7 +66,7 @@ namespace BaSyx.Clients.AdminShell.Http
             Endpoint = new Endpoint(httpEndpoint.EndpointAddress.RemoveFromEnd(AssetAdministrationShellRepositoryRoutes.SHELLS), InterfaceName.AssetAdministrationShellRepositoryInterface);
         }
 
-        public Uri GetPath(string requestPath, string aasIdentifier = null, string submodelIdentifier = null, string idShortPath = null, RequestContent content = default)
+        public Uri GetPath(string requestPath, string aasIdentifier = null, string submodelIdentifier = null, string idShortPath = null)
         {
             string path = Endpoint.ProtocolInformation.EndpointAddress.Trim('/');
 
@@ -85,10 +85,7 @@ namespace BaSyx.Clients.AdminShell.Http
 
             if (!string.IsNullOrEmpty(idShortPath))
             {
-                if (content == RequestContent.Value)
-                    requestPath = requestPath.Replace("{idShortPath}", idShortPath) + "?content=value";
-                else
-                    requestPath = requestPath.Replace("{idShortPath}", idShortPath);
+                requestPath = requestPath.Replace("{idShortPath}", idShortPath);
             }
 
             return new Uri(path + requestPath);

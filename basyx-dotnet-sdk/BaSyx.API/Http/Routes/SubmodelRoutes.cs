@@ -23,26 +23,34 @@ namespace BaSyx.API.Http
         /// <summary>
         /// Submodel table format route
         /// </summary>
-        public const string SUBMODEL_TABLE = "/submodel/table";
+        public const string SUBMODEL_TABLE = "/table";
         /// <summary>
         /// Submodel elements route
         /// </summary>
-        public const string SUBMODEL_ELEMENTS = "/submodel/submodel-elements";
+        public const string SUBMODEL_ELEMENTS = "/submodel-elements";
         /// <summary>
         /// Submodel elements idShortPath route
         /// </summary>
-        public const string SUBMODEL_ELEMENTS_IDSHORTPATH = "/submodel/submodel-elements/{idShortPath}";
+        public const string SUBMODEL_ELEMENTS_IDSHORTPATH = "/submodel-elements/{idShortPath}";
         /// <summary>
         /// Submodel operation idShortPath route
         /// </summary>
-        public const string SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE = "/submodel/submodel-elements/{idShortPath}/invoke";
+        public const string SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE = "/submodel-elements/{idShortPath}/invoke";
+        /// <summary>
+        /// Submodel operation idShortPath route
+        /// </summary>
+        public const string SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE_ASYNC = "/submodel-elements/{idShortPath}/invoke-async";
         /// <summary>
         /// Submodel file element upload route
         /// </summary>
-        public const string SUBMODEL_ELEMENTS_IDSHORTPATH_UPLOAD = "/submodel/submodel-elements/{idShortPath}/upload";
+        public const string SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT = "/submodel-elements/{idShortPath}/attachment";
+        /// <summary>
+        /// Submodel asyncronous operation status route
+        /// </summary>
+        public const string SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_STATUS = "/submodel-elements/{idShortPath}/operation-status/{handleId}";
         /// <summary>
         /// Submodel asyncronous operation result route
         /// </summary>
-        public const string SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS = "/submodel/submodel-elements/{idShortPath}/operation-results/{handleId}";
+        public const string SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS = "/submodel-elements/{idShortPath}/operation-results/{handleId}";
     }
 }

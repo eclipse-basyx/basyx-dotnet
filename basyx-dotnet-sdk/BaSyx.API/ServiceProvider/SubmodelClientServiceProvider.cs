@@ -75,9 +75,9 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.InvokeOperation(idShortPath, invocationRequest, async);
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestContent content = RequestContent.Normal, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return _submodelClient.RetrieveSubmodel(level, content, extent);
+            return _submodelClient.RetrieveSubmodel(level, extent);
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)
@@ -140,7 +140,7 @@ namespace BaSyx.API.ServiceProvider
                     outArgs = invoked.Entity.OutputArguments;
                     inoutArgs = invoked.Entity.InOutputArguments;
                 }
-                return invoked.Entity.ExecutionResult;
+                return new OperationResult(invoked.Entity.Success, invoked.Entity.Messages);
             });
         }
 

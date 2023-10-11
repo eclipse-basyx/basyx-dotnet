@@ -12,14 +12,13 @@ using BaSyx.Servers.AdminShell.Http;
 using BaSyx.API.ServiceProvider;
 using BaSyx.Common.UI;
 using BaSyx.Common.UI.Swagger;
-using BaSyx.Models.Connectivity;
 using BaSyx.Models.AdminShell;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Settings;
 using NLog.Web;
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MultiAssetAdministrationShell
 {
@@ -75,7 +74,7 @@ namespace MultiAssetAdministrationShell
                                   new LangString("de", $"Gibt die {i}.Potenz der Basis zurück (Basis-Default-Wert: 2)"),
                                   new LangString("en", $"Returns the base raised to the power of {i} (base default value: 2)")
                             },
-                            Get = prop => { return Math.Pow(baseValue, Int32.Parse(loopVariable)); }
+                            Get = prop => { return Task.FromResult(Math.Pow(baseValue, Int32.Parse(loopVariable))); }
                         },
                         new Operation("SetBase")
                         {
@@ -84,10 +83,10 @@ namespace MultiAssetAdministrationShell
                                   new LangString("de", "Setzt die Basis der Exponentialfunktion"),
                                   new LangString("en", "Sets the base of the exponential funktion")
                             },
-                            InputVariables = { new Property<double>("Base") },
-                            OnMethodCalled = (op, inargs, inoutargs, outargs, ct) =>
+                            InputVariables = { new Property<double>("Base"), new Property<double>("Base2"), new Property<double>("Base3"), new Property<double>("Base4"),  },
+                            OnMethodCalled = async (op, inargs, inoutargs, outargs, ct) =>
                             {
-                                baseValue =  inargs.Get("Base").GetValue<double>();
+                                baseValue = await inargs.Get("Base").GetValueAsync<double>();
                                 return new OperationResult(true);
                             }
                         }

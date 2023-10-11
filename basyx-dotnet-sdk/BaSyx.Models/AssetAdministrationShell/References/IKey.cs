@@ -8,8 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
@@ -24,7 +22,6 @@ namespace BaSyx.Models.AdminShell
         /// In all other cases the key references a model element of the same or of another AAS.The name of the model element is explicitly listed.
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "type")]
-        [JsonConverter(typeof(StringEnumConverter))]
         KeyType Type { get; }
 
         /// <summary>

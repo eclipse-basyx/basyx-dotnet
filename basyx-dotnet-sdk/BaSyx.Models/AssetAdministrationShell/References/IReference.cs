@@ -11,6 +11,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Xml.Linq;
 
 namespace BaSyx.Models.AdminShell
@@ -22,7 +23,7 @@ namespace BaSyx.Models.AdminShell
     /// </summary>
     public interface IReference
     {
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         IKey First { get; }
 
         /// <summary>

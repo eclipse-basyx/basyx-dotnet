@@ -42,7 +42,7 @@ namespace BaSyx.Models.AdminShell
                     else
                         _value = ToObject(value, ValueType.SystemType);
 
-                    ValueChanged?.Invoke(this, new ValueChangedArgs(null, value, ValueType));
+                    ValueChanged?.Invoke(this, new ValueChangedArgs(null, new PropertyValue(new ElementValue(value))));
                 }
             }
         }
@@ -100,41 +100,7 @@ namespace BaSyx.Models.AdminShell
 
         public static T ToObject<T>(object value)
         {
-            if (value == null || (value is string s && string.IsNullOrEmpty(s)))
-                return default;
-            else if (value is T tValue)
-                return tValue;
-            else if (typeof(T) == typeof(Uri))
-                try { return (T)Activator.CreateInstance(typeof(Uri), value.ToString()); }
-                catch (Exception uriExc)
-                {
-                    logger.LogError(uriExc, $"Cannot convert from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}");
-                    throw new InvalidOperationException($"Cannot convert from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}", uriExc);
-                }
-            else
-            {
-                try
-                {
-                    value = Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
-                    return (T)value;
-                }
-                catch (Exception e1)
-                {
-                    logger.LogWarning(e1, $"Cannot change type from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}");
-
-                    try
-                    {
-                        JToken jVal = JToken.Parse(value.ToString());
-                        T convertedVal = jVal.ToObject<T>();
-                        return convertedVal;
-                    }
-                    catch (Exception e2)
-                    {
-                        logger.LogError(e2, $"Cannot convert from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}");
-                        throw new InvalidCastException($"Cannot convert from {value?.GetType()} to {typeof(T)} | value: {value?.ToString()}", e2);
-                    }
-                }
-            }
+            return (T)ToObject(value, typeof(T));     
         }
 
         public object ToObject(Type type)

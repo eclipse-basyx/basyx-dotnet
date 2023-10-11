@@ -8,9 +8,9 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -23,7 +23,7 @@ namespace BaSyx.Models.AdminShell
         /// In case of identifiables, this attribute is a short name of the element. In case of a referable, this ID is an identifying string of the element within its name space. 
         /// Note: if the element is a property and the property has a semantic definition (HasSemantics/semanticId) conformant to IEC61360, the idShort is typically identical to the short name in English, if available.
         /// </summary>
-        [JsonProperty(Order = -2), DataMember(Order = 0, EmitDefaultValue = false, IsRequired = false, Name = "idShort")]
+        [DataMember(Order = 0, EmitDefaultValue = false, IsRequired = false, Name = "idShort")]
         string IdShort { get; }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace BaSyx.Models.AdminShell
         /// the element is a measurement value, whereas the semantic definition of the element would denote that it is the measured temperature.
         /// </summary>
         [Obsolete]
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "category")]
+        [JsonIgnore, DataMember(EmitDefaultValue = false, IsRequired = false, Name = "category")]
         string Category { get; }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace BaSyx.Models.AdminShell
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "displayName")]
         LangStringSet DisplayName { get; }
 
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         IReferable Parent { get; set; }
     }
 }

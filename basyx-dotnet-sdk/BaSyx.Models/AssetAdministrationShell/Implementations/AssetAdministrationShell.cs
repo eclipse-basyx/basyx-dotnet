@@ -8,11 +8,11 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using BaSyx.Models.Extensions;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -20,6 +20,8 @@ namespace BaSyx.Models.AdminShell
     public class AssetAdministrationShell : Identifiable, IAssetAdministrationShell
     {
         public IAssetInformation AssetInformation { get; set; }
+
+        [JsonIgnore]
         public IElementContainer<ISubmodel> Submodels { get; set; }
 
         private List<IReference<ISubmodel>> _submodelRefs;
@@ -50,8 +52,6 @@ namespace BaSyx.Models.AdminShell
         public IEnumerable<IEmbeddedDataSpecification> EmbeddedDataSpecifications { get; }
         public IConceptDescription ConceptDescription { get; set; }
      
-
-        [JsonConstructor]
         public AssetAdministrationShell(string idShort, Identifier identification) : base(idShort, identification)
         {
             Submodels = new ElementContainer<ISubmodel>(this);

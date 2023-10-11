@@ -8,19 +8,19 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Utils.Json;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    [DataContract, JsonConverter(typeof(ToStringConverter))]
+    [DataContract]
     public class DataType : IEquatable<DataType>
     {
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "dataObjectType")]
+        [IgnoreDataMember]
         public DataObjectType DataObjectType { get; internal set; }
 
         [IgnoreDataMember]
@@ -185,6 +185,72 @@ namespace BaSyx.Models.AdminShell
                 return typeof(object);
             else
                 return null;
+        }
+
+        public static JsonValueKind GetJsonValueKind(DataObjectType dataObjectType)
+        {
+            if (dataObjectType == DataObjectType.String)
+                return JsonValueKind.String;
+            if (dataObjectType == DataObjectType.LangString)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.Bool)
+                return JsonValueKind.True;
+            else if (dataObjectType == DataObjectType.Float)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.Double)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.Decimal)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.UInt8)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.UInt16)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.UInt32)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.UInt64)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.Int8)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.Int16)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.Int32)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.Int64)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.Integer)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.NegativeInteger)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.PositiveInteger)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.NonNegativeInteger)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.NonPositiveInteger)
+                return JsonValueKind.Number;
+            else if (dataObjectType == DataObjectType.AnyType)
+                return JsonValueKind.Object;
+            else if (dataObjectType == DataObjectType.AnySimpleType)
+                return JsonValueKind.Object;
+            else if (dataObjectType == DataObjectType.DateTime)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.DateTimeStamp)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.AnyURI)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.Base64Binary)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.HexBinary)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.Duration)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.DayTimeDuration)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.YearMonthDuration)
+                return JsonValueKind.String;
+            else if (dataObjectType == DataObjectType.None)
+                return JsonValueKind.String;
+            else
+                return JsonValueKind.Null;
         }
 
         public static Type GetSystemTypeFromDataType(DataType dataType)

@@ -31,16 +31,12 @@ function ExecuteOperation(requestPath, className) {
 
         var value = {
             idShort: argNames.item(i).innerText,
-            modelType: {
-                name: "Property"
-            },
+            modelType: "Property",
             valueType: _valueType,
             value: _value
         };
         var arg = {
-            modelType: {
-                name: "OperationVariable"
-            },
+            modelType: "OperationVariable",
             value
         };
         args.push(arg);
@@ -57,7 +53,7 @@ function ExecuteOperation(requestPath, className) {
 
     $.ajax({
         type: 'POST',
-        url: requestPath + '/invoke?async=false',
+        url: requestPath + '/invoke',
         contentType: 'application/json',
         data: JSON.stringify(invocationRequest),
         error: function (jqXHR, errorType, exception) {
@@ -90,7 +86,7 @@ function ExecuteOperation(requestPath, className) {
 function GetPropertyValue(requestPath, hashedPathIdInput) {
     $.ajax({
         type: 'GET',
-        url: requestPath + '?content=value',
+        url: requestPath + '/$value',
         success: function (data) {
             $('#' + hashedPathIdInput).val(data);
             $('#' + hashedPathIdInput).css('border-color', 'green');
@@ -111,8 +107,8 @@ function SetPropertyValue(requestPath, hashedPathIdInput, value, valueType) {
         value = value.replace(/,/g, '.')
     }
     $.ajax({
-        type: 'PUT',
-        url: requestPath + '?content=value',
+        type: 'PATCH',
+        url: requestPath + '/$value',
         contentType: 'application/json',
         data: JSON.stringify(value),
         error: function (jqXHR, errorType, exception) {

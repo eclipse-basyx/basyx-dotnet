@@ -18,7 +18,7 @@ namespace BaSyx.API.Clients
 {
     public interface IAssetAdministrationShellClient : IAssetAdministrationShellInterface, IClient
     {
-        Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(RequestContent content);
+        Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync();
 
         Task<IResult> UpdateAssetAdministrationShellAsync(IAssetAdministrationShell aas);
 
