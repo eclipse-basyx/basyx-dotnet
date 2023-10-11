@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
-    public class IdentifierConverterSystemTextJson : JsonConverter<Identifier>
+    public class IdentifierConverter : JsonConverter<Identifier>
     {
         public override Identifier Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

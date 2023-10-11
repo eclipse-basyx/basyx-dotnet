@@ -7,9 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
-    public class SubmodelElementConverterSystemTextJson : JsonConverter<ISubmodelElement>
+    public class SubmodelElementConverter : JsonConverter<ISubmodelElement>
     {
-        private static readonly ILogger logger = LoggingExtentions.CreateLogger<SubmodelElementConverterSystemTextJson>();
+        private static readonly ILogger logger = LoggingExtentions.CreateLogger<SubmodelElementConverter>();
 
         public override ISubmodelElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

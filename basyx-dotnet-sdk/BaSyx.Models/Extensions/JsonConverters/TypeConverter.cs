@@ -8,17 +8,17 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
-    public class TypeConverterSystemTextJson : JsonConverterFactory
+    public class TypeConverter : JsonConverterFactory
     {
         static readonly Dictionary<Type, Type> CustomConverterDictionary;
         static readonly List<Type> IgnoreConvert;
 
         public IDependencyInjectionExtension DependencyInjectionExtension { get; }
-        static TypeConverterSystemTextJson()
+        static TypeConverter()
         {            
             CustomConverterDictionary = new Dictionary<Type, Type>()
             {
-                { typeof(ValueScope), typeof(ValueScopeConverterSystemTextJson) }
+                { typeof(ValueScope), typeof(ValueScopeConverter) }
             };
 
             IgnoreConvert = new List<Type>()
@@ -31,7 +31,7 @@ namespace BaSyx.Models.Extensions
             };
         }
 
-        public TypeConverterSystemTextJson(IDependencyInjectionExtension diExtension)
+        public TypeConverter(IDependencyInjectionExtension diExtension)
         {
             DependencyInjectionExtension = diExtension;
         }

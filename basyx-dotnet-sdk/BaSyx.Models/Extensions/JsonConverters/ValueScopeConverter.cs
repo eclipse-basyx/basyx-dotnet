@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
-    public class ValueScopeConverterSystemTextJson : JsonConverter<ValueScope>
+    public class ValueScopeConverter : JsonConverter<ValueScope>
     {
         public override ValueScope Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

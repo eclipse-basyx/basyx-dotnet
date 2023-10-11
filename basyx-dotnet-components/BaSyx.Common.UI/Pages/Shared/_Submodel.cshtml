@@ -204,7 +204,7 @@ ShowSubmodelElement = @<text>@{
         }
         else if (apiType == "Submodel")
         {
-            requestPath += SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH.Replace("{idShortPath}", pathId);
+            requestPath += SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH.Replace("{idShortPath}", pathId);
         }
         else if (apiType == "AssetAdministrationShellRepository")
         {

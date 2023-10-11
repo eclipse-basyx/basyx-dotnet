@@ -18,10 +18,10 @@ namespace BaSyx.Models.Extensions
             _options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull | JsonIgnoreCondition.WhenWritingDefault;
 
             _options.Converters.Add(new JsonStringEnumConverter());
-            _options.Converters.Add(new DataTypeConverterSystemTextJson());
-            _options.Converters.Add(new ModelTypeConverterSystemTextJson());
-            _options.Converters.Add(new ValueScopeConverterSystemTextJson());
-            _options.Converters.Add(new IdentifierConverterSystemTextJson());
+            _options.Converters.Add(new DataTypeConverter());
+            _options.Converters.Add(new ModelTypeConverter());
+            _options.Converters.Add(new ValueScopeConverter());
+            _options.Converters.Add(new IdentifierConverter());
             _options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
             {
                 Modifiers = { DefaultValueModifier }
@@ -30,24 +30,24 @@ namespace BaSyx.Models.Extensions
 
         public DefaultJsonSerializerOptions AddDependencyInjection(IDependencyInjectionExtension extension)
         {
-            _options.Converters.Add(new TypeConverterSystemTextJson(extension));
+            _options.Converters.Add(new TypeConverter(extension));
             return this;
         }
         public DefaultJsonSerializerOptions AddFullSubmodelElementConverter()
         {
-            _options.Converters.Add(new FullSubmodelElementConverterSystemTextJson());
+            _options.Converters.Add(new FullSubmodelElementConverter());
             return this;
         }
 
         public DefaultJsonSerializerOptions AddValueOnlySubmodelElementConverter()
         {
-            _options.Converters.Add(new ValueOnlyConverterSystemTextJson());
+            _options.Converters.Add(new ValueOnlyConverter());
             return this;
         }
 
         public DefaultJsonSerializerOptions AddMetadataSubmodelElementConverter()
         {
-            _options.Converters.Add(new SubmodelElementConverterSystemTextJson());
+            _options.Converters.Add(new SubmodelElementConverter());
             return this;
         }
 

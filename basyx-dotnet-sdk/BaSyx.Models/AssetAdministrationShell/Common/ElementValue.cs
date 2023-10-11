@@ -86,6 +86,8 @@ namespace BaSyx.Models.AdminShell
 
         public static T ToObject<T>(object value)
         {
+            if(value == null)
+                return default(T);
             return (T)ToObject(value, typeof(T));     
         }
 

@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace BaSyx.Models.Extensions.SystemTextJson
 {
-    public class FullSubmodelElementConverterSystemTextJson : SubmodelElementConverterSystemTextJson
+    public class FullSubmodelElementConverter : SubmodelElementConverter
     {
         public override ISubmodelElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
-    public class DataTypeConverterSystemTextJson : JsonConverter<DataType>
+    public class DataTypeConverter : JsonConverter<DataType>
     {
         public override DataType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
