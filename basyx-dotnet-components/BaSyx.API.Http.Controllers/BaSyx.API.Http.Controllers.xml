@@ -700,17 +700,6 @@
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetOperationAsyncResult(System.String,System.String,System.String)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncResult(System.String,System.String)"/>
         </member>
-        <member name="T:BaSyx.API.Http.Controllers.ErrorsController">
-            <summary>
-            The Error Controller
-            </summary>
-        </member>
-        <member name="M:BaSyx.API.Http.Controllers.ErrorsController.Error">
-            <summary>
-            The main error function
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:BaSyx.API.Http.Controllers.DescriptorController">
             <summary>
             The Descriptor Controller

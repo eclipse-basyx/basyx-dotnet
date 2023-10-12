@@ -1,6 +1,8 @@
 ﻿using BaSyx.Models.AdminShell;
+using BaSyx.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -18,7 +20,7 @@ namespace BaSyx.Models.Extensions
             if (jsonReader.TokenType != JsonTokenType.StartObject)
                 throw new JsonException("Json does not start with {");            
 
-            string idShort = null, modelType = null, valueType = null;
+            string idShort = null, modelType = null;
             while(jsonReader.Read())
             {
                 if (jsonReader.TokenType == JsonTokenType.EndObject)
@@ -36,16 +38,18 @@ namespace BaSyx.Models.Extensions
                     case "modelType":
                         modelType = jsonReader.GetString();
                         break;
-                    case "valueType":
-                        valueType = jsonReader.GetString();
+                    default:
+                        jsonReader.Skip(); 
                         break;
                 }
+                if (!string.IsNullOrEmpty(idShort) && !string.IsNullOrEmpty(modelType))
+                    break;
             }
             if (idShort == null || modelType == null)
                 throw new JsonException("IdShort or ModelType is null");
 
-            SubmodelElement submodelElement = SubmodelElementFactory.CreateSubmodelElement(idShort, modelType, valueType);
-
+            SubmodelElement submodelElement = SubmodelElementFactory.CreateSubmodelElement(idShort, modelType, null);
+            string valueType = null;
             while (reader.Read())
             {
                 if (reader.TokenType == JsonTokenType.EndObject)
@@ -60,18 +64,225 @@ namespace BaSyx.Models.Extensions
                 {
                     case "idShort":
                     case "modelType":
-                    case "valueType":
                         continue;
-                    case "value":
-                        string value = reader.GetString();
-                        if (value != null)
+                    case "kind":
+                        submodelElement.Kind = reader.GetString().GetEnum<ModelingKind>();
+                        break;
+                    case "category":
+                        submodelElement.Category = reader.GetString();
+                        break;
+                    case "description":
+                        submodelElement.Description = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
+                        break;
+                    case "displayName":
+                        submodelElement.DisplayName = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
+                        break;
+                    case "semanticId":
+                        submodelElement.SemanticId = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        break;
+                    case "supplementalSemanticIds":
+                        submodelElement.SupplementalSemanticIds = JsonSerializer.Deserialize<IEnumerable<IReference>>(ref reader, options);
+                        break;
+                    case "qualifiers":
+                        submodelElement.Qualifiers = JsonSerializer.Deserialize<IEnumerable<IQualifier>>(ref reader, options);
+                        break;
+                    case "valueId":
+                        IReference valueId = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        if (submodelElement is Property prop1)
+                            prop1.ValueId = valueId;
+                        else if (submodelElement is Range range1)
+                            range1.ValueId = valueId;
+                        else if (submodelElement is MultiLanguageProperty mlp1)
+                            mlp1.ValueId = valueId;
+                        break;
+                    case "valueType":
+                        valueType = reader.GetString();
+                        if(submodelElement is Property prop3)
+                            prop3.ValueType = valueType;
+                        if(submodelElement is Range r3)
+                            r3.ValueType = valueType;
+                        break;
+                    #region RelationshipElement
+                    case "first":
+                        if (submodelElement is AnnotatedRelationshipElement arel1)
+                            arel1.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        else if (submodelElement is RelationshipElement rel1)
+                            rel1.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        break;
+                    case "second":
+                        if (submodelElement is AnnotatedRelationshipElement arel2)
+                            arel2.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        else if (submodelElement is RelationshipElement rel2)
+                            rel2.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        break;
+                    case "annotations":
+                        if (submodelElement is AnnotatedRelationshipElement arel3)
                         {
-                            if (modelType == ModelType.Property)
+                            while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                            {
+                                ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
+                                arel3.Annotations.Add(sme);
+                            }
+                        }
+                        break;
+                    #endregion
+                    #region File/Blob
+                    case "contentType":
+                        if (submodelElement is Blob b1)
+                            b1.ContentType = reader.GetString();
+                        else if (submodelElement is FileElement f1)
+                            f1.ContentType = reader.GetString();
+                        break;
+                    #endregion
+                    #region Operation
+                    case "inputVariables":
+                        if (submodelElement is Operation op1)
+                            op1.InputVariables = JsonSerializer.Deserialize<IOperationVariableSet>(ref reader, options);                      
+                        break;
+                    case "inoutputVariables":
+                        if (submodelElement is Operation op2)
+                            op2.InOutputVariables = JsonSerializer.Deserialize<IOperationVariableSet>(ref reader, options);
+                        break;
+                    case "outputVariables":
+                        if (submodelElement is Operation op3)
+                            op3.OutputVariables = JsonSerializer.Deserialize<IOperationVariableSet>(ref reader, options);
+                        break;
+                    #endregion
+                    #region Range
+                    case "min":
+                        if (submodelElement is Range r1)
+                        {
+                            string min = reader.GetString();
+                            var vc = r1.GetValueScope<RangeValue>();
+                            if (vc == null)
+                                _ = r1.SetValueScope(new RangeValue { Min = new ElementValue(min, r1.ValueType) });
+                            else
+                                vc.Min = new ElementValue(min, r1.ValueType);
+                        }
+                        break;
+                    case "max":
+                        if (submodelElement is Range r2)
+                        {
+                            string max = reader.GetString();
+                            var vc = r2.GetValueScope<RangeValue>();
+                            if (vc == null)
+                                _ = r2.SetValueScope(new RangeValue { Min = new ElementValue(max, r2.ValueType) });
+                            else
+                                vc.Max = new ElementValue(max, r2.ValueType);
+                        }
+                        break;
+                    #endregion
+                    #region SubmodelElementList
+                    case "orderRelevant":
+                        if(submodelElement is SubmodelElementList sml1)
+                            sml1.OrderRelevant = reader.GetBoolean();
+                        break;
+                    case "semanticIdListElement":
+                        if (submodelElement is SubmodelElementList sml2)
+                            sml2.SemanticIdListElement = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        break;
+                    case "typeValueListElement":
+                        if (submodelElement is SubmodelElementList sml3)
+                            sml3.TypeValueListElement = reader.GetString();
+                        break;
+                    case "valueTypeListElement":
+                        if (submodelElement is SubmodelElementList sml4)
+                            sml4.ValueTypeListElement = reader.GetString();
+                        break;
+                    #endregion
+                    #region Entity
+                    case "globalAssetId":
+                        if (submodelElement is Entity e1)
+                            e1.GlobalAssetId = reader.GetString();
+                        break;
+                    case "specificAssetIds":
+                        if (submodelElement is Entity e2)
+                            e2.SpecificAssetIds = JsonSerializer.Deserialize<IEnumerable<SpecificAssetId>>(ref reader, options);
+                        break;
+                    case "statements":
+                        if (submodelElement is Entity e3)
+                        {
+                            while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                            {
+                                ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
+                                e3.Statements.Add(sme);
+                            }
+                        }
+                        break;
+                    #endregion
+                    #region BasicEventElement
+                    case "observed":
+                        if (submodelElement is BasicEventElement bee1)
+                            bee1.Observed = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        break;
+                    case "observableReference":
+                        if (submodelElement is BasicEventElement bee2)
+                            bee2.ObservableReference = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        break;
+                    case "direction":
+                        if (submodelElement is BasicEventElement bee3)
+                            bee3.Direction = reader.GetString().GetEnum<EventDirection>();
+                        break;
+                    case "state":
+                        if (submodelElement is BasicEventElement bee4)
+                            bee4.State = reader.GetString().GetEnum<EventState>();
+                        break;
+                    case "messageTopic":
+                        if (submodelElement is BasicEventElement bee5)
+                            bee5.MessageTopic = reader.GetString();
+                        break;
+                    case "messageBroker":
+                        if (submodelElement is BasicEventElement bee6)
+                            bee6.MessageBroker = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        break;
+                    case "lastUpdate":
+                        if (submodelElement is BasicEventElement bee7)
+                            bee7.LastUpdate = reader.GetString();
+                        break;
+                    case "minInterval":
+                        if (submodelElement is BasicEventElement bee8)
+                            bee8.MinInterval = reader.GetString();
+                        break;
+                    case "maxInterval":
+                        if (submodelElement is BasicEventElement bee9)
+                            bee9.MaxInterval = reader.GetString();
+                        break;
+                    #endregion
+                    case "value":
+                        if (submodelElement is Property prop)
+                        {
+                            string value = reader.GetString();
+                            if (value != null)
                             {
                                 PropertyValue propertyValue = new PropertyValue(new ElementValue(value, valueType));
                                 _ = submodelElement.SetValueScope(propertyValue);
                             }
+                        } 
+                        else if (submodelElement is SubmodelElementCollection smc)
+                        {
+                            while(reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                            {
+                                ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
+                                smc.Value.Add(sme);
+                            }
                         }
+                        else if (submodelElement is MultiLanguageProperty mlp)
+                        {
+                            mlp.Value = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
+                        }
+                        else if (submodelElement is ReferenceElement re)
+                        {
+                            re.Value = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        }
+                        else if (submodelElement is Blob blob)
+                        {
+                            blob.Value = reader.GetString();
+                        }
+                        else if (submodelElement is FileElement file)
+                        {
+                            file.Value = reader.GetString();
+                        }
+
                         break;
                 }
             }
@@ -95,7 +306,7 @@ namespace BaSyx.Models.Extensions
             writer.WriteString("modelType", value.ModelType.ToString());
 
             if (!string.IsNullOrEmpty(value.Category))
-                writer.WriteString("idShort", value.Category);
+                writer.WriteString("category", value.Category);
 
             if (value.Description?.Count > 0)
             {

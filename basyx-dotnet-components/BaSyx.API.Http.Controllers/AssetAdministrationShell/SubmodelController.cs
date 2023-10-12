@@ -171,7 +171,8 @@ namespace BaSyx.API.Http.Controllers
             if(!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            string json = JsonSerializer.Serialize(result.Entity, _metadataSerializerOptions);
+            ISubmodel metadataSubmodel = result.Entity.GetMetadata();
+            string json = JsonSerializer.Serialize(metadataSubmodel, _metadataSerializerOptions);
             return Content(json, "application/json");                    
         }
 

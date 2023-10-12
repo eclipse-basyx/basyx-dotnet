@@ -14,6 +14,7 @@ using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Settings;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -297,6 +298,11 @@ namespace BaSyx.Components.Common
             services.AddSingleton(typeof(ServerSettings), Settings);
             services.AddSingleton<IServerApplicationLifetime>(this);
 
+            services.AddExceptionHandler(options =>
+            {
+                options.ExceptionHandler = ExceptionHandler;
+            });
+
             var urls = Settings.ServerConfig.Hosting.Urls;
             var secureUrl = urls.Find(s => s.StartsWith("https"));
             if (!string.IsNullOrEmpty(secureUrl) && !context.HostingEnvironment.IsDevelopment())
@@ -363,6 +369,39 @@ namespace BaSyx.Components.Common
                 serviceBuider.Invoke(services);
             }
         }
+
+        private async Task ExceptionHandler(HttpContext context)
+        {
+            var feature = context.Features.Get<IExceptionHandlerFeature>();
+            var exception = feature?.Error;
+
+            if (exception != null)
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 400;
+
+                Result result = new Result(exception);
+                result.Messages.Add(new Message(MessageType.Exception, exception.StackTrace));
+
+                string resultMessage = JsonSerializer.Serialize(result);
+
+                await context.Response.WriteAsync(resultMessage);
+            }
+        }
+
+        private async Task StatusCodeHandler(StatusCodeContext context)
+        {
+            context.HttpContext.Response.ContentType = "application/json";
+
+            Result result = new Result(false,
+                new Message(MessageType.Error, "Path: " + context.HttpContext.Request.Path.Value,
+                context.HttpContext.Response.StatusCode.ToString()));
+
+            string resultMessage = JsonSerializer.Serialize(result);
+
+            await context.HttpContext.Response.WriteAsync(resultMessage);
+        }
+
         protected virtual void Configure(IApplicationBuilder app)
         {
             var env = app.ApplicationServices.GetRequiredService<IWebHostEnvironment>();
@@ -389,20 +428,9 @@ namespace BaSyx.Components.Common
                 });
             }
 
-            app.UseExceptionHandler(ERROR_PATH);
+            app.UseExceptionHandler();
 
-            app.UseStatusCodePages(async context =>
-            {
-                context.HttpContext.Response.ContentType = "application/json";
-
-                Result result = new Result(false, 
-                    new Message(MessageType.Error, "Path: " + context.HttpContext.Request.Path.Value, 
-                    context.HttpContext.Response.StatusCode.ToString()));
-                              
-                string resultMessage = JsonSerializer.Serialize(result);
-
-                await context.HttpContext.Response.WriteAsync(resultMessage);
-            });
+            app.UseStatusCodePages(StatusCodeHandler);
 
             if(_secure && !env.IsDevelopment())
                 app.UseHttpsRedirection();
@@ -476,6 +504,6 @@ namespace BaSyx.Components.Common
                 applicationLifetime.ApplicationStopping.Register(ApplicationStopping);
             if (ApplicationStopped != null)
                 applicationLifetime.ApplicationStopped.Register(ApplicationStopped);            
-        }
+        }        
     }
 }

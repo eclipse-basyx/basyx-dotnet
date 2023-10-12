@@ -84,7 +84,7 @@ namespace BaSyx.Utils.Client.Http
 
             if (proxyConfiguration.UseProxy && !string.IsNullOrEmpty(proxyConfiguration.ProxyAddress))
             {
-                if(clientHandler == null)
+                if (clientHandler == null)
                 {
                     logger.LogError("Error loading proxy settings -> Client handler is null");
                     return;
@@ -132,14 +132,14 @@ namespace BaSyx.Utils.Client.Http
             {
                 return new Result<HttpResponseMessage>(e);
             }
-        }    
-        
+        }
+
         public TimeSpan GetDefaultTimeout()
         {
             if (HttpMessageHandler is SimpleHttpClientTimeoutHandler timeoutHandler)
                 return timeoutHandler.DefaultTimeout;
             else
-                return HttpClient.Timeout;                
+                return HttpClient.Timeout;
         }
 
         public void SetDefaultTimeout(TimeSpan timeout)
@@ -156,7 +156,7 @@ namespace BaSyx.Utils.Client.Http
         }
 
         public virtual HttpRequestMessage CreateRequest(Uri uri, HttpMethod method, HttpContent content)
-        {           
+        {
             var message = CreateRequest(uri, method);
             if (content != null)
                 message.Content = content;
@@ -166,7 +166,7 @@ namespace BaSyx.Utils.Client.Http
 
         public virtual HttpRequestMessage CreateJsonContentRequest(Uri uri, HttpMethod method, object content)
         {
-            var message = CreateRequest(uri, method, () => 
+            var message = CreateRequest(uri, method, () =>
             {
                 var serialized = JsonSerializer.Serialize(content, JsonSerializerOptions);
                 return new StringContent(serialized, Encoding.UTF8, "application/json");
@@ -224,7 +224,7 @@ namespace BaSyx.Utils.Client.Http
             List<IMessage> messageList = new List<IMessage>(result.Messages);
 
             if (response != null)
-            {               
+            {
                 if (response.IsSuccessStatusCode)
                 {
                     try
@@ -243,6 +243,9 @@ namespace BaSyx.Utils.Client.Http
                 }
                 else
                 {
+                    var contentString = await response.Content?.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(contentString))
+                        messageList.Add(new ErrorMessage(contentString));
                     messageList.Add(new Message(MessageType.Error, response.ReasonPhrase, ((int)response.StatusCode).ToString()));
                     return new Result<T>(false, messageList);
                 }

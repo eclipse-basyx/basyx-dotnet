@@ -28,7 +28,7 @@ namespace BaSyx.Models.AdminShell
         public IEnumerable<IQualifier> Qualifiers { get; set; }
         
 
-        public Submodel(string idShort, Identifier identification) : base(idShort, identification)
+        public Submodel(string idShort, Identifier id) : base(idShort, id)
         {
             SubmodelElements = new ElementContainer<ISubmodelElement>(this);
             MetaData = new Dictionary<string, string>();

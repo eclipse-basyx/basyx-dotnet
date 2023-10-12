@@ -30,33 +30,28 @@ namespace SimpleAssetAdministrationShell
                 {
                     new Property<string>("TestProperty1")
                     {
-                        Set = (prop, val) => propertyValue = val,
-                        Get = prop => { return propertyValue + "_" + i++; }
+                        Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                        Get = prop => { return Task.FromResult(propertyValue + "_" + i ++); }
                     },
                     new Property<string>("TestProperty2")
                     {
-                        Set = (prop, val) => propertyValue = val,
-                        Get = prop => { return propertyValue + "_" + i++; }
+                        Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                        Get = prop => { return Task.FromResult(propertyValue + "_" + i ++); }
                     },
                     new Property<int>("TestProperty3")
                     {
-                        Set = (prop, val) => i = val,
-                        Get = prop => { return i++; }
+                        Set = (prop, val) => { i = val; return Task.CompletedTask; },
+                        Get = prop => { return Task.FromResult(i++); }
                     },
                     new Property<double>("TestProperty4")
                     {
-                        Set = (prop, val) => y = val,
-                        Get = prop => { return Math.Pow(y, i); }
-                    },
-                    new Property<string>("TestPropertyNull")
-                    {
-                        Set = (prop, val) => propertyValue = val,
-                        Get = prop => { return null; }
+                        Set = (prop, val) => { y = val; return Task.CompletedTask; },
+                        Get = prop => { return Task.FromResult(Math.Pow(y, i)); }
                     },
                     new Property<string>("TestPropertyNoSetter")
                     {
                         Set = null,
-                        Get = prop => { return "You can't change me!"; }
+                        Get = prop => { return Task.FromResult("You can't change me!"); }
                     },
                     new Property<string>("TestValueChanged1", "InitialValue"),
                     new SubmodelElementCollection("TestSubmodelElementCollection")
@@ -65,23 +60,23 @@ namespace SimpleAssetAdministrationShell
                         {
                             new Property<string>("TestSubProperty1")
                             {
-                                Set = (prop, val) => propertyValue = val,
-                                Get = prop => { return propertyValue + "_" + i--; }
+                                Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                Get = prop => { return Task.FromResult(propertyValue + "_" + i--); }
                             },
                             new Property<string>("TestSubProperty2")
                             {
-                                Set = (prop, val) => propertyValue = val,
-                                Get = prop => { return propertyValue + "_" + i--; }
+                                Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                Get = prop => { return Task.FromResult(propertyValue + "_" + i--); }
                             },
                             new Property<int>("TestSubProperty3")
                             {
-                                Set = (prop, val) => i = val,
-                                Get = prop => { return i--; }
+                                Set = (prop, val) => { i = val; return Task.CompletedTask; },
+                                Get = prop => { return Task.FromResult(i--); }
                             },
                             new Property<double>("TestSubProperty4")
                             {
-                                Set = (prop, val) => y = val,
-                                Get = prop => { return Math.Pow(y, i); }
+                                Set = (prop, val) => { y = val; return Task.CompletedTask; },
+                                Get = prop => { return Task.FromResult(Math.Pow(y, i)); }
                             }
                         }
                     },
@@ -95,9 +90,9 @@ namespace SimpleAssetAdministrationShell
                         },
                         OnMethodCalled = (op, inArgs, inOutArgs, outArgs, cancellationToken) =>
                         {
-                            outArgs.Add(new Property<string>("Date") { Value = "Heute ist der " + DateTime.Now.Date.ToString() });
-                            outArgs.Add(new Property<string>("Time") { Value = "Es ist " + DateTime.Now.TimeOfDay.ToString() + " Uhr" });
-                            outArgs.Add(new Property<string>("Ticks") { Value = "Ticks: " + DateTime.Now.Ticks.ToString() });
+                            outArgs.Add(new Property<string>("Date", "Heute ist der " + DateTime.Now.Date.ToString()));
+                            outArgs.Add(new Property<string>("Time", "Es ist " + DateTime.Now.TimeOfDay.ToString() + " Uhr"));
+                            outArgs.Add(new Property<string>("Ticks", "Ticks: " + DateTime.Now.Ticks.ToString()));
                             return new OperationResult(true);
                         }
                     },
@@ -133,8 +128,8 @@ namespace SimpleAssetAdministrationShell
                        },
                        OnMethodCalled = async (op, inArgs, inOutArgs, outArgs, cancellationToken) =>
                        {
-                           string expression = inArgs["Expression"]?.GetValueAsync<string>();
-                           int? computingTime = inArgs["ComputingTime"]?.GetValueAsync<int>();
+                           string expression = inArgs["Expression"]?.GetValue<string>();
+                           int? computingTime = inArgs["ComputingTime"]?.GetValue<int>();
 
                            inOutArgs["HierRein"]?.SetValueAsync("DaWiederRaus");
 

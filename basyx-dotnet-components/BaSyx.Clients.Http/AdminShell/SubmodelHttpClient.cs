@@ -158,7 +158,7 @@ namespace BaSyx.Clients.AdminShell.Http
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<ISubmodel>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }

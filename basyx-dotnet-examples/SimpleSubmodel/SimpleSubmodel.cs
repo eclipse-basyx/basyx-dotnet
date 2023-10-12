@@ -78,11 +78,6 @@ namespace SimpleAssetAdministrationShell
                         Set = (prop, val) => { y = val; return Task.CompletedTask; },
                         Get = prop => { return Task.FromResult(Math.Pow(y, i)); }
                     },
-                    new Property<string>("TestPropertyNull")
-                    {
-                        Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
-                        Get = prop => { return null; }
-                    },
                     new Property<string>("TestPropertyNoSetter")
                     {
                         Set = null,

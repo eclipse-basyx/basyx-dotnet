@@ -25,7 +25,7 @@ namespace BaSyx.Models.Extensions
             {
                 typeof(IReferable),
                 typeof(ISubmodelElement),
-                typeof(IElementContainer<ISubmodelElement>),
+                //typeof(IElementContainer<ISubmodelElement>),
                 typeof(IEmbeddedDataSpecification),
                 typeof(IDataSpecificationContent)
             };

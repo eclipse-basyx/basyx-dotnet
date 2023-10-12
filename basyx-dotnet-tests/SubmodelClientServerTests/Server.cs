@@ -21,7 +21,7 @@ namespace SubmodelClientServerTests
 {
     class Server
     {
-        public static string ServerUrl = "http://localhost:5070";
+        public static string ServerUrl = "http://localhost:5080";
         public static void Run()
         {
             ServerSettings settings = new ServerSettings()

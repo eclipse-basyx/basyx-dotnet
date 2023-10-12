@@ -31,8 +31,7 @@ namespace SimpleAssetAdministrationShell
             ServerSettings submodelServerSettings = ServerSettings.CreateSettings();
             submodelServerSettings.ServerConfig.Hosting.ContentPath = "Content";
             submodelServerSettings.ServerConfig.Hosting.Environment = "Development";
-            submodelServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5040");
-            submodelServerSettings.ServerConfig.Hosting.Urls.Add("https://+:5440");
+            submodelServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5080");
 
             SubmodelHttpServer submodelServer = new SubmodelHttpServer(submodelServerSettings);
             submodelServer.WebHostBuilder.UseNLog();

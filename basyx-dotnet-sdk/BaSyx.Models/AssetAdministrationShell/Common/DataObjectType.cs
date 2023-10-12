@@ -106,7 +106,7 @@ namespace BaSyx.Models.AdminShell
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "name")]
         public string Name { get; }
-               
+
         internal DataObjectType(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -207,6 +207,12 @@ namespace BaSyx.Models.AdminShell
         }
 
         public static implicit operator string(DataObjectType dataObjectType) => dataObjectType.ToString();
-        public static implicit operator DataObjectType(string dataObjectType) => _dataObjectTypes[dataObjectType.ToLowerFirstChar()];
+        public static implicit operator DataObjectType(string dataObjectType)
+        {
+            if (string.IsNullOrEmpty(dataObjectType))
+                return None;
+
+            return _dataObjectTypes[dataObjectType.ToLowerFirstChar()];
+        }
     }
 }

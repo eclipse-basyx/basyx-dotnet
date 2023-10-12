@@ -18,9 +18,9 @@ namespace BaSyx.Models.AdminShell
         public Identifier Id { get; set; }
         public AdministrativeInformation Administration { get; set; }
 
-        protected Identifiable(string idShort, Identifier identification) : base(idShort)
+        protected Identifiable(string idShort, Identifier id) : base(idShort)
         {
-            Id = identification;
+            Id = id;
         }
     }
 }

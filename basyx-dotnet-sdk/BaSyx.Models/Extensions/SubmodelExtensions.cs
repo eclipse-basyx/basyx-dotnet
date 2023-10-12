@@ -72,6 +72,24 @@ namespace BaSyx.Models.Extensions
             return submodel;
         }
 
+        public static ISubmodel GetMetadata(this ISubmodel submodel)
+        {
+            Submodel trimmedSubmodel = new Submodel(submodel.Id, submodel.Id);
+            trimmedSubmodel.Administration = submodel.Administration;
+            trimmedSubmodel.Category = submodel.Category;
+            trimmedSubmodel.Kind = submodel.Kind;
+            trimmedSubmodel.SemanticId  = submodel.SemanticId;
+            trimmedSubmodel.SupplementalSemanticIds = submodel.SupplementalSemanticIds;
+            trimmedSubmodel.Qualifiers = submodel.Qualifiers;
+            trimmedSubmodel.Description = submodel.Description;
+            trimmedSubmodel.DisplayName = submodel.DisplayName;
+            trimmedSubmodel.EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications;
+            trimmedSubmodel.ConceptDescription = submodel.ConceptDescription;
+            trimmedSubmodel.SubmodelElements = null;
+
+            return trimmedSubmodel;
+        }
+
         #endregion
     }
 }

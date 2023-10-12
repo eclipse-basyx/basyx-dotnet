@@ -16,6 +16,7 @@ namespace BaSyx.Models.Extensions
         {
             _options = new JsonSerializerOptions();
             _options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull | JsonIgnoreCondition.WhenWritingDefault;
+            _options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
             _options.Converters.Add(new JsonStringEnumConverter());
             _options.Converters.Add(new DataTypeConverter());

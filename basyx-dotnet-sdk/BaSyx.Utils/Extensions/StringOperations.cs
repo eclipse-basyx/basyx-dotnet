@@ -86,6 +86,11 @@ namespace BaSyx.Utils.Extensions
             return char.ToLower(s[0]) + s.Substring(1);
         }
 
+        public static T GetEnum<T>(this string s)
+        {
+            return (T)Enum.Parse(typeof(T), s, true);
+        }
+
         public static string RemoveFromEnd(this string s, string suffix)
         {
             if (s.EndsWith(suffix))
