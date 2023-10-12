@@ -438,8 +438,6 @@ namespace BaSyx.API.ServiceProvider
                 return new Result<ISubmodelElement>(false, new NotFoundMessage("Submodel"));
 
             var created = _submodel.SubmodelElements.Create(idShortPath, submodelElement);
-            if (created.Success && created.Entity != null)
-                RegisterSubmodelElementHandler(idShortPath, new SubmodelElementHandler(submodelElement.Get, submodelElement.Set));
             return created;
         }
 
@@ -449,8 +447,6 @@ namespace BaSyx.API.ServiceProvider
                 return new Result<ISubmodelElement>(false, new NotFoundMessage("Submodel"));
 
             var updated = _submodel.SubmodelElements.Update(idShortPath, submodelElement);
-            if (updated.Success && updated.Entity != null)
-                RegisterSubmodelElementHandler(idShortPath, new SubmodelElementHandler(submodelElement.Get, submodelElement.Set));
             return updated;
         }
 
@@ -460,8 +456,6 @@ namespace BaSyx.API.ServiceProvider
                 return new Result<ISubmodelElement>(false, new NotFoundMessage("Submodel"));
 
             var created = _submodel.SubmodelElements.CreateOrUpdate(idShortPath, submodelElement);
-            if (created.Success && created.Entity != null)
-                RegisterSubmodelElementHandler(idShortPath, submodelElementHandler);
             return created;
         }
 

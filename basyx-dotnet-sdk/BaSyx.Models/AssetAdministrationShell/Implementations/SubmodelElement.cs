@@ -108,22 +108,6 @@ namespace BaSyx.Models.AdminShell
             SupplementalSemanticIds = new List<IReference>();
         }
 
-        public bool ShouldSerializeEmbeddedDataSpecifications()
-        {
-            if (EmbeddedDataSpecifications?.Count() > 0)
-                return true;
-            else
-                return false;
-        }
-
-        public bool ShouldSerializeConstraints()
-        {
-            if (Qualifiers?.Count() > 0)
-                return true;
-            else
-                return false;
-        }
-
         protected virtual void OnValueChanged(ValueChangedArgs e)
         {
             ValueChanged?.Invoke(this, e);

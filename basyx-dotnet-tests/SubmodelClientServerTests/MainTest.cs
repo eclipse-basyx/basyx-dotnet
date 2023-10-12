@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
+using BaSyx.Utils.DependencyInjection;
+using System.Text.Json;
 
 namespace SubmodelClientServerTests
 {
@@ -36,9 +38,9 @@ namespace SubmodelClientServerTests
 
         static MainTest()
         {
-            //Server.Run();
+            Server.Run();
             Submodel = TestSubmodel.GetSubmodel("TestSubmodel");
-            Client = new SubmodelHttpClient(new Uri("http://localhost:5080"));
+            Client = new SubmodelHttpClient(new Uri(Server.ServerUrl));
         }
 
         [TestMethod]
@@ -73,7 +75,7 @@ namespace SubmodelClientServerTests
         {
             Property<string> property = new Property<string>("MyTestProperty", "MyTestValue");
 
-            var result = CreateSubmodelElement(".", property);
+            ävar result = CreateSubmodelElement(".", property);
 
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(property, options =>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 
-namespace BaSyx.Models.Extensions.SystemTextJson
+namespace BaSyx.Models.Extensions
 {
     public class FullSubmodelElementConverter : SubmodelElementConverter
     {

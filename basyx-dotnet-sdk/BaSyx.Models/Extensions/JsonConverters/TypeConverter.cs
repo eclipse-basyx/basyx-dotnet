@@ -3,6 +3,7 @@ using BaSyx.Utils.DependencyInjection.Abstractions;
 using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -43,6 +44,10 @@ namespace BaSyx.Models.Extensions
 
             if (typeToConvert.IsInterface)
                 return true;
+
+            if (typeof(ISubmodelElement).IsAssignableFrom(typeToConvert) && typeToConvert != typeof(ISubmodelElement))
+                return true;
+
             return false;
         }
 
@@ -56,7 +61,17 @@ namespace BaSyx.Models.Extensions
             else if (DependencyInjectionExtension.IsTypeRegistered(typeToConvert))
             {
                 var implementationType = DependencyInjectionExtension.GetRegisteredTypeFor(typeToConvert);
-                var converter = (JsonConverter)Activator.CreateInstance(typeof(TypeConverter<>).MakeGenericType(new Type[] { implementationType }));
+                var converter = (JsonConverter)Activator.CreateInstance(
+                    type: typeof(TypeConverter<>).MakeGenericType(new Type[] { implementationType }),
+                    bindingAttr: BindingFlags.Instance | BindingFlags.Public,
+                    binder: null,
+                    args: null,
+                    culture: null);
+                return converter;
+            }
+            else if (typeof(ISubmodelElement).IsAssignableFrom(typeToConvert) && typeToConvert != typeof(ISubmodelElement))
+            {
+                var converter = (JsonConverter)Activator.CreateInstance(typeof(SubmodelElementConverter));
                 return converter;
             }
             else
