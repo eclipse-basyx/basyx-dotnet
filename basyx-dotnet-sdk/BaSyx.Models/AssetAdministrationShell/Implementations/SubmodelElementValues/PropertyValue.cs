@@ -9,13 +9,14 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
+using System.Globalization;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
     public class PropertyValue : ValueScope
-    {
+    {    
         public override ModelType ModelType => ModelType.Property;
 
         public IValue Value { get; set; }
@@ -33,6 +34,16 @@ namespace BaSyx.Models.AdminShell
         public override JsonValue ToJson()
         {
             return JsonValue.Create(Value.Value);
+        }
+
+        public override string ToString()
+        {
+            if(Value?.Value is double dbl)
+                return dbl.ToString(_nfi);
+            else if (Value?.Value is float flt)
+                return flt.ToString(_nfi);
+            else
+                return Value?.Value?.ToString();
         }
     }
 

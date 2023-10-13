@@ -105,12 +105,12 @@ namespace BaSyx.Models.AdminShell
             }
         }
 
-        public IResult<IQueryableElementContainer<ISubmodelElement>> RetrieveAll()
+        public IResult<IElementContainer<ISubmodelElement>> RetrieveAll()
         {
             return Value.RetrieveAll();
         }
 
-        public IResult<IQueryableElementContainer<ISubmodelElement>> RetrieveAll(Predicate<ISubmodelElement> predicate)
+        public IResult<IElementContainer<ISubmodelElement>> RetrieveAll(Predicate<ISubmodelElement> predicate)
         {
             return Value.RetrieveAll(predicate);
         }
@@ -160,12 +160,12 @@ namespace BaSyx.Models.AdminShell
             return Value.Retrieve<T>(id);
         }
 
-        IResult<IQueryableElementContainer<T>> ICrudContainer<string, ISubmodelElement>.RetrieveAll<T>()
+        IResult<IElementContainer<T>> ICrudContainer<string, ISubmodelElement>.RetrieveAll<T>()
         {
             return Value.RetrieveAll<T>();
         }
 
-        IResult<IQueryableElementContainer<T>> ICrudContainer<string, ISubmodelElement>.RetrieveAll<T>(Predicate<T> predicate)
+        IResult<IElementContainer<T>> ICrudContainer<string, ISubmodelElement>.RetrieveAll<T>(Predicate<T> predicate)
         {
             return Value.RetrieveAll(predicate);
         }

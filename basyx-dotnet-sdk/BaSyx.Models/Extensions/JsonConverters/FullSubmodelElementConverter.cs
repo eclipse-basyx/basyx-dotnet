@@ -26,7 +26,7 @@ namespace BaSyx.Models.Extensions
                     var property = (Property)value;
                     var propValue = property.GetValueScope<PropertyValue>();
                     if (propValue != null)
-                        writer.WriteString("value", propValue.Value.Value.ToString());
+                        writer.WriteString("value", propValue.ToString());
                     break;
                 case ModelTypes.AnnotatedRelationshipElement:
                     var are = (AnnotatedRelationshipElement)value;

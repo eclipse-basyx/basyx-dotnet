@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.Interfaces
 {
@@ -23,7 +24,7 @@ namespace BaSyx.API.Interfaces
 
         IResult<ISubmodelElement> UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement);
 
-        IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements();
+        IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements();
 
         IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath);
 

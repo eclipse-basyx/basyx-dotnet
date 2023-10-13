@@ -24,6 +24,11 @@ namespace BaSyx.Utils.ResultHandling.ResultTypes
     public class PagedResult<T> : PagedResult
     {
         public new T Result { get; set; }
+
+        [JsonConstructor]
+        public PagedResult() { }
+
+        public PagedResult(T result) { Result = result; }
     }
 
     public class PagingMetadata

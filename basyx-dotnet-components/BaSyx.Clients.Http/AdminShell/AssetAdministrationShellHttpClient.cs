@@ -26,6 +26,7 @@ using BaSyx.API.Http;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.DependencyInjection;
 using System.Text.Json;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -256,7 +257,7 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelElementAsync(submodelIdentifier, rootIdShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
-        public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements(string submodelIdentifier)
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(string submodelIdentifier)
         {
             return RetrieveSubmodelElementsAsync(submodelIdentifier).GetAwaiter().GetResult();
         }
@@ -339,12 +340,12 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElementsAsync(string submodelIdentifier)
+        public async Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(string submodelIdentifier)
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, submodelIdentifier);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<IElementContainer<ISubmodelElement>>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }

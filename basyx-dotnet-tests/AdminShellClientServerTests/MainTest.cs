@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace AdminShellClientServerTests
 {
@@ -49,7 +50,7 @@ namespace AdminShellClientServerTests
         [TestMethod]
         public void Test000_RetrieveAssetAdministrationShell()
         {
-            var result = RetrieveAssetAdministrationShell(default);
+            var result = RetrieveAssetAdministrationShell();
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(AdminShell, options =>
             {
@@ -71,7 +72,7 @@ namespace AdminShellClientServerTests
             var updated = UpdateAssetAdministrationShell(AdminShell);
             updated.Success.Should().BeTrue();
 
-            var result = RetrieveAssetAdministrationShell(default);
+            var result = RetrieveAssetAdministrationShell();
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(AdminShell, options =>
             {
@@ -98,7 +99,7 @@ namespace AdminShellClientServerTests
             var updated = UpdateAssetInformation(assetInfo);
             updated.Success.Should().BeTrue();
 
-            var result = RetrieveAssetAdministrationShell(default);
+            var result = RetrieveAssetAdministrationShell();
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(AdminShell, options =>
             {
@@ -217,7 +218,7 @@ namespace AdminShellClientServerTests
         public void Test104_RetrieveSubmodelElements()
         {
             var result = RetrieveSubmodelElements();
-            result.Entity.Should().ContainEquivalentOf(Submodel.SubmodelElements["MyCollection"],
+            result.Entity.Result.Should().ContainEquivalentOf(Submodel.SubmodelElements["MyCollection"],
                 options =>
                 {
                     options
@@ -324,7 +325,7 @@ namespace AdminShellClientServerTests
 
             var retrieved = RetrieveSubmodelElements();
             retrieved.Success.Should().BeTrue();
-            retrieved.Entity.Should().NotContainEquivalentOf(Submodel.SubmodelElements["MyCollection"]);
+            retrieved.Entity.Result.Should().NotContainEquivalentOf(Submodel.SubmodelElements["MyCollection"]);
         }
 
         [TestMethod]
@@ -336,9 +337,9 @@ namespace AdminShellClientServerTests
 
         #region Submodel Client
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestContent content = RequestContent.Normal, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return Client.RetrieveSubmodel(Submodel.Id, level, content, extent);
+            return Client.RetrieveSubmodel(Submodel.Id, level, extent);
         }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
@@ -371,7 +372,7 @@ namespace AdminShellClientServerTests
             return Client.RetrieveSubmodelElement(Submodel.Id, idShortPath);
         }
 
-        public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
         {
             return Client.RetrieveSubmodelElements(Submodel.Id);
         }
@@ -391,9 +392,9 @@ namespace AdminShellClientServerTests
             return Client.UpdateSubmodelElementValue(Submodel.Id, idShortPath, value);
         }
 
-        public Task<IResult<ISubmodel>> RetrieveSubmodelAsync(RequestLevel level = RequestLevel.Deep, RequestContent content = RequestContent.Normal, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public Task<IResult<ISubmodel>> RetrieveSubmodelAsync(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return Client.RetrieveSubmodelAsync(Submodel.Id, level, content, extent);
+            return Client.RetrieveSubmodelAsync(Submodel.Id, level, extent);
         }
 
         public Task<IResult> UpdateSubmodelAsync(ISubmodel submodel)
@@ -411,7 +412,7 @@ namespace AdminShellClientServerTests
             return Client.UpdateSubmodelElementAsync(Submodel.Id, rootIdShortPath, submodelElement);
         }
 
-        public Task<IResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElementsAsync()
+        public Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync()
         {
             return Client.RetrieveSubmodelElementsAsync(Submodel.Id);
         }
@@ -450,9 +451,9 @@ namespace AdminShellClientServerTests
 
         #region Asset Administration Shell Client
 
-        public Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(RequestContent content)
+        public Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync()
         {
-            return ((IAssetAdministrationShellClient)Client).RetrieveAssetAdministrationShellAsync(content);
+            return ((IAssetAdministrationShellClient)Client).RetrieveAssetAdministrationShellAsync();
         }
 
         public Task<IResult> UpdateAssetAdministrationShellAsync(IAssetAdministrationShell aas)
@@ -485,9 +486,9 @@ namespace AdminShellClientServerTests
             return ((IAssetAdministrationShellClient)Client).DeleteSubmodelReferenceAsync(submodelIdentifier);
         }
 
-        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(RequestContent content)
+        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell()
         {
-            return ((IAssetAdministrationShellInterface)Client).RetrieveAssetAdministrationShell(content);
+            return ((IAssetAdministrationShellInterface)Client).RetrieveAssetAdministrationShell();
         }
 
         public IResult UpdateAssetAdministrationShell(IAssetAdministrationShell aas)

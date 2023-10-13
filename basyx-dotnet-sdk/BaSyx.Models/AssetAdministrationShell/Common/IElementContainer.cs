@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
@@ -32,9 +31,9 @@ namespace BaSyx.Models.AdminShell
         /// <returns></returns>
         IResult<T> Retrieve<T>(TIdentifier idShortPath) where T : class, TElement;
 
-        IResult<IQueryableElementContainer<T>> RetrieveAll<T>() where T : class, IReferable, IModelElement;
+        IResult<IElementContainer<T>> RetrieveAll<T>() where T : class, IReferable, IModelElement;
 
-        IResult<IQueryableElementContainer<T>> RetrieveAll<T>(Predicate<T> predicate) where T : class, IReferable, IModelElement;
+        IResult<IElementContainer<T>> RetrieveAll<T>(Predicate<T> predicate) where T : class, IReferable, IModelElement;
         /// <summary>
         /// Creates a new or updates an existing element in the container. No conflict detection here.
         /// </summary>
@@ -79,8 +78,8 @@ namespace BaSyx.Models.AdminShell
         event EventHandler<ElementContainerEventArgs<TElement>> OnUpdated;
         event EventHandler<ElementContainerEventArgs<TElement>> OnDeleted;
 
-        IResult<IQueryableElementContainer<TElement>> RetrieveAll();
-        IResult<IQueryableElementContainer<TElement>> RetrieveAll(Predicate<TElement> predicate);
+        IResult<IElementContainer<TElement>> RetrieveAll();
+        IResult<IElementContainer<TElement>> RetrieveAll(Predicate<TElement> predicate);
 
         IEnumerable<IElementContainer<TElement>> Children { get; }
         IEnumerable<TElement> Values { get; }

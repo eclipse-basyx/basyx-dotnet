@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
 using BaSyx.Utils.DependencyInjection;
 using System.Text.Json;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace SubmodelClientServerTests
 {
@@ -75,7 +76,7 @@ namespace SubmodelClientServerTests
         {
             Property<string> property = new Property<string>("MyTestProperty", "MyTestValue");
 
-            ävar result = CreateSubmodelElement(".", property);
+            var result = CreateSubmodelElement(".", property);
 
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(property, options =>
@@ -121,7 +122,7 @@ namespace SubmodelClientServerTests
         public void Test104_RetrieveSubmodelElements()
         {
             var retrieved = RetrieveSubmodelElements();
-            retrieved.Entity.Should().ContainEquivalentOf(Submodel.SubmodelElements["MyCollection"],
+            retrieved.Entity.Result.Should().ContainEquivalentOf(Submodel.SubmodelElements["MyCollection"],
                 options =>
                 {
                     options
@@ -137,7 +138,7 @@ namespace SubmodelClientServerTests
         public void Test105_RetrieveSubmodelElement()
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubSubFloat");
-            result.Entity.GetValueAsync<float>().Should().Be(3.3f);
+            result.Entity.GetValue<float>().Should().Be(3.3f);
         }
 
         [TestMethod]
@@ -161,13 +162,13 @@ namespace SubmodelClientServerTests
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection");
             result.Success.Should().BeTrue();
-            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValueAsync<int>().Should().Be(6);
+            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValue<int>().Should().Be(6);
         }
 
         [TestMethod]
         public void Test108_UpdateSubmodelElementValue()
         {
-            var result = UpdateSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble", new PropertyValue(new ElementValue(1.8d)));
+            var result = UpdateSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble", new PropertyValue(new ElementValue<double>(1.8d)));
             result.Success.Should().BeTrue();
         }
 
@@ -193,7 +194,7 @@ namespace SubmodelClientServerTests
 
             var result = InvokeOperation("Calculate", request, false);
             result.Success.Should().BeTrue();
-            result.Entity.OutputArguments["Result"].GetValueAsync<double>().Should().Be(24);
+            result.Entity.OutputArguments["Result"].GetValue<double>().Should().Be(24);
 
         }
 
@@ -217,7 +218,7 @@ namespace SubmodelClientServerTests
 
             var handleResult = GetInvocationResult("Calculate", request.RequestId);
             handleResult.Success.Should().BeTrue();
-            handleResult.Entity.OutputArguments["Result"].GetValueAsync<double>().Should().Be(24);
+            handleResult.Entity.OutputArguments["Result"].GetValue<double>().Should().Be(24);
         }
 
         [TestMethod]
@@ -228,7 +229,7 @@ namespace SubmodelClientServerTests
 
             var retrieved = RetrieveSubmodelElements();
             retrieved.Success.Should().BeTrue();
-            retrieved.Entity.Should().NotContainEquivalentOf(Submodel.SubmodelElements["MyCollection"]);
+            retrieved.Entity.Result.Should().NotContainEquivalentOf(Submodel.SubmodelElements["MyCollection"]);
         }
 
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
@@ -266,7 +267,7 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElement(idShortPath);
         }
 
-        public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElements();
         }
@@ -306,7 +307,7 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).UpdateSubmodelElementAsync(rootIdShortPath, submodelElement);
         }
 
-        public Task<IResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElementsAsync()
+        public Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync()
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementsAsync();
         }

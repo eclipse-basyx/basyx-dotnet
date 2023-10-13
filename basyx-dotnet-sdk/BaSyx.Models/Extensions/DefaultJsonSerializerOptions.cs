@@ -5,6 +5,7 @@ using System.Text.Json;
 using BaSyx.Models.AdminShell;
 using System.Collections;
 using BaSyx.Models.Extensions.SystemTextJson;
+using System;
 
 namespace BaSyx.Models.Extensions
 {
@@ -23,6 +24,7 @@ namespace BaSyx.Models.Extensions
             _options.Converters.Add(new ModelTypeConverter());
             _options.Converters.Add(new ValueScopeConverter());
             _options.Converters.Add(new IdentifierConverter());
+            _options.Converters.Add(new ElementContainerConverter());
             _options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
             {
                 Modifiers = { DefaultValueModifier }
@@ -65,5 +67,14 @@ namespace BaSyx.Models.Extensions
                 }
             }
         }       
+    }
+
+    public static class JsonExtensions
+    {
+        //public static Func<T> GetJsonValueFunction<T>(this JsonElement element, DataType dataType)
+        //{
+        //    if (dataType.SystemType == typeof(string))
+        //        return element.GetString();
+        //}
     }
 }

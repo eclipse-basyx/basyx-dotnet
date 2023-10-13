@@ -14,6 +14,7 @@ using BaSyx.Utils.Client;
 using BaSyx.Utils.ResultHandling;
 using System;
 using BaSyx.Models.Connectivity;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -114,7 +115,7 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.UpdateSubmodelElement(rootSubmodelElementPath, submodelElement);
         }
 
-        public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
         {
             return submodelClient.RetrieveSubmodelElements();
         }

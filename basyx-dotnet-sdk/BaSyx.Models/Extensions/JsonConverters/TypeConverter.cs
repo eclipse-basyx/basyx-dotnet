@@ -19,14 +19,15 @@ namespace BaSyx.Models.Extensions
         {            
             CustomConverterDictionary = new Dictionary<Type, Type>()
             {
-                { typeof(ValueScope), typeof(ValueScopeConverter) }
+                { typeof(ValueScope), typeof(ValueScopeConverter) },
+                { typeof(PropertyValue), typeof(ValueScopeConverter) },
+                { typeof(IElementContainer<ISubmodelElement>), typeof(ElementContainerConverter) }
             };
 
             IgnoreConvert = new List<Type>()
             {
                 typeof(IReferable),
                 typeof(ISubmodelElement),
-                //typeof(IElementContainer<ISubmodelElement>),
                 typeof(IEmbeddedDataSpecification),
                 typeof(IDataSpecificationContent)
             };
@@ -41,6 +42,9 @@ namespace BaSyx.Models.Extensions
         {
             if(IgnoreConvert.Contains(typeToConvert)) 
                 return false;
+
+            if(CustomConverterDictionary.ContainsKey(typeToConvert))
+                return true;
 
             if (typeToConvert.IsInterface)
                 return true;
@@ -71,7 +75,7 @@ namespace BaSyx.Models.Extensions
             }
             else if (typeof(ISubmodelElement).IsAssignableFrom(typeToConvert) && typeToConvert != typeof(ISubmodelElement))
             {
-                var converter = (JsonConverter)Activator.CreateInstance(typeof(SubmodelElementConverter));
+                var converter = (JsonConverter)Activator.CreateInstance(typeof(FullSubmodelElementConverter));
                 return converter;
             }
             else

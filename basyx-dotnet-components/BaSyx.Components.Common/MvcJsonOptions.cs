@@ -27,6 +27,7 @@ namespace BaSyx.Components.Common
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull | JsonIgnoreCondition.WhenWritingDefault;
             options.JsonSerializerOptions.Converters.Add(new TypeConverter(new DependencyInjectionExtension(services)));
             options.JsonSerializerOptions.Converters.Add(new FullSubmodelElementConverter());
+            options.JsonSerializerOptions.Converters.Add(new ElementContainerConverter());
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             options.JsonSerializerOptions.Converters.Add(new DataTypeConverter());
             options.JsonSerializerOptions.Converters.Add(new ModelTypeConverter());

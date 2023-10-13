@@ -24,6 +24,7 @@ using BaSyx.API.Http;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.Models.Extensions;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -106,7 +107,7 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelElementAsync(rootIdShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
-        public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
         {
             return RetrieveSubmodelElementsAsync().GetAwaiter().GetResult();
         }
@@ -191,12 +192,12 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElementsAsync()
+        public async Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync()
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<IElementContainer<ISubmodelElement>>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }
@@ -213,10 +214,10 @@ namespace BaSyx.Clients.AdminShell.Http
 
         public async Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(string idShortPath)
         {
-            Uri uri = GetPath(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, idShortPath);
+            Uri uri = GetPath(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, idShortPath);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            IResult result = await base.EvaluateResponseAsync(response, response.Entity);
+            var result = await base.EvaluateResponseAsync<ValueScope>(response, response.Entity);
             response?.Entity?.Dispose();
             //TODO
             //if (result.Success && result.Entity != null)
@@ -228,13 +229,13 @@ namespace BaSyx.Clients.AdminShell.Http
             //        return new Result<ValueScope>(result.Success, new ElementValue(deserializedValue, deserializedValue?.GetType()), result.Messages);
             //    }
             //}
-            return new Result<ValueScope>(result);
+            return result;
         }
 
         public async Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, ValueScope value)
         {
-            Uri uri = GetPath(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, idShortPath);
-            var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, value);
+            Uri uri = GetPath(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, idShortPath);
+            var request = base.CreateJsonContentRequest(uri, new HttpMethod("PATCH"), value);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();

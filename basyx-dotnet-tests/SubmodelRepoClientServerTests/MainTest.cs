@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.Clients.AdminShell.Http;
 using BaSyx.Models.Connectivity;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace SubmodelRepoClientServerTests
 {
@@ -180,7 +181,7 @@ namespace SubmodelRepoClientServerTests
         public void Test104_RetrieveSubmodelElements()
         {
             var retrieved = RetrieveSubmodelElements();
-            retrieved.Entity.Should().ContainEquivalentOf(MainSubmodel.SubmodelElements["MyCollection"],
+            retrieved.Entity.Result.Should().ContainEquivalentOf(MainSubmodel.SubmodelElements["MyCollection"],
                 options =>
                 {
                     options
@@ -226,7 +227,7 @@ namespace SubmodelRepoClientServerTests
         [TestMethod]
         public void Test108_UpdateSubmodelElementValue()
         {
-            var result = UpdateSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble", new ElementValue(1.8d));
+            var result = UpdateSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble", new PropertyValue(new ElementValue(1.8d)));
             result.Success.Should().BeTrue();
         }
 
@@ -235,7 +236,7 @@ namespace SubmodelRepoClientServerTests
         {
             var result = RetrieveSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble");
             result.Success.Should().BeTrue();
-            result.Entity.ToObject<double>().Should().Be(1.8d);
+            result.Entity.GetValue<double>().Should().Be(1.8d);
         }
 
         [TestMethod]
@@ -287,14 +288,14 @@ namespace SubmodelRepoClientServerTests
 
             var retrieved = RetrieveSubmodelElements();
             retrieved.Success.Should().BeTrue();
-            retrieved.Entity.Should().NotContainEquivalentOf(MainSubmodel.SubmodelElements["MyCollection"]);
+            retrieved.Entity.Result.Should().NotContainEquivalentOf(MainSubmodel.SubmodelElements["MyCollection"]);
         }
 
         #region Submodel Client
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestContent content = RequestContent.Normal, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return ((ISubmodelClient)Client).RetrieveSubmodel(level, content, extent);
+            return ((ISubmodelClient)Client).RetrieveSubmodel(level, extent);
         } 
 
         public IResult UpdateSubmodel(ISubmodel submodel)
@@ -327,12 +328,12 @@ namespace SubmodelRepoClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElement(idShortPath);
         }
 
-        public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElements();
         }
 
-        public IResult<IValue> RetrieveSubmodelElementValue(string idShortPath)
+        public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementValue(idShortPath);
         }
@@ -342,14 +343,14 @@ namespace SubmodelRepoClientServerTests
             return ((ISubmodelClient)Client).UpdateSubmodelElement(rootIdShortPath, submodelElement);
         }
 
-        public IResult UpdateSubmodelElementValue(string idShortPath, IValue value)
+        public IResult UpdateSubmodelElementValue(string idShortPath, ValueScope value)
         {
             return ((ISubmodelClient)Client).UpdateSubmodelElementValue(idShortPath, value);
         }
 
-        public Task<IResult<ISubmodel>> RetrieveSubmodelAsync(RequestLevel level = RequestLevel.Deep, RequestContent content = RequestContent.Normal, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public Task<IResult<ISubmodel>> RetrieveSubmodelAsync(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return ((ISubmodelClient)Client).RetrieveSubmodelAsync(level, content, extent);
+            return ((ISubmodelClient)Client).RetrieveSubmodelAsync(level, extent);
         }
 
         public Task<IResult> UpdateSubmodelAsync(ISubmodel submodel)
@@ -367,7 +368,7 @@ namespace SubmodelRepoClientServerTests
             return ((ISubmodelClient)Client).UpdateSubmodelElementAsync(rootIdShortPath, submodelElement);
         }
 
-        public Task<IResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElementsAsync()
+        public Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync()
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementsAsync();
         }
@@ -377,12 +378,12 @@ namespace SubmodelRepoClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElementAsync(idShortPath);
         }
 
-        public Task<IResult<IValue>> RetrieveSubmodelElementValueAsync(string idShortPath)
+        public Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(string idShortPath)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementValueAsync(idShortPath);
         }
 
-        public Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, IValue value)
+        public Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, ValueScope value)
         {
             return ((ISubmodelClient)Client).UpdateSubmodelElementValueAsync(idShortPath, value);
         }

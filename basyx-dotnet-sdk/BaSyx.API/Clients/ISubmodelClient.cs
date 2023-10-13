@@ -12,6 +12,7 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.API.Interfaces;
 using System.Threading.Tasks;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.Clients
 {
@@ -21,7 +22,7 @@ namespace BaSyx.API.Clients
         Task<IResult> UpdateSubmodelAsync(ISubmodel submodel);
         Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement);
         Task<IResult<ISubmodelElement>> UpdateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement);
-        Task<IResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElementsAsync();
+        Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync();
         Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string idShortPath);
         Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(string idShortPath);
         Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, ValueScope value);

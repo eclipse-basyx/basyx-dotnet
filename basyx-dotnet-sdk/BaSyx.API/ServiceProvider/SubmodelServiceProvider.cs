@@ -19,6 +19,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using BaSyx.Models.Extensions;
 using System.Text.Json;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -459,14 +460,15 @@ namespace BaSyx.API.ServiceProvider
             return created;
         }
 
-        public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
         {
             if (_submodel == null)
-                return new Result<ElementContainer<ISubmodelElement>>(false, new NotFoundMessage("Submodel"));
+                return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(false, new NotFoundMessage("Submodel"));
 
             if (_submodel.SubmodelElements == null)
-                return new Result<ElementContainer<ISubmodelElement>>(false, new NotFoundMessage("SubmodelElements"));
-            return _submodel.SubmodelElements.RetrieveAll();
+                return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(false, new NotFoundMessage("SubmodelElements"));
+            var retrieved = _submodel.SubmodelElements.RetrieveAll();
+            return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(retrieved.Success, new PagedResult<IElementContainer<ISubmodelElement>>(retrieved.Entity), retrieved.Messages); 
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string submodelElementId)

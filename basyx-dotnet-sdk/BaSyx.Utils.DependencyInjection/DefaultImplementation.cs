@@ -40,14 +40,13 @@ namespace BaSyx.Utils.DependencyInjection
             services.AddTransient(typeof(IQualifier), typeof(Qualifier));
 
             services.AddTransient(typeof(IElementContainer<>), typeof(ElementContainer<>));
-            services.AddTransient(typeof(IQueryableElementContainer<>), typeof(QueryableElementContainer<>));
             //services.AddTransient(typeof(IEnumerable<IAssetAdministrationShellRepositoryDescriptor>), typeof(List<IAssetAdministrationShellRepositoryDescriptor>));
             //services.AddTransient(typeof(IEnumerable<IAssetAdministrationShellDescriptor>), typeof(List<IAssetAdministrationShellDescriptor>));
             //services.AddTransient(typeof(IEnumerable<ISubmodelRepositoryDescriptor>), typeof(List<ISubmodelRepositoryDescriptor>));
             //services.AddTransient(typeof(IEnumerable<ISubmodelDescriptor>), typeof(List<ISubmodelDescriptor>));
             services.AddTransient(typeof(IElementContainer<IAssetAdministrationShell>), typeof(ElementContainer<IAssetAdministrationShell>));
             services.AddTransient(typeof(IElementContainer<ISubmodel>), typeof(ElementContainer<ISubmodel>));
-            services.AddTransient(typeof(IElementContainer<ISubmodelElement>), typeof(ElementContainer<ISubmodelElement>));
+            //services.AddTransient(typeof(IElementContainer<ISubmodelElement>), typeof(ElementContainer<ISubmodelElement>));
             services.AddTransient(typeof(IElementContainer<IConceptDictionary>), typeof(ElementContainer<IConceptDictionary>));
 
             services.AddTransient<IProperty, Property>();

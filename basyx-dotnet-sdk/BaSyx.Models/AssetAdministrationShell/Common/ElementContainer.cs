@@ -220,18 +220,18 @@ namespace BaSyx.Models.AdminShell
                 child.Traverse(action);
         }
 
-        public virtual IResult<IQueryableElementContainer<TElement>> RetrieveAll()
+        public virtual IResult<IElementContainer<TElement>> RetrieveAll()
         {
             if (this.Count() == 0)
-                return new Result<IQueryableElementContainer<TElement>>(true, new ElementContainer<TElement>().AsQueryableElementContainer(), new EmptyMessage());
+                return new Result<IElementContainer<TElement>>(true, new ElementContainer<TElement>(), new EmptyMessage());
             else
-                return new Result<IQueryableElementContainer<TElement>>(true, this.AsQueryableElementContainer());
+                return new Result<IElementContainer<TElement>>(true, this);
         }
 
-        public virtual IResult<IQueryableElementContainer<T>> RetrieveAll<T>() where T : class, IReferable, IModelElement
+        public virtual IResult<IElementContainer<T>> RetrieveAll<T>() where T : class, IReferable, IModelElement
         {
             if (this.Count() == 0)
-                return new Result<IQueryableElementContainer<T>>(true, new EmptyMessage());
+                return new Result<IElementContainer<T>>(true, new EmptyMessage());
             else
             {
                 ElementContainer<T> container = new ElementContainer<T>();
@@ -243,16 +243,16 @@ namespace BaSyx.Models.AdminShell
                 }
 
                 if(container.Count() > 0)
-                    return new Result<IQueryableElementContainer<T>>(true, container.AsQueryableElementContainer());
+                    return new Result<IElementContainer<T>>(true, container);
                 else
-                    return new Result<IQueryableElementContainer<T>>(true, new EmptyMessage());
+                    return new Result<IElementContainer<T>>(true, new EmptyMessage());
             }
         }
 
-        public IResult<IQueryableElementContainer<TElement>> RetrieveAll(Predicate<TElement> predicate)
+        public IResult<IElementContainer<TElement>> RetrieveAll(Predicate<TElement> predicate)
         {
             if (this.Count() == 0)
-                return new Result<IQueryableElementContainer<TElement>>(true, new EmptyMessage());
+                return new Result<IElementContainer<TElement>>(true, new EmptyMessage());
             else
             {
                 ElementContainer<TElement> container = new ElementContainer<TElement>();
@@ -261,16 +261,16 @@ namespace BaSyx.Models.AdminShell
                     container.AddRange(elements);
 
                 if (container.Count() > 0)
-                    return new Result<IQueryableElementContainer<TElement>>(true, container.AsQueryableElementContainer());
+                    return new Result<IElementContainer<TElement>>(true, container);
                 else
-                    return new Result<IQueryableElementContainer<TElement>>(true, new EmptyMessage());
+                    return new Result<IElementContainer<TElement>>(true, new EmptyMessage());
             }
         }
 
-        public virtual IResult<IQueryableElementContainer<T>> RetrieveAll<T>(Predicate<T> predicate) where T : class, IReferable, IModelElement
+        public virtual IResult<IElementContainer<T>> RetrieveAll<T>(Predicate<T> predicate) where T : class, IReferable, IModelElement
         {
             if (this.Count() == 0)
-                return new Result<IQueryableElementContainer<T>>(true, new EmptyMessage());
+                return new Result<IElementContainer<T>>(true, new EmptyMessage());
             else
             {
                 ElementContainer<T> container = new ElementContainer<T>();
@@ -282,9 +282,9 @@ namespace BaSyx.Models.AdminShell
                 }
 
                 if (container.Count() > 0)
-                    return new Result<IQueryableElementContainer<T>>(true, container.AsQueryableElementContainer());
+                    return new Result<IElementContainer<T>>(true, container);
                 else
-                    return new Result<IQueryableElementContainer<T>>(true, new EmptyMessage());
+                    return new Result<IElementContainer<T>>(true, new EmptyMessage());
             }
         }
 

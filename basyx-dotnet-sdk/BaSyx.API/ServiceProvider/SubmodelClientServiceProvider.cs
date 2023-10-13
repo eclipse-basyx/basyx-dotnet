@@ -13,6 +13,7 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Models.Connectivity;
 using BaSyx.Utils.Client;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -85,7 +86,7 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.RetrieveSubmodelElement(idShortPath);
         }
      
-        public IResult<IElementContainer<ISubmodelElement>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
         {
             return _submodelClient.RetrieveSubmodelElements();
         }

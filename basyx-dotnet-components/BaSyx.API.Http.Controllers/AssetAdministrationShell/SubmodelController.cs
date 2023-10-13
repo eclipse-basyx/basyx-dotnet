@@ -211,11 +211,11 @@ namespace BaSyx.API.Http.Controllers
         public IActionResult GetSubmodelValueOnly([FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
             var result = serviceProvider.RetrieveSubmodelElements();
-            if (!result.Success || result.Entity == null)
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
             JsonObject smValue = new JsonObject();
-            var node = JsonSerializer.SerializeToNode(result.Entity, _fullSerializerOptions);
+            var node = JsonSerializer.SerializeToNode(result.Entity.Result, _fullSerializerOptions);
             smValue.Add("submodelElements", node);
 
             string json = smValue.ToJsonString(); 
@@ -321,11 +321,7 @@ namespace BaSyx.API.Http.Controllers
         public IActionResult GetAllSubmodelElements([FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
             var result = serviceProvider.RetrieveSubmodelElements();
-            PagedResult pagedResult = new PagedResult()
-            {
-                Result = result.Entity
-            };
-            Result<PagedResult> newPagedResult = new Result<PagedResult>(result.Success, pagedResult, result.Messages);
+            Result<PagedResult> newPagedResult = new Result<PagedResult>(result.Success, result.Entity, result.Messages);
             return newPagedResult.CreateActionResult(CrudOperation.Retrieve);
         }
 
@@ -373,12 +369,7 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            PagedResult pagedResult = new PagedResult()
-            {
-                Result = result.Entity
-            };
-
-            string json = JsonSerializer.Serialize(pagedResult, _metadataSerializerOptions);
+            string json = JsonSerializer.Serialize(result.Entity, _metadataSerializerOptions);
             return Content(json, "application/json");
         }
 
@@ -398,15 +389,10 @@ namespace BaSyx.API.Http.Controllers
         public IActionResult GetAllSubmodelElementsValueOnly([FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
             var result = serviceProvider.RetrieveSubmodelElements();
-            if (!result.Success || result.Entity == null)
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            PagedResult<List<IElementContainer<ISubmodelElement>>> pagedResult = new PagedResult<List<IElementContainer<ISubmodelElement>>>()
-            {
-                Result = new List<IElementContainer<ISubmodelElement>>() { result.Entity }
-            };
-
-            string json = JsonSerializer.Serialize(pagedResult, _valueOnlySerializerOptions);
+            string json = JsonSerializer.Serialize(result.Entity, _valueOnlySerializerOptions);
             return Content(json, "application/json");
         }
 
@@ -538,7 +524,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="204">Submodel element updated successfully</response>
-        [HttpPut(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "PatchSubmodelElementByPath")]
+        [HttpPatch(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "PatchSubmodelElementByPath")]
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(204)]
@@ -703,7 +689,7 @@ namespace BaSyx.API.Http.Controllers
                     break;
                 case JsonValueKind.Number:
                     if (sme is Property propNumber)
-                        elementValue = new ElementValue(requestBody.GetString(), propNumber.ValueType);
+                        elementValue = new ElementValue(requestBody.GetRawText(), propNumber.ValueType);
                     else
                         return new Result(false, new ErrorMessage("SubmodelElement is not a Property")).CreateActionResult(CrudOperation.Update);
                     break;
@@ -887,7 +873,8 @@ namespace BaSyx.API.Http.Controllers
             if (operationRequest == null)
                 return ResultHandling.NullResult(nameof(operationRequest));
 
-            throw new NotImplementedException();
+            IResult<InvocationResponse> result = serviceProvider.InvokeOperation(idShortPath, operationRequest, true);
+            return result.CreateActionResult(CrudOperation.Invoke);
         }
 
         /// <summary>
