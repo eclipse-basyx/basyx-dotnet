@@ -11,6 +11,7 @@
 using BaSyx.API.Interfaces;
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 using System.Threading.Tasks;
 
 namespace BaSyx.API.Clients
@@ -19,12 +20,12 @@ namespace BaSyx.API.Clients
     {
         Task<IResult<IAssetAdministrationShell>> CreateAssetAdministrationShellAsync(IAssetAdministrationShell aas);
 
-        Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(string aasIdentifier);
+        Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(Identifier id);
 
-        Task<IResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShellsAsync();
+        Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync();
 
-        Task<IResult> UpdateAssetAdministrationShellAsync(string aasIdentifier, IAssetAdministrationShell aas);
+        Task<IResult> UpdateAssetAdministrationShellAsync(Identifier id, IAssetAdministrationShell aas);
 
-        Task<IResult> DeleteAssetAdministrationShellAsync(string aasIdentifier);
+        Task<IResult> DeleteAssetAdministrationShellAsync(Identifier id);
     }
 }

@@ -24,6 +24,7 @@ using BaSyx.API.Http;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.Models.Extensions;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -71,16 +72,16 @@ namespace BaSyx.Clients.AdminShell.Http
             Endpoint = new Endpoint(httpEndpoint.EndpointAddress.RemoveFromEnd(SubmodelRepositoryRoutes.SUBMODELS), InterfaceName.SubmodelRepositoryInterface);
         }
 
-        public Uri GetPath(string requestPath, string submodelIdentifier = null, string idShortPath = null)
+        public Uri GetPath(string requestPath, Identifier id = null, string idShortPath = null)
         {
             string path = Endpoint.ProtocolInformation.EndpointAddress.Trim('/');
 
             if (string.IsNullOrEmpty(requestPath))
                 return new Uri(path);
 
-            if (!string.IsNullOrEmpty(submodelIdentifier))
+            if (!string.IsNullOrEmpty(id))
             {
-                requestPath = requestPath.Replace("{submodelIdentifier}", submodelIdentifier.Base64UrlEncode());
+                requestPath = requestPath.Replace("{submodelIdentifier}", id.Id.Base64UrlEncode());
             }
 
             if (!string.IsNullOrEmpty(idShortPath))
@@ -98,24 +99,24 @@ namespace BaSyx.Clients.AdminShell.Http
             return CreateSubmodelAsync(submodel).GetAwaiter().GetResult();
         }
 
-        public IResult UpdateSubmodel(string submodelIdentifier, ISubmodel submodel)
+        public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)
         {
-            return UpdateSubmodelAsync(submodelIdentifier, submodel).GetAwaiter().GetResult();
+            return UpdateSubmodelAsync(id, submodel).GetAwaiter().GetResult();
         }
 
-        public IResult<IElementContainer<ISubmodel>> RetrieveSubmodels()
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels()
         {
             return RetrieveSubmodelsAsync().GetAwaiter().GetResult();
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(string submodelIdentifier)
+        public IResult<ISubmodel> RetrieveSubmodel(Identifier id)
         {
-            return RetrieveSubmodelAsync(submodelIdentifier).GetAwaiter().GetResult();
+            return RetrieveSubmodelAsync(id).GetAwaiter().GetResult();
         }
 
-        public IResult DeleteSubmodel(string submodelIdentifier)
+        public IResult DeleteSubmodel(Identifier id)
         {
-            return DeleteSubmodelAsync(submodelIdentifier).GetAwaiter().GetResult();
+            return DeleteSubmodelAsync(id).GetAwaiter().GetResult();
         }
 
         #endregion
@@ -132,9 +133,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<ISubmodel>> RetrieveSubmodelAsync(string submodelIdentifier)
+        public async Task<IResult<ISubmodel>> RetrieveSubmodelAsync(Identifier id)
         {
-            Uri uri = GetPath(SubmodelRepositoryRoutes.SUBMODEL_BYID, submodelIdentifier);
+            Uri uri = GetPath(SubmodelRepositoryRoutes.SUBMODEL_BYID, id);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<ISubmodel>(response, response.Entity);
@@ -142,19 +143,19 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsAsync()
+        public async Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync()
         {
             Uri uri = GetPath(SubmodelRepositoryRoutes.SUBMODELS);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<IElementContainer<ISubmodel>>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodel>>>(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }
 
-        public async Task<IResult> UpdateSubmodelAsync(string submodelIdentifier, ISubmodel submodel)
+        public async Task<IResult> UpdateSubmodelAsync(Identifier id, ISubmodel submodel)
         {
-            Uri uri = GetPath(SubmodelRepositoryRoutes.SUBMODEL_BYID, submodelIdentifier);
+            Uri uri = GetPath(SubmodelRepositoryRoutes.SUBMODEL_BYID, id);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);
@@ -162,9 +163,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult> DeleteSubmodelAsync(string submodelIdentifier)
+        public async Task<IResult> DeleteSubmodelAsync(Identifier id)
         {
-            Uri uri = GetPath(SubmodelRepositoryRoutes.SUBMODEL_BYID, submodelIdentifier);
+            Uri uri = GetPath(SubmodelRepositoryRoutes.SUBMODEL_BYID, id);
             var request = base.CreateRequest(uri, HttpMethod.Delete);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);

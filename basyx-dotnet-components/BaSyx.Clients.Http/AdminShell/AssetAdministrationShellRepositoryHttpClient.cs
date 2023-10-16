@@ -24,6 +24,7 @@ using BaSyx.API.Http;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.Models.Extensions;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -103,24 +104,24 @@ namespace BaSyx.Clients.AdminShell.Http
             return CreateAssetAdministrationShellAsync(aas).GetAwaiter().GetResult();
         }
 
-        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(string aasIdentifier)
+        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(Identifier id)
         {
-            return RetrieveAssetAdministrationShellAsync(aasIdentifier).GetAwaiter().GetResult();
+            return RetrieveAssetAdministrationShellAsync(id).GetAwaiter().GetResult();
         }
 
-        public IResult<IElementContainer<IAssetAdministrationShell>> RetrieveAssetAdministrationShells()
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells()
         {
             return RetrieveAssetAdministrationShellsAsync().GetAwaiter().GetResult();
         }
 
-        public IResult UpdateAssetAdministrationShell(string aasIdentifier, IAssetAdministrationShell aas)
+        public IResult UpdateAssetAdministrationShell(Identifier id, IAssetAdministrationShell aas)
         {
-            return UpdateAssetAdministrationShellAsync(aasIdentifier, aas).GetAwaiter().GetResult();
+            return UpdateAssetAdministrationShellAsync(id, aas).GetAwaiter().GetResult();
         }
 
-        public IResult DeleteAssetAdministrationShell(string aasIdentifier)
+        public IResult DeleteAssetAdministrationShell(Identifier id)
         {
-            return DeleteAssetAdministrationShellAsync(aasIdentifier).GetAwaiter().GetResult();
+            return DeleteAssetAdministrationShellAsync(id).GetAwaiter().GetResult();
         }
 
         #endregion
@@ -137,9 +138,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(string aasIdentifier)
+        public async Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(Identifier id)
         {
-            Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, aasIdentifier);
+            Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, id);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<IAssetAdministrationShell>(response, response.Entity);
@@ -147,19 +148,19 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShellsAsync()
+        public async Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync()
         {
             Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<IElementContainer<IAssetAdministrationShell>>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<IAssetAdministrationShell>>>(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }
 
-        public async Task<IResult> UpdateAssetAdministrationShellAsync(string aasIdentifier, IAssetAdministrationShell aas)
+        public async Task<IResult> UpdateAssetAdministrationShellAsync(Identifier id, IAssetAdministrationShell aas)
         {
-            Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, aasIdentifier);
+            Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, id);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, aas);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);
@@ -167,9 +168,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult> DeleteAssetAdministrationShellAsync(string aasIdentifier)
+        public async Task<IResult> DeleteAssetAdministrationShellAsync(Identifier id)
         {
-            Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, aasIdentifier);
+            Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, id);
             var request = base.CreateRequest(uri, HttpMethod.Delete);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);

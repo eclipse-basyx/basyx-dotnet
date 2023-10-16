@@ -96,7 +96,7 @@ namespace ComplexAssetAdministrationShellScenario
             {
                 for (int i = 0; i < repositoryService.ServiceDescriptor.SubmodelDescriptors.Count(); i++)
                 {
-                    registryClient.DeleteSubmodelRegistration(new BaSyxShellIdentifier("MultiAAS_" + i, "1.0.0").ToIdentifier().Id, repositoryService.ServiceDescriptor.SubmodelDescriptors.ElementAt(i).Identification.Id);
+                    registryClient.DeleteSubmodelRegistration(new BaSyxShellIdentifier("MultiAAS_" + i, "1.0.0").ToIdentifier().Id, repositoryService.ServiceDescriptor.SubmodelDescriptors.ElementAt(i).Id.Id);
                 }
             };
 
@@ -105,15 +105,15 @@ namespace ComplexAssetAdministrationShellScenario
 
             _ = multiServer.RunAsync();
 
-            var shells = registryClient.RetrieveAllAssetAdministrationShellRegistrations(p => p.Identification.Id.Contains("SimpleAAS"));
-            var shell = shells.Entity?.FirstOrDefault();
+            var shells = registryClient.RetrieveAllAssetAdministrationShellRegistrations(p => p.Id.Id.Contains("SimpleAAS"));
+            var shell = shells.Entity?.Result?.FirstOrDefault();
             for (int i = 0; i < repositoryService.ServiceDescriptor.SubmodelDescriptors.Count(); i++)
             {
                 var descriptor = repositoryService.ServiceDescriptor.SubmodelDescriptors.ElementAt(i);
                 registryClient.CreateSubmodelRegistration(new BaSyxShellIdentifier("MultiAAS_" + i, "1.0.0").ToIdentifier().Id, descriptor);
 
                 if(shell != null)
-                    registryClient.CreateSubmodelRegistration(shell.Identification.Id, descriptor);
+                    registryClient.CreateSubmodelRegistration(shell.Id.Id, descriptor);
             }
         }
 
@@ -185,7 +185,7 @@ namespace ComplexAssetAdministrationShellScenario
             {
                 foreach (var aasDescriptor in repositoryService.ServiceDescriptor.AssetAdministrationShellDescriptors)
                 {
-                    registryClient.DeleteAssetAdministrationShellRegistration(aasDescriptor.Identification.Id);
+                    registryClient.DeleteAssetAdministrationShellRegistration(aasDescriptor.Id.Id);
                 }
             };
 

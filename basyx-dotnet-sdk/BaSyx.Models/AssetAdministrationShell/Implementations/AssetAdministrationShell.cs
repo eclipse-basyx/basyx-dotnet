@@ -49,10 +49,10 @@ namespace BaSyx.Models.AdminShell
         }
         public IReference<IAssetAdministrationShell> DerivedFrom { get; set; }     
         public ModelType ModelType => ModelType.AssetAdministrationShell;
-        public IEnumerable<IEmbeddedDataSpecification> EmbeddedDataSpecifications { get; }
+        public IEnumerable<IEmbeddedDataSpecification> EmbeddedDataSpecifications { get; set; }
         public IConceptDescription ConceptDescription { get; set; }
      
-        public AssetAdministrationShell(string idShort, Identifier identification) : base(idShort, identification)
+        public AssetAdministrationShell(string idShort, Identifier id) : base(idShort, id)
         {
             Submodels = new ElementContainer<ISubmodel>(this);
             MetaData = new Dictionary<string, string>();

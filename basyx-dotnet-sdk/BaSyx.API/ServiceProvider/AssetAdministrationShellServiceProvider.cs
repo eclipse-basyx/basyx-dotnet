@@ -15,6 +15,7 @@ using System.Linq;
 using BaSyx.Models.Connectivity;
 using System;
 using BaSyx.Models.Extensions;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -122,32 +123,32 @@ namespace BaSyx.API.ServiceProvider
             return new Result<IEnumerable<ISubmodelServiceProvider>>(true, SubmodelServiceProviders.Values?.ToList());
         }
 
-        public virtual IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(string submodelIdentifier, ISubmodelServiceProvider submodelServiceProvider)
+        public virtual IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(Identifier id, ISubmodelServiceProvider submodelServiceProvider)
         {
-            if (SubmodelServiceProviders.ContainsKey(submodelIdentifier))
-                SubmodelServiceProviders[submodelIdentifier] = submodelServiceProvider;
+            if (SubmodelServiceProviders.ContainsKey(id))
+                SubmodelServiceProviders[id] = submodelServiceProvider;
             else
-                SubmodelServiceProviders.Add(submodelIdentifier, submodelServiceProvider);
+                SubmodelServiceProviders.Add(id, submodelServiceProvider);
 
             return new Result<ISubmodelDescriptor>(true, submodelServiceProvider.ServiceDescriptor);
         }
-        public virtual IResult<ISubmodelServiceProvider> GetSubmodelServiceProvider(string submodelId)
+        public virtual IResult<ISubmodelServiceProvider> GetSubmodelServiceProvider(Identifier id)
         {
-            if (SubmodelServiceProviders.TryGetValue(submodelId, out ISubmodelServiceProvider submodelServiceProvider))
+            if (SubmodelServiceProviders.TryGetValue(id, out ISubmodelServiceProvider submodelServiceProvider))
                 return new Result<ISubmodelServiceProvider>(true, submodelServiceProvider);
             else
-                return new Result<ISubmodelServiceProvider>(false, new NotFoundMessage(submodelId));
+                return new Result<ISubmodelServiceProvider>(false, new NotFoundMessage(id));
         }
 
-        public virtual IResult UnregisterSubmodelServiceProvider(string submodelIdentifier)
+        public virtual IResult UnregisterSubmodelServiceProvider(Identifier id)
         {
-            if (SubmodelServiceProviders.ContainsKey(submodelIdentifier))
+            if (SubmodelServiceProviders.ContainsKey(id))
             {
-                SubmodelServiceProviders.Remove(submodelIdentifier);
+                SubmodelServiceProviders.Remove(id);
                 return new Result(true);
             }
             else
-                return new Result(false, new NotFoundMessage(submodelIdentifier));
+                return new Result(false, new NotFoundMessage(id));
         }
 
         public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell()
@@ -175,6 +176,9 @@ namespace BaSyx.API.ServiceProvider
                 Description = aas.Description ?? _assetAdministrationShell.Description,
                 DisplayName = aas.DisplayName ?? _assetAdministrationShell.DisplayName,
                 Submodels = _assetAdministrationShell.Submodels,
+                SubmodelReferences = _assetAdministrationShell.SubmodelReferences,
+                EmbeddedDataSpecifications = _assetAdministrationShell.EmbeddedDataSpecifications,
+                ConceptDescription = _assetAdministrationShell.ConceptDescription                
             };
 
             _assetAdministrationShell = tempShell;
@@ -212,12 +216,13 @@ namespace BaSyx.API.ServiceProvider
             return new Result(true);
         }
 
-        public IResult<IEnumerable<IReference<ISubmodel>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
         {
             if (_assetAdministrationShell == null)
-                return new Result<IEnumerable<IReference<ISubmodel>>>(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
+                return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
 
-            return new Result<IEnumerable<IReference<ISubmodel>>>(true, _assetAdministrationShell.SubmodelReferences);
+            return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(true, 
+                new PagedResult<IEnumerable<IReference<ISubmodel>>>(_assetAdministrationShell.SubmodelReferences));
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)
@@ -244,16 +249,16 @@ namespace BaSyx.API.ServiceProvider
             return new Result<IReference>(true, reference);
         }
 
-        public IResult DeleteSubmodelReference(string submodelIdentifier)
+        public IResult DeleteSubmodelReference(Identifier id)
         {
             if (_assetAdministrationShell == null)
                 return new Result(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
 
-            var sp = GetSubmodelServiceProvider(submodelIdentifier);
+            var sp = GetSubmodelServiceProvider(id);
             if(!sp.Success)
-                return new Result(false, new NotFoundMessage($"Submodel with id {submodelIdentifier}"));
+                return new Result(false, new NotFoundMessage($"Submodel with id {id}"));
 
-            var result = UnregisterSubmodelServiceProvider(submodelIdentifier);
+            var result = UnregisterSubmodelServiceProvider(id);
             if (!result.Success)
                 return result;
 

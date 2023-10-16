@@ -12,6 +12,7 @@
 using BaSyx.API.Interfaces;
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 using System.Threading.Tasks;
 
 namespace BaSyx.API.Clients
@@ -20,12 +21,12 @@ namespace BaSyx.API.Clients
     {
         Task<IResult<ISubmodel>> CreateSubmodelAsync(ISubmodel submodel);
 
-        Task<IResult<ISubmodel>> RetrieveSubmodelAsync(string submodelIdentifier);
+        Task<IResult<ISubmodel>> RetrieveSubmodelAsync(Identifier id);
 
-        Task<IResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsAsync();
+        Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync();
 
-        Task<IResult> UpdateSubmodelAsync(string submodelIdentifier, ISubmodel submodel);
+        Task<IResult> UpdateSubmodelAsync(Identifier id, ISubmodel submodel);
 
-        Task<IResult> DeleteSubmodelAsync(string submodelIdentifier);
+        Task<IResult> DeleteSubmodelAsync(Identifier id);
     }
 }

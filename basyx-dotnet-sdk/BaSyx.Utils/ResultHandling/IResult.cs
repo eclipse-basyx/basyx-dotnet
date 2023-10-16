@@ -10,18 +10,23 @@
 *******************************************************************************/
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Utils.ResultHandling
 {
     public interface IResult
     {
-        [DataMember(Name = "entityType", EmitDefaultValue = false, IsRequired = false)]
+        [JsonIgnore, IgnoreDataMember]
         Type EntityType { get; }
-        [DataMember(Name = "entity", EmitDefaultValue = false, IsRequired = false)]
+        [JsonIgnore, IgnoreDataMember]
         object Entity { get; }
         [DataMember(Name = "success", IsRequired = true)]
         bool Success { get; }
-        [DataMember(Name = "isException", EmitDefaultValue = false, IsRequired = false)]
+        [JsonIgnore, IgnoreDataMember]
+        bool HasContent { get; }
+        [JsonIgnore, IgnoreDataMember]
+        bool SuccessAndContent { get; }
+        [JsonIgnore, IgnoreDataMember]
         bool? IsException { get; }
         [DataMember(Name = "messages", EmitDefaultValue = false, IsRequired = false)]
         MessageCollection Messages { get; }
@@ -31,7 +36,7 @@ namespace BaSyx.Utils.ResultHandling
 
     public interface IResult<out TEntity> : IResult
     {
-        [DataMember(Name = "entity", EmitDefaultValue = false, IsRequired = false)]
+        [JsonIgnore, IgnoreDataMember]
         new TEntity Entity { get; }
     }
 }

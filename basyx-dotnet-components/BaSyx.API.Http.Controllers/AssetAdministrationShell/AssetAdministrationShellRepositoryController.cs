@@ -16,6 +16,8 @@ using BaSyx.Utils.ResultHandling;
 using BaSyx.API.ServiceProvider;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Text.Json;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -59,14 +61,12 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns all Asset Administration Shells
         /// </summary>
-        /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
-        /// <param name="assetIds">The key-value-pair of an Asset identifier</param>
         /// <returns></returns>
         /// <response code="200">Requested Asset Administration Shells</response>
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS, Name = "GetAllAssetAdministrationShells")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(List<BaSyx.Models.AdminShell.AssetAdministrationShell>), 200)]
-        public IActionResult GetAllAssetAdministrationShells([FromQuery] string idShort = null, [FromQuery] List<string> assetIds = null)
+        [ProducesResponseType(typeof(PagedResult<List<AssetAdministrationShell>>), 200)]
+        public IActionResult GetAllAssetAdministrationShells()
         {
             var result = serviceProvider.RetrieveAssetAdministrationShells();
             return result.CreateActionResult(CrudOperation.Retrieve);
@@ -103,7 +103,7 @@ namespace BaSyx.API.Http.Controllers
         /// <response code="404">No Asset Administration Shell found</response>           
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, Name = "GetAssetAdministrationShellById")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(BaSyx.Models.AdminShell.AssetAdministrationShell), 200)]
+        [ProducesResponseType(typeof(AssetAdministrationShell), 200)]
         public IActionResult GetAssetAdministrationShellById(string aasIdentifier)
         {
             if (string.IsNullOrEmpty(aasIdentifier))
@@ -121,31 +121,22 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <param name="aas">Asset Administration Shell object</param>
         /// <returns></returns>
-        /// <response code="204">Asset Administration Shell updated successfully</response>
-        /// <response code="400">Bad Request</response>             
+        /// <response code="204">Asset Administration Shell updated successfully</response>          
         [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS, Name = "PutAssetAdministrationShellById")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        [ProducesResponseType(typeof(AssetAdministrationShell), 201)]
+        [ProducesResponseType(204)]
         public IActionResult PutAssetAdministrationShellById(string aasIdentifier, [FromBody] IAssetAdministrationShell aas)
         {
             if (string.IsNullOrEmpty(aasIdentifier))
                 return ResultHandling.NullResult(nameof(aasIdentifier));
-            if (aas == null)
+            if(aas == null)
                 return ResultHandling.NullResult(nameof(aas));
 
             aasIdentifier = ResultHandling.Base64UrlDecode(aasIdentifier);
 
-            if (aasIdentifier != aas.Id)
-            {
-                Result badRequestResult = new Result(false,
-                    new Message(MessageType.Error, $"Passed path parameter {aasIdentifier} does not equal the Asset Administration Shells's id {aas.Id}", "400"));
-
-                return badRequestResult.CreateActionResult(CrudOperation.Create, $"shells/{aasIdentifier}");
-            }
-
-            var result = serviceProvider.CreateAssetAdministrationShell(aas);
-            return result.CreateActionResult(CrudOperation.Create, $"shells/{aasIdentifier}");
+            var result = serviceProvider.UpdateAssetAdministrationShell(aasIdentifier, aas);
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
 
@@ -170,32 +161,6 @@ namespace BaSyx.API.Http.Controllers
         }
 
         #region Asset Adminstration Shell Interface
-
-        /// <inheritdoc cref="AssetAdministrationShellController.GetAssetAdministrationShell()"/>
-        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS, Name = "ShellRepo_GetAssetAdministrationShell")]
-        [ProducesResponseType(typeof(IAssetAdministrationShell), 200)]
-        [Produces("application/json")]
-        public IActionResult ShellRepo_GetAssetAdministrationShell(string aasIdentifier)
-        {
-            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
-                return result;
-
-            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.GetAssetAdministrationShell();
-        }
-
-        /// <inheritdoc cref="AssetAdministrationShellController.PutAssetAdministrationShell(IAssetAdministrationShell)"/>
-        [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS, Name = "ShellRepo_PutAssetAdministrationShell")]
-        [ProducesResponseType(204)]
-        [Produces("application/json")]
-        public IActionResult ShellRepo_PutAssetAdministrationShell(string aasIdentifier, [FromBody] IAssetAdministrationShell aas)
-        {
-            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
-                return result;
-
-            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.PutAssetAdministrationShell(aas);
-        }
 
         /// <inheritdoc cref="AssetAdministrationShellController.GetAssetInformation"/>
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION, Name = "ShellRepo_GetAssetInformation")]
@@ -225,9 +190,9 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.GetAllSubmodelReferences"/>
-        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS, Name = "ShellRepo_GetAllSubmodelReferences")]
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "ShellRepo_GetAllSubmodelReferences")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(Reference[]), 200)]
+        [ProducesResponseType(typeof(PagedResult<Reference[]>), 200)]
         [ProducesResponseType(typeof(Result), 404)]
         public IActionResult ShellRepo_GetAllSubmodelReferences(string aasIdentifier)
         {
@@ -238,13 +203,13 @@ namespace BaSyx.API.Http.Controllers
             return service.GetAllSubmodelReferences();
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.PostSubmodelReference(Reference)"/>          
-        [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS, Name = "ShellRepo_PostSubmodelReference")]
+        /// <inheritdoc cref="AssetAdministrationShellController.PostSubmodelReference(IReference)"/>          
+        [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "ShellRepo_PostSubmodelReference")]
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(Reference), 201)]
         [ProducesResponseType(typeof(Result), 400)]
-        public IActionResult ShellRepo_PostSubmodelReference(string aasIdentifier, [FromBody] Reference submodelReference)
+        public IActionResult ShellRepo_PostSubmodelReference(string aasIdentifier, [FromBody] IReference submodelReference)
         {
             if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
@@ -255,7 +220,7 @@ namespace BaSyx.API.Http.Controllers
 
 
         /// <inheritdoc cref="AssetAdministrationShellController.DeleteSubmodelReferenceById(string)"/>          
-        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "ShellRepo_DeleteSubmodelReferenceById")]
+        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS_BYID, Name = "ShellRepo_DeleteSubmodelReferenceById")]
         [Produces("application/json")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -273,7 +238,7 @@ namespace BaSyx.API.Http.Controllers
         #region Submodel Interface
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodel(string, RequestLevel, RequestExtent)"/>
-        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL, Name = "ShellRepo_GetSubmodel")]
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "ShellRepo_GetSubmodel")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
@@ -287,7 +252,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodel(string, ISubmodel, RequestLevel, RequestExtent)"/>
-        [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL, Name = "ShellRepo_PutSubmodel")]
+        [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "ShellRepo_PutSubmodel")]
         [Produces("application/json")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 404)]
@@ -356,6 +321,19 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_GetSubmodelElementByPathValueOnly(submodelIdentifier, idShortPath, level);
+        }
+
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PatchSubmodelElementValueByPathValueOnly(string, string, JsonElement, RequestLevel)"/>
+        [HttpPatch(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "ShellRepo_PatchSubmodelElementValueByPathValueOnly")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        public IActionResult ShellRepo_PatchSubmodelElementValueByPathValueOnly(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] JsonElement requestBody, [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_PatchSubmodelElementValueByPathValueOnly(submodelIdentifier, idShortPath, requestBody, level);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_PostSubmodelElementByPath(string, string, ISubmodelElement, RequestLevel, RequestExtent)"/>
@@ -433,6 +411,21 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_InvokeOperationSync(submodelIdentifier, idShortPath, operationRequest);
+        }
+
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_InvokeOperationAsync(string, string, InvocationRequest)"/>
+        [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE_ASYNC, Name = "ShellRepo_InvokeOperationAsync")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_InvokeOperationAsync(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] InvocationRequest operationRequest)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_InvokeOperationAsync(submodelIdentifier, idShortPath, operationRequest);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetOperationAsyncResult(string, string, string)"/>

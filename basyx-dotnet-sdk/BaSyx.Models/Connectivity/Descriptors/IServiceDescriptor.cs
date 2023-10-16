@@ -18,8 +18,8 @@ namespace BaSyx.Models.Connectivity
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "idShort")]
         string IdShort { get; }
 
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "identification")]
-        Identifier Identification { get; }
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "id")]
+        Identifier Id { get; }
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "administration")]
         AdministrativeInformation Administration { get; }

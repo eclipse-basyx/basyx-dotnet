@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.Interfaces
 {
@@ -17,12 +18,12 @@ namespace BaSyx.API.Interfaces
     {
         IResult<ISubmodel> CreateSubmodel(ISubmodel submodel);
 
-        IResult<ISubmodel> RetrieveSubmodel(string submodelIdentifier);
+        IResult<ISubmodel> RetrieveSubmodel(Identifier id);
 
-        IResult<IElementContainer<ISubmodel>> RetrieveSubmodels();
+        IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels();
 
-        IResult UpdateSubmodel(string submodelIdentifier, ISubmodel submodel);
+        IResult UpdateSubmodel(Identifier id, ISubmodel submodel);
 
-        IResult DeleteSubmodel(string submodelIdentifier);
+        IResult DeleteSubmodel(Identifier id);
     }
 }

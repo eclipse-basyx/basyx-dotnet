@@ -8,6 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using BaSyx.Models.AdminShell;
 using BaSyx.Models.Connectivity;
 using BaSyx.Utils.ResultHandling;
 using System.Collections.Generic;
@@ -16,9 +17,9 @@ namespace BaSyx.API.ServiceProvider
 {
     public interface ISubmodelServiceProviderRegistry
     {
-        IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(string submodelIdentifier, ISubmodelServiceProvider submodelServiceProvider);
-        IResult UnregisterSubmodelServiceProvider(string submodelIdentifier);
-        IResult<ISubmodelServiceProvider> GetSubmodelServiceProvider(string submodelIdentifier);
+        IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(Identifier id, ISubmodelServiceProvider submodelServiceProvider);
+        IResult UnregisterSubmodelServiceProvider(Identifier id);
+        IResult<ISubmodelServiceProvider> GetSubmodelServiceProvider(Identifier id);
         IResult<IEnumerable<ISubmodelServiceProvider>> GetSubmodelServiceProviders();
     }
 }

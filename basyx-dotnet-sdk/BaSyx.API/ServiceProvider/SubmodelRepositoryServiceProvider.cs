@@ -14,6 +14,7 @@ using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -89,14 +90,14 @@ namespace BaSyx.API.ServiceProvider
                 return new Result<ISubmodel>(false, new Message(MessageType.Error, "Could not retrieve Submodel Service Provider"));
         }
 
-        public IResult DeleteSubmodel(string submodelId)
+        public IResult DeleteSubmodel(Identifier id)
         {
-            if (string.IsNullOrEmpty(submodelId))
-                return new Result<ISubmodel>(new ArgumentNullException(nameof(submodelId)));
-            return UnregisterSubmodelServiceProvider(submodelId);
+            if (string.IsNullOrEmpty(id))
+                return new Result<ISubmodel>(new ArgumentNullException(nameof(id)));
+            return UnregisterSubmodelServiceProvider(id);
         }
 
-        public IResult<ISubmodelServiceProvider> GetSubmodelServiceProvider(string id)
+        public IResult<ISubmodelServiceProvider> GetSubmodelServiceProvider(Identifier id)
         {
             if (SubmodelServiceProviders.TryGetValue(id, out ISubmodelServiceProvider submodelServiceProvider))
                 return new Result<ISubmodelServiceProvider>(true, submodelServiceProvider);
@@ -112,7 +113,7 @@ namespace BaSyx.API.ServiceProvider
             return new Result<IEnumerable<ISubmodelServiceProvider>>(true, SubmodelServiceProviders.Values?.ToList());
         }
 
-        public IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(string id, ISubmodelServiceProvider submodelServiceProvider)
+        public IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(Identifier id, ISubmodelServiceProvider submodelServiceProvider)
         {
             if (SubmodelServiceProviders.ContainsKey(id))
                 SubmodelServiceProviders[id] = submodelServiceProvider;
@@ -122,7 +123,7 @@ namespace BaSyx.API.ServiceProvider
             return new Result<ISubmodelDescriptor>(true, submodelServiceProvider.ServiceDescriptor);
         }
 
-        public IResult UnregisterSubmodelServiceProvider(string id)
+        public IResult UnregisterSubmodelServiceProvider(Identifier id)
         {
             if (SubmodelServiceProviders.ContainsKey(id))
             {
@@ -133,9 +134,9 @@ namespace BaSyx.API.ServiceProvider
                 return new Result(false, new NotFoundMessage(id));
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(string submodelId)
+        public IResult<ISubmodel> RetrieveSubmodel(Identifier id)
         {
-            var retrievedSubmodelServiceProvider = GetSubmodelServiceProvider(submodelId);
+            var retrievedSubmodelServiceProvider = GetSubmodelServiceProvider(id);
             if(retrievedSubmodelServiceProvider.TryGetEntity(out ISubmodelServiceProvider serviceProvider))
             {
                 ISubmodel binding = serviceProvider.GetBinding();
@@ -144,18 +145,24 @@ namespace BaSyx.API.ServiceProvider
             return new Result<ISubmodel>(false, new NotFoundMessage("Submodel Service Provider"));
         }
 
-        public IResult<IElementContainer<ISubmodel>> RetrieveSubmodels()
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels()
         {
-            return new Result<IElementContainer<ISubmodel>>(true, new ElementContainer<ISubmodel>(null, Submodels));
+            return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, 
+                new PagedResult<IElementContainer<ISubmodel>>(new ElementContainer<ISubmodel>(null, Submodels)));
         }
 
-        public IResult UpdateSubmodel(string submodelId, ISubmodel submodel)
+        public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)
         {
-            if (string.IsNullOrEmpty(submodelId))
-                return new Result<ISubmodel>(new ArgumentNullException(nameof(submodelId)));
+            if (string.IsNullOrEmpty(id))
+                return new Result<ISubmodel>(new ArgumentNullException(nameof(id)));
             if (submodel == null)
                 return new Result<ISubmodel>(new ArgumentNullException(nameof(submodel)));
-            return CreateSubmodel(submodel);
+
+            var retrievedSubmodelServiceProvider = GetSubmodelServiceProvider(id);
+            if (retrievedSubmodelServiceProvider.TryGetEntity(out ISubmodelServiceProvider serviceProvider))
+                return serviceProvider.UpdateSubmodel(submodel);
+            
+            return new Result<ISubmodel>(false, new NotFoundMessage("Submodel Service Provider"));
         }
     }
 }

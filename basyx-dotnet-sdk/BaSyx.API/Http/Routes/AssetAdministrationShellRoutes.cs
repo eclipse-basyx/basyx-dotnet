@@ -23,15 +23,27 @@ namespace BaSyx.API.Http
         /// <summary>
         /// Asset Information
         /// </summary>
-        public const string AAS_ASSET_INFORMATION = "/aas/asset-information";
+        public const string AAS_ASSET_INFORMATION = "/asset-information";
         /// <summary>
-        /// Asset Information
+        /// Asset Information Thumbnail
         /// </summary>
-        public const string AAS_SUBMODELS = "/aas/submodels";
+        public const string AAS_ASSET_INFORMATION_THUMBNAIL = "/asset-information/thumbnail";
         /// <summary>
-        /// Asset Information
+        /// Submodels
         /// </summary>
-        public const string AAS_SUBMODELS_BYID = "/aas/submodels/{submodelIdentifier}";
+        public const string AAS_SUBMODELS = "/submodels";
+        /// <summary>
+        /// Submodels References
+        /// </summary>
+        public const string AAS_SUBMODEL_REFS = "/submodel-refs";
+        /// <summary>
+        /// Submodels References by id
+        /// </summary>
+        public const string AAS_SUBMODEL_REFS_BYID = "/submodel-refs{submodelIdentifier}/";
+        /// <summary>
+        /// Submodels by id
+        /// </summary>
+        public const string AAS_SUBMODELS_BYID = "/submodels/{submodelIdentifier}";
 
     }
 }

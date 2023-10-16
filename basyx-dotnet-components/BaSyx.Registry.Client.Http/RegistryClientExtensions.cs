@@ -23,7 +23,7 @@ namespace BaSyx.Registry.Client.Http
         {
             RegistryClientSettings registryClientSettings = settings ?? RegistryClientSettings.LoadSettings();
             RegistryHttpClient registryHttpClient = new RegistryHttpClient(registryClientSettings);
-            IResult<IAssetAdministrationShellDescriptor> result = registryHttpClient.UpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Identification.Id, serviceProvider.ServiceDescriptor);
+            IResult<IAssetAdministrationShellDescriptor> result = registryHttpClient.UpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Id.Id, serviceProvider.ServiceDescriptor);
             return result;
         }
 
@@ -35,7 +35,7 @@ namespace BaSyx.Registry.Client.Http
             cancellationToken = new CancellationTokenSource();
             registryHttpClient.RepeatRegistration(serviceProvider.ServiceDescriptor, interval, cancellationToken);
 
-            IResult<IAssetAdministrationShellDescriptor> result = registryHttpClient.UpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Identification.Id, serviceProvider.ServiceDescriptor);
+            IResult<IAssetAdministrationShellDescriptor> result = registryHttpClient.UpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Id.Id, serviceProvider.ServiceDescriptor);
             return result;
         }
 

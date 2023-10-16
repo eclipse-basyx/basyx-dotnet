@@ -37,10 +37,13 @@ namespace BaSyx.Clients.AdminShell.Http
         
         public static bool USE_HTTPS = true;
 
+        private bool _standalone;
+
         public IEndpoint Endpoint { get; }
 
-        private AssetAdministrationShellHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
+        private AssetAdministrationShellHttpClient(HttpMessageHandler messageHandler, bool standalone = true) : base(messageHandler)
         {
+            _standalone = standalone;
             var options = new DefaultJsonSerializerOptions();
             var services = DefaultImplementation.GetStandardServiceCollection();
             options.AddDependencyInjection(new DependencyInjectionExtension(services));
@@ -48,18 +51,18 @@ namespace BaSyx.Clients.AdminShell.Http
             JsonSerializerOptions = options.Build();
         }
 
-        public AssetAdministrationShellHttpClient(Uri endpoint) : this(endpoint, null)
+        public AssetAdministrationShellHttpClient(Uri endpoint, bool standalone = true) : this(endpoint, null, standalone)
         { }
-        public AssetAdministrationShellHttpClient(Uri endpoint, HttpMessageHandler messageHandler) : this(messageHandler)
+        public AssetAdministrationShellHttpClient(Uri endpoint, HttpMessageHandler messageHandler, bool standalone = true) : this(messageHandler, standalone)
         {
             endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
             string endpointAddress = endpoint.ToString();
             Endpoint = new Endpoint(endpointAddress.RemoveFromEnd(AssetAdministrationShellRoutes.AAS), InterfaceName.AssetAdministrationShellInterface);
         }
-        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor) : this(aasDescriptor, null)
+        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, bool standalone = true) : this(aasDescriptor, null, standalone)
         { }
 
-        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, HttpMessageHandler messageHandler) : this(messageHandler)
+        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, HttpMessageHandler messageHandler, bool standalone = true) : this(messageHandler, standalone)
         {
             aasDescriptor = aasDescriptor ?? throw new ArgumentNullException(nameof(aasDescriptor));
             IEnumerable<HttpProtocol> httpEndpoints = aasDescriptor.Endpoints?.OfType<HttpProtocol>();
@@ -75,16 +78,19 @@ namespace BaSyx.Clients.AdminShell.Http
             Endpoint = new Endpoint(httpEndpoint.EndpointAddress.RemoveFromEnd(AssetAdministrationShellRoutes.AAS), InterfaceName.AssetAdministrationShellInterface);
         }
 
-        public Uri GetPath(string requestPath, string submodelIdentifier = null, string idShortPath = null)
+        public Uri GetPath(string requestPath = null, Identifier id = null, string idShortPath = null)
         {
             string path = Endpoint.ProtocolInformation.EndpointAddress.Trim('/');
+
+            if (_standalone)
+                path += AssetAdministrationShellRoutes.AAS;
 
             if (string.IsNullOrEmpty(requestPath))
                 return new Uri(path);
 
-            if (!string.IsNullOrEmpty(submodelIdentifier))
+            if (!string.IsNullOrEmpty(id))
             {
-                requestPath = requestPath.Replace("{submodelIdentifier}", submodelIdentifier.Base64UrlEncode());
+                requestPath = requestPath.Replace("{submodelIdentifier}", id.Id.Base64UrlEncode());
             }
 
             if (!string.IsNullOrEmpty(idShortPath))
@@ -137,7 +143,7 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateAssetInformationAsync(assetInformation).GetAwaiter().GetResult();
         }
 
-        public IResult<IEnumerable<IReference<ISubmodel>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
         {
             return RetrieveAllSubmodelReferencesAsync().GetAwaiter().GetResult();
         }
@@ -147,9 +153,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return CreateSubmodelReferenceAsync(submodelRef).GetAwaiter().GetResult();
         }
 
-        public IResult DeleteSubmodelReference(string submodelIdentifier)
+        public IResult DeleteSubmodelReference(Identifier id)
         {
-            return DeleteSubmodelReferenceAsync(submodelIdentifier).GetAwaiter().GetResult();
+            return DeleteSubmodelReferenceAsync(id).GetAwaiter().GetResult();
         }
 
         #endregion
@@ -158,7 +164,7 @@ namespace BaSyx.Clients.AdminShell.Http
 
         public async Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync()
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS);
+            Uri uri = GetPath();
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<IAssetAdministrationShell>(response, response.Entity);
@@ -168,7 +174,7 @@ namespace BaSyx.Clients.AdminShell.Http
 
         public async Task<IResult> UpdateAssetAdministrationShellAsync(IAssetAdministrationShell aas)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS);
+            Uri uri = GetPath();
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, aas);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);
@@ -196,19 +202,19 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferencesAsync()
+        public async Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync()
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<IEnumerable<IReference<ISubmodel>>>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync<PagedResult<IEnumerable<IReference<ISubmodel>>>>(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }
 
         public async Task<IResult<IReference>> CreateSubmodelReferenceAsync(IReference submodelRef)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Post, submodelRef);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<IReference>(response, response.Entity);
@@ -216,9 +222,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult> DeleteSubmodelReferenceAsync(string submodelIdentifier)
+        public async Task<IResult> DeleteSubmodelReferenceAsync(Identifier id)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, submodelIdentifier);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS_BYID, id);
             var request = base.CreateRequest(uri, HttpMethod.Delete);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);
@@ -230,71 +236,71 @@ namespace BaSyx.Clients.AdminShell.Http
 
         #region Asset Administration Shell Submodel Client
 
-        public ISubmodelClient CreateSubmodelClient(string submodelIdentifier)
+        public ISubmodelClient CreateSubmodelClient(Identifier id)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL, submodelIdentifier);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
             SubmodelHttpClient submodelClient = new SubmodelHttpClient(uri);
             return submodelClient;
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(string submodelIdentifier, RequestLevel level = default, RequestExtent extent = default)
+        public IResult<ISubmodel> RetrieveSubmodel(Identifier id, RequestLevel level = default, RequestExtent extent = default)
         {
-            return RetrieveSubmodelAsync(submodelIdentifier, level, extent).GetAwaiter().GetResult();
+            return RetrieveSubmodelAsync(id, level, extent).GetAwaiter().GetResult();
         }
 
-        public IResult UpdateSubmodel(string submodelIdentifier, ISubmodel submodel)
+        public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)
         {
-            return UpdateSubmodelAsync(submodelIdentifier, submodel).GetAwaiter().GetResult();
+            return UpdateSubmodelAsync(id, submodel).GetAwaiter().GetResult();
         }
 
-        public IResult<ISubmodelElement> CreateSubmodelElement(string submodelIdentifier, string rootIdShortPath, ISubmodelElement submodelElement)
+        public IResult<ISubmodelElement> CreateSubmodelElement(Identifier id, string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return CreateSubmodelElementAsync(submodelIdentifier, rootIdShortPath, submodelElement).GetAwaiter().GetResult();
+            return CreateSubmodelElementAsync(id, rootIdShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
-        public IResult<ISubmodelElement> UpdateSubmodelElement(string submodelIdentifier, string rootIdShortPath, ISubmodelElement submodelElement)
+        public IResult<ISubmodelElement> UpdateSubmodelElement(Identifier id, string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return UpdateSubmodelElementAsync(submodelIdentifier, rootIdShortPath, submodelElement).GetAwaiter().GetResult();
+            return UpdateSubmodelElementAsync(id, rootIdShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(string submodelIdentifier)
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(Identifier id)
         {
-            return RetrieveSubmodelElementsAsync(submodelIdentifier).GetAwaiter().GetResult();
+            return RetrieveSubmodelElementsAsync(id).GetAwaiter().GetResult();
         }
 
-        public IResult<ISubmodelElement> RetrieveSubmodelElement(string submodelIdentifier, string idShortPath)
+        public IResult<ISubmodelElement> RetrieveSubmodelElement(Identifier id, string idShortPath)
         {
-            return RetrieveSubmodelElementAsync(submodelIdentifier, idShortPath).GetAwaiter().GetResult();
+            return RetrieveSubmodelElementAsync(id, idShortPath).GetAwaiter().GetResult();
         }
 
-        public IResult<IValue> RetrieveSubmodelElementValue(string submodelIdentifier, string idShortPath)
+        public IResult<ValueScope> RetrieveSubmodelElementValue(Identifier id, string idShortPath)
         {
-            return RetrieveSubmodelElementValueAsync(submodelIdentifier, idShortPath).GetAwaiter().GetResult();
+            return RetrieveSubmodelElementValueAsync(id, idShortPath).GetAwaiter().GetResult();
         }
 
-        public IResult DeleteSubmodelElement(string submodelIdentifier, string idShortPath)
+        public IResult DeleteSubmodelElement(Identifier id, string idShortPath)
         {
-            return DeleteSubmodelElementAsync(submodelIdentifier, idShortPath).GetAwaiter().GetResult();
+            return DeleteSubmodelElementAsync(id, idShortPath).GetAwaiter().GetResult();
         }
 
-        public IResult<InvocationResponse> InvokeOperation(string submodelIdentifier, string idShortPath, InvocationRequest invocationRequest, bool async)
+        public IResult<InvocationResponse> InvokeOperation(Identifier id, string idShortPath, InvocationRequest invocationRequest, bool async)
         {
-            return InvokeOperationAsync(submodelIdentifier, idShortPath, invocationRequest, async).GetAwaiter().GetResult();
+            return InvokeOperationAsync(id, idShortPath, invocationRequest, async).GetAwaiter().GetResult();
         }
 
-        public IResult<InvocationResponse> GetInvocationResult(string submodelIdentifier, string idShortPath, string requestId)
+        public IResult<InvocationResponse> GetInvocationResult(Identifier id, string idShortPath, string requestId)
         {
-            return GetInvocationResultAsync(submodelIdentifier, idShortPath, requestId).GetAwaiter().GetResult();
+            return GetInvocationResultAsync(id, idShortPath, requestId).GetAwaiter().GetResult();
         }
 
-        public IResult UpdateSubmodelElementValue(string submodelIdentifier, string idShortPath, IValue value)
+        public IResult UpdateSubmodelElementValue(Identifier id, string idShortPath, ValueScope value)
         {
-            return UpdateSubmodelElementValueAsync(submodelIdentifier, idShortPath, value).GetAwaiter().GetResult();
+            return UpdateSubmodelElementValueAsync(id, idShortPath, value).GetAwaiter().GetResult();
         }
 
-        public async Task<IResult<ISubmodel>> RetrieveSubmodelAsync(string submodelIdentifier, RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public async Task<IResult<ISubmodel>> RetrieveSubmodelAsync(Identifier id, RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL, submodelIdentifier);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<ISubmodel>(response, response.Entity);
@@ -302,26 +308,26 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult> UpdateSubmodelAsync(string submodelIdentifier, ISubmodel submodel)
+        public async Task<IResult> UpdateSubmodelAsync(Identifier id, ISubmodel submodel)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL, submodelIdentifier);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<ISubmodel>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }
 
-        public async Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(string submodelIdentifier, ISubmodelElement submodelElement)
+        public async Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(Identifier id, ISubmodelElement submodelElement)
             => await CreateSubmodelElementAsync(".", submodelElement).ConfigureAwait(false);
 
-        public async Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(string submodelIdentifier, string rootIdShortPath, ISubmodelElement submodelElement)
+        public async Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(Identifier id, string rootIdShortPath, ISubmodelElement submodelElement)
         {
             Uri uri;
             if (rootIdShortPath == ".")
-                uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, submodelIdentifier);
+                uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, id);
             else
-                uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, submodelIdentifier, rootIdShortPath);
+                uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, id, rootIdShortPath);
 
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Post, submodelElement);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
@@ -330,9 +336,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<ISubmodelElement>> UpdateSubmodelElementAsync(string submodelIdentifier, string rootIdShortPath, ISubmodelElement submodelElement)
+        public async Task<IResult<ISubmodelElement>> UpdateSubmodelElementAsync(Identifier id, string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, submodelIdentifier, rootIdShortPath);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, id, rootIdShortPath);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, submodelElement);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<ISubmodelElement>(response, response.Entity);
@@ -340,9 +346,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(string submodelIdentifier)
+        public async Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(Identifier id)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, submodelIdentifier);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, id);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity);
@@ -350,9 +356,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string submodelIdentifier, string idShortPath)
+        public async Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(Identifier id, string idShortPath)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, submodelIdentifier, idShortPath);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, id, idShortPath);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<ISubmodelElement>(response, response.Entity);
@@ -360,38 +366,29 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<IValue>> RetrieveSubmodelElementValueAsync(string submodelIdentifier, string idShortPath)
+        public async Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(Identifier id, string idShortPath)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, submodelIdentifier, idShortPath);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, id, idShortPath);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            IResult result = await base.EvaluateResponseAsync(response, response.Entity);
+            var result = await base.EvaluateResponseAsync<ValueScope>(response, response.Entity);
             response?.Entity?.Dispose();
-            if (result.Success && result.Entity != null)
-            {
-                string sValue = Encoding.UTF8.GetString((byte[])result.Entity);
-                if (!string.IsNullOrEmpty(sValue))
-                {
-                    object deserializedValue = JsonSerializer.Deserialize<object>(sValue);
-                    return new Result<IValue>(result.Success, new ElementValue(deserializedValue, deserializedValue?.GetType()), result.Messages);
-                }
-            }
-            return new Result<IValue>(result);
+            return result;
         }
 
-        public async Task<IResult> UpdateSubmodelElementValueAsync(string submodelIdentifier, string idShortPath, IValue value)
+        public async Task<IResult> UpdateSubmodelElementValueAsync(Identifier id, string idShortPath, ValueScope value)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, submodelIdentifier, idShortPath);
-            var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, value.Value);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, id, idShortPath);
+            var request = base.CreateJsonContentRequest(uri, new HttpMethod("PATCH"), value);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }
 
-        public async Task<IResult> DeleteSubmodelElementAsync(string submodelIdentifier, string idShortPath)
+        public async Task<IResult> DeleteSubmodelElementAsync(Identifier id, string idShortPath)
         {
-            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, submodelIdentifier, idShortPath);
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, id, idShortPath);
             var request = base.CreateRequest(uri, HttpMethod.Delete);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync(response, response.Entity);
@@ -399,13 +396,13 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<InvocationResponse>> InvokeOperationAsync(string submodelIdentifier, string idShortPath, InvocationRequest invocationRequest, bool async = false)
+        public async Task<IResult<InvocationResponse>> InvokeOperationAsync(Identifier id, string idShortPath, InvocationRequest invocationRequest, bool async = false)
         {
             string path = AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE;
             if (async)
-                path = AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE + "?async=true";
+                path = AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE_ASYNC;
 
-            Uri uri = GetPath(path, submodelIdentifier, idShortPath);
+            Uri uri = GetPath(path, id, idShortPath);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Post, invocationRequest);
 
             TimeSpan timeout = request.GetTimeout() ?? GetDefaultTimeout();
@@ -418,10 +415,10 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<InvocationResponse>> GetInvocationResultAsync(string submodelIdentifier, string idShortPath, string requestId)
+        public async Task<IResult<InvocationResponse>> GetInvocationResultAsync(Identifier id, string idShortPath, string requestId)
         {
             string path = AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS.Replace("{handleId}", requestId);
-            Uri uri = GetPath(path, submodelIdentifier, idShortPath);
+            Uri uri = GetPath(path, id, idShortPath);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<InvocationResponse>(response, response.Entity);

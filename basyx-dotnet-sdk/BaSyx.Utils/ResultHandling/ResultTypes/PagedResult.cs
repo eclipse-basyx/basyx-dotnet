@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace BaSyx.Utils.ResultHandling.ResultTypes
@@ -17,18 +16,25 @@ namespace BaSyx.Utils.ResultHandling.ResultTypes
     {
         [JsonPropertyName("paging_metadata")]
         public PagingMetadata PagingMetadata { get; set; }
-
+        [JsonPropertyName("result")]
         public object Result { get; set; }
     }
 
     public class PagedResult<T> : PagedResult
     {
+        [JsonIgnore(Condition = JsonIgnoreCondition.Never), JsonPropertyName("result")]
         public new T Result { get; set; }
 
         [JsonConstructor]
         public PagedResult() { }
 
         public PagedResult(T result) { Result = result; }
+
+
+        public static implicit operator PagedResult<T>(T value)
+        {
+            return new PagedResult<T>(value);
+        }
     }
 
     public class PagingMetadata

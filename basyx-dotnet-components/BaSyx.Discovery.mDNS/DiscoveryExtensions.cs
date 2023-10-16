@@ -93,11 +93,11 @@ namespace BaSyx.Discovery.mDNS
                 }
                 if (aasDescriptor != null)
                 {
-                    var registeredResult = assetAdministrationShellRegistry.UpdateAssetAdministrationShellRegistration(aasDescriptor.Identification.Id, aasDescriptor);
+                    var registeredResult = assetAdministrationShellRegistry.UpdateAssetAdministrationShellRegistration(aasDescriptor.Id.Id, aasDescriptor);
                     if (registeredResult.Success)
-                        logger.LogInformation($"Successfully registered Asset Administration Shell with {aasDescriptor.Identification.Id} at registry");
+                        logger.LogInformation($"Successfully registered Asset Administration Shell with {aasDescriptor.Id.Id} at registry");
                     else
-                        registeredResult.LogResult(logger, LogLevel.Error, $"Could not register Asset Administration Shell with {aasDescriptor.Identification.Id} at registry");
+                        registeredResult.LogResult(logger, LogLevel.Error, $"Could not register Asset Administration Shell with {aasDescriptor.Id.Id} at registry");
                 }
             }
             catch (Exception exc)
@@ -114,7 +114,7 @@ namespace BaSyx.Discovery.mDNS
 
             if (retrieveDescriptor.Success && retrieveDescriptor.Entity != null)
             {
-                logger.LogInformation($"Successfully retrieved AssetAdministrationShellDescriptor with id {retrieveDescriptor.Entity.Identification.Id}");
+                logger.LogInformation($"Successfully retrieved AssetAdministrationShellDescriptor with id {retrieveDescriptor.Entity.Id.Id}");
                 if (aasDescriptor == null)
                 {
                     aasDescriptor = retrieveDescriptor.Entity;
@@ -237,7 +237,7 @@ namespace BaSyx.Discovery.mDNS
         public static void StartDiscovery(this IAssetAdministrationShellServiceProvider serviceProvider, int port, IEnumerable<IPAddress> iPAddresses)
         {
             discoveryClient = new DiscoveryClient(serviceProvider.ServiceDescriptor.IdShort, (ushort)port, ServiceTypes.AAS_SERVICE_TYPE, iPAddresses);
-            discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_ID, serviceProvider.ServiceDescriptor.Identification.Id);
+            discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_ID, serviceProvider.ServiceDescriptor.Id.Id);
             discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_IDSHORT, serviceProvider.ServiceDescriptor.IdShort);
             for (int i = 0; i < serviceProvider.ServiceDescriptor.Endpoints.Count(); i++)
             {

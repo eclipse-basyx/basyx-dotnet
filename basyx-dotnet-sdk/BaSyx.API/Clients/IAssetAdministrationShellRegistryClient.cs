@@ -11,6 +11,7 @@
 using BaSyx.API.Interfaces;
 using BaSyx.Models.Connectivity;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -29,10 +30,10 @@ namespace BaSyx.API.Clients
         Task<IResult<IAssetAdministrationShellDescriptor>> RetrieveAssetAdministrationShellRegistrationAsync(string aasIdentifier);
 
         ///<inheritdoc cref="IAssetAdministrationShellRegistryInterface.RetrieveAllAssetAdministrationShellRegistrations"/>
-        Task<IResult<IEnumerable<IAssetAdministrationShellDescriptor>>> RetrieveAllAssetAdministrationShellRegistrationsAsync();
+        Task<IResult<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>> RetrieveAllAssetAdministrationShellRegistrationsAsync();
 
         ///<inheritdoc cref="IAssetAdministrationShellRegistryInterface.RetrieveAllAssetAdministrationShellRegistrations(Predicate{IAssetAdministrationShellDescriptor})"/>
-        Task<IResult<IEnumerable<IAssetAdministrationShellDescriptor>>> RetrieveAllAssetAdministrationShellRegistrationsAsync(Predicate<IAssetAdministrationShellDescriptor> predicate);
+        Task<IResult<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>> RetrieveAllAssetAdministrationShellRegistrationsAsync(Predicate<IAssetAdministrationShellDescriptor> predicate);
 
         ///<inheritdoc cref="IAssetAdministrationShellRegistryInterface.DeleteAssetAdministrationShellRegistration(string)"/>
         Task<IResult> DeleteAssetAdministrationShellRegistrationAsync(string aasIdentifier);
@@ -44,10 +45,10 @@ namespace BaSyx.API.Clients
         Task<IResult<ISubmodelDescriptor>> UpdateSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor);
 
         ///<inheritdoc cref="IAssetAdministrationShellRegistryInterface.RetrieveAllSubmodelRegistrations(string)"/>
-        Task<IResult<IEnumerable<ISubmodelDescriptor>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier);
+        Task<IResult<PagedResult<IEnumerable<ISubmodelDescriptor>>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier);
 
         ///<inheritdoc cref="IAssetAdministrationShellRegistryInterface.RetrieveAllSubmodelRegistrations(string, Predicate{ISubmodelDescriptor})"/>
-        Task<IResult<IEnumerable<ISubmodelDescriptor>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier, Predicate<ISubmodelDescriptor> predicate);
+        Task<IResult<PagedResult<IEnumerable<ISubmodelDescriptor>>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier, Predicate<ISubmodelDescriptor> predicate);
 
         ///<inheritdoc cref="IAssetAdministrationShellRegistryInterface.RetrieveSubmodelRegistration(string, string)"/>
         Task<IResult<ISubmodelDescriptor>> RetrieveSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier);

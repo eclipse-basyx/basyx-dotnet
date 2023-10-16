@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Connectivity
 {
@@ -17,6 +18,7 @@ namespace BaSyx.Models.Connectivity
         public ProtocolInformation ProtocolInformation { get; set; }
         public InterfaceName Interface { get; set; }
 
+        [JsonConstructor]
         public Endpoint(ProtocolInformation protocolInformation, InterfaceName @interface)
         {
             ProtocolInformation = protocolInformation;

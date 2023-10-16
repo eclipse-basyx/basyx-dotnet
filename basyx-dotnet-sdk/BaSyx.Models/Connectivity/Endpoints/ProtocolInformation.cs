@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Connectivity
 {
@@ -40,6 +41,7 @@ namespace BaSyx.Models.Connectivity
         [IgnoreDataMember]
         public Uri Uri { get; }
 
+        [JsonConstructor]
         public ProtocolInformation(string endpointAddress)
         {
             EndpointAddress = endpointAddress ?? throw new ArgumentNullException(nameof(endpointAddress));

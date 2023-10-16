@@ -24,7 +24,7 @@ namespace BaSyx.Models.AdminShell
         {
             get
             {
-                if (Keys?.Count > 0)
+                if (Keys?.Count() > 0)
                     return Keys.Last().Type;
                 return KeyType.Undefined;
             }
@@ -35,14 +35,14 @@ namespace BaSyx.Models.AdminShell
         {
             get
             {
-                if (Keys?.Count > 0)
-                    return Keys.First();
+                if (Keys?.Count() > 0)
+                    return Keys.FirstOrDefault();
                 return null;
             }
         }
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "keys")]
-        public List<IKey> Keys { get; protected set; }
+        public IEnumerable<IKey> Keys { get; set; }
 
         public ReferenceType Type { get; set; }
 
@@ -50,28 +50,23 @@ namespace BaSyx.Models.AdminShell
         public IReference ReferredSemanticId { get; set; }
 
         [JsonConstructor]
+        public Reference(IEnumerable<IKey> keys) : this(keys.ToArray())
+        { }
+
         public Reference(params IKey[] keys)
         {
             keys = keys ?? throw new ArgumentNullException(nameof(keys));
-
-            if (Keys?.Count > 0)
-            {
-                foreach (var key in keys)
-                    if (!Keys.Contains(key))
-                        Keys.Add(key);
-            }
-            else
-                Keys = keys.ToList();
+            Keys = keys.ToList();
         }
 
         public string ToStandardizedString()
         {
             string referenceString = string.Empty;
-            for (int i = 0; i < Keys.Count; i++)
+            for (int i = 0; i < Keys.Count(); i++)
             {
-                referenceString += Keys[i].ToStandardizedString();
+                referenceString += Keys.ElementAt(i).ToStandardizedString();
 
-                if (i + 1 == Keys.Count)
+                if (i + 1 == Keys.Count())
                     break;
                 else
                     referenceString += ",";
@@ -87,6 +82,9 @@ namespace BaSyx.Models.AdminShell
         public override KeyType RefersTo => Key.GetKeyElementFromType(typeof(T));
 
         [JsonConstructor]
+        public Reference(IEnumerable<IKey> keys) : this(keys.ToArray())
+        { }
+
         public Reference(params IKey[] keys) : base(keys)
         { }
 
@@ -109,7 +107,7 @@ namespace BaSyx.Models.AdminShell
                 keys.Add(new Key(Key.GetKeyElementFromType(referable.GetType()), referable.IdShort));
             }
 
-            Keys = keys.ToList();
+            Keys = keys;
         }
     }
 }

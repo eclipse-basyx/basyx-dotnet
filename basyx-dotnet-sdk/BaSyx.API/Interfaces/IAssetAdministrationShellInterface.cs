@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 using System.Collections.Generic;
 
 namespace BaSyx.API.Interfaces
@@ -24,10 +25,10 @@ namespace BaSyx.API.Interfaces
 
         IResult UpdateAssetInformation(IAssetInformation assetInformation);
 
-        IResult<IEnumerable<IReference<ISubmodel>>> RetrieveAllSubmodelReferences();
+        IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences();
 
         IResult<IReference> CreateSubmodelReference(IReference submodelRef);
 
-        IResult DeleteSubmodelReference(string submodelIdentifier);
+        IResult DeleteSubmodelReference(Identifier id);
     }
 }

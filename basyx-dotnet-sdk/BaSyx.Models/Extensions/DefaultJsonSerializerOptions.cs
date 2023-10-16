@@ -61,20 +61,11 @@ namespace BaSyx.Models.Extensions
         {
             foreach (var property in info.Properties)
             {
-                if (DataType.IsGenericList(property.PropertyType))
+                if (DataType.IsGenericList(property.PropertyType) && property.Name != "result")
                 {
                     property.ShouldSerialize = (_, val) => val is ICollection collection && collection.Count > 0;
                 }
             }
         }       
-    }
-
-    public static class JsonExtensions
-    {
-        //public static Func<T> GetJsonValueFunction<T>(this JsonElement element, DataType dataType)
-        //{
-        //    if (dataType.SystemType == typeof(string))
-        //        return element.GetString();
-        //}
     }
 }

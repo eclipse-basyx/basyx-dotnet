@@ -33,17 +33,20 @@ namespace BaSyx.Utils.DependencyInjection
             services.AddTransient<ISubmodelDescriptor, SubmodelDescriptor>();
 
             services.AddTransient(typeof(IEnumerable<IReference>), typeof(List<IReference>));
+            services.AddTransient(typeof(IEnumerable<IKey>), typeof(List<IKey>));
             services.AddTransient(typeof(IEnumerable<IQualifier>), typeof(List<IQualifier>));
             services.AddTransient(typeof(IEnumerable<IEmbeddedDataSpecification>), typeof(List<IEmbeddedDataSpecification>));
             services.AddTransient(typeof(IEnumerable<IReference<ISubmodel>>), typeof(List<IReference<ISubmodel>>));
             services.AddTransient(typeof(IEnumerable<SpecificAssetId>), typeof(List<SpecificAssetId>));
+            services.AddTransient(typeof(IEnumerable<IEndpoint>), typeof(List<IEndpoint>));
+            services.AddTransient(typeof(IEnumerable<SecurityAttribute>), typeof(List<SecurityAttribute>));
             services.AddTransient(typeof(IQualifier), typeof(Qualifier));
 
             services.AddTransient(typeof(IElementContainer<>), typeof(ElementContainer<>));
-            //services.AddTransient(typeof(IEnumerable<IAssetAdministrationShellRepositoryDescriptor>), typeof(List<IAssetAdministrationShellRepositoryDescriptor>));
-            //services.AddTransient(typeof(IEnumerable<IAssetAdministrationShellDescriptor>), typeof(List<IAssetAdministrationShellDescriptor>));
-            //services.AddTransient(typeof(IEnumerable<ISubmodelRepositoryDescriptor>), typeof(List<ISubmodelRepositoryDescriptor>));
-            //services.AddTransient(typeof(IEnumerable<ISubmodelDescriptor>), typeof(List<ISubmodelDescriptor>));
+            services.AddTransient(typeof(IEnumerable<IAssetAdministrationShellRepositoryDescriptor>), typeof(List<IAssetAdministrationShellRepositoryDescriptor>));
+            services.AddTransient(typeof(IEnumerable<IAssetAdministrationShellDescriptor>), typeof(List<IAssetAdministrationShellDescriptor>));
+            services.AddTransient(typeof(IEnumerable<ISubmodelRepositoryDescriptor>), typeof(List<ISubmodelRepositoryDescriptor>));
+            services.AddTransient(typeof(IEnumerable<ISubmodelDescriptor>), typeof(List<ISubmodelDescriptor>));
             services.AddTransient(typeof(IElementContainer<IAssetAdministrationShell>), typeof(ElementContainer<IAssetAdministrationShell>));
             services.AddTransient(typeof(IElementContainer<ISubmodel>), typeof(ElementContainer<ISubmodel>));
             //services.AddTransient(typeof(IElementContainer<ISubmodelElement>), typeof(ElementContainer<ISubmodelElement>));

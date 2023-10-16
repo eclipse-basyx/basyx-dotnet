@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.Interfaces
 {
@@ -17,12 +18,12 @@ namespace BaSyx.API.Interfaces
     {
         IResult<IAssetAdministrationShell> CreateAssetAdministrationShell(IAssetAdministrationShell aas);
 
-        IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(string aasIdentifier);
+        IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(Identifier id);
 
-        IResult<IElementContainer<IAssetAdministrationShell>> RetrieveAssetAdministrationShells();
+        IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells();
 
-        IResult UpdateAssetAdministrationShell(string aasIdentifier, IAssetAdministrationShell aas);
+        IResult UpdateAssetAdministrationShell(Identifier id, IAssetAdministrationShell aas);
 
-        IResult DeleteAssetAdministrationShell(string aasIdentifier);
+        IResult DeleteAssetAdministrationShell(Identifier id);
     }
 }

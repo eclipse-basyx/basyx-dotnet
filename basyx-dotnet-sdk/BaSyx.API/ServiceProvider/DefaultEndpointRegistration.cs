@@ -164,7 +164,7 @@ namespace BaSyx.API.ServiceProvider
                 List<IEndpoint> aasEndpoints = new List<IEndpoint>();
                 foreach (var endpoint in repositoryEndpoints)
                 {
-                    var ep = new Endpoint(GetAssetAdministrationShellEndpoint(endpoint, aasDescriptor.Identification.Id), InterfaceName.AssetAdministrationShellRepositoryInterface);
+                    var ep = new Endpoint(GetAssetAdministrationShellEndpoint(endpoint, aasDescriptor.Id.Id), InterfaceName.AssetAdministrationShellRepositoryInterface);
                     aasEndpoints.Add(ep);
                 }
                 aasDescriptor.AddEndpoints(aasEndpoints);
@@ -174,7 +174,7 @@ namespace BaSyx.API.ServiceProvider
                     List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
                     foreach (var endpoint in aasEndpoints)
                     {
-                        var ep = new Endpoint(GetSubmodelEndpoint(endpoint, submodelDescriptor.Identification.Id), InterfaceName.AssetAdministrationShellRepositoryInterface);
+                        var ep = new Endpoint(GetSubmodelEndpoint(endpoint, submodelDescriptor.Id.Id), InterfaceName.AssetAdministrationShellRepositoryInterface);
                         submodelEndpoints.Add(ep);
                     }
                     submodelDescriptor.AddEndpoints(submodelEndpoints);
@@ -201,7 +201,7 @@ namespace BaSyx.API.ServiceProvider
                 List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
                 foreach (var endpoint in repositoryEndpoints)
                 {
-                    var ep = new Endpoint(GetSubmodelInRepositoryEndpoint(endpoint, submodelDescriptor.Identification.Id), InterfaceName.SubmodelRepositoryInterface);
+                    var ep = new Endpoint(GetSubmodelInRepositoryEndpoint(endpoint, submodelDescriptor.Id.Id), InterfaceName.SubmodelRepositoryInterface);
                     submodelEndpoints.Add(ep);
                 }
                 submodelDescriptor.AddEndpoints(submodelEndpoints);                
@@ -227,7 +227,7 @@ namespace BaSyx.API.ServiceProvider
                 List<IEndpoint> spEndpoints = new List<IEndpoint>();
                 foreach (var endpoint in aasEndpoints)
                 {
-                    var ep = new Endpoint(GetSubmodelEndpoint(endpoint, submodel.Identification.Id), InterfaceName.AssetAdministrationShellInterface);
+                    var ep = new Endpoint(GetSubmodelEndpoint(endpoint, submodel.Id.Id), InterfaceName.AssetAdministrationShellInterface);
                     spEndpoints.Add(ep);
                 }
                 submodel.AddEndpoints(spEndpoints);

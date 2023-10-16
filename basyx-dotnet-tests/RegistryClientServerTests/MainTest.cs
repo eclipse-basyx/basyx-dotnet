@@ -14,6 +14,7 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Models.Connectivity;
 using BaSyx.Registry.Client.Http;
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SimpleAssetAdministrationShell;
@@ -90,7 +91,7 @@ namespace RegistryClientServerTests
                 new LangString("en", "My new description")
             };
             ShellDescriptor.Description = newDescription;
-            UpdateAssetAdministrationShellRegistration(ShellDescriptor.Identification.Id, ShellDescriptor);
+            UpdateAssetAdministrationShellRegistration(ShellDescriptor.Id.Id, ShellDescriptor);
         }
 
         [TestMethod]
@@ -102,19 +103,19 @@ namespace RegistryClientServerTests
         [TestMethod]
         public void Test106_RetrieveSubmodelRegistration()
         {
-            RetrieveSubmodelRegistration(Shell.Id, SubmodelDescriptor.Identification.Id);
+            RetrieveSubmodelRegistration(Shell.Id, SubmodelDescriptor.Id.Id);
         }
 
         [TestMethod]
         public void Test107_RetrieveAllSubmodelRegistrations()
         {
-            RetrieveAllSubmodelRegistrations(ShellDescriptor.Identification.Id);
+            RetrieveAllSubmodelRegistrations(ShellDescriptor.Id.Id);
         }
 
         [TestMethod]
         public void Test108_RetrieveAllSubmodelRegistrations()
         {
-            RetrieveAllSubmodelRegistrations(ShellDescriptor.Identification.Id, p => p.IdShort == SubmodelDescriptor.IdShort);
+            RetrieveAllSubmodelRegistrations(ShellDescriptor.Id.Id, p => p.IdShort == SubmodelDescriptor.IdShort);
         }
 
         [TestMethod]
@@ -126,29 +127,29 @@ namespace RegistryClientServerTests
                 new LangString("en", "My new description")
             };
             SubmodelDescriptor.Description = newDescription;
-            UpdateSubmodelRegistration(ShellDescriptor.Identification.Id, Submodel.Id, SubmodelDescriptor);
+            UpdateSubmodelRegistration(ShellDescriptor.Id.Id, Submodel.Id, SubmodelDescriptor);
         }
 
         [TestMethod]
         public void Test110_DeleteSubmodelRegistration()
         {
-            DeleteSubmodelRegistration(ShellDescriptor.Identification.Id, SubmodelDescriptor.Identification.Id);
+            DeleteSubmodelRegistration(ShellDescriptor.Id.Id, SubmodelDescriptor.Id.Id);
         }
 
         [TestMethod]
         public void Test111_DeleteAssetAdministrationShellRegistration()
         {
-            DeleteAssetAdministrationShellRegistration(ShellDescriptor.Identification.Id);
+            DeleteAssetAdministrationShellRegistration(ShellDescriptor.Id.Id);
             var result = Client.RetrieveAllAssetAdministrationShellRegistrations();
             result.Success.Should().BeTrue();
-            result.Entity.Should().HaveCount(0);
+            result.Entity.Result.Should().HaveCount(0);
         }
 
-        public IResult<IEnumerable<ISubmodelDescriptor>> RetrieveAllSubmodelRegistrations(string aasIdentifier)
+        public IResult<PagedResult<IEnumerable<ISubmodelDescriptor>>> RetrieveAllSubmodelRegistrations(string aasIdentifier)
         {
             var result = Client.RetrieveAllSubmodelRegistrations(aasIdentifier);
             result.Success.Should().BeTrue();
-            result.Entity.Should().ContainEquivalentOf(SubmodelDescriptor);
+            result.Entity.Result.Should().ContainEquivalentOf(SubmodelDescriptor);
             return result;
         }
 
@@ -185,27 +186,27 @@ namespace RegistryClientServerTests
         }
 
 
-        public IResult<IEnumerable<IAssetAdministrationShellDescriptor>> RetrieveAllAssetAdministrationShellRegistrations()
+        public IResult<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>> RetrieveAllAssetAdministrationShellRegistrations()
         {
             var result = Client.RetrieveAllAssetAdministrationShellRegistrations();
             result.Success.Should().BeTrue();
-            result.Entity.Should().ContainEquivalentOf(ShellDescriptor);
+            result.Entity.Result.Should().ContainEquivalentOf(ShellDescriptor);
             return result;
         }
 
-        public IResult<IEnumerable<IAssetAdministrationShellDescriptor>> RetrieveAllAssetAdministrationShellRegistrations(Predicate<IAssetAdministrationShellDescriptor> predicate)
+        public IResult<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>> RetrieveAllAssetAdministrationShellRegistrations(Predicate<IAssetAdministrationShellDescriptor> predicate)
         {
             var result = Client.RetrieveAllAssetAdministrationShellRegistrations(predicate);
             result.Success.Should().BeTrue();
-            result.Entity.Should().ContainEquivalentOf(ShellDescriptor);
+            result.Entity.Result.Should().ContainEquivalentOf(ShellDescriptor);
             return result;
         }
 
-        public IResult<IEnumerable<ISubmodelDescriptor>> RetrieveAllSubmodelRegistrations(string aasIdentifier, Predicate<ISubmodelDescriptor> predicate)
+        public IResult<PagedResult<IEnumerable<ISubmodelDescriptor>>> RetrieveAllSubmodelRegistrations(string aasIdentifier, Predicate<ISubmodelDescriptor> predicate)
         {
             var result = Client.RetrieveAllSubmodelRegistrations(aasIdentifier, predicate);
             result.Success.Should().BeTrue();
-            result.Entity.Should().ContainEquivalentOf(SubmodelDescriptor);
+            result.Entity.Result.Should().ContainEquivalentOf(SubmodelDescriptor);
             return result;
         }
 
@@ -256,12 +257,12 @@ namespace RegistryClientServerTests
             return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAssetAdministrationShellRegistrationAsync(aasIdentifier);
         }
 
-        public Task<IResult<IEnumerable<IAssetAdministrationShellDescriptor>>> RetrieveAllAssetAdministrationShellRegistrationsAsync()
+        public Task<IResult<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>> RetrieveAllAssetAdministrationShellRegistrationsAsync()
         {
             return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAllAssetAdministrationShellRegistrationsAsync();
         }
 
-        public Task<IResult<IEnumerable<IAssetAdministrationShellDescriptor>>> RetrieveAllAssetAdministrationShellRegistrationsAsync(Predicate<IAssetAdministrationShellDescriptor> predicate)
+        public Task<IResult<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>> RetrieveAllAssetAdministrationShellRegistrationsAsync(Predicate<IAssetAdministrationShellDescriptor> predicate)
         {
             return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAllAssetAdministrationShellRegistrationsAsync(predicate);
         }
@@ -281,12 +282,12 @@ namespace RegistryClientServerTests
             return ((IAssetAdministrationShellRegistryClient)Client).UpdateSubmodelRegistrationAsync(aasIdentifier, submodelIdentifier, submodelDescriptor);
         }
 
-        public Task<IResult<IEnumerable<ISubmodelDescriptor>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier)
+        public Task<IResult<PagedResult<IEnumerable<ISubmodelDescriptor>>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier)
         {
             return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAllSubmodelRegistrationsAsync(aasIdentifier);
         }
 
-        public Task<IResult<IEnumerable<ISubmodelDescriptor>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier, Predicate<ISubmodelDescriptor> predicate)
+        public Task<IResult<PagedResult<IEnumerable<ISubmodelDescriptor>>>> RetrieveAllSubmodelRegistrationsAsync(string aasIdentifier, Predicate<ISubmodelDescriptor> predicate)
         {
             return ((IAssetAdministrationShellRegistryClient)Client).RetrieveAllSubmodelRegistrationsAsync(aasIdentifier, predicate);
         }

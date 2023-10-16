@@ -30,9 +30,21 @@ namespace BaSyx.Models.AdminShell
             Id = id;
         }
 
-        public static implicit operator string(Identifier identifier) => identifier.Id;
+        public static implicit operator string(Identifier identifier)
+        {
+            if (identifier == null || string.IsNullOrEmpty(identifier.Id))
+                return null;
+            else
+                return identifier.Id;
+        }
 
-        public static implicit operator Identifier(string id) => new Identifier(id);
+        public static implicit operator Identifier(string id)
+        {
+            if(string.IsNullOrEmpty(id)) 
+                return null;
+            else
+                return new Identifier(id);
+        }
 
         public override string ToString() => Id;
     }

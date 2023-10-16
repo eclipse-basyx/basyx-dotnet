@@ -153,6 +153,17 @@ namespace BaSyx.Utils.Extensions
             return encoded;
         }
 
+        /// <summary>
+        /// Decodes a string to a Base64UrlEncoded string (UTF8)
+        /// </summary>
+        /// <param name="toDecode">String to encode</param>
+        /// <returns></returns>
+        public static string Base64UrlDecode(this string toDecode)
+        {
+            toDecode = toDecode.Replace('-', '+').Replace('_', '/');          
+            return toDecode.Base64Decode();
+        }
+
         private static int GetMinimalOutputArrayLength(int inputLength)
         {
             var blocks = checked(inputLength + 2) / 3;

@@ -19,7 +19,10 @@ namespace BaSyx.Utils.ResultHandling
     public class Result : IResult
     {
         public bool Success { get; set; }
-
+        [JsonIgnore]
+        public bool HasContent => Entity != null;
+        [JsonIgnore]
+        public bool SuccessAndContent => Success && HasContent;
         [JsonIgnore]
         public bool? IsException { get; }
         [JsonIgnore]

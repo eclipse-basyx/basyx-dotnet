@@ -15,9 +15,9 @@
 
     IEnumerable<IAssetAdministrationShellDescriptor> shellsDescriptors = null;
     var retrievedShellDescriptors = registry.RetrieveAllAssetAdministrationShellRegistrations();
-    if (retrievedShellDescriptors.Success && retrievedShellDescriptors.Entity != null)
+    if (retrievedShellDescriptors.SuccessAndContent)
     {
-        shellsDescriptors = retrievedShellDescriptors.Entity;
+        shellsDescriptors = retrievedShellDescriptors.Entity.Result;
     }
 
     ViewData["Title"] = settings.UIConfig?.Title ?? "BaSyx Registry UI";
@@ -63,7 +63,7 @@
             <div id="@GetHashString(aas.IdShort)" class="collapse">
                 <ul class="list-group list-group-flush">
                     @await Html.PartialAsync("_IdShort", aas.IdShort)
-                    @await Html.PartialAsync("_Identifier", aas.Identification)
+                    @await Html.PartialAsync("_Identifier", aas.Id)
                     @await Html.PartialAsync("_Description", aas.Description)
                 </ul>
                 <div class="card-body">
@@ -118,7 +118,7 @@
                                         <div id="@GetHashString(submodelDescriptor.IdShort)" class="collapse">
                                             <ul class="list-group list-group-flush">
                                                 @await Html.PartialAsync("_IdShort", submodelDescriptor.IdShort)
-                                                @await Html.PartialAsync("_Identifier", submodelDescriptor.Identification)
+                                                @await Html.PartialAsync("_Identifier", submodelDescriptor.Id)
                                                 @await Html.PartialAsync("_Description", submodelDescriptor.Description)
                                             </ul>
                                             <div class="card-body">

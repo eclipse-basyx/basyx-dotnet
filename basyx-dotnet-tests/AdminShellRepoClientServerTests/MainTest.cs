@@ -32,7 +32,8 @@ namespace AdminShellRepoClientServerTests
     [TestClass]
     public class MainTest : IAssetAdministrationShellRepositoryClient
     {
-        private static Submodel Submodel;
+        private static Submodel MainSubmodel;
+        private static Submodel TestSubmodel;
         private static AssetAdministrationShell AdminShell;
 
         private static AssetAdministrationShellHttpClient Client;
@@ -43,12 +44,12 @@ namespace AdminShellRepoClientServerTests
         static MainTest()
         {
             Server.Run();
-            Submodel = TestSubmodel.GetSubmodel("TestSubmodel");
+            TestSubmodel = SimpleAssetAdministrationShell.TestSubmodel.GetSubmodel("TestSubmodel");
             AdminShell = TestAssetAdministrationShell.GetAssetAdministrationShell("MainAdminShell");
-            var mainSubmodel = TestSubmodel.GetSubmodel("MainSubmodel");
-            AdminShell.Submodels.Add(mainSubmodel);
+            MainSubmodel = SimpleAssetAdministrationShell.TestSubmodel.GetSubmodel("MainSubmodel");
+            AdminShell.Submodels.Add(MainSubmodel);
             string basePath = AssetAdministrationShellRepositoryRoutes.SHELLS_AAS.Replace("{aasIdentifier}", StringOperations.Base64UrlEncode(AdminShell.Id));
-            Client = new AssetAdministrationShellHttpClient(new Uri(Server.ServerUrl + basePath));
+            Client = new AssetAdministrationShellHttpClient(new Uri(Server.ServerUrl + basePath), false);
             RepoClient = new AssetAdministrationShellRepositoryHttpClient(new Uri(Server.ServerUrl));
         }
 
@@ -56,7 +57,7 @@ namespace AdminShellRepoClientServerTests
         public void Test0000_CreateAssetAdministrationShell()
         {
             var testShell = TestAssetAdministrationShell.GetAssetAdministrationShell("TestAdminShell");
-            var testSubmodel = TestSubmodel.GetSubmodel("TestSubmodel");
+            var testSubmodel = SimpleAssetAdministrationShell.TestSubmodel.GetSubmodel("TestSubmodel");
             testShell.Submodels.Add(testSubmodel);
 
             var result = CreateAssetAdministrationShell(testShell);
@@ -73,7 +74,7 @@ namespace AdminShellRepoClientServerTests
         public void Test0001_RetrieveAssetAdministrationShell()
         {
             var testShell = TestAssetAdministrationShell.GetAssetAdministrationShell("TestAdminShell");
-            var testSubmodel = TestSubmodel.GetSubmodel("TestSubmodel");
+            var testSubmodel = SimpleAssetAdministrationShell.TestSubmodel.GetSubmodel("TestSubmodel");
             testShell.Submodels.Add(testSubmodel);
 
             var result = RetrieveAssetAdministrationShell(testShell.Id);
@@ -90,7 +91,7 @@ namespace AdminShellRepoClientServerTests
         public void Test0002_UpdateAssetAdministrationShell()
         { 
             var testShell = TestAssetAdministrationShell.GetAssetAdministrationShell("TestAdminShell");
-            var testSubmodel = TestSubmodel.GetSubmodel("TestSubmodel");
+            var testSubmodel = SimpleAssetAdministrationShell.TestSubmodel.GetSubmodel("TestSubmodel");
             testShell.Submodels.Add(testSubmodel);
 
             LangStringSet newDescription = new LangStringSet()
@@ -117,8 +118,8 @@ namespace AdminShellRepoClientServerTests
         {
             var result = RetrieveAssetAdministrationShells();
             result.Success.Should().BeTrue();
-            result.Entity.Should().HaveCount(2);
-            result.Entity.Should().ContainEquivalentOf(AdminShell, options =>
+            result.Entity.Result.Should().HaveCount(2);
+            result.Entity.Result.Should().ContainEquivalentOf(AdminShell, options =>
             {
                 options
                 .Excluding(p => p.Submodels);
@@ -130,7 +131,7 @@ namespace AdminShellRepoClientServerTests
         public void Test0004_DeleteAssetAdministrationShell()
         {
             var testShell = TestAssetAdministrationShell.GetAssetAdministrationShell("TestAdminShell");
-            var testSubmodel = TestSubmodel.GetSubmodel("TestSubmodel");
+            var testSubmodel = SimpleAssetAdministrationShell.TestSubmodel.GetSubmodel("TestSubmodel");
             testShell.Submodels.Add(testSubmodel);
 
             var result = DeleteAssetAdministrationShell(testShell.Id);
@@ -140,7 +141,7 @@ namespace AdminShellRepoClientServerTests
         [TestMethod]
         public void Test000_RetrieveAssetAdministrationShell()
         {
-            var result = RetrieveAssetAdministrationShellByAasClient();
+            var result = RetrieveAssetAdministrationShell(AdminShell.Id);
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(AdminShell, options =>
             {
@@ -159,10 +160,10 @@ namespace AdminShellRepoClientServerTests
                 new LangString("en", "My new description")
             };
             AdminShell.Description = newDescription;
-            var updated = UpdateAssetAdministrationShellByAasClient(AdminShell);
+            var updated = UpdateAssetAdministrationShell(AdminShell.Id, AdminShell);
             updated.Success.Should().BeTrue();
 
-            var result = RetrieveAssetAdministrationShellByAasClient();
+            var result = RetrieveAssetAdministrationShell(AdminShell.Id);
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(AdminShell, options =>
             {
@@ -213,7 +214,7 @@ namespace AdminShellRepoClientServerTests
         [TestMethod]
         public void Test010_CreateSubmodelReference()
         {
-            var reference = Submodel.CreateReference();
+            var reference = TestSubmodel.CreateReference();
             var result = CreateSubmodelReference(reference);
             result.Success.Should().BeTrue();
             result.Entity.Should().BeEquivalentTo(reference);
@@ -222,11 +223,11 @@ namespace AdminShellRepoClientServerTests
         [TestMethod]
         public void Test011_RetrieveAllSubmodelReferences()
         {
-            var reference = Submodel.CreateReference();
+            var reference = TestSubmodel.CreateReference();
             var result = RetrieveAllSubmodelReferences();
             result.Success.Should().BeTrue();
-            result.Entity.Should().HaveCount(2);
-            result.Entity.Should().ContainEquivalentOf(reference);
+            result.Entity.Result.Should().HaveCount(2);
+            result.Entity.Result.Should().ContainEquivalentOf(reference);
         }
 
 
@@ -238,8 +239,8 @@ namespace AdminShellRepoClientServerTests
                 new LangString("de", "Meine neue Beschreibung"),
                 new LangString("en", "My new description")
             };
-            Submodel.Description = newDescription;
-            var updated = UpdateSubmodel(Submodel);
+            TestSubmodel.Description = newDescription;
+            var updated = UpdateSubmodel(TestSubmodel);
             updated.Success.Should().BeTrue();
         }
 
@@ -249,12 +250,12 @@ namespace AdminShellRepoClientServerTests
             var result = RetrieveSubmodel();
 
             result.Success.Should().BeTrue();
-            result.Entity.IdShort.Should().BeEquivalentTo(Submodel.IdShort);
-            result.Entity.Id.Should().BeEquivalentTo(Submodel.Id);
-            result.Entity.Description.Should().BeEquivalentTo(Submodel.Description);
-            result.Entity.DisplayName.Should().BeEquivalentTo(Submodel.DisplayName);
-            result.Entity.SemanticId.Should().BeEquivalentTo(Submodel.SemanticId);
-            result.Entity.Kind.Should().Be(Submodel.Kind);
+            result.Entity.IdShort.Should().BeEquivalentTo(TestSubmodel.IdShort);
+            result.Entity.Id.Should().BeEquivalentTo(TestSubmodel.Id);
+            result.Entity.Description.Should().BeEquivalentTo(TestSubmodel.Description);
+            result.Entity.DisplayName.Should().BeEquivalentTo(TestSubmodel.DisplayName);
+            result.Entity.SemanticId.Should().BeEquivalentTo(TestSubmodel.SemanticId);
+            result.Entity.Kind.Should().Be(TestSubmodel.Kind);
         }
 
         [TestMethod]
@@ -299,7 +300,7 @@ namespace AdminShellRepoClientServerTests
                    }
                }
             };
-            Submodel.SubmodelElements.Add(coll);
+            TestSubmodel.SubmodelElements.Add(coll);
             var created = CreateSubmodelElement(".", coll);
             created.Success.Should().BeTrue();
         }
@@ -308,7 +309,7 @@ namespace AdminShellRepoClientServerTests
         public void Test104_RetrieveSubmodelElements()
         {
             var result = RetrieveSubmodelElements();
-            result.Entity.Result.Should().ContainEquivalentOf(Submodel.SubmodelElements["MyCollection"],
+            result.Entity.Result.Should().ContainEquivalentOf(TestSubmodel.SubmodelElements["MyCollection"],
                 options =>
                 {
                     options
@@ -324,13 +325,13 @@ namespace AdminShellRepoClientServerTests
         public void Test105_RetrieveSubmodelElement()
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubSubFloat");
-            result.Entity.GetValueAsync<float>().Should().Be(3.3f);
+            result.Entity.GetValue<float>().Should().Be(3.3f);
         }
 
         [TestMethod]
         public void Test106_UpdateSubmodelElement()
         {
-            var mySubFloat = Submodel.SubmodelElements["MyCollection.MySubCollection.MySubSubFloat"].Cast<Property<float>>();
+            var mySubFloat = TestSubmodel.SubmodelElements["MyCollection.MySubCollection.MySubSubFloat"].Cast<Property<float>>();
             mySubFloat.Description = new LangStringSet()
             {
                 new LangString("de", "Meine float Property Beschreibung"),
@@ -348,13 +349,13 @@ namespace AdminShellRepoClientServerTests
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection");
             result.Success.Should().BeTrue();
-            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValueAsync<int>().Should().Be(6);
+            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValue<int>().Should().Be(6);
         }
 
         [TestMethod]
         public void Test108_UpdateSubmodelElementValue()
         {
-            var result = UpdateSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble", new ElementValue(1.8d));
+            var result = UpdateSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble", new PropertyValue(new ElementValue(1.8d)));
             result.Success.Should().BeTrue();
         }
 
@@ -363,7 +364,7 @@ namespace AdminShellRepoClientServerTests
         {
             var result = RetrieveSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble");
             result.Success.Should().BeTrue();
-            result.Entity.ToObject<double>().Should().Be(1.8d);
+            result.Entity.GetValue<double>().Should().Be(1.8d);
         }
 
         [TestMethod]
@@ -380,7 +381,7 @@ namespace AdminShellRepoClientServerTests
 
             var result = InvokeOperation("Calculate", request, false);
             result.Success.Should().BeTrue();
-            result.Entity.OutputArguments["Result"].GetValueAsync<double>().Should().Be(24);
+            result.Entity.OutputArguments["Result"].GetValue<double>().Should().Be(24);
 
         }
 
@@ -404,7 +405,7 @@ namespace AdminShellRepoClientServerTests
 
             var handleResult = GetInvocationResult("Calculate", request.RequestId);
             handleResult.Success.Should().BeTrue();
-            handleResult.Entity.OutputArguments["Result"].GetValueAsync<double>().Should().Be(24);
+            handleResult.Entity.OutputArguments["Result"].GetValue<double>().Should().Be(24);
         }
 
         [TestMethod]
@@ -415,13 +416,13 @@ namespace AdminShellRepoClientServerTests
 
             var retrieved = RetrieveSubmodelElements();
             retrieved.Success.Should().BeTrue();
-            retrieved.Entity.Result.Should().NotContainEquivalentOf(Submodel.SubmodelElements["MyCollection"]);
+            retrieved.Entity.Result.Should().NotContainEquivalentOf(TestSubmodel.SubmodelElements["MyCollection"]);
         }
 
         [TestMethod]
         public void Test112_DeleteSubmodelReference()
         {
-            var result = DeleteSubmodelReference(Submodel.Id);
+            var result = DeleteSubmodelReference(TestSubmodel.Id);
             result.Success.Should().BeTrue();
         }
 
@@ -429,22 +430,22 @@ namespace AdminShellRepoClientServerTests
 
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return Client.RetrieveSubmodel(Submodel.Id, level, extent);
+            return Client.RetrieveSubmodel(TestSubmodel.Id, level, extent);
         }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
         {
-            return Client.UpdateSubmodel(Submodel.Id, submodel);
+            return Client.UpdateSubmodel(TestSubmodel.Id, submodel);
         }
 
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return Client.CreateSubmodelElement(Submodel.Id, rootIdShortPath, submodelElement);
+            return Client.CreateSubmodelElement(TestSubmodel.Id, rootIdShortPath, submodelElement);
         }
 
         public IResult DeleteSubmodelElement(string idShortPath)
         {
-            return Client.DeleteSubmodelElement(Submodel.Id, idShortPath);
+            return Client.DeleteSubmodelElement(TestSubmodel.Id, idShortPath);
         }
 
         public IResult<InvocationResponse> GetInvocationResult(string idShortPath, string requestId)
@@ -459,82 +460,82 @@ namespace AdminShellRepoClientServerTests
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)
         {
-            return Client.RetrieveSubmodelElement(Submodel.Id, idShortPath);
+            return Client.RetrieveSubmodelElement(TestSubmodel.Id, idShortPath);
         }
 
         public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
         {
-            return Client.RetrieveSubmodelElements(Submodel.Id);
+            return Client.RetrieveSubmodelElements(TestSubmodel.Id);
         }
 
-        public IResult<IValue> RetrieveSubmodelElementValue(string idShortPath)
+        public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
         {
-            return Client.RetrieveSubmodelElementValue(Submodel.Id, idShortPath);
+            return Client.RetrieveSubmodelElementValue(TestSubmodel.Id, idShortPath);
         }
 
         public IResult<ISubmodelElement> UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return Client.UpdateSubmodelElement(Submodel.Id, rootIdShortPath, submodelElement);
+            return Client.UpdateSubmodelElement(TestSubmodel.Id, rootIdShortPath, submodelElement);
         }
 
-        public IResult UpdateSubmodelElementValue(string idShortPath, IValue value)
+        public IResult UpdateSubmodelElementValue(string idShortPath, ValueScope value)
         {
-            return Client.UpdateSubmodelElementValue(Submodel.Id, idShortPath, value);
+            return Client.UpdateSubmodelElementValue(TestSubmodel.Id, idShortPath, value);
         }
 
         public Task<IResult<ISubmodel>> RetrieveSubmodelAsync(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return Client.RetrieveSubmodelAsync(Submodel.Id, level, extent);
+            return Client.RetrieveSubmodelAsync(TestSubmodel.Id, level, extent);
         }
 
         public Task<IResult> UpdateSubmodelAsync(ISubmodel submodel)
         {
-            return Client.UpdateSubmodelAsync(Submodel.Id, submodel);
+            return Client.UpdateSubmodelAsync(TestSubmodel.Id, submodel);
         }
 
         public Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return Client.CreateSubmodelElementAsync(Submodel.Id, rootIdShortPath, submodelElement);
+            return Client.CreateSubmodelElementAsync(TestSubmodel.Id, rootIdShortPath, submodelElement);
         }
 
         public Task<IResult<ISubmodelElement>> UpdateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            return Client.UpdateSubmodelElementAsync(Submodel.Id, rootIdShortPath, submodelElement);
+            return Client.UpdateSubmodelElementAsync(TestSubmodel.Id, rootIdShortPath, submodelElement);
         }
 
         public Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync()
         {
-            return Client.RetrieveSubmodelElementsAsync(Submodel.Id);
+            return Client.RetrieveSubmodelElementsAsync(TestSubmodel.Id);
         }
 
         public Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string idShortPath)
         {
-            return Client.RetrieveSubmodelElementAsync(Submodel.Id, idShortPath);
+            return Client.RetrieveSubmodelElementAsync(TestSubmodel.Id, idShortPath);
         }
 
-        public Task<IResult<IValue>> RetrieveSubmodelElementValueAsync(string idShortPath)
+        public Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(string idShortPath)
         {
-            return Client.RetrieveSubmodelElementValueAsync(Submodel.Id, idShortPath);
+            return Client.RetrieveSubmodelElementValueAsync(TestSubmodel.Id, idShortPath);
         }
 
-        public Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, IValue value)
+        public Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, ValueScope value)
         {
-            return Client.UpdateSubmodelElementValueAsync(Submodel.Id, idShortPath, value);
+            return Client.UpdateSubmodelElementValueAsync(TestSubmodel.Id, idShortPath, value);
         }
 
         public Task<IResult> DeleteSubmodelElementAsync(string idShortPath)
         {
-            return Client.DeleteSubmodelElementAsync(Submodel.Id, idShortPath);
+            return Client.DeleteSubmodelElementAsync(TestSubmodel.Id, idShortPath);
         }
 
         public Task<IResult<InvocationResponse>> InvokeOperationAsync(string idShortPath, InvocationRequest invocationRequest, bool async = false)
         {
-            return Client.InvokeOperationAsync(Submodel.Id, idShortPath, invocationRequest, async);
+            return Client.InvokeOperationAsync(TestSubmodel.Id, idShortPath, invocationRequest, async);
         }
 
         public Task<IResult<InvocationResponse>> GetInvocationResultAsync(string idShortPath, string requestId)
         {
-            return Client.GetInvocationResultAsync(Submodel.Id, idShortPath, requestId);
+            return Client.GetInvocationResultAsync(TestSubmodel.Id, idShortPath, requestId);
         }
 
         #endregion
@@ -562,7 +563,7 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellClient)Client).UpdateAssetInformationAsync(assetInformation);
         }
 
-        public Task<IResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferencesAsync()
+        public Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync()
         {
             return ((IAssetAdministrationShellClient)Client).RetrieveAllSubmodelReferencesAsync();
         }
@@ -597,7 +598,7 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellInterface)Client).UpdateAssetInformation(assetInformation);
         }
 
-        public IResult<IEnumerable<IReference<ISubmodel>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
         {
             return ((IAssetAdministrationShellInterface)Client).RetrieveAllSubmodelReferences();
         }
@@ -607,9 +608,9 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellInterface)Client).CreateSubmodelReference(submodelRef);
         }
 
-        public IResult DeleteSubmodelReference(string submodelIdentifier)
+        public IResult DeleteSubmodelReference(Identifier id)
         {
-            return ((IAssetAdministrationShellInterface)Client).DeleteSubmodelReference(submodelIdentifier);
+            return ((IAssetAdministrationShellInterface)Client).DeleteSubmodelReference(id);
         }
 
         #endregion
@@ -621,24 +622,24 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellRepositoryClient)RepoClient).CreateAssetAdministrationShellAsync(aas);
         }
 
-        public Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(string aasIdentifier)
+        public Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(Identifier id)
         {
-            return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellAsync(aasIdentifier);
+            return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellAsync(id);
         }
 
-        public Task<IResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShellsAsync()
+        public Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync()
         {
             return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellsAsync();
         }
 
-        public Task<IResult> UpdateAssetAdministrationShellAsync(string aasIdentifier, IAssetAdministrationShell aas)
+        public Task<IResult> UpdateAssetAdministrationShellAsync(Identifier id, IAssetAdministrationShell aas)
         {
-            return ((IAssetAdministrationShellRepositoryClient)RepoClient).UpdateAssetAdministrationShellAsync(aasIdentifier, aas);
+            return ((IAssetAdministrationShellRepositoryClient)RepoClient).UpdateAssetAdministrationShellAsync(id, aas);
         }
 
-        public Task<IResult> DeleteAssetAdministrationShellAsync(string aasIdentifier)
+        public Task<IResult> DeleteAssetAdministrationShellAsync(Identifier id)
         {
-            return ((IAssetAdministrationShellRepositoryClient)RepoClient).DeleteAssetAdministrationShellAsync(aasIdentifier);
+            return ((IAssetAdministrationShellRepositoryClient)RepoClient).DeleteAssetAdministrationShellAsync(id);
         }
 
         public IResult<IAssetAdministrationShell> CreateAssetAdministrationShell(IAssetAdministrationShell aas)
@@ -646,24 +647,24 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellRepositoryInterface)RepoClient).CreateAssetAdministrationShell(aas);
         }
 
-        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(string aasIdentifier)
+        public IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(Identifier id)
         {
-            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShell(aasIdentifier);
+            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShell(id);
         }
 
-        public IResult<IElementContainer<IAssetAdministrationShell>> RetrieveAssetAdministrationShells()
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells()
         {
             return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShells();
         }
 
-        public IResult UpdateAssetAdministrationShell(string aasIdentifier, IAssetAdministrationShell aas)
+        public IResult UpdateAssetAdministrationShell(Identifier id, IAssetAdministrationShell aas)
         {
-            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).UpdateAssetAdministrationShell(aasIdentifier, aas);
+            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).UpdateAssetAdministrationShell(id, aas);
         }
 
-        public IResult DeleteAssetAdministrationShell(string aasIdentifier)
+        public IResult DeleteAssetAdministrationShell(Identifier id)
         {
-            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).DeleteAssetAdministrationShell(aasIdentifier);
+            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).DeleteAssetAdministrationShell(id);
         }
 
         #endregion

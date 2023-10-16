@@ -9,11 +9,9 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace BaSyx.Models.Connectivity
 {
@@ -21,7 +19,7 @@ namespace BaSyx.Models.Connectivity
     public abstract class Descriptor : IServiceDescriptor
     {
         public string IdShort { get; set; }
-        public Identifier Identification { get; set; }
+        public Identifier Id { get; set; }
         public AdministrativeInformation Administration { get; set; }
         public LangStringSet Description { get; set; }
         public LangStringSet DisplayName { get; set; }

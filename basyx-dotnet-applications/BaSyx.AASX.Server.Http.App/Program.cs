@@ -136,7 +136,7 @@ namespace BaSyx.AASX.Server.Http.App
                         foreach (var shellProvider in providers)
                         {
                             var result = registryHttpClient
-                            .DeleteAssetAdministrationShellRegistration(shellProvider.ServiceDescriptor.Identification.Id);
+                            .DeleteAssetAdministrationShellRegistration(shellProvider.ServiceDescriptor.Id.Id);
 
                             logger.Info($"Success: {result.Success} | Messages: {result.Messages.ToString()}");
                         }

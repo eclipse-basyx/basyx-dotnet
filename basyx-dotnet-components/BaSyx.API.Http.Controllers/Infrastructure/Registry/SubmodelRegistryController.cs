@@ -63,10 +63,10 @@ namespace BaSyx.API.Http.Controllers
         {
             if (submodelDescriptor == null)
                 return ResultHandling.NullResult(nameof(submodelDescriptor));
-            if (submodelDescriptor.Identification == null || string.IsNullOrEmpty(submodelDescriptor.Identification.Id))
+            if (submodelDescriptor.Id == null || string.IsNullOrEmpty(submodelDescriptor.Id.Id))
                 return ResultHandling.NullResult("The identification property of the Submodel Descriptor is null or empty");
 
-            string submodelId = ResultHandling.Base64UrlEncode(submodelDescriptor.Identification.Id);
+            string submodelId = ResultHandling.Base64UrlEncode(submodelDescriptor.Id.Id);
 
             var result = serviceProvider.CreateSubmodelRegistration(submodelDescriptor);
             return result.CreateActionResult(CrudOperation.Create, SubmodelRegistryRoutes.SUBMODEL_DESCRIPTOR_ID.Replace("{submodelIdentifier}", submodelId));
@@ -93,7 +93,7 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(submodelIdentifier));
             if (submodelDescriptor == null)
                 return ResultHandling.NullResult(nameof(submodelDescriptor));
-            if (submodelDescriptor.Identification == null || string.IsNullOrEmpty(submodelDescriptor.Identification.Id))
+            if (submodelDescriptor.Id == null || string.IsNullOrEmpty(submodelDescriptor.Id.Id))
                 return ResultHandling.NullResult("The identification property of the Submodel Descriptor is null or empty");
 
             submodelIdentifier = ResultHandling.Base64UrlDecode(submodelIdentifier);

@@ -14,6 +14,7 @@ using BaSyx.Utils.ResultHandling;
 using System.Web;
 using BaSyx.Models.Connectivity;
 using BaSyx.API.Interfaces;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -41,8 +42,8 @@ namespace BaSyx.API.Http.Controllers
         /// <response code="200">Requested Asset Administration Shell Descriptors</response>        
         [HttpGet(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTORS, Name = "GetAllAssetAdministrationShellDescriptors")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(List<AssetAdministrationShellDescriptor>), 200)]
-        public IActionResult GetAllAssetAdministrationShellDescriptors()
+        [ProducesResponseType(typeof(PagedResult<List<AssetAdministrationShellDescriptor>>), 200)]
+        public IActionResult GetAllAssetAdministrationShellDescriptors([FromQuery] string assetKind = null, [FromQuery] string assetType = null)
         {
             var result = serviceProvider.RetrieveAllAssetAdministrationShellRegistrations();
             return result.CreateActionResult(CrudOperation.Retrieve);
@@ -61,10 +62,10 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(AssetAdministrationShellDescriptor), 201)]
         public IActionResult PostAssetAdministrationShellDescriptor([FromBody] IAssetAdministrationShellDescriptor aasDescriptor)
         {
-            if (aasDescriptor.Identification == null || string.IsNullOrEmpty(aasDescriptor.Identification.Id))
+            if (aasDescriptor.Id == null || string.IsNullOrEmpty(aasDescriptor.Id.Id))
                 return ResultHandling.NullResult("The identification property of the Asset Administration Shell Descriptor is null or empty");
 
-            string aasId = ResultHandling.Base64UrlEncode(aasDescriptor.Identification.Id);
+            string aasId = ResultHandling.Base64UrlEncode(aasDescriptor.Id.Id);
 
             var result = serviceProvider.CreateAssetAdministrationShellRegistration(aasDescriptor);
             return result.CreateActionResult(CrudOperation.Create, AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID.Replace("{aasIdentifier}", aasId));
@@ -109,13 +110,13 @@ namespace BaSyx.API.Http.Controllers
         {
             if (string.IsNullOrEmpty(aasIdentifier))
                 return ResultHandling.NullResult(nameof(aasIdentifier));
-            if(aasDescriptor.Identification == null || string.IsNullOrEmpty(aasDescriptor.Identification.Id))
+            if(aasDescriptor.Id == null || string.IsNullOrEmpty(aasDescriptor.Id.Id))
                 return ResultHandling.NullResult("The identification property of the Asset Administration Shell Descriptor is null or empty");
 
             aasIdentifier = ResultHandling.Base64UrlDecode(aasIdentifier);
 
-            if (aasIdentifier != aasDescriptor.Identification.Id)
-                return ResultHandling.BadRequestResult($"Path parameter {aasIdentifier} does not equal Asset Administration Shell Descriptor identification property {aasDescriptor.Identification.Id}");
+            if (aasIdentifier != aasDescriptor.Id.Id)
+                return ResultHandling.BadRequestResult($"Path parameter {aasIdentifier} does not equal Asset Administration Shell Descriptor identification property {aasDescriptor.Id.Id}");
             
             var result = serviceProvider.UpdateAssetAdministrationShellRegistration(aasIdentifier, aasDescriptor);
             return result.CreateActionResult(CrudOperation.Create, "api/v1/registry/" + HttpUtility.UrlEncode(aasIdentifier));
@@ -165,11 +166,11 @@ namespace BaSyx.API.Http.Controllers
         {
             if (submodelDescriptor == null)
                 return ResultHandling.NullResult(nameof(submodelDescriptor));
-            if (submodelDescriptor.Identification == null || string.IsNullOrEmpty(submodelDescriptor.Identification.Id))
+            if (submodelDescriptor.Id == null || string.IsNullOrEmpty(submodelDescriptor.Id.Id))
                 return ResultHandling.NullResult("The identification property of the Submodel Descriptor is null or empty");
 
             aasIdentifier = ResultHandling.Base64UrlDecode(aasIdentifier);
-            string submodelId = ResultHandling.Base64UrlEncode(submodelDescriptor.Identification.Id);
+            string submodelId = ResultHandling.Base64UrlEncode(submodelDescriptor.Id.Id);
 
             var result = serviceProvider.CreateSubmodelRegistration(aasIdentifier, submodelDescriptor);
             return result.CreateActionResult(CrudOperation.Create, SubmodelRegistryRoutes.SUBMODEL_DESCRIPTOR_ID.Replace("{submodelIdentifier}", submodelId));
@@ -188,7 +189,7 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(submodelIdentifier));
             if (submodelDescriptor == null)
                 return ResultHandling.NullResult(nameof(submodelDescriptor));
-            if (submodelDescriptor.Identification == null || string.IsNullOrEmpty(submodelDescriptor.Identification.Id))
+            if (submodelDescriptor.Id == null || string.IsNullOrEmpty(submodelDescriptor.Id.Id))
                 return ResultHandling.NullResult("The identification property of the Submodel Descriptor is null or empty");
 
             aasIdentifier = ResultHandling.Base64UrlDecode(aasIdentifier);

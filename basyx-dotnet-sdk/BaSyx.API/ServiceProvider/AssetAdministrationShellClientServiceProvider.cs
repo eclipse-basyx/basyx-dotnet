@@ -15,6 +15,7 @@ using BaSyx.Models.Connectivity;
 using System;
 using BaSyx.API.Clients;
 using System.Linq;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -95,7 +96,7 @@ namespace BaSyx.API.ServiceProvider
             return _shellClient.UpdateAssetInformation(assetInformation);
         }
 
-        public IResult<IEnumerable<IReference<ISubmodel>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
         {
             return _shellClient.RetrieveAllSubmodelReferences();
         }
@@ -105,9 +106,9 @@ namespace BaSyx.API.ServiceProvider
             return _shellClient.CreateSubmodelReference(submodelRef);
         }
 
-        public IResult DeleteSubmodelReference(string submodelIdentifier)
+        public IResult DeleteSubmodelReference(Identifier id)
         {
-            return _shellClient.DeleteSubmodelReference(submodelIdentifier);
+            return _shellClient.DeleteSubmodelReference(id);
         }
 
         public virtual IResult<IEnumerable<ISubmodelServiceProvider>> GetSubmodelServiceProviders()
@@ -118,32 +119,32 @@ namespace BaSyx.API.ServiceProvider
             return new Result<IEnumerable<ISubmodelServiceProvider>>(true, SubmodelServiceProviders.Values?.ToList());
         }
 
-        public virtual IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(string submodelIdentifier, ISubmodelServiceProvider submodelServiceProvider)
+        public virtual IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(Identifier id, ISubmodelServiceProvider submodelServiceProvider)
         {
-            if (SubmodelServiceProviders.ContainsKey(submodelIdentifier))
-                SubmodelServiceProviders[submodelIdentifier] = submodelServiceProvider;
+            if (SubmodelServiceProviders.ContainsKey(id))
+                SubmodelServiceProviders[id] = submodelServiceProvider;
             else
-                SubmodelServiceProviders.Add(submodelIdentifier, submodelServiceProvider);
+                SubmodelServiceProviders.Add(id, submodelServiceProvider);
 
             return new Result<ISubmodelDescriptor>(true, submodelServiceProvider.ServiceDescriptor);
         }
-        public virtual IResult<ISubmodelServiceProvider> GetSubmodelServiceProvider(string submodelId)
+        public virtual IResult<ISubmodelServiceProvider> GetSubmodelServiceProvider(Identifier id)
         {
-            if (SubmodelServiceProviders.TryGetValue(submodelId, out ISubmodelServiceProvider submodelServiceProvider))
+            if (SubmodelServiceProviders.TryGetValue(id, out ISubmodelServiceProvider submodelServiceProvider))
                 return new Result<ISubmodelServiceProvider>(true, submodelServiceProvider);
             else
-                return new Result<ISubmodelServiceProvider>(false, new NotFoundMessage(submodelId));
+                return new Result<ISubmodelServiceProvider>(false, new NotFoundMessage(id));
         }
 
-        public virtual IResult UnregisterSubmodelServiceProvider(string submodelIdentifier)
+        public virtual IResult UnregisterSubmodelServiceProvider(Identifier id)
         {
-            if (SubmodelServiceProviders.ContainsKey(submodelIdentifier))
+            if (SubmodelServiceProviders.ContainsKey(id))
             {
-                SubmodelServiceProviders.Remove(submodelIdentifier);
+                SubmodelServiceProviders.Remove(id);
                 return new Result(true);
             }
             else
-                return new Result(false, new NotFoundMessage(submodelIdentifier));
+                return new Result(false, new NotFoundMessage(id));
         }
     }
 }

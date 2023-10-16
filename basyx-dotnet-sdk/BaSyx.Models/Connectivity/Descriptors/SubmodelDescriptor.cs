@@ -9,9 +9,9 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
-
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Connectivity
 {
@@ -23,6 +23,7 @@ namespace BaSyx.Models.Connectivity
         public IEnumerable<IReference> SupplementalSemanticIds { get; set; }
         public override ModelType ModelType => ModelType.SubmodelDescriptor;
 
+        [JsonConstructor]
         public SubmodelDescriptor(IEnumerable<IEndpoint> endpoints) : base (endpoints)
         {
             SupplementalSemanticIds = new List<IReference>();
@@ -31,7 +32,7 @@ namespace BaSyx.Models.Connectivity
         public SubmodelDescriptor(ISubmodel submodel, IEnumerable<IEndpoint> endpoints) : this(endpoints)
         {
             IdShort = submodel.IdShort;
-            Identification = submodel.Id;
+            Id = submodel.Id;
             Administration = submodel.Administration;
             Description = submodel.Description;
             DisplayName = submodel.DisplayName;

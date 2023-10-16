@@ -46,7 +46,7 @@ namespace SubmodelRepoClientServerTests
             MainSubmodel = TestSubmodel.GetSubmodel("MainSubmodel");
             TestingSubmodel = TestSubmodel.GetSubmodel("TestSubmodel");
             string basePath = SubmodelRepositoryRoutes.SUBMODEL_BYID.Replace("{submodelIdentifier}", StringOperations.Base64UrlEncode(MainSubmodel.Id));
-            Client = new SubmodelHttpClient(new Uri(Server.ServerUrl + basePath));
+            Client = new SubmodelHttpClient(new Uri(Server.ServerUrl + basePath), false);
             RepoClient = new SubmodelRepositoryHttpClient(new Uri(Server.ServerUrl));
         }
 
@@ -69,7 +69,7 @@ namespace SubmodelRepoClientServerTests
         {
             var result = RetrieveSubmodels();
             result.Success.Should().BeTrue();
-            result.Entity.Should().HaveCount(2);
+            result.Entity.Result.Should().HaveCount(2);
             //result.Entity.Should().ContainEquivalentOf(MainSubmodel);
             //result.Entity.Should().ContainEquivalentOf(TestingSubmodel);
         }
@@ -197,7 +197,7 @@ namespace SubmodelRepoClientServerTests
         public void Test105_RetrieveSubmodelElement()
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubSubFloat");
-            result.Entity.GetValueAsync<float>().Should().Be(3.3f);
+            result.Entity.GetValue<float>().Should().Be(3.3f);
         }
 
         [TestMethod]
@@ -221,7 +221,7 @@ namespace SubmodelRepoClientServerTests
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection");
             result.Success.Should().BeTrue();
-            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValueAsync<int>().Should().Be(6);
+            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValue<int>().Should().Be(6);
         }
 
         [TestMethod]
@@ -253,7 +253,7 @@ namespace SubmodelRepoClientServerTests
 
             var result = InvokeOperation("Calculate", request, false);
             result.Success.Should().BeTrue();
-            result.Entity.OutputArguments["Result"].GetValueAsync<double>().Should().Be(24);
+            result.Entity.OutputArguments["Result"].GetValue<double>().Should().Be(24);
 
         }
 
@@ -277,7 +277,7 @@ namespace SubmodelRepoClientServerTests
 
             var handleResult = GetInvocationResult("Calculate", request.RequestId);
             handleResult.Success.Should().BeTrue();
-            handleResult.Entity.OutputArguments["Result"].GetValueAsync<double>().Should().Be(24);
+            handleResult.Entity.OutputArguments["Result"].GetValue<double>().Should().Be(24);
         }
 
         [TestMethod]
@@ -412,24 +412,24 @@ namespace SubmodelRepoClientServerTests
             return ((ISubmodelRepositoryClient)RepoClient).CreateSubmodelAsync(submodel);
         }
 
-        public Task<IResult<ISubmodel>> RetrieveSubmodelAsync(string submodelIdentifier)
+        public Task<IResult<ISubmodel>> RetrieveSubmodelAsync(Identifier id)
         {
-            return ((ISubmodelRepositoryClient)RepoClient).RetrieveSubmodelAsync(submodelIdentifier);
+            return ((ISubmodelRepositoryClient)RepoClient).RetrieveSubmodelAsync(id);
         }
 
-        public Task<IResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsAsync()
+        public Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync()
         {
             return ((ISubmodelRepositoryClient)RepoClient).RetrieveSubmodelsAsync();
         }
 
-        public Task<IResult> UpdateSubmodelAsync(string submodelIdentifier, ISubmodel submodel)
+        public Task<IResult> UpdateSubmodelAsync(Identifier id, ISubmodel submodel)
         {
-            return ((ISubmodelRepositoryClient)RepoClient).UpdateSubmodelAsync(submodelIdentifier, submodel);
+            return ((ISubmodelRepositoryClient)RepoClient).UpdateSubmodelAsync(id, submodel);
         }
 
-        public Task<IResult> DeleteSubmodelAsync(string submodelIdentifier)
+        public Task<IResult> DeleteSubmodelAsync(Identifier id)
         {
-            return ((ISubmodelRepositoryClient)RepoClient).DeleteSubmodelAsync(submodelIdentifier);
+            return ((ISubmodelRepositoryClient)RepoClient).DeleteSubmodelAsync(id);
         }
 
         public IResult<ISubmodel> CreateSubmodel(ISubmodel submodel)
@@ -437,24 +437,24 @@ namespace SubmodelRepoClientServerTests
             return ((ISubmodelRepositoryInterface)RepoClient).CreateSubmodel(submodel);
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(string submodelIdentifier)
+        public IResult<ISubmodel> RetrieveSubmodel(Identifier id)
         {
-            return ((ISubmodelRepositoryInterface)RepoClient).RetrieveSubmodel(submodelIdentifier);
+            return ((ISubmodelRepositoryInterface)RepoClient).RetrieveSubmodel(id);
         }
 
-        public IResult<IElementContainer<ISubmodel>> RetrieveSubmodels()
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels()
         {
             return ((ISubmodelRepositoryInterface)RepoClient).RetrieveSubmodels();
         }
 
-        public IResult UpdateSubmodel(string submodelIdentifier, ISubmodel submodel)
+        public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)
         {
-            return ((ISubmodelRepositoryInterface)RepoClient).UpdateSubmodel(submodelIdentifier, submodel);
+            return ((ISubmodelRepositoryInterface)RepoClient).UpdateSubmodel(id, submodel);
         }
 
-        public IResult DeleteSubmodel(string submodelIdentifier)
+        public IResult DeleteSubmodel(Identifier id)
         {
-            return ((ISubmodelRepositoryInterface)RepoClient).DeleteSubmodel(submodelIdentifier);
+            return ((ISubmodelRepositoryInterface)RepoClient).DeleteSubmodel(id);
         }
 
         #endregion

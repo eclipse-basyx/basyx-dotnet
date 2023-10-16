@@ -125,7 +125,7 @@ namespace BaSyx.WebUI
                                     var submodelRefs_retrieved = await client.RetrieveAllSubmodelReferencesAsync();
                                     if (submodelRefs_retrieved.Success)
                                     {
-                                        foreach (var submodelRef in submodelRefs_retrieved.Entity)
+                                        foreach (var submodelRef in submodelRefs_retrieved.Entity.Result)
                                         {
                                             var submodelClient = client.CreateSubmodelClient(submodelRef.First.Value);
                                             var submodelProvider = submodelClient.CreateServiceProvider();

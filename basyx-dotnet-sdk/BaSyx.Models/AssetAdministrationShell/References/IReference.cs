@@ -9,10 +9,8 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -46,7 +44,7 @@ namespace BaSyx.Models.AdminShell
         /// Unique reference in its name space. 
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "keys")]
-        List<IKey> Keys { get; }
+        IEnumerable<IKey> Keys { get; }
 
         /// <summary>
         /// Returns the official string representation of a Reference
