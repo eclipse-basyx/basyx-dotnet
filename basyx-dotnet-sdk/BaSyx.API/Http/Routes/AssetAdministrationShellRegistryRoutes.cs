@@ -19,18 +19,18 @@ namespace BaSyx.API.Http
         /// <summary>
         /// Root route
         /// </summary>
-        public const string SHELL_DESCRIPTORS = "/registry/shell-descriptors";
+        public const string SHELL_DESCRIPTORS = "/shell-descriptors";
         /// <summary>
         /// Specific Asset Administration Shell Descriptor
         /// </summary>
-        public const string SHELL_DESCRIPTOR_ID = "/registry/shell-descriptors/{aasIdentifier}";
+        public const string SHELL_DESCRIPTOR_ID = "/shell-descriptors/{aasIdentifier}";
         /// <summary>
         /// Submodel Descriptors
         /// </summary>
-        public const string SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTORS = "/registry/shell-descriptors/{aasIdentifier}/submodel-descriptors";
+        public const string SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTORS = "/shell-descriptors/{aasIdentifier}/submodel-descriptors";
         /// <summary>
         /// Specific Submodel Descriptor
         /// </summary>
-        public const string SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTOR_ID = "/registry/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}";
+        public const string SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTOR_ID = "/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}";
     }
 }
