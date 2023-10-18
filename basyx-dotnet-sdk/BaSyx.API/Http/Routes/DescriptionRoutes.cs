@@ -20,6 +20,11 @@ namespace BaSyx.API.Http
         /// Root route
         /// </summary>
         public const string DESCRIPTION = "/description";
+
+        /// <summary>
+        /// Root route
+        /// </summary>
+        public const string DESCRIPTOR = "/descriptor";
     }
 
     public static class Profiles

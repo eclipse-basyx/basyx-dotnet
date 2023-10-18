@@ -11,6 +11,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BaSyx.Models.Connectivity;
 using BaSyx.Utils.ResultHandling;
+using System;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -38,10 +39,25 @@ namespace BaSyx.API.Http.Controllers
         /// <response code="200">Requested Description</response>
         [HttpGet(DescriptionRoutes.DESCRIPTION, Name = "GetDescription")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IServiceDescriptor), 200)]
+        [ProducesResponseType(typeof(ServiceDescription), 200)]
         [ProducesResponseType(typeof(Result), 401)]
         [ProducesResponseType(typeof(Result), 403)]
         public IActionResult GetDescription()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns the Service Descriptor
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">Requested Service Descriptor</response>
+        [HttpGet(DescriptionRoutes.DESCRIPTOR, Name = "GetDescriptor")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IServiceDescriptor), 200)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        public IActionResult GetDescriptor()
         {
             return new OkObjectResult(serviceDescriptor);
         }

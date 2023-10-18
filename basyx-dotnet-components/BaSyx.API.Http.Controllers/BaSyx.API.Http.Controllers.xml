@@ -741,6 +741,13 @@
             <returns></returns>
             <response code="200">Requested Description</response>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.DescriptionController.GetDescriptor">
+            <summary>
+            Returns the Service Descriptor
+            </summary>
+            <returns></returns>
+            <response code="200">Requested Service Descriptor</response>
+        </member>
         <member name="T:BaSyx.API.Http.Controllers.AssetAdministrationShellRegistryController">
             <summary>
             The Asset Administration Shell Registry Controller

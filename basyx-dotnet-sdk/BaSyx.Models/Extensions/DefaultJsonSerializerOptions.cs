@@ -13,6 +13,15 @@ namespace BaSyx.Models.Extensions
     {
         JsonSerializerOptions _options;
 
+        public static JsonSerializerOptions CreateDefaultJsonSerializerOptions(IDependencyInjectionExtension extension = null)
+        {
+            DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
+            if(extension != null)
+                options.AddDependencyInjection(extension);
+            options.AddFullSubmodelElementConverter();
+            return options.Build();
+        }
+
         public DefaultJsonSerializerOptions()
         {
             _options = new JsonSerializerOptions();

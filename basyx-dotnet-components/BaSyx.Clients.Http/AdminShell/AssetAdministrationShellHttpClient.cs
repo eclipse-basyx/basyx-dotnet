@@ -17,7 +17,6 @@ using System.Net.Http;
 using BaSyx.Models.Connectivity;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -25,7 +24,6 @@ using BaSyx.Utils.Extensions;
 using BaSyx.API.Http;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.DependencyInjection;
-using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.Clients.AdminShell.Http
@@ -111,7 +109,8 @@ namespace BaSyx.Clients.AdminShell.Http
 
         public async Task<IResult<IAssetAdministrationShellDescriptor>> RetrieveAssetAdministrationShellDescriptorAsync()
         {
-            Uri uri = GetPath(DescriptionRoutes.DESCRIPTION);
+            string path = Endpoint.ProtocolInformation.EndpointAddress.Trim('/') + DescriptionRoutes.DESCRIPTOR;
+            Uri uri = new Uri(path);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<IAssetAdministrationShellDescriptor>(response, response.Entity);
