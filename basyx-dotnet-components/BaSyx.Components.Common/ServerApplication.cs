@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Components.Common.Abstractions;
+using BaSyx.Models.Extensions;
 using BaSyx.Utils.Assembly;
 using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling;
@@ -43,6 +44,7 @@ namespace BaSyx.Components.Common
         private bool _secure = false;
         private string _defaultRoute = null;
         private string _pathBase = null;
+        private JsonSerializerOptions _jsonSerializerOptions = null;
 
         private readonly List<Action<IApplicationBuilder>> AppBuilderPipeline;
         private readonly List<Action<IServiceCollection>> ServiceBuilderPipeline;
@@ -85,6 +87,8 @@ namespace BaSyx.Components.Common
 
             Settings = settings ?? ServerSettings.LoadSettingsFromFile(ServerSettings.FileName) ?? throw new ArgumentNullException(nameof(settings));
             ControllerAssembly = Assembly.Load(CONTROLLER_ASSEMBLY_NAME);
+
+            _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
             webHostBuilderArgs ??= Environment.GetCommandLineArgs();
             WebHostBuilder = DefaultWebHostBuilder
@@ -383,7 +387,7 @@ namespace BaSyx.Components.Common
                 Result result = new Result(exception);
                 result.Messages.Add(new Message(MessageType.Exception, exception.StackTrace));
 
-                string resultMessage = JsonSerializer.Serialize(result);
+                string resultMessage = JsonSerializer.Serialize(result, _jsonSerializerOptions);
 
                 await context.Response.WriteAsync(resultMessage);
             }
@@ -397,7 +401,7 @@ namespace BaSyx.Components.Common
                 new Message(MessageType.Error, "Path: " + context.HttpContext.Request.Path.Value,
                 context.HttpContext.Response.StatusCode.ToString()));
 
-            string resultMessage = JsonSerializer.Serialize(result);
+            string resultMessage = JsonSerializer.Serialize(result, _jsonSerializerOptions);
 
             await context.HttpContext.Response.WriteAsync(resultMessage);
         }

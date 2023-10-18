@@ -723,23 +723,23 @@
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetOperationAsyncResult(System.String,System.String,System.String)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncResult(System.String,System.String)"/>
         </member>
-        <member name="T:BaSyx.API.Http.Controllers.DescriptionController">
+        <member name="T:BaSyx.API.Http.Controllers.DescriptorController">
             <summary>
-            The Description Controller
+            The Descriptor Controller
             </summary>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.DescriptionController.#ctor(BaSyx.Models.Connectivity.IServiceDescriptor)">
+        <member name="M:BaSyx.API.Http.Controllers.DescriptorController.#ctor(BaSyx.Models.Connectivity.IServiceDescriptor)">
             <summary>
-            The constructor for the Description API
+            The constructor for the Descriptor Controller
             </summary>
             <param name="descriptor">The service descriptor.</param>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.DescriptionController.GetDescription">
+        <member name="M:BaSyx.API.Http.Controllers.DescriptorController.GetDescriptor">
             <summary>
-            Returns the self-describing information of a network resource (ServiceDescription)
+            Returns the descriptor
             </summary>
             <returns></returns>
-            <response code="200">Requested Description</response>
+            <response code="200">Returns the descriptor</response>
         </member>
         <member name="T:BaSyx.API.Http.Controllers.AssetAdministrationShellRegistryController">
             <summary>

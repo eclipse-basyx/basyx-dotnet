@@ -20,8 +20,8 @@
       <!-- Password for the certificate -->
       <ServerCertificatePassword/>
     </Security>
-    <!-- Default route of the server. Navigates automatically to /ui if left empty -->
-    <DefaultRoute/>
+    <!-- The DefaultRoute of the server navigates -->
+    <DefaultRoute>/ui</DefaultRoute>
   </ServerConfig>
   <!-- Optional Web-UI configuration -->
   <UIConfig>
@@ -34,6 +34,6 @@
   </UIConfig>
   <!-- Add whatever you like for later use in your code -->
   <Miscellaneous>
-    <DiscoveryActivated>false</DiscoveryActivated>
+    <DiscoveryActivated>true</DiscoveryActivated>
   </Miscellaneous>
 </ServerSettings>

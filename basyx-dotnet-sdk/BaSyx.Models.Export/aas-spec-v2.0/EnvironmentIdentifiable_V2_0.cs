@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.AdminShell;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
 
@@ -16,19 +15,22 @@ namespace BaSyx.Models.Export
 {
     public class EnvironmentIdentifiable_V2_0 : EnvironmentReferable_V2_0
     {
-        private Identifier _identifier;
+        private EnvironmentIdentifier_V2_0 _identifier;
         [JsonProperty("identification", Order = -2)]
         [XmlElement("identification")]
-        public Identifier Identification
+        public EnvironmentIdentifier_V2_0 Identification
         {
             get { return _identifier; }
             set
             {
-               _identifier = new Identifier(value.Id);
+                if (value.IdType == KeyType_V2_0.URI)
+                    _identifier = new EnvironmentIdentifier_V2_0(value.Id, KeyType_V2_0.IRI);
+                else
+                    _identifier = new EnvironmentIdentifier_V2_0(value.Id, value.IdType);
             }
         }
         [JsonProperty("administration", Order = -1)]
         [XmlElement("administration")]
-        public AdministrativeInformation Administration { get; set; }
+        public EnvironmentAdministrativeInformation_V2_0 Administration { get; set; }
     }
 }

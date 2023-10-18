@@ -33,6 +33,8 @@ namespace BaSyx.Models.Export
         Undefined,
         [EnumMember(Value = "Custom")]
         Custom,
+        [EnumMember(Value = "URI")]
+        URI,
         [EnumMember(Value = "IRI")]
         IRI,
         [EnumMember(Value = "IRDI")]

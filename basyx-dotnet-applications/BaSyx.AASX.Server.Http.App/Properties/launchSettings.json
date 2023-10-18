@@ -2,6 +2,7 @@
   "profiles": {
     "BaSyx.AASX.Server.Http.App": {
       "commandName": "Project",
+      "commandLineArgs": "MyAssetPackage.aasx",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

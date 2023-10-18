@@ -42,7 +42,7 @@ namespace BaSyx.Registry.Server.Http
                 {
                 options.Conventions.Add(new ControllerConvention(this)
                     .Include(typeof(AssetAdministrationShellRegistryController))
-                    .Include(typeof(DescriptorController)));
+                    .Include(typeof(DescriptionController)));
                 });
             });
         }

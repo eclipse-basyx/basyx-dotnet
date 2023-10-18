@@ -17,6 +17,7 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Models.Export;
 using BaSyx.Registry.Client.Http;
 using BaSyx.Utils.Settings;
+using BaSyx.Utils.Extensions;
 using CommandLine;
 using NLog;
 using NLog.Web;
@@ -26,7 +27,7 @@ using System.IO;
 using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
+using BaSyx.API.Http;
 
 namespace BaSyx.AASX.Server.Http.App
 {
@@ -36,7 +37,7 @@ namespace BaSyx.AASX.Server.Http.App
         private static FileSystemWatcher watcher;
         private static AssetAdministrationShellRepositoryHttpServer repositoryServer;
         private static AssetAdministrationShellRepositoryServiceProvider repositoryService;
-        private static List<HttpProtocol> endpoints;
+        private static List<Endpoint> endpoints;
         private static ServerSettings serverSettings;
         private static RegistryHttpClient registryHttpClient;
 
@@ -86,7 +87,7 @@ namespace BaSyx.AASX.Server.Http.App
                                watcher.EnableRaisingEvents = true;
                                watcher.Changed += Watcher_Changed;
                            }
-                           else if (System.IO.File.Exists(o.InputPath))
+                           else if (File.Exists(o.InputPath))
                            {
                                inputFiles = new string[] { o.InputPath };
                            }
@@ -117,7 +118,13 @@ namespace BaSyx.AASX.Server.Http.App
                 repositoryServer = new AssetAdministrationShellRepositoryHttpServer(serverSettings);
                 repositoryServer.WebHostBuilder.UseNLog();
                 repositoryService = new AssetAdministrationShellRepositoryServiceProvider();
-                repositoryService.UseAutoEndpointRegistration(serverSettings.ServerConfig);
+                endpoints = serverSettings.ServerConfig.Hosting.Urls.ConvertAll(c =>
+                {
+                    string address = c.Replace("+", "127.0.0.1");
+                    logger.Info("Using " + address + " as base endpoint url");
+                    return new Endpoint(address, InterfaceName.AssetAdministrationShellRepositoryInterface);
+                });
+                repositoryService.UseDefaultEndpointRegistration(endpoints);
                 repositoryServer.SetServiceProvider(repositoryService);
 
                 repositoryServer.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
@@ -155,7 +162,7 @@ namespace BaSyx.AASX.Server.Http.App
 
         private static void LoadAASX(string aasxFilePath)
         {
-            using (BaSyx.Models.Export.AASX_V2_0 aasx = new BaSyx.Models.Export.AASX_V2_0(aasxFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (AASX_V2_0 aasx = new AASX_V2_0(aasxFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 AssetAdministrationShellEnvironment_V2_0 environment = aasx.GetEnvironment_V2_0();
                 if (environment == null)
@@ -187,8 +194,8 @@ namespace BaSyx.AASX.Server.Http.App
                 var aasServiceEndpoints = endpoints.ConvertAll(e =>
                 {
                     return new Endpoint(
-                        new Uri(e.Uri, 
-                        new Uri("/shells/" + HttpUtility.UrlEncode(shell.Id), UriKind.Relative)), InterfaceName.AssetAdministrationShellRepositoryInterface);
+                        new Uri(e.ProtocolInformation.Uri, 
+                        new Uri(AssetAdministrationShellRepositoryRoutes.SHELLS + "/" + shell.Id.Id.Base64UrlEncode(), UriKind.Relative)), InterfaceName.AssetAdministrationShellInterface);
                 });
 
                 aasServiceProvider.UseDefaultEndpointRegistration(aasServiceEndpoints);

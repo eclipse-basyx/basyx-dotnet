@@ -90,39 +90,39 @@ namespace BaSyx.API.Http.Controllers.PackageService
             //return fileResult;
         }
 
-        /// <summary>
-        /// Returns the thumbnail of the AASX package
-        /// </summary>
-        /// <returns>AASX Package as download</returns>
-        /// <response code="200">Success</response>     
-        [HttpGet("aasx/thumbnail", Name = "GetThumbnail")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public IActionResult GetThumbnail()
-        {
-            IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
-            var files = fileProvider.GetDirectoryContents("");
-            if (files?.Count() > 0)
-            {
-                foreach (var file in files)
-                {
-                    if (file.IsDirectory)
-                        continue;
+        ///// <summary>
+        ///// Returns the thumbnail of the AASX package
+        ///// </summary>
+        ///// <returns>AASX Package as download</returns>
+        ///// <response code="200">Success</response>     
+        //[HttpGet("aasx/thumbnail", Name = "GetThumbnail")]
+        //[ProducesResponseType(200)]
+        //[ProducesResponseType(404)]
+        //public IActionResult GetThumbnail()
+        //{
+        //    IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
+        //    var files = fileProvider.GetDirectoryContents("");
+        //    if (files?.Count() > 0)
+        //    {
+        //        foreach (var file in files)
+        //        {
+        //            if (file.IsDirectory)
+        //                continue;
 
-                    string fileName = file.Name.ToLower();
-                    if (fileName.Contains(".jpg") ||
-                        fileName.Contains(".jpeg") ||
-                        fileName.Contains(".png") ||
-                        fileName.Contains(".bmp") ||
-                        fileName.Contains(".gif"))
-                    {
-                        if (MimeTypes.TryGetContentType(file.PhysicalPath, out string contentType))
-                            return File(file.CreateReadStream(), contentType);
-                    }
-                }
-            }
-            return NotFound();
-        }
+        //            string fileName = file.Name.ToLower();
+        //            if (fileName.Contains(".jpg") ||
+        //                fileName.Contains(".jpeg") ||
+        //                fileName.Contains(".png") ||
+        //                fileName.Contains(".bmp") ||
+        //                fileName.Contains(".gif"))
+        //            {
+        //                if (MimeTypes.TryGetContentType(file.PhysicalPath, out string contentType))
+        //                    return File(file.CreateReadStream(), contentType);
+        //            }
+        //        }
+        //    }
+        //    return NotFound();
+        //}
 
         //TODO
         //private void AddThumbnailToAASX(IFileProvider fileProvider, AASX_V2_0 aasx)

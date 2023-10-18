@@ -30,6 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="aas-spec-v2.0\Resources\EnvironmentKeyType_V2_0.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="aas-spec-v3.0\Resources\AAS.xsd" />
     <None Remove="aas-spec-v3.0\Resources\AAS_ABAC.xsd" />
     <None Remove="aas-spec-v3.0\Resources\IEC61360.xsd" />

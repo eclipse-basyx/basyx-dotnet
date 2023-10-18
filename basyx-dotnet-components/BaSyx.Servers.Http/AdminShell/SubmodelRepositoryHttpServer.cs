@@ -45,7 +45,7 @@ namespace BaSyx.Servers.AdminShell.Http
                 {
                     options.Conventions.Add(new ControllerConvention(this)
                         .Include(typeof(SubmodelRepositoryController))
-                        .Include(typeof(DescriptorController)));
+                        .Include(typeof(DescriptionController)));
                 });
             });
         }       

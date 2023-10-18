@@ -70,13 +70,6 @@
             <returns>AASX Package as download</returns>
             <response code="200">Success</response>     
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.PackageService.PackageController.GetThumbnail">
-            <summary>
-            Returns the thumbnail of the AASX package
-            </summary>
-            <returns>AASX Package as download</returns>
-            <response code="200">Success</response>     
-        </member>
         <member name="T:BaSyx.API.Http.Controllers.PackageService.SerializationController">
             <summary>
             The Serialization Controller

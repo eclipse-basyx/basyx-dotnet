@@ -8,40 +8,40 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using BaSyx.Utils.ResultHandling;
 using BaSyx.Models.Connectivity;
-using BaSyx.API.Interfaces;
+using BaSyx.Utils.ResultHandling;
 
 namespace BaSyx.API.Http.Controllers
 {
     /// <summary>
-    /// The Descriptor Controller
+    /// The Description Controller
     /// </summary>
     [ApiController]
-    public class DescriptorController : Controller
+    public class DescriptionController : Controller
     {
         private readonly IServiceDescriptor serviceDescriptor;
 
         /// <summary>
-        /// The constructor for the Descriptor Controller
+        /// The constructor for the Description API
         /// </summary>
         /// <param name="descriptor">The service descriptor.</param>
-        public DescriptorController(IServiceDescriptor descriptor)
+        public DescriptionController(IServiceDescriptor descriptor)
         {
             serviceDescriptor = descriptor;
         }
 
         /// <summary>
-        /// Returns the descriptor
+        /// Returns the self-describing information of a network resource (ServiceDescription)
         /// </summary>
         /// <returns></returns>
-        /// <response code="200">Returns the descriptor</response>
-        [HttpGet(DescriptorRoutes.DESCRIPTOR, Name = "GetDescriptor")]
+        /// <response code="200">Requested Description</response>
+        [HttpGet(DescriptionRoutes.DESCRIPTION, Name = "GetDescription")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(IServiceDescriptor), 200)]
-        public IActionResult GetDescriptor()
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        public IActionResult GetDescription()
         {
             return new OkObjectResult(serviceDescriptor);
         }

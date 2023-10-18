@@ -13,8 +13,8 @@
         <!-- <Url>https://+:5479</Url> -->
       </Urls>
     </Hosting>
-    <!-- The DefaultRoute of the server navigates /ui if the following element is left empty. You need that only in special cases. -->
-    <DefaultRoute/>
+    <!-- The DefaultRoute of the server navigates -->
+    <DefaultRoute>/ui</DefaultRoute>
   </ServerConfig>
   <!-- Add whatever you like for later user -->
   <Miscellaneous>

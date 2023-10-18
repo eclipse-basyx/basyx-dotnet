@@ -111,7 +111,7 @@ namespace BaSyx.Clients.AdminShell.Http
 
         public async Task<IResult<IAssetAdministrationShellDescriptor>> RetrieveAssetAdministrationShellDescriptorAsync()
         {
-            Uri uri = GetPath(DescriptorRoutes.DESCRIPTOR);
+            Uri uri = GetPath(DescriptionRoutes.DESCRIPTION);
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<IAssetAdministrationShellDescriptor>(response, response.Entity);

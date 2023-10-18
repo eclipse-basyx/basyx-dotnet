@@ -54,11 +54,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <ProjectReference Include="..\..\basyx-dotnet-sdk\BaSyx.Models.Export\BaSyx.Models.Export.csproj" />
   </ItemGroup>
 

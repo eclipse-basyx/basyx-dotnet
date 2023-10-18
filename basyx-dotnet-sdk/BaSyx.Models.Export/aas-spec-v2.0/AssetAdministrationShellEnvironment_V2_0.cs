@@ -237,10 +237,14 @@ namespace BaSyx.Models.Export
             {
                 ConceptDescription conceptDescription = new ConceptDescription()
                 {
-                    Administration = envConceptDescription.Administration,
+                    Administration = new AdministrativeInformation()
+                    {
+                        Revision = envConceptDescription.Administration?.Revision,
+                        Version = envConceptDescription.Administration?.Version
+                    },
                     Category = envConceptDescription.Category,
                     Description = envConceptDescription.Description,
-                    Id = envConceptDescription.Identification,
+                    Id = new Identifier(envConceptDescription.Identification.Id),
                     IdShort = envConceptDescription.IdShort,
                     IsCaseOf = envConceptDescription.IsCaseOf?.ConvertAll(c => c.ToReference_V2_0()),
                     EmbeddedDataSpecifications = (envConceptDescription.EmbeddedDataSpecification?.DataSpecificationContent?.DataSpecificationIEC61360 != null) ? new List<DataSpecificationIEC61360>() : null
@@ -259,9 +263,13 @@ namespace BaSyx.Models.Export
             }
             foreach (var envSubmodel in environment.EnvironmentSubmodels)
             {
-                Submodel submodel = new Submodel(envSubmodel.IdShort, envSubmodel.Identification)
+                Submodel submodel = new Submodel(envSubmodel.IdShort, new Identifier(envSubmodel.Identification.Id))
                 {
-                    Administration = envSubmodel.Administration,
+                    Administration = new AdministrativeInformation()
+                    {
+                        Revision = envSubmodel.Administration?.Revision,
+                        Version = envSubmodel.Administration?.Version
+                    },
                     Category = envSubmodel.Category,
                     Description = envSubmodel.Description,
                     Kind = envSubmodel.Kind,
@@ -277,9 +285,13 @@ namespace BaSyx.Models.Export
             }
             foreach (var envAssetAdministrationShell in environment.EnvironmentAssetAdministrationShells)
             {
-                AssetAdministrationShell assetAdministrationShell = new AssetAdministrationShell(envAssetAdministrationShell.IdShort, envAssetAdministrationShell.Identification)
+                AssetAdministrationShell assetAdministrationShell = new AssetAdministrationShell(envAssetAdministrationShell.IdShort, new Identifier(envAssetAdministrationShell.Identification.Id))
                 {
-                    Administration = envAssetAdministrationShell.Administration,
+                    Administration = new AdministrativeInformation()
+                    {
+                        Revision = envAssetAdministrationShell.Administration?.Revision,
+                        Version = envAssetAdministrationShell.Administration?.Version
+                    },
                     Category = envAssetAdministrationShell.Category,
                     DerivedFrom = envAssetAdministrationShell.DerivedFrom?.ToReference_V2_0<IAssetAdministrationShell>(),
                     Description = envAssetAdministrationShell.Description
