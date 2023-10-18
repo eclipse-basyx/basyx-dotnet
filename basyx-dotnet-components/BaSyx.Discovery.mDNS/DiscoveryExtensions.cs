@@ -11,7 +11,6 @@
 using BaSyx.Clients.AdminShell.Http;
 using BaSyx.API.ServiceProvider;
 using BaSyx.Models.Connectivity;
-using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +30,7 @@ namespace BaSyx.Discovery.mDNS
         public const string ASSETADMINISTRATIONSHELL_ID = "aas.id";
         public const string ASSETADMINISTRATIONSHELL_IDSHORT = "aas.idShort";
         public const string ASSETADMINISTRATIONSHELL_ENDPOINT = "aas.endpoint";
-        public const string KEY_VALUE_SEPERATOR = "=";
+        public const char KEY_VALUE_SEPERATOR = '=';
 
         private static readonly ILogger logger = LoggingExtentions.CreateLogger("DiscoveryExtensions");
 
@@ -45,53 +44,36 @@ namespace BaSyx.Discovery.mDNS
             discoveryServer.Start();
         }
 
-        private static async void DiscoveryServer_ServiceInstanceDiscovered(object sender, ServiceInstanceEventArgs e)
+        private static void DiscoveryServer_ServiceInstanceDiscovered(object sender, ServiceInstanceEventArgs e)
         {
             try
             {
                 IAssetAdministrationShellDescriptor aasDescriptor = null;
-                if (e?.Servers?.Count > 0)
+                if (e?.TxtRecords?.Count > 0)
                 {
-                    foreach (var server in e.Servers)
+                    foreach (var txtRecord in e.TxtRecords)
                     {
-                        bool pingable = await BaSyx.Utils.Network.NetworkUtils.PingHostAsync(server.Address.ToString()).ConfigureAwait(false);
-                        if (pingable)
+                        if (txtRecord.StartsWith(ASSETADMINISTRATIONSHELL_ID) && assetAdministrationShellRegistry != null)
                         {
-                            string uri = string.Empty;
-                            if (server.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                                uri = "http://" + server.Address.ToString() + ":" + server.Port + "/aas";
-                            else if (server.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-                                uri = "http://[" + server.Address.ToString() + "]:" + server.Port + "/aas";
-                            else
-                                continue;
-                            
-                            AssemblyDescriptor(ref aasDescriptor, new Uri(uri));
-                        }
-                    }
-                }
-                else
-                {
-                    logger.LogWarning("Informations about the server are not available. Trying endpoints from TXT-record...");
-                    if (e?.TxtRecords?.Count > 0)
-                    {
-                        foreach (var txtRecord in e.TxtRecords)
-                        {
-                            if (txtRecord.StartsWith(ASSETADMINISTRATIONSHELL_ENDPOINT))
+                            string[] splittedEndpoint = txtRecord.Split(new char[] { KEY_VALUE_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
+                            if (splittedEndpoint.Length == 2)
                             {
-                                string[] splittedEndpoint = txtRecord.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                                if (splittedEndpoint.Length == 2 && splittedEndpoint[0].ToLower().Contains("http"))
-                                {
-                                    AssemblyDescriptor(ref aasDescriptor, new Uri(splittedEndpoint[1]));
-                                }
+                                var retrieved = assetAdministrationShellRegistry.RetrieveAssetAdministrationShellRegistration(splittedEndpoint[1]);
+                                if (retrieved.SuccessAndContent)
+                                    return;
+                            }                            
+                        }
+                        else if (txtRecord.StartsWith(ASSETADMINISTRATIONSHELL_ENDPOINT))
+                        {
+                            string[] splittedEndpoint = txtRecord.Split(new char[] { KEY_VALUE_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
+                            if (splittedEndpoint.Length == 2 && splittedEndpoint[0].ToLower().Contains("http"))
+                            {
+                                AssemblyDescriptor(ref aasDescriptor, new Uri(splittedEndpoint[1]));
                             }
                         }
                     }
-                    else
-                    {
-                        logger.LogWarning("Got no discovery information even from TXT-records. I'm afraid.");
-                    }
                 }
-                if (aasDescriptor != null)
+                if (aasDescriptor != null && assetAdministrationShellRegistry != null)
                 {
                     var registeredResult = assetAdministrationShellRegistry.UpdateAssetAdministrationShellRegistration(aasDescriptor.Id.Id, aasDescriptor);
                     if (registeredResult.Success)
@@ -108,52 +90,49 @@ namespace BaSyx.Discovery.mDNS
 
         private static void AssemblyDescriptor(ref IAssetAdministrationShellDescriptor aasDescriptor, Uri aasEndpoint)
         {
-            IResult<IAssetAdministrationShellDescriptor> retrieveDescriptor;
-            using (var client = new AssetAdministrationShellHttpClient(aasEndpoint, SimpleHttpClient.DEFAULT_HTTP_CLIENT_HANDLER))
-                retrieveDescriptor = client.RetrieveAssetAdministrationShellDescriptor();
-
-            if (retrieveDescriptor.Success && retrieveDescriptor.Entity != null)
+            if (aasDescriptor == null)
             {
-                logger.LogInformation($"Successfully retrieved AssetAdministrationShellDescriptor with id {retrieveDescriptor.Entity.Id.Id}");
-                if (aasDescriptor == null)
+                using (var client = new AssetAdministrationShellHttpClient(aasEndpoint, SimpleHttpClient.DEFAULT_HTTP_CLIENT_HANDLER))
                 {
-                    aasDescriptor = retrieveDescriptor.Entity;
-                    aasDescriptor.SetEndpoints(new List<IEndpoint>() { new Endpoint(aasEndpoint, InterfaceName.AssetAdministrationShellInterface) });
-
-                    foreach (var submodelDescriptor in retrieveDescriptor.Entity.SubmodelDescriptors)
-                    {
-                        List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
-                        foreach (var submodelEndpoint in submodelDescriptor.Endpoints)
-                        {
-                            if (submodelEndpoint.ProtocolInformation.EndpointAddress.Contains(aasEndpoint.Host))
-                            {
-                                submodelEndpoints.Add(submodelEndpoint);
-                            }
-                        }
-                        aasDescriptor.SubmodelDescriptors.First(s => s.IdShort == submodelDescriptor.IdShort).SetEndpoints(submodelEndpoints);
-                    }
+                    var retrieveDescriptor = client.RetrieveAssetAdministrationShellDescriptor();
+                    if (retrieveDescriptor.SuccessAndContent)
+                        aasDescriptor = retrieveDescriptor.Entity;
+                    else
+                        return;
                 }
-                else
-                {
-                    aasDescriptor.AddEndpoints(new List<IEndpoint>() { new Endpoint(aasEndpoint, InterfaceName.AssetAdministrationShellInterface) });
+                aasDescriptor.SetEndpoints(new List<IEndpoint>() { new Endpoint(aasEndpoint, InterfaceName.AssetAdministrationShellInterface) });
 
-                    foreach (var submodelDescriptor in retrieveDescriptor.Entity.SubmodelDescriptors)
+                foreach (var submodelDescriptor in aasDescriptor.SubmodelDescriptors)
+                {
+                    List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
+                    foreach (var submodelEndpoint in submodelDescriptor.Endpoints)
                     {
-                        List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
-                        foreach (var submodelEndpoint in submodelDescriptor.Endpoints)
+                        if (submodelEndpoint.ProtocolInformation.EndpointAddress.Contains(aasEndpoint.Host))
                         {
-                            if (submodelEndpoint.ProtocolInformation.EndpointAddress.Contains(aasEndpoint.Host))
-                            {
-                                if (aasDescriptor.SubmodelDescriptors.First(s => s.IdShort == submodelDescriptor.IdShort).Endpoints.FirstOrDefault(f => f.ProtocolInformation.EndpointAddress == submodelEndpoint.ProtocolInformation.EndpointAddress) == null)
-                                    submodelEndpoints.Add(submodelEndpoint);
-                            }
+                            submodelEndpoints.Add(submodelEndpoint);
                         }
-                        aasDescriptor.SubmodelDescriptors.First(s => s.IdShort == submodelDescriptor.IdShort).AddEndpoints(submodelEndpoints);
                     }
+                    aasDescriptor.SubmodelDescriptors.First(s => s.Id.Id == submodelDescriptor.Id.Id).SetEndpoints(submodelEndpoints);
                 }
             }
             else
-                retrieveDescriptor.LogResult(logger, LogLevel.Error, "Could not retrieve AssetAdministrationShell descriptor");
+            {
+                aasDescriptor.AddEndpoints(new List<IEndpoint>() { new Endpoint(aasEndpoint, InterfaceName.AssetAdministrationShellInterface) });
+
+                foreach (var submodelDescriptor in aasDescriptor.SubmodelDescriptors)
+                {
+                    List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
+                    foreach (var submodelEndpoint in submodelDescriptor.Endpoints)
+                    {
+                        if (submodelEndpoint.ProtocolInformation.EndpointAddress.Contains(aasEndpoint.Host))
+                        {
+                            if (aasDescriptor.SubmodelDescriptors.First(s => s.Id.Id == submodelDescriptor.Id.Id).Endpoints.FirstOrDefault(f => f.ProtocolInformation.EndpointAddress == submodelEndpoint.ProtocolInformation.EndpointAddress) == null)
+                                submodelEndpoints.Add(submodelEndpoint);
+                        }
+                    }
+                    aasDescriptor.SubmodelDescriptors.First(s => s.Id.Id == submodelDescriptor.Id.Id).AddEndpoints(submodelEndpoints);
+                }
+            }
         }
 
         private class EndpointComparer : IEqualityComparer<IEndpoint>
@@ -181,7 +160,7 @@ namespace BaSyx.Discovery.mDNS
                     string aasIdKeyValue = e.TxtRecords.FirstOrDefault(t => t.StartsWith(ASSETADMINISTRATIONSHELL_ID + KEY_VALUE_SEPERATOR));
                     if (!string.IsNullOrEmpty(aasIdKeyValue))
                     {
-                        string[] splittedItem = aasIdKeyValue.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] splittedItem = aasIdKeyValue.Split(new char[] { KEY_VALUE_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
                         if (splittedItem != null && splittedItem.Length == 2)
                         {
                             if (splittedItem[0] == ASSETADMINISTRATIONSHELL_ID)
@@ -242,7 +221,7 @@ namespace BaSyx.Discovery.mDNS
             for (int i = 0; i < serviceProvider.ServiceDescriptor.Endpoints.Count(); i++)
             {
                 var endpoint = serviceProvider.ServiceDescriptor.Endpoints.ElementAt(i);
-                discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_ENDPOINT + "." + endpoint.ProtocolInformation.EndpointProtocol + "[" + i + "]", endpoint.ProtocolInformation.EndpointAddress);
+                discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_ENDPOINT + "." + endpoint.ProtocolInformation.EndpointProtocol + "." + i, endpoint.ProtocolInformation.EndpointAddress);
             }
    
             discoveryClient.Start();

@@ -83,11 +83,11 @@
                                 @if (((endpoint.ProtocolInformation.EndpointProtocol == Uri.UriSchemeHttp) || (endpoint.ProtocolInformation.EndpointProtocol == Uri.UriSchemeHttps))
                                    && !string.IsNullOrEmpty(endpoint.ProtocolInformation.EndpointAddress) && endpoint.ProtocolInformation.EndpointAddress.EndsWith("/aas"))
                                 {
-                                    var httpEndpoint = endpoint.ProtocolInformation as HttpProtocol;
-                                    string uiEndpoint = httpEndpoint.Uri.GetLeftPart(UriPartial.Authority) + "/ui";
+                                    var httpEndpoint = new Uri(endpoint.ProtocolInformation.EndpointAddress);
+                                    string uiEndpoint = httpEndpoint.GetLeftPart(UriPartial.Authority) + "/ui";
                                     <li class="list-group-item">
                                         <div class="row align-items-center">
-                                            <div class="col-sm-2"><b>Endpoint (http-UI)</b></div>
+                                            <div class="col-sm-2"><b>Endpoint (UI)</b></div>
                                             <div class="col-sm-10"><a target="_blank" href="@uiEndpoint">@uiEndpoint</a></div>
                                         </div>
                                     </li>

@@ -164,7 +164,7 @@ namespace BaSyx.API.ServiceProvider
                 List<IEndpoint> aasEndpoints = new List<IEndpoint>();
                 foreach (var endpoint in repositoryEndpoints)
                 {
-                    var ep = new Endpoint(GetAssetAdministrationShellEndpoint(endpoint, aasDescriptor.Id.Id), InterfaceName.AssetAdministrationShellRepositoryInterface);
+                    var ep = new Endpoint(GetAssetAdministrationShellEndpoint(endpoint, aasDescriptor.Id.Id), InterfaceName.AssetAdministrationShellInterface);
                     aasEndpoints.Add(ep);
                 }
                 aasDescriptor.AddEndpoints(aasEndpoints);
@@ -174,7 +174,7 @@ namespace BaSyx.API.ServiceProvider
                     List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
                     foreach (var endpoint in aasEndpoints)
                     {
-                        var ep = new Endpoint(GetSubmodelEndpoint(endpoint, submodelDescriptor.Id.Id), InterfaceName.AssetAdministrationShellRepositoryInterface);
+                        var ep = new Endpoint(GetSubmodelInRepositoryEndpoint(endpoint, submodelDescriptor.Id.Id), InterfaceName.SubmodelInterface);
                         submodelEndpoints.Add(ep);
                     }
                     submodelDescriptor.AddEndpoints(submodelEndpoints);
@@ -227,7 +227,7 @@ namespace BaSyx.API.ServiceProvider
                 List<IEndpoint> spEndpoints = new List<IEndpoint>();
                 foreach (var endpoint in aasEndpoints)
                 {
-                    var ep = new Endpoint(GetSubmodelEndpoint(endpoint, submodel.Id.Id), InterfaceName.AssetAdministrationShellInterface);
+                    var ep = new Endpoint(GetSubmodelEndpoint(endpoint, submodel.Id.Id), InterfaceName.SubmodelInterface);
                     spEndpoints.Add(ep);
                 }
                 submodel.AddEndpoints(spEndpoints);
@@ -257,7 +257,7 @@ namespace BaSyx.API.ServiceProvider
 
             submodelId = StringOperations.Base64UrlEncode(submodelId);
 
-            return epAddress + "/" + submodelId + SubmodelRoutes.SUBMODEL;
+            return epAddress + "/" + submodelId;
         }
 
         public static string GetSubmodelEndpoint(IEndpoint endpoint, string submodelId)
@@ -268,7 +268,7 @@ namespace BaSyx.API.ServiceProvider
 
             submodelId = StringOperations.Base64UrlEncode(submodelId);
 
-            return epAddress + SubmodelRepositoryRoutes.SUBMODELS + "/" + submodelId + SubmodelRoutes.SUBMODEL;
+            return epAddress + SubmodelRepositoryRoutes.SUBMODELS + "/" + submodelId;
         }
 
         public static string GetAssetAdministrationShellEndpoint(IEndpoint endpoint, string aasId)
@@ -279,7 +279,7 @@ namespace BaSyx.API.ServiceProvider
 
             aasId = StringOperations.Base64UrlEncode(aasId);
 
-            return epAddress + "/" + aasId + AssetAdministrationShellRoutes.AAS;
+            return epAddress + "/" + aasId;
         }
     }
 }

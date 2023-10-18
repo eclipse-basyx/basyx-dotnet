@@ -23,7 +23,7 @@ namespace BaSyx.Models.Connectivity
         public string AssetType { get; set; }
         public Identifier GlobalAssetId { get; set; }
         public IEnumerable<SpecificAssetId> SpecificAssetIds { get; set; }
-        public IEnumerable<ISubmodelDescriptor> SubmodelDescriptors { get => _submodelDescriptors; }
+        public IEnumerable<ISubmodelDescriptor> SubmodelDescriptors { get => _submodelDescriptors; set { _submodelDescriptors = value.ToList(); } }
         public override ModelType ModelType => ModelType.AssetAdministrationShellDescriptor;
 
         private List<ISubmodelDescriptor> _submodelDescriptors;

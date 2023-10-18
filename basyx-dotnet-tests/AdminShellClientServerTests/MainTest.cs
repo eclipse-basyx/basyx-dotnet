@@ -48,6 +48,14 @@ namespace AdminShellClientServerTests
         }
 
         [TestMethod]
+        public void Test000_RetrieveDescriptor()
+        {
+            var result = Client.RetrieveAssetAdministrationShellDescriptorAsync().Result;
+            result.Success.Should().BeTrue();
+            result.Entity.SubmodelDescriptors.Should().HaveCountGreaterThan(0);
+        }
+
+        [TestMethod]
         public void Test000_RetrieveAssetAdministrationShell()
         {
             var result = RetrieveAssetAdministrationShell();
