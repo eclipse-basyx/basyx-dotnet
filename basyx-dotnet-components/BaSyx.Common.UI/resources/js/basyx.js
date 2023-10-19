@@ -68,15 +68,15 @@ function ExecuteOperation(requestPath, className) {
                 var argOutIdShort = data.outputArguments[i].value.idShort;
                 $('#argOutValue_' + className + argOutIdShort).val(JSON.stringify(data.outputArguments[i].value.value));
             }           
-            if (data.executionResult.success) {
+            if (data.success) {
                 $('#executeIcon_' + className).html('<i class="fas fa-check-circle"></i>');
                 setTimeout(() => $('#executeIcon_' + className).children("i:first").remove(), 5000);
             } else {
                 $('#executeIcon_' + className).html('<i class="fas fa-exclamation-triangle"></i>');
                 setTimeout(() => $('#executeIcon_' + className).children("i:first").remove(), 5000);
             }
-            if (data.executionResult.messages && data.executionResult.messages.length > 0) {
-                $('#messageInput_' + className).val(JSON.stringify(data.executionResult.messages));
+            if (data.messages && data.messages.length > 0) {
+                $('#messageInput_' + className).val(JSON.stringify(data.messages));
             }            
         }
     });

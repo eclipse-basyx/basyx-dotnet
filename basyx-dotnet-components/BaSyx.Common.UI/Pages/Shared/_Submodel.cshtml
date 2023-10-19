@@ -200,7 +200,7 @@ ShowSubmodelElement = @<text>@{
         string requestPath = pathBase;
         if (apiType == "AssetAdministrationShell")
         {
-            requestPath += AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID.Replace("{submodelIdentifier}", submodelId) + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH.Replace("{idShortPath}", pathId);
+            requestPath += AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID.Replace("{submodelIdentifier}", submodelId) + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH.Replace("{idShortPath}", pathId);
         }
         else if (apiType == "Submodel")
         {
