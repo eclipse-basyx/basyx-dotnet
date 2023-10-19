@@ -69,7 +69,7 @@ namespace BaSyx.Models.AdminShell
                 if (i + 1 == Keys.Count())
                     break;
                 else
-                    referenceString += ",";
+                    referenceString += ", ";
             }
             return referenceString;
         }
