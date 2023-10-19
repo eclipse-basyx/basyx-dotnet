@@ -16,6 +16,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +24,17 @@ namespace BaSyx.Models.Extensions
 {
     public static class SubmodelElementExtensions
     {
+        private static readonly JsonSerializerOptions _jsonOptions;
+        static SubmodelElementExtensions()
+        {
+            DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
+            options.AddValueOnlySubmodelElementConverter();
+            _jsonOptions = options.Build();
+        }
+
         private static readonly ILogger logger = LoggingExtentions.CreateLogger("SubmodelElementExtensions");
+
+
 
         public const BindingFlags DEFAULT_BINDING_FLAGS = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 
@@ -35,6 +46,11 @@ namespace BaSyx.Models.Extensions
         public static T Cast<T>(this IReferable referable) where T : class, IReferable
         {
             return referable as T;
+        }
+
+        public static string ToValueOnly(this IElementContainer<ISubmodelElement> elements)
+        {
+            return JsonSerializer.Serialize(elements, _jsonOptions);
         }
 
         //TODO
