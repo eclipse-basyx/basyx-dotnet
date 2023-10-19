@@ -33,8 +33,8 @@ namespace BaSyx.API.Interfaces
         /// </summary>
         /// <param name="aasIdentifier">The Asset Administration Shell's unique id</param>
         /// <param name="aasDescriptor">The Asset Administration Shell Descriptor</param>
-        /// <returns>Result object with embedded Asset Administration Shell Descriptor</returns>
-        IResult<IAssetAdministrationShellDescriptor> UpdateAssetAdministrationShellRegistration(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor);
+        /// <returns>Result object</returns>
+        IResult UpdateAssetAdministrationShellRegistration(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor);
         
         /// <summary>
         /// Retrieves the Asset Administration Shell registration from the Registry
@@ -78,7 +78,7 @@ namespace BaSyx.API.Interfaces
         /// <param name="submodelIdentifier">The Submodel's unique id</param>
         /// <param name="submodelDescriptor">The Submodel Descriptor</param>
         /// <returns>Result object with embedded Submodel Descriptor</returns>
-        IResult<ISubmodelDescriptor> UpdateSubmodelRegistration(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor);
+        IResult UpdateSubmodelRegistration(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor);
 
         /// <summary>
         /// Retrieves all Submodel registrations

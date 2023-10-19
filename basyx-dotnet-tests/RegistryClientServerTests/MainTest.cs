@@ -226,19 +226,17 @@ namespace RegistryClientServerTests
             return result;
         }
 
-        public IResult<IAssetAdministrationShellDescriptor> UpdateAssetAdministrationShellRegistration(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
+        public IResult UpdateAssetAdministrationShellRegistration(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
         {
             var result = Client.UpdateAssetAdministrationShellRegistration(aasIdentifier, aasDescriptor);
             result.Success.Should().BeTrue();
-            result.Entity.Should().BeEquivalentTo(aasDescriptor);
             return result;
         }
 
-        public IResult<ISubmodelDescriptor> UpdateSubmodelRegistration(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
+        public IResult UpdateSubmodelRegistration(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
         {
             var result = Client.UpdateSubmodelRegistration(aasIdentifier, submodelIdentifier, submodelDescriptor);
             result.Success.Should().BeTrue();
-            result.Entity.Should().BeEquivalentTo(SubmodelDescriptor);
             return result;
         }
 
@@ -247,7 +245,7 @@ namespace RegistryClientServerTests
             return ((IAssetAdministrationShellRegistryClient)Client).CreateAssetAdministrationShellRegistrationAsync(aasDescriptor);
         }
 
-        public Task<IResult<IAssetAdministrationShellDescriptor>> UpdateAssetAdministrationShellRegistrationAsync(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
+        public Task<IResult> UpdateAssetAdministrationShellRegistrationAsync(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
         {
             return ((IAssetAdministrationShellRegistryClient)Client).UpdateAssetAdministrationShellRegistrationAsync(aasIdentifier, aasDescriptor);
         }
@@ -277,7 +275,7 @@ namespace RegistryClientServerTests
             return ((IAssetAdministrationShellRegistryClient)Client).CreateSubmodelRegistrationAsync(aasIdentifier, submodelDescriptor);
         }
 
-        public Task<IResult<ISubmodelDescriptor>> UpdateSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
+        public Task<IResult> UpdateSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
         {
             return ((IAssetAdministrationShellRegistryClient)Client).UpdateSubmodelRegistrationAsync(aasIdentifier, submodelIdentifier, submodelDescriptor);
         }

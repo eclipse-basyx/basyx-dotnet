@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.Client.Http\BaSyx.Registry.Client.Http.csproj" />
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.FileBased\BaSyx.Registry.ReferenceImpl.FileBased.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.InMemory\BaSyx.Registry.ReferenceImpl.InMemory.csproj" />
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.Server.Http\BaSyx.Registry.Server.Http.csproj" />
     <ProjectReference Include="..\BaSyx.Tests.Common\BaSyx.Tests.Common.csproj" />
   </ItemGroup>

@@ -119,7 +119,7 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.BadRequestResult($"Path parameter {aasIdentifier} does not equal Asset Administration Shell Descriptor identification property {aasDescriptor.Id.Id}");
             
             var result = serviceProvider.UpdateAssetAdministrationShellRegistration(aasIdentifier, aasDescriptor);
-            return result.CreateActionResult(CrudOperation.Create, "api/v1/registry/" + HttpUtility.UrlEncode(aasIdentifier));
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>

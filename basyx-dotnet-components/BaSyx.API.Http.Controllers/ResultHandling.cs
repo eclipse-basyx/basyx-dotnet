@@ -203,7 +203,7 @@ namespace BaSyx.API.Http.Controllers
                     break;
                 case CrudOperation.Update:
                     if (result.Success)
-                        return new OkObjectResult(result.Entity);
+                        return new NoContentResult();
                     break;
                 case CrudOperation.Delete:
                     if (result.Success)

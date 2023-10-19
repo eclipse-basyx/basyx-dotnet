@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using BaSyx.Models.Extensions;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Models.AdminShell;
 
 namespace BaSyx.Registry.ReferenceImpl.FileBased
 {
@@ -74,11 +75,7 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
         }
 
         public IResult<IAssetAdministrationShellDescriptor> CreateAssetAdministrationShellRegistration(IAssetAdministrationShellDescriptor aasDescriptor)
-            => UpdateAssetAdministrationShellRegistration(aasDescriptor.Id.Id, aasDescriptor);
-        public IResult<IAssetAdministrationShellDescriptor> UpdateAssetAdministrationShellRegistration(string aasId, IAssetAdministrationShellDescriptor aasDescriptor)
-        {
-            if(string.IsNullOrEmpty(aasId))
-                return new Result<IAssetAdministrationShellDescriptor>(new ArgumentNullException(nameof(aasId)));
+        {            
             if (aasDescriptor == null)
                 return new Result<IAssetAdministrationShellDescriptor>(new ArgumentNullException(nameof(aasDescriptor)));
             if (aasDescriptor.Id?.Id == null)
@@ -88,17 +85,17 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
 
             try
             {
-                string aasIdHash = GetHashString(aasId);
+                string aasIdHash = GetHashString(aasDescriptor.Id.Id);
                 string aasDirectoryPath = Path.Combine(FolderPath, aasIdHash);
-                
+
                 if (!Directory.Exists(aasDirectoryPath))
                     Directory.CreateDirectory(aasDirectoryPath);
 
-                if(aasDescriptor.SubmodelDescriptors?.Count() > 0)
+                if (aasDescriptor.SubmodelDescriptors?.Count() > 0)
                 {
                     foreach (var submodelDescriptor in aasDescriptor.SubmodelDescriptors)
                     {
-                        var interimResult = UpdateSubmodelRegistration(aasId, submodelDescriptor.Id.Id, submodelDescriptor);
+                        var interimResult = UpdateSubmodelRegistration(aasDescriptor.Id.Id, submodelDescriptor.Id.Id, submodelDescriptor);
                         if (!interimResult.Success)
                             return new Result<IAssetAdministrationShellDescriptor>(interimResult);
                     }
@@ -109,7 +106,7 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
                 string aasFilePath = Path.Combine(aasDirectoryPath, aasIdHash) + ".json";
                 File.WriteAllText(aasFilePath, aasDescriptorContent);
 
-                IResult<IAssetAdministrationShellDescriptor> readResult = RetrieveAssetAdministrationShellRegistration(aasId);
+                IResult<IAssetAdministrationShellDescriptor> readResult = RetrieveAssetAdministrationShellRegistration(aasDescriptor.Id.Id);
                 return readResult;
             }
             catch (Exception e)
@@ -117,16 +114,18 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
                 return new Result<IAssetAdministrationShellDescriptor>(e);
             }
         }
+        public IResult UpdateAssetAdministrationShellRegistration(string aasId, IAssetAdministrationShellDescriptor aasDescriptor)
+        {
+            if (string.IsNullOrEmpty(aasId))
+                return new Result<IAssetAdministrationShellDescriptor>(new ArgumentNullException(nameof(aasId)));
+            var result = CreateAssetAdministrationShellRegistration(aasDescriptor);
+            return new Result(result.SuccessAndContent);
+        }
 
         public IResult<ISubmodelDescriptor> CreateSubmodelRegistration(string aasId, ISubmodelDescriptor submodelDescriptor)
-            => UpdateSubmodelRegistration(aasId, submodelDescriptor.Id.Id, submodelDescriptor);
-
-        public IResult<ISubmodelDescriptor> UpdateSubmodelRegistration(string aasId, string submodelId, ISubmodelDescriptor submodelDescriptor)
         {
             if (string.IsNullOrEmpty(aasId))
                 return new Result<ISubmodelDescriptor>(new ArgumentNullException(nameof(aasId)));
-            if (string.IsNullOrEmpty(submodelId))
-                return new Result<ISubmodelDescriptor>(new ArgumentNullException(nameof(submodelId)));
             if (submodelDescriptor == null)
                 return new Result<ISubmodelDescriptor>(new ArgumentNullException(nameof(submodelDescriptor)));
 
@@ -142,17 +141,25 @@ namespace BaSyx.Registry.ReferenceImpl.FileBased
                 if (!Directory.Exists(submodelDirectory))
                     Directory.CreateDirectory(submodelDirectory);
 
-                string submodelIdHash = GetHashString(submodelId);
+                string submodelIdHash = GetHashString(submodelDescriptor.Id.Id);
                 string submodelFilePath = Path.Combine(submodelDirectory, submodelIdHash) + ".json";
                 File.WriteAllText(submodelFilePath, submodelContent);
 
-                IResult<ISubmodelDescriptor> readSubmodel = RetrieveSubmodelRegistration(aasId, submodelId);
+                IResult<ISubmodelDescriptor> readSubmodel = RetrieveSubmodelRegistration(aasId, submodelDescriptor.Id.Id);
                 return readSubmodel;
             }
             catch (Exception e)
             {
                 return new Result<ISubmodelDescriptor>(e);
             }
+        }
+
+        public IResult UpdateSubmodelRegistration(string aasId, string submodelId, ISubmodelDescriptor submodelDescriptor)
+        {
+            if (string.IsNullOrEmpty(submodelId))
+                return new Result(new ArgumentNullException(nameof(submodelId)));
+            var result = CreateSubmodelRegistration(aasId, submodelDescriptor);
+            return new Result(result.SuccessAndContent);
         }
 
         public IResult DeleteAssetAdministrationShellRegistration(string aasId)

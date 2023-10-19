@@ -92,7 +92,7 @@ namespace BaSyx.Registry.Client.Http
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    IResult<IAssetAdministrationShellDescriptor> result = UpdateAssetAdministrationShellRegistration(aasDescriptor.Id.Id, aasDescriptor);
+                    IResult result = UpdateAssetAdministrationShellRegistration(aasDescriptor.Id.Id, aasDescriptor);
                     logger.LogInformation("Registration-Renewal - Success: " + result.Success + " | Messages: " + result.Messages.ToString());
                     await Task.Delay(interval);
                 }
@@ -109,7 +109,7 @@ namespace BaSyx.Registry.Client.Http
             return CreateAssetAdministrationShellRegistrationAsync(aasDescriptor).GetAwaiter().GetResult();
         }
 
-        public IResult<IAssetAdministrationShellDescriptor> UpdateAssetAdministrationShellRegistration(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
+        public IResult UpdateAssetAdministrationShellRegistration(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
         {
             return UpdateAssetAdministrationShellRegistrationAsync(aasIdentifier, aasDescriptor).GetAwaiter().GetResult();
         }
@@ -139,7 +139,7 @@ namespace BaSyx.Registry.Client.Http
              return CreateSubmodelRegistrationAsync(aasIdentifier, submodelDescriptor).GetAwaiter().GetResult();
         }
 
-        public IResult<ISubmodelDescriptor> UpdateSubmodelRegistration(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
+        public IResult UpdateSubmodelRegistration(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
         {
             return UpdateSubmodelRegistrationAsync(aasIdentifier, submodelIdentifier, submodelDescriptor).GetAwaiter().GetResult();
         }
@@ -178,17 +178,17 @@ namespace BaSyx.Registry.Client.Http
             return result;
         }
 
-        public async Task<IResult<IAssetAdministrationShellDescriptor>> UpdateAssetAdministrationShellRegistrationAsync(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
+        public async Task<IResult> UpdateAssetAdministrationShellRegistrationAsync(string aasIdentifier, IAssetAdministrationShellDescriptor aasDescriptor)
         {
             if (string.IsNullOrEmpty(aasIdentifier))
-                return new Result<IAssetAdministrationShellDescriptor>(new ArgumentNullException(nameof(aasIdentifier)));
+                return new Result(new ArgumentNullException(nameof(aasIdentifier)));
             if (aasDescriptor == null)
-                return new Result<IAssetAdministrationShellDescriptor>(new ArgumentNullException(nameof(aasDescriptor)));
+                return new Result(new ArgumentNullException(nameof(aasDescriptor)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID, aasIdentifier);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, aasDescriptor);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<IAssetAdministrationShellDescriptor>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }
@@ -268,19 +268,19 @@ namespace BaSyx.Registry.Client.Http
             return result;
         }
 
-        public async Task<IResult<ISubmodelDescriptor>> UpdateSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
+        public async Task<IResult> UpdateSubmodelRegistrationAsync(string aasIdentifier, string submodelIdentifier, ISubmodelDescriptor submodelDescriptor)
         {
             if (string.IsNullOrEmpty(aasIdentifier))
-                return new Result<ISubmodelDescriptor>(new ArgumentNullException(nameof(aasIdentifier)));
+                return new Result(new ArgumentNullException(nameof(aasIdentifier)));
             if (string.IsNullOrEmpty(submodelIdentifier))
-                return new Result<ISubmodelDescriptor>(new ArgumentNullException(nameof(submodelIdentifier)));
+                return new Result(new ArgumentNullException(nameof(submodelIdentifier)));
             if (submodelDescriptor == null)
-                return new Result<ISubmodelDescriptor>(new ArgumentNullException(nameof(submodelDescriptor)));
+                return new Result(new ArgumentNullException(nameof(submodelDescriptor)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTOR_ID, aasIdentifier, submodelIdentifier);
             var request = base.CreateJsonContentRequest(uri, HttpMethod.Put, submodelDescriptor);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<ISubmodelDescriptor>(response, response.Entity);
+            var result = await base.EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }

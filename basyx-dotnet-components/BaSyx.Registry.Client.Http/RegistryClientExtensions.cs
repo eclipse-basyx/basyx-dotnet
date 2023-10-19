@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.API.ServiceProvider;
-using BaSyx.Models.Connectivity;
 using BaSyx.Utils.ResultHandling;
 using System;
 using System.Threading;
@@ -18,16 +17,16 @@ namespace BaSyx.Registry.Client.Http
 {
     public static class RegistryClientExtensions
     {
-        public static IResult<IAssetAdministrationShellDescriptor> RegisterAssetAdministrationShell(this IAssetAdministrationShellServiceProvider serviceProvider) => RegisterAssetAdministrationShell(serviceProvider, null);
-        public static IResult<IAssetAdministrationShellDescriptor> RegisterAssetAdministrationShell(this IAssetAdministrationShellServiceProvider serviceProvider, RegistryClientSettings settings)
+        public static IResult RegisterAssetAdministrationShell(this IAssetAdministrationShellServiceProvider serviceProvider) => RegisterAssetAdministrationShell(serviceProvider, null);
+        public static IResult RegisterAssetAdministrationShell(this IAssetAdministrationShellServiceProvider serviceProvider, RegistryClientSettings settings)
         {
             RegistryClientSettings registryClientSettings = settings ?? RegistryClientSettings.LoadSettings();
             RegistryHttpClient registryHttpClient = new RegistryHttpClient(registryClientSettings);
-            IResult<IAssetAdministrationShellDescriptor> result = registryHttpClient.UpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Id.Id, serviceProvider.ServiceDescriptor);
+            IResult result = registryHttpClient.UpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Id.Id, serviceProvider.ServiceDescriptor);
             return result;
         }
 
-        public static IResult<IAssetAdministrationShellDescriptor> RegisterAssetAdministrationShellWithRepeat(this IAssetAdministrationShellServiceProvider serviceProvider, RegistryClientSettings settings, TimeSpan interval, out CancellationTokenSource cancellationToken)
+        public static IResult RegisterAssetAdministrationShellWithRepeat(this IAssetAdministrationShellServiceProvider serviceProvider, RegistryClientSettings settings, TimeSpan interval, out CancellationTokenSource cancellationToken)
         {
             RegistryClientSettings registryClientSettings = settings ?? RegistryClientSettings.LoadSettings();
             RegistryHttpClient registryHttpClient = new RegistryHttpClient(registryClientSettings);
@@ -35,7 +34,7 @@ namespace BaSyx.Registry.Client.Http
             cancellationToken = new CancellationTokenSource();
             registryHttpClient.RepeatRegistration(serviceProvider.ServiceDescriptor, interval, cancellationToken);
 
-            IResult<IAssetAdministrationShellDescriptor> result = registryHttpClient.UpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Id.Id, serviceProvider.ServiceDescriptor);
+            IResult result = registryHttpClient.UpdateAssetAdministrationShellRegistration(serviceProvider.ServiceDescriptor.Id.Id, serviceProvider.ServiceDescriptor);
             return result;
         }
 
