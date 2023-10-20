@@ -40,6 +40,7 @@ namespace BaSyx.API.ServiceProvider
         private readonly Dictionary<string, InvocationResponse> invocationResults;
         
         private IMessageClient messageClient;
+        private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
         /// <summary>
         /// Constructor for SubmodelServiceProvider
@@ -410,13 +411,9 @@ namespace BaSyx.API.ServiceProvider
             if (eventMessage == null)
                 return new Result(new ArgumentNullException(nameof(eventMessage)));
 
-            //TODO
-            //if (eventDelegates.TryGetValue(eventMessage.SourceIdShort, out EventDelegate eventDelegate))
-            //    eventDelegate.Invoke(this, eventMessage);
-
             try
             {
-                string message = JsonSerializer.Serialize(eventMessage);
+                string message = JsonSerializer.Serialize(eventMessage, _jsonOptions);
                 return await messageClient.PublishAsync(eventMessage.Topic, message).ConfigureAwait(false);
             }
             catch (Exception e)

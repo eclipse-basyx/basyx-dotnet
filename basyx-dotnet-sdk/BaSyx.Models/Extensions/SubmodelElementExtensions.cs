@@ -17,6 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +30,7 @@ namespace BaSyx.Models.Extensions
         {
             DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
             options.AddValueOnlySubmodelElementConverter();
+            options.RemoveConverter(typeof(ElementContainerConverter));
             _jsonOptions = options.Build();
         }
 
@@ -51,6 +53,11 @@ namespace BaSyx.Models.Extensions
         public static string ToValueOnly(this IElementContainer<ISubmodelElement> elements)
         {
             return JsonSerializer.Serialize(elements, _jsonOptions);
+        }
+
+        public static JsonElement ToJsonElement(this IElementContainer<ISubmodelElement> elements)
+        {
+            return JsonSerializer.SerializeToElement(elements, _jsonOptions);
         }
 
         //TODO

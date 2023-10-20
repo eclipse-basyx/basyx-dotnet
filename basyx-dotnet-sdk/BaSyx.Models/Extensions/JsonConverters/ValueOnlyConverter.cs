@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
-namespace BaSyx.Models.Extensions.SystemTextJson
+namespace BaSyx.Models.Extensions
 {
     public class ValueOnlyConverter : JsonConverter<IElementContainer<ISubmodelElement>>
     {

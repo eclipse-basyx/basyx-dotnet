@@ -12,7 +12,7 @@ using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    public interface IEventPayload : IModelElement
+    public interface IEventPayload
     {
         /// <summary>
         /// Reference to the source event element.

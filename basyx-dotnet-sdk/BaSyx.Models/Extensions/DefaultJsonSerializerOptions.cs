@@ -4,8 +4,8 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using BaSyx.Models.AdminShell;
 using System.Collections;
-using BaSyx.Models.Extensions.SystemTextJson;
 using System;
+using System.Linq;
 
 namespace BaSyx.Models.Extensions
 {
@@ -38,6 +38,15 @@ namespace BaSyx.Models.Extensions
             {
                 Modifiers = { DefaultValueModifier }
             };
+        }
+
+
+        public DefaultJsonSerializerOptions RemoveConverter(Type converterType)
+        {
+            int? _index = _options.Converters.Select((item, index) => new { Item = item, Index = index })?.FirstOrDefault(i => i.Item.GetType() == converterType)?.Index;
+            if (_index.HasValue && _index.Value != -1)
+                _options.Converters.RemoveAt(_index.Value);
+            return this;
         }
 
         public DefaultJsonSerializerOptions AddDependencyInjection(IDependencyInjectionExtension extension)

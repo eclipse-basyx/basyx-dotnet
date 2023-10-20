@@ -19,7 +19,6 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class EventPayload : IEventPayload
     {
-        public ModelType ModelType => ModelType.EventMessage;
         public string MessageId { get; set; }
         public string Payload { get; set; }
         public string Timestamp { get; set; }

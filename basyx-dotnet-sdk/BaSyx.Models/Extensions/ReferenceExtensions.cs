@@ -101,5 +101,10 @@ namespace BaSyx.Models.Extensions
 
             return false;
         }
+
+        public static string GetLastIdShort(this IReference reference)
+        {
+            return reference?.Keys?.LastOrDefault()?.Value;
+        }
     }
 }
