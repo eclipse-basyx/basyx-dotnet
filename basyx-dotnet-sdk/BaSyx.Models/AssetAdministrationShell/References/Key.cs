@@ -52,6 +52,8 @@ namespace BaSyx.Models.AdminShell
                 return KeyType.Operation;
             else if (typeof(IRelationshipElement).IsAssignableFrom(type))
                 return KeyType.RelationshipElement;
+            else if (typeof(IAnnotatedRelationshipElement).IsAssignableFrom(type))
+                return KeyType.AnnotatedRelationshipElement;
             else if (typeof(IEventElement).IsAssignableFrom(type))
                 return KeyType.EventElement;
             else if (typeof(IBasicEventElement).IsAssignableFrom(type))
@@ -62,10 +64,48 @@ namespace BaSyx.Models.AdminShell
                 return KeyType.Blob;
             else if (typeof(ISubmodelElementCollection).IsAssignableFrom(type))
                 return KeyType.SubmodelElementCollection;
+            else if (typeof(ISubmodelElementList).IsAssignableFrom(type))
+                return KeyType.SubmodelElementList;
             else if (typeof(IEntity).IsAssignableFrom(type))
                 return KeyType.Entity;
             else
                 throw new InvalidOperationException("Cannot convert type " + type.FullName + "to referable element");
+        }
+
+        public static KeyType GetKeyElementFromModelType(ModelType type)
+        {
+            if (type == ModelType.AssetAdministrationShell)
+                return KeyType.AssetAdministrationShell;
+            else if (type == ModelType.Submodel)
+                return KeyType.Submodel;
+            else if (type == ModelType.Property)
+                return KeyType.Property;
+            else if (type == ModelType.Operation)
+                return KeyType.Operation;
+            else if (type == ModelType.ConceptDescription)
+                return KeyType.ConceptDescription;
+            else if (type == ModelType.ReferenceElement)
+                return KeyType.ReferenceElement;
+            else if (type == ModelType.Range)
+                return KeyType.Range;
+            else if (type == ModelType.RelationshipElement)
+                return KeyType.RelationshipElement;
+            else if (type == ModelType.AnnotatedRelationshipElement)
+                return KeyType.AnnotatedRelationshipElement;
+            else if (type == ModelType.BasicEventElement)
+                return KeyType.BasicEventElement;
+            else if (type == ModelType.File)
+                return KeyType.File;
+            else if (type == ModelType.Blob)
+                return KeyType.Blob;
+            else if (type == ModelType.SubmodelElementCollection)
+                return KeyType.SubmodelElementCollection;
+            else if (type == ModelType.SubmodelElementList)
+                return KeyType.SubmodelElementList;
+            else if (type == ModelType.Entity)
+                return KeyType.Entity;
+            else
+                throw new InvalidOperationException("Cannot convert type " + type.Name + "to referable element");
         }
 
         public string ToStandardizedString()

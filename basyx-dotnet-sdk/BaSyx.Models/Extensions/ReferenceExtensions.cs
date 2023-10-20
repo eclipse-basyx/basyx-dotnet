@@ -9,9 +9,54 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BaSyx.Models.Extensions
 {
+    public static class ReferenceFactory
+    {
+        private static List<Key> CreateKeys(string idShortPath, KeyType keyType)
+        {
+            List<Key> keys = new List<Key>();
+            if (idShortPath.Contains("."))
+            {
+                string[] splitted = idShortPath.Split('.');
+                for (int i = 0; i < splitted.Length; i++)
+                {
+                    Key key;
+                    if (i + 1 == splitted.Length)
+                    {
+                        key = new Key(keyType, splitted[i]);
+                    }
+                    else
+                    {
+                        key = new Key(KeyType.SubmodelElementCollection, splitted[i]);
+                    }
+                    keys.Add(key);
+                }
+            }
+            else
+                keys.Add(new Key(keyType, idShortPath));
+            return keys;
+        }
+
+        public static IReference Create(string idShortPath, ModelType modelType)
+        {
+            KeyType keyType = Key.GetKeyElementFromModelType(modelType);
+            List<Key> keys = CreateKeys(idShortPath, keyType);
+            return new Reference(keys) { Type = ReferenceType.ModelReference };
+        }
+
+        public static IReference Create(string submodelId, string idShortPath, ModelType modelType)
+        {
+            KeyType keyType = Key.GetKeyElementFromModelType(modelType);
+            List<Key> keys = CreateKeys(idShortPath, keyType);
+            Key submodelKey = new Key(KeyType.Submodel, submodelId);
+            var newKeys = keys.Prepend(submodelKey);
+            return new Reference(newKeys) { Type = ReferenceType.ModelReference };
+        }
+    }
     public static class ReferenceExtensions
     {
         public const string eClass_ICD = "0173";

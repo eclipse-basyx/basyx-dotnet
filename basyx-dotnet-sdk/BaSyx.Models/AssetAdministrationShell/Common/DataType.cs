@@ -68,6 +68,11 @@ namespace BaSyx.Models.AdminShell
                 dataType.IsCollection = false;
                 innerType = typeof(int);
             }
+            else if(IsNullable(type))
+            {
+                dataType.IsCollection = false;
+                innerType = Nullable.GetUnderlyingType(type);
+            }
             else
             {
                 dataType.IsCollection = false;
@@ -114,6 +119,11 @@ namespace BaSyx.Models.AdminShell
         public static bool IsDictionary(Type type)
         {
             return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>));
+        }
+
+        public static bool IsNullable(Type type)
+        {
+            return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
 
         public static bool IsArray(Type type)

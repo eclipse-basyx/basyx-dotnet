@@ -12,6 +12,7 @@ using BaSyx.Models.Extensions;
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -29,6 +30,20 @@ namespace BaSyx.Models.AdminShell
         public IReference ObservableSemanticId { get; set; }
         public string Topic { get; set; }
 
+        public EventPayload(string basicEventElementIdShort) :
+            this(ReferenceFactory.Create(basicEventElementIdShort, ModelType.BasicEventElement), 
+                ReferenceFactory.Create(basicEventElementIdShort, ModelType.BasicEventElement))
+        { }
+
+        public EventPayload(string basicEventElementIdShort, string aasIdasSubjectId) :
+           this(ReferenceFactory.Create(basicEventElementIdShort, ModelType.BasicEventElement),
+               ReferenceFactory.Create(basicEventElementIdShort, ModelType.BasicEventElement))
+        { 
+            SubjectId = new Reference(new Key(KeyType.AssetAdministrationShell, aasIdasSubjectId));
+        }
+
+
+        [JsonConstructor]
         public EventPayload(IReference source, IReference observableReference)
         {
             MessageId = Guid.NewGuid().ToString();

@@ -11,7 +11,7 @@
 
 namespace BaSyx.Models.AdminShell
 {
-    public class Environment : IEnvironment
+    public class AdminShellEnvironment : IAdminShellEnvironment
     {
         public IElementContainer<IAssetAdministrationShell> AssetAdministrationShells { get; set; }
 
@@ -19,7 +19,7 @@ namespace BaSyx.Models.AdminShell
 
         public IElementContainer<IConceptDescription> ConceptDescriptions { get; set; }
 
-        public Environment()
+        public AdminShellEnvironment()
         {
             AssetAdministrationShells = new ElementContainer<IAssetAdministrationShell>();
             Submodels = new ElementContainer<ISubmodel>();

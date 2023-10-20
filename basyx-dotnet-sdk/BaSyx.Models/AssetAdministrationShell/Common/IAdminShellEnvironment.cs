@@ -12,7 +12,7 @@ using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    public interface IEnvironment
+    public interface IAdminShellEnvironment
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "assetAdministrationShells")]
         IElementContainer<IAssetAdministrationShell> AssetAdministrationShells { get; }
