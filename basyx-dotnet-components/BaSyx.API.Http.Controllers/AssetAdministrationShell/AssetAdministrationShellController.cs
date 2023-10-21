@@ -19,8 +19,6 @@ using System.Text.Json;
 using BaSyx.Models.Extensions;
 using System;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using BaSyx.Utils.Extensions;
-using System.Web;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -31,34 +29,18 @@ namespace BaSyx.API.Http.Controllers
     public class AssetAdministrationShellController : Controller
     {
         private readonly IAssetAdministrationShellServiceProvider serviceProvider;
-
-#if NETCOREAPP3_1
         private readonly IWebHostEnvironment hostingEnvironment;
-
-        /// <summary>
-        /// The constructor for the Asset Administration Shell Controller
-        /// </summary>
-        /// <param name="assetAdministrationShellServiceProvider">The Asset Administration Shell Service Provider implementation provided by the dependency injection</param>
-        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public AssetAdministrationShellController(IAssetAdministrationShellServiceProvider assetAdministrationShellServiceProvider, IWebHostEnvironment environment)
-        {
-            shellServiceProvider = aasServiceProvider;
-            hostingEnvironment = environment;
-        }
-#else
-        private readonly IHostingEnvironment hostingEnvironment;
 
         /// <summary>
         /// The constructor for the Asset Administration Shell Controller
         /// </summary>
         /// <param name="aasServiceProvider">The Asset Administration Shell Service Provider implementation provided by the dependency injection</param>
         /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public AssetAdministrationShellController(IAssetAdministrationShellServiceProvider aasServiceProvider, IHostingEnvironment environment)
+        public AssetAdministrationShellController(IAssetAdministrationShellServiceProvider aasServiceProvider, IWebHostEnvironment environment)
         {
             serviceProvider = aasServiceProvider;
             hostingEnvironment = environment;
         }
-#endif
 
         #region Asset Adminstration Shell Interface
         /// <summary>

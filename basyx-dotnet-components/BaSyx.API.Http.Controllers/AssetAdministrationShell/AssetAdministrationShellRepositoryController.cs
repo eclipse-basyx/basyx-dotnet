@@ -28,9 +28,6 @@ namespace BaSyx.API.Http.Controllers
     public class AssetAdministrationShellRepositoryController : Controller
     {
         private readonly IAssetAdministrationShellRepositoryServiceProvider serviceProvider;
-
-
-#if NETCOREAPP3_1
         private readonly IWebHostEnvironment hostingEnvironment;
 
         /// <summary>
@@ -40,23 +37,9 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
         public AssetAdministrationShellRepositoryController(IAssetAdministrationShellRepositoryServiceProvider assetAdministrationShellRepositoryServiceProvider, IWebHostEnvironment environment)
         {
-            shellServiceProvider = aasServiceProvider;
-            hostingEnvironment = environment;
-        }
-#else
-        private readonly IHostingEnvironment hostingEnvironment;
-
-        /// <summary>
-        /// The constructor for the Asset Administration Shell Repository Controller
-        /// </summary>
-        /// <param name="assetAdministrationShellRepositoryServiceProvider"></param>
-        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public AssetAdministrationShellRepositoryController(IAssetAdministrationShellRepositoryServiceProvider assetAdministrationShellRepositoryServiceProvider, IHostingEnvironment environment)
-        {
             serviceProvider = assetAdministrationShellRepositoryServiceProvider;
             hostingEnvironment = environment;
         }
-#endif
 
         /// <summary>
         /// Returns all Asset Administration Shells

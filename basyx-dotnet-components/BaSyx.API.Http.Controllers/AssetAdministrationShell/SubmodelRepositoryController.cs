@@ -17,8 +17,6 @@ using BaSyx.API.ServiceProvider;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
-using System.Reflection.Emit;
-using System.Xml.Linq;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.Http.Controllers
@@ -30,8 +28,6 @@ namespace BaSyx.API.Http.Controllers
     public class SubmodelRepositoryController : Controller
     {
         private readonly ISubmodelRepositoryServiceProvider serviceProvider;
-
-#if NETCOREAPP3_1
         private readonly IWebHostEnvironment hostingEnvironment;
 
         /// <summary>
@@ -41,23 +37,9 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
         public SubmodelRepositoryController(ISubmodelRepositoryServiceProvider submodelRepositoryServiceProvider, IWebHostEnvironment environment)
         {
-            shellServiceProvider = aasServiceProvider;
-            hostingEnvironment = environment;
-        }
-#else
-        private readonly IHostingEnvironment hostingEnvironment;
-
-        /// <summary>
-        /// The constructor for the Submodel Repository Controller
-        /// </summary>
-        /// <param name="submodelRepositoryServiceProvider"></param>
-        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public SubmodelRepositoryController(ISubmodelRepositoryServiceProvider submodelRepositoryServiceProvider, IHostingEnvironment environment)
-        {
             serviceProvider = submodelRepositoryServiceProvider;
             hostingEnvironment = environment;
         }
-#endif
 
         /// <summary>
         /// Returns all Submodels

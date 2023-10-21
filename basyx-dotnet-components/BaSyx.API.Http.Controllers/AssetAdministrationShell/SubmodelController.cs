@@ -24,7 +24,6 @@ using System.Text.Json.Nodes;
 using System.Text.Json;
 using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using System.Collections.Generic;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -35,6 +34,7 @@ namespace BaSyx.API.Http.Controllers
     public class SubmodelController : Controller
     {
         private readonly ISubmodelServiceProvider serviceProvider;
+        private readonly IWebHostEnvironment hostingEnvironment;
 
         private static JsonSerializerOptions _metadataSerializerOptions;
         private static JsonSerializerOptions _valueOnlySerializerOptions;
@@ -60,33 +60,17 @@ namespace BaSyx.API.Http.Controllers
             _fullSerializerOptions = options3.Build();
         }
 
-#if NETCOREAPP3_1
-        private readonly IWebHostEnvironment hostingEnvironment;
-
-         /// <summary>
+        /// <summary>
         /// The constructor for the Submodel Controller
         /// </summary>
         /// <param name="submodelServiceProvider">The Submodel Service Provider implementation provided by the dependency injection</param>
         /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
         public SubmodelController(ISubmodelServiceProvider submodelServiceProvider, IWebHostEnvironment environment)
         {
-            shellServiceProvider = aasServiceProvider;
-            hostingEnvironment = environment;
-        }
-#else
-        private readonly IHostingEnvironment hostingEnvironment;
-
-        /// <summary>
-        /// The constructor for the Submodel Controller
-        /// </summary>
-        /// <param name="submodelServiceProvider">The Submodel Service Provider implementation provided by the dependency injection</param>
-        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public SubmodelController(ISubmodelServiceProvider submodelServiceProvider, IHostingEnvironment environment)
-        {
             serviceProvider = submodelServiceProvider;
             hostingEnvironment = environment;
         }
-#endif
+
         /// <summary>
         /// Returns the Submodel
         /// </summary>
