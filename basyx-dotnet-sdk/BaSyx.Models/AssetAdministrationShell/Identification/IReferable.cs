@@ -27,13 +27,13 @@ namespace BaSyx.Models.AdminShell
         string IdShort { get; }
 
         /// <summary>
+        /// OBSOLETE
         /// The category is a value that gives further meta information w.r.t.the class of the element. It affects the expected existence of attributes and the applicability of constraints.
         /// 
         /// Note: The category is not identical to the semantic definition(HasSemantics) of an element.The category could e.g.denote that
         /// the element is a measurement value, whereas the semantic definition of the element would denote that it is the measured temperature.
         /// </summary>
-        [Obsolete]
-        [JsonIgnore, DataMember(EmitDefaultValue = false, IsRequired = false, Name = "category")]
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "category")]
         string Category { get; }
 
         /// <summary>
