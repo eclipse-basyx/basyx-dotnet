@@ -15,7 +15,7 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-    <Version>2.0.0-alpha.3</Version>
+    <Version>2.0.0-alpha.4</Version>
   </PropertyGroup>
 
   <ItemGroup>
