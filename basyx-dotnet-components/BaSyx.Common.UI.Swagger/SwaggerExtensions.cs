@@ -104,7 +104,7 @@ namespace BaSyx.Common.UI.Swagger
     }
     public static class SwaggerExtensions
     {
-        public static void AddSwagger(this IServerApplication serverApp, Interface interfaceType)
+        public static void AddSwagger(this IServerApplication serverApp, Interface interfaceType, string xmlCommentFilePath = null)
         {
             OpenApiInfo info = OpenApiInfos.GetApiInfo(interfaceType);
             serverApp.ConfigureServices(services =>
@@ -113,10 +113,18 @@ namespace BaSyx.Common.UI.Swagger
                 {
                     c.SwaggerDoc("v1", info);
 
+                    string xmlPath = null;
+
                     // Set the comments path for the Swagger JSON and UI.
-                    string xmlFile = $"{serverApp.ControllerAssembly.GetName().Name}.xml";
-                    string executionPath = serverApp.Settings?.ExecutionPath ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    string xmlPath = Path.Combine(executionPath, xmlFile);
+                    if (string.IsNullOrEmpty(xmlCommentFilePath))
+                    {
+                        string xmlFile = $"{serverApp.ControllerAssembly.GetName().Name}.xml";
+                        string executionPath = serverApp.Settings?.ExecutionPath ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                        xmlPath = Path.Combine(executionPath, xmlFile);
+                    }
+                    else
+                        xmlPath = xmlCommentFilePath;
+                  
                     if (EmbeddedResource.CheckOrWriteRessourceToFile(serverApp.ControllerAssembly, xmlPath))
                         c.IncludeXmlComments(xmlPath, true);
 
