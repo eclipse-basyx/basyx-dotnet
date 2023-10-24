@@ -5,7 +5,7 @@
     <Configurations>Debug;Release</Configurations>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <Authors>Constantin Ziesche</Authors>
-    <Copyright>Copyright 2022 - Bosch Rexroth AG</Copyright>
+    <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet-sdk</RepositoryUrl>
     <Description>The official BaSyx Collection of Information Model Classes</Description>
