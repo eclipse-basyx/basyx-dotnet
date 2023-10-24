@@ -88,6 +88,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{03AD0C9E-6787-493C-895E-859668A1AE75}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
+		LICENSE-3RD-PARTY.txt = LICENSE-3RD-PARTY.txt
 		README.md = README.md
 	EndProjectSection
 EndProject
