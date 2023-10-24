@@ -1,12 +1,15 @@
-﻿# Welcome to basyx-dotnet!
+﻿# Welcome to the BaSyx .NET SDK
 
-This is the main repository and starting point to work with the BaSyx .NET SDK.
+This is the the one and only repository to start workign with the BaSyx .NET SDK.
 
-The entire .NET SDK is structured in 4 separate Git submodules:
-- [basyx-dotnet-sdk](https://github.com/eclipse-basyx/basyx-dotnet-sdk): Contains all the core libraries to build everything from scratch
-- [basyx-dotnet-components](https://github.com/eclipse-basyx/basyx-dotnet-components): Built on top of the core libraries providing more high-level components as well as various client and server libraries
-- [basyx-dotnet-applications](https://github.com/eclipse-basyx/basyx-dotnet-applications): Off-the-shelf components ready to be used and deployed in any scenario (Cloud, On Premises, Embedded Systems, RaspberryPi, Docker, etc.)
-- [basyx-dotnet-examples](https://github.com/eclipse-basyx/basyx-dotnet-examples): Solution with a couple of example projects showing how things work
+It implements the offical AAS Part 1: Metamodel v3 as well as the Part 2: API v1
+
+The entire .NET SDK is structured in 5 separate folder:
+- basyx-dotnet-sdk: Contains all the core libraries to build everything from scratch
+- basyx-dotnet-components: Built on top of the core libraries providing more high-level components as well as various client and server libraries
+- basyx-dotnet-applications: Off-the-shelf components ready to be used and deployed in any scenario (Cloud, On Premises, Embedded Systems, RaspberryPi, Docker, etc.)
+- basyx-dotnet-examples: Solution with a couple of example projects showing how things work
+- basyx-dotnet-test: Unit and integration tests of the SDK
 
 # Setup BaSyx
 
