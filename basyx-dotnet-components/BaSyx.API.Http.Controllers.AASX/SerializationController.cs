@@ -10,10 +10,7 @@
 *******************************************************************************/
 using Microsoft.AspNetCore.Mvc;
 using BaSyx.API.ServiceProvider;
-using BaSyx.Models.Export;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
-using System.IO;
 using BaSyx.Models.AdminShell;
 using System.Linq;
 using System.Collections.Generic;
@@ -26,8 +23,6 @@ namespace BaSyx.API.Http.Controllers.PackageService
     public class SerializationController : Controller
     {
         private readonly IServiceProvider serviceProvider;
-
-#if NETCOREAPP3_1
         private readonly IWebHostEnvironment hostingEnvironment;
 
         /// <summary>
@@ -35,27 +30,11 @@ namespace BaSyx.API.Http.Controllers.PackageService
         /// </summary>
         /// <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
         /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public PackageService(IServiceProvider serviceProvider, IWebHostEnvironment environment)
+        public SerializationController(IServiceProvider serviceProvider, IWebHostEnvironment environment)
         {
             this.serviceProvider = serviceProvider;
             hostingEnvironment = environment;
         }
-#else
-        private readonly IHostingEnvironment hostingEnvironment;
-
-        /// <summary>
-        /// Constructor for the Serialization Controller
-        /// </summary>
-        /// <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
-        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public SerializationController(IServiceProvider serviceProvider, IHostingEnvironment environment)
-        {
-            this.serviceProvider = serviceProvider;
-            hostingEnvironment = environment;
-        }
-
-
-#endif
 
         /// <summary>
         /// Returns an appropriate serialization based on the specified format (see SerializationFormat)

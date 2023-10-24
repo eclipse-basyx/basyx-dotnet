@@ -10,13 +10,7 @@
 *******************************************************************************/
 using Microsoft.AspNetCore.Mvc;
 using BaSyx.API.ServiceProvider;
-using BaSyx.Models.Export;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
-using System.IO;
-using BaSyx.Models.AdminShell;
-using System.Linq;
-using BaSyx.Utils.FileSystem;
 
 namespace BaSyx.API.Http.Controllers.PackageService
 {
@@ -26,8 +20,6 @@ namespace BaSyx.API.Http.Controllers.PackageService
     public class PackageController : Controller
     {
         private readonly IServiceProvider serviceProvider;
-
-#if NETCOREAPP3_1
         private readonly IWebHostEnvironment hostingEnvironment;
 
         /// <summary>
@@ -35,27 +27,12 @@ namespace BaSyx.API.Http.Controllers.PackageService
         /// </summary>
         /// <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
         /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public PackageService(IServiceProvider serviceProvider, IWebHostEnvironment environment)
-        {
-            this.serviceProvider = serviceProvider;
-            hostingEnvironment = environment;
-        }
-#else
-        private readonly IHostingEnvironment hostingEnvironment;
-
-        /// <summary>
-        /// Constructor for the AASX Package Controller
-        /// </summary>
-        /// <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
-        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public PackageController(IServiceProvider serviceProvider, IHostingEnvironment environment)
+        public PackageController(IServiceProvider serviceProvider, IWebHostEnvironment environment)
         {
             this.serviceProvider = serviceProvider;
             hostingEnvironment = environment;
         }
 
-
-#endif
 
         /// <summary>
         /// Retrieves the full AASX package for a single Asset Administration Shell

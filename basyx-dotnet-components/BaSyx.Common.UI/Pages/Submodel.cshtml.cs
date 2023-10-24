@@ -19,9 +19,9 @@ namespace BaSyx.Common.UI.Pages
     {
         public ISubmodelServiceProvider ServiceProvider { get; }
         public ServerSettings Settings { get; }
-        public IHostingEnvironment HostingEnvironment { get; }
+        public IWebHostEnvironment HostingEnvironment { get; }
 
-        public SubmodelModel(ISubmodelServiceProvider provider, ServerSettings serverSettings, IHostingEnvironment hostingEnvironment)
+        public SubmodelModel(ISubmodelServiceProvider provider, ServerSettings serverSettings, IWebHostEnvironment hostingEnvironment)
         {
             ServiceProvider = provider;
             Settings = serverSettings;

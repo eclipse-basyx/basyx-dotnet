@@ -31,8 +31,6 @@ namespace BaSyx.API.Http.Controllers.PackageService
     public class FileServerController : Controller
     {
         private readonly IFileServiceProvider serviceProvider;
-
-#if NETCOREAPP3_1
         private readonly IWebHostEnvironment hostingEnvironment;
 
         /// <summary>
@@ -40,27 +38,11 @@ namespace BaSyx.API.Http.Controllers.PackageService
         /// </summary>
         /// <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
         /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public PackageService(IServiceProvider serviceProvider, IWebHostEnvironment environment)
+        public FileServerController(IFileServiceProvider serviceProvider, IWebHostEnvironment environment)
         {
             this.serviceProvider = serviceProvider;
             hostingEnvironment = environment;
         }
-#else
-        private readonly IHostingEnvironment hostingEnvironment;
-
-        /// <summary>
-        /// Constructor for the File Server Controller
-        /// </summary>
-        /// <param name="serviceProvider">The Service Provider implementation provided by the dependency injection</param>
-        /// <param name="environment">The Hosting Environment provided by the dependency injection</param>
-        public FileServerController(IFileServiceProvider serviceProvider, IHostingEnvironment environment)
-        {
-            this.serviceProvider = serviceProvider;
-            hostingEnvironment = environment;
-        }
-
-
-#endif
 
         /// <summary>
         /// Returns a list of available AASX packages at the server

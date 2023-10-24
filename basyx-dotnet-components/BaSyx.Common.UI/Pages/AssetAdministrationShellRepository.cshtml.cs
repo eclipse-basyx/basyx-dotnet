@@ -19,8 +19,8 @@ namespace BaSyx.Common.UI.Pages
     {
         public IAssetAdministrationShellRepositoryServiceProvider ServiceProvider { get; }
         public ServerSettings Settings { get; }
-        public IHostingEnvironment HostingEnvironment { get; }
-        public AssetAdministrationShellRepositoryModel(IAssetAdministrationShellRepositoryServiceProvider provider, ServerSettings serverSettings, IHostingEnvironment hostingEnvironment)
+        public IWebHostEnvironment HostingEnvironment { get; }
+        public AssetAdministrationShellRepositoryModel(IAssetAdministrationShellRepositoryServiceProvider provider, ServerSettings serverSettings, IWebHostEnvironment hostingEnvironment)
         {
             ServiceProvider = provider;
             Settings = serverSettings;

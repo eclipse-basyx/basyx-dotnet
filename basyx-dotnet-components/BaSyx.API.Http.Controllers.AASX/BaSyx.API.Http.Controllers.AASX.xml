@@ -9,7 +9,7 @@
             The File Server Controller Controller
             </summary>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.PackageService.FileServerController.#ctor(BaSyx.API.ServiceProvider.IFileServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.FileServerController.#ctor(BaSyx.API.ServiceProvider.IFileServiceProvider,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             <summary>
             Constructor for the File Server Controller
             </summary>
@@ -56,7 +56,7 @@
             The AASX Package Controller
             </summary>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.PackageService.PackageController.#ctor(BaSyx.API.ServiceProvider.IServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.PackageController.#ctor(BaSyx.API.ServiceProvider.IServiceProvider,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             <summary>
             Constructor for the AASX Package Controller
             </summary>
@@ -75,7 +75,7 @@
             The Serialization Controller
             </summary>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.PackageService.SerializationController.#ctor(BaSyx.API.ServiceProvider.IServiceProvider,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+        <member name="M:BaSyx.API.Http.Controllers.PackageService.SerializationController.#ctor(BaSyx.API.ServiceProvider.IServiceProvider,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             <summary>
             Constructor for the Serialization Controller
             </summary>
