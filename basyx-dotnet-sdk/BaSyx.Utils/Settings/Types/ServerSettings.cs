@@ -35,7 +35,8 @@ namespace BaSyx.Utils.Settings
     public class UserInterfaceConfiguration
     {
         public bool? BlazorSupportEnabled { get; set; }
-        public string CompanyLogo { get; set; }
+        public string BrandLogo { get; set; }
+        public string BrandStyle { get; set; }
         public string Title { get; set; }
         public string Url { get; set; }
 

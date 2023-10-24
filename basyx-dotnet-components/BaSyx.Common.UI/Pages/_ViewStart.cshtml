@@ -11,13 +11,13 @@
         {
             ViewData.Add("BlazorSupportEnabled", settings.UIConfig.BlazorSupportEnabled.Value);
         }
-        if (!string.IsNullOrEmpty(settings.UIConfig.CompanyLogo))
+        if (!string.IsNullOrEmpty(settings.UIConfig.BrandLogo))
         {
-            ViewData.Add("CompanyLogo", settings.UIConfig.CompanyLogo);
+            ViewData.Add("BrandLogo", settings.UIConfig.BrandLogo);
         }
-        else if (settings.Miscellaneous.TryGetValue("CompanyLogo", out string companyLogoPath))
+        if (!string.IsNullOrEmpty(settings.UIConfig.BrandStyle))
         {
-            ViewData.Add("CompanyLogo", companyLogoPath);
+            ViewData.Add("BrandStyle", settings.UIConfig.BrandStyle);
         }
         if (!string.IsNullOrEmpty(settings.UIConfig.Title))
         {

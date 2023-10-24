@@ -26,7 +26,7 @@
   <!-- Optional Web-UI configuration -->
   <UIConfig>
     <!-- If the path start with /files you can access the ContentPath defined above. -->
-    <CompanyLogo>/images/MyCompanyLogo.png</CompanyLogo>
+    <BrandLogo>/images/MyCompanyLogo.png</BrandLogo>
     <Title>BaSyx Registry</Title>
     <Links>
       <Link name="Swagger-Doc" href="/swagger"/>
