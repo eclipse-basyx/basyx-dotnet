@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
-    <PackageReference Include="BaSyx.Discovery.mDNS" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Registry.Client.Http" Version="2.0.0-alpha.3" />
+    <PackageReference Include="BaSyx.Discovery.mDNS" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Registry.Client.Http" Version="2.0.0-alpha.4" />
   </ItemGroup>
 
   <ItemGroup>

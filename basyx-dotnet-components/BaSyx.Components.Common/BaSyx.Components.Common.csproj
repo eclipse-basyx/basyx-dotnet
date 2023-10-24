@@ -38,9 +38,9 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('..\..\basyx-dotnet-sdk\')">
-    <PackageReference Include="BaSyx.API" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Utils.DependencyInjection" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Utils" Version="2.0.0-alpha.3" />
+    <PackageReference Include="BaSyx.API" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Utils.DependencyInjection" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Utils" Version="2.0.0-alpha.4" />
   </ItemGroup>
 
 

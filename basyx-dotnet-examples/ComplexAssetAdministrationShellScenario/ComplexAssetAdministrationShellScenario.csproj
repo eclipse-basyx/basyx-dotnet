@@ -30,14 +30,14 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
-    <PackageReference Include="BaSyx.Common.UI" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Registry.Server.Http" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Registry.Client.Http" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Registry.ReferenceImpl.FileBased" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Servers.Http" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.Clients.Http" Version="2.0.0-alpha.3" />
-    <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="2.0.0-alpha.3" />
+    <PackageReference Include="BaSyx.Common.UI" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Registry.Server.Http" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Registry.Client.Http" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Registry.ReferenceImpl.FileBased" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Servers.Http" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Clients.Http" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="2.0.0-alpha.4" />
   </ItemGroup>
 
   <ItemGroup>
