@@ -61,8 +61,8 @@ namespace BaSyx.Utils.Client.Mqtt
             if (config.Credentials != null)
                 builder.WithCredentials(config.Credentials.Username, config.Credentials.Password);
             if (config.Security != null)
-            {
-                var options = new MqttClientOptionsBuilderTlsParameters();
+            {                
+                var options = new MqttClientTlsOptions();
                 if (config.Security.UseTls)
                     options.UseTls = true;
                 if (!string.IsNullOrEmpty(config.Security.SslProtocols))
@@ -76,14 +76,13 @@ namespace BaSyx.Utils.Client.Mqtt
 
                 if (config.Security.CaCert != null && config.Security.ClientCert != null)
                 {
-                    options.Certificates = new List<X509Certificate>()
+                    options.ClientCertificatesProvider = new MqttClientCertificateProvider(new List<X509Certificate>()
                     {
                         config.Security.CaCert, config.Security.ClientCert
-                    };
+                    });                    
                 }
-                builder.WithTls(options);
+                builder.WithTlsOptions(options);
             }
-
 
             builder.WithCleanSession(config.CleanSession);
             builder.WithKeepAlivePeriod(TimeSpan.FromSeconds(config.KeepAlivePeriod));
