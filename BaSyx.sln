@@ -83,7 +83,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Clients.Http", "basyx
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Servers.Http", "basyx-dotnet-components\BaSyx.Servers.Http\BaSyx.Servers.Http.csproj", "{F9D73225-00A0-413D-A22D-05A22B011FA8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneralTests", "basyx-dotnet-tests\GeneralTests\GeneralTests.csproj", "{6959C8B0-20CF-425D-B2B3-33D70A44C209}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Registry.ReferenceImpl.InMemory", "basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.InMemory\BaSyx.Registry.ReferenceImpl.InMemory.csproj", "{96724E51-4714-4C98-B632-B043CDF984EA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{03AD0C9E-6787-493C-895E-859668A1AE75}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -231,10 +237,10 @@ Global
 		{F9D73225-00A0-413D-A22D-05A22B011FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9D73225-00A0-413D-A22D-05A22B011FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9D73225-00A0-413D-A22D-05A22B011FA8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6959C8B0-20CF-425D-B2B3-33D70A44C209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6959C8B0-20CF-425D-B2B3-33D70A44C209}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6959C8B0-20CF-425D-B2B3-33D70A44C209}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6959C8B0-20CF-425D-B2B3-33D70A44C209}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96724E51-4714-4C98-B632-B043CDF984EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96724E51-4714-4C98-B632-B043CDF984EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96724E51-4714-4C98-B632-B043CDF984EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96724E51-4714-4C98-B632-B043CDF984EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,7 +281,7 @@ Global
 		{02740189-447E-462B-A3AF-52304CB65666} = {4FBBD33F-2754-494E-BDDA-4D200EFAE28F}
 		{382C7932-B2C9-4B2B-86F2-FFD383D933B7} = {355B90BE-8EF1-4803-84AA-C6AF306E3577}
 		{F9D73225-00A0-413D-A22D-05A22B011FA8} = {355B90BE-8EF1-4803-84AA-C6AF306E3577}
-		{6959C8B0-20CF-425D-B2B3-33D70A44C209} = {4FBBD33F-2754-494E-BDDA-4D200EFAE28F}
+		{96724E51-4714-4C98-B632-B043CDF984EA} = {355B90BE-8EF1-4803-84AA-C6AF306E3577}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B028A9A2-E37C-44AF-8032-C8F0492BDB00}
