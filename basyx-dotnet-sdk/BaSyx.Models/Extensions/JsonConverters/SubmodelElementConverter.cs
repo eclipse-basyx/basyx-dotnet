@@ -357,12 +357,12 @@ namespace BaSyx.Models.Extensions
                         writer.WritePropertyName("observableReference");
                         JsonSerializer.Serialize(writer, bee.ObservableReference, options);
                     }
-                    if (bee.Direction != null)
+                    if (bee.Direction != EventDirection.None)
                     {
                         writer.WritePropertyName("direction");
                         JsonSerializer.Serialize(writer, bee.Direction, options);
                     }
-                    if (bee.State != null)
+                    if (bee.State != EventState.None)
                     {
                         writer.WritePropertyName("state");
                         JsonSerializer.Serialize(writer, bee.State, options);

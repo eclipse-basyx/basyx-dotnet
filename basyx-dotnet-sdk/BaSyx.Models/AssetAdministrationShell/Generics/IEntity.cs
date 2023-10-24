@@ -57,6 +57,8 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public enum EntityType
     {
+        [EnumMember(Value = "None")]
+        None,
         [EnumMember(Value = "CoManagedEntity")]
         CoManagedEntity,
         [EnumMember(Value = "SelfManagedEntity")]

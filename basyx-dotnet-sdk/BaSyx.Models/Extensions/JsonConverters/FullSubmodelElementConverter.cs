@@ -88,7 +88,7 @@ namespace BaSyx.Models.Extensions
                         writer.WritePropertyName("statements");
                         JsonSerializer.Serialize(writer, entity.Statements, options);
                     }
-                    if (entity.EntityType != null)
+                    if (entity.EntityType != EntityType.None)
                     {
                         writer.WritePropertyName("entityType");
                         JsonSerializer.Serialize(writer, entity.EntityType, options);
