@@ -17,6 +17,8 @@ using BaSyx.Utils.Settings;
 using NLog;
 using NLog.Web;
 using BaSyx.Models.AdminShell;
+using System.IO;
+using System;
 
 namespace HelloAssetAdministrationShell
 {
@@ -28,6 +30,19 @@ namespace HelloAssetAdministrationShell
         static void Main(string[] args)
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
+
+            string[] files = Directory.GetFiles(@"C:\Development\basyx-dotnet-dev", "*.cs", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                if (file.Contains("\\bin\\") || file.Contains("\\obj\\"))
+                    continue;
+
+                string fileText = File.ReadAllText(file);
+                if (!fileText.StartsWith("/*"))
+                    logger.Warn(file);
+            }
+
+            Console.ReadKey();
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
