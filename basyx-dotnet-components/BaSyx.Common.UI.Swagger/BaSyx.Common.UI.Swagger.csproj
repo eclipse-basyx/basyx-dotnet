@@ -5,7 +5,7 @@
     <Authors>Constantin Ziesche</Authors>
     <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet-components</RepositoryUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <Description>The official BaSyx Common Swagger Extensions</Description>
     <Company>Bosch Rexroth AG</Company>
@@ -19,7 +19,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.6.9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>

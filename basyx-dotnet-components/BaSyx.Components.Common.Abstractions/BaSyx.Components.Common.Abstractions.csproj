@@ -7,7 +7,7 @@
     <Authors>Constantin Ziesche</Authors>
     <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet-components</RepositoryUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
     <Description>The official BaSyx Components Common Abstractions Library</Description>
     <Company>Bosch Rexroth AG</Company>
     <PackageTags>BaSys BaSyx Components Abstractions Common</PackageTags>
@@ -17,10 +17,6 @@
     <LangVersion>8.0</LangVersion>
     <Version>2.0.0-alpha.4</Version>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
-  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

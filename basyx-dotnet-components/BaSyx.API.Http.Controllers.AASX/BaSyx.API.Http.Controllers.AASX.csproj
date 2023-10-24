@@ -6,7 +6,7 @@
     <Authors>Constantin Ziesche</Authors>
     <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet-components</RepositoryUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <Description>The official BaSyx HTTP Controller AASX Package Service</Description>
     <Company>Bosch Rexroth AG</Company>
@@ -31,7 +31,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.11" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.12" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

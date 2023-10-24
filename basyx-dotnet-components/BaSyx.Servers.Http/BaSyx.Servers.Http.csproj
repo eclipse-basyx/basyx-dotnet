@@ -7,7 +7,7 @@
     <Authors>Constantin Ziesche</Authors>
     <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet-components</RepositoryUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <Description>The official BaSyx Server Library for Asset Administration Shells</Description>
     <Company>Bosch Rexroth AG</Company>

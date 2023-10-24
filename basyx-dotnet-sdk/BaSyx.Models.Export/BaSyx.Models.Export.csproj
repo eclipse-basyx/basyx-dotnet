@@ -10,7 +10,7 @@
     <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet-sdk</RepositoryUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
     <PackageIcon>basyxlogo.png</PackageIcon>
     <PackageTags>BaSys BaSyx Models Export</PackageTags>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
@@ -48,7 +48,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.11" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.12" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
