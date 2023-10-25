@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('..\..\basyx-dotnet-sdk\')">
-    <PackageReference Include="BaSyx.Utils" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Utils" Version="*" />
   </ItemGroup>
 
 

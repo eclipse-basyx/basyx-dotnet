@@ -28,11 +28,11 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
-    <PackageReference Include="BaSyx.Servers.Http" Version="2.0.0-alpha.4" />
-    <PackageReference Include="BaSyx.Common.UI" Version="2.0.0-alpha.4" />
-    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="2.0.0-alpha.4" />
-    <PackageReference Include="BaSyx.Discovery.mDNS" Version="2.0.0-alpha.4" />
-    <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.Servers.Http" Version="*" />
+    <PackageReference Include="BaSyx.Common.UI" Version="*" />
+    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="*" />
+    <PackageReference Include="BaSyx.Discovery.mDNS" Version="*" />
+    <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="*" />
   </ItemGroup>
 
   <ItemGroup>

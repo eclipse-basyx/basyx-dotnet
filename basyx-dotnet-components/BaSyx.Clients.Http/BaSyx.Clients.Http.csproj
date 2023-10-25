@@ -36,8 +36,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('..\..\basyx-dotnet-sdk\')">
-    <PackageReference Include="BaSyx.API" Version="2.0.0-alpha.4" />
-    <PackageReference Include="BaSyx.Utils.DependencyInjection" Version="2.0.0-alpha.4" />
+    <PackageReference Include="BaSyx.API" Version="*" />
+    <PackageReference Include="BaSyx.Utils.DependencyInjection" Version="*" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
