@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <Authors>Constantin Ziesche</Authors>
+    <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
+    <Description>AppDataService for Asset Administration Shell projects</Description>
+    <Company>Bosch Rexroth AG</Company>
+    <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
+    <PackageTags>BaSys BaSyx Deployment AppDataService</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <PackageIcon>basyxlogo.png</PackageIcon>
+    <IsPackable>true</IsPackable>
+    <Version>2.0.0</Version>
+  </PropertyGroup> 
+
+  <ItemGroup>
+    <!--<PackageReference Include="BaSyx.API" Version="1.0.2" />-->
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.16.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-sdk\')">
+    <ProjectReference Include="..\..\basyx-dotnet-sdk\BaSyx.API\BaSyx.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-sdk\')">
+    <PackageReference Include="BaSyx.API" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="basyxlogo.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="AppDataServiceSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Exec Command="IF EXIST %25BASYX_REPO%25 ( dotnet pack &quot;$(ProjectPath)&quot; -c Release --no-build --include-source --include-symbols --output &quot;%25BASYX_REPO%25&quot; ) ELSE ( ECHO BASYX_REPO Environment Variable not found)" />
+  </Target>
+
+</Project>
