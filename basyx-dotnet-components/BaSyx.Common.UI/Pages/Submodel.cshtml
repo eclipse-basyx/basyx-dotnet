@@ -10,7 +10,7 @@
     ServerSettings settings = Model.Settings;
     ISubmodel submodel = sp.GetBinding();
 
-    ViewData["Title"] = settings.UIConfig?.Title ?? submodel.IdShort;
+    ViewData["Title"] = settings.UserInterfaceConfig?.Title ?? submodel.IdShort;
     ViewData["ApiRoot"] = SubmodelRoutes.SUBMODEL;
     ViewData["ApiType"] = "Submodel";
     ViewData["aasId"] = string.Empty;

@@ -22,7 +22,7 @@
         ViewData["Thumbnail"] = aas.AssetInformation.DefaultThumbnail;
     }
 
-    ViewData["Title"] = settings.UIConfig?.Title ?? aas.IdShort;
+    ViewData["Title"] = settings.UserInterfaceConfig?.Title ?? aas.IdShort;
     ViewData["ApiRoot"] = AssetAdministrationShellRoutes.AAS;
     ViewData["ApiType"] = "AssetAdministrationShell";
     ViewData["aasId"] = (string)aas.Id;

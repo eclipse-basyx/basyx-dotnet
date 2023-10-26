@@ -19,7 +19,7 @@
         shellServiceProviders = retrievedShellServiceProviders.Entity;
     }
 
-    ViewData["Title"] = settings.UIConfig?.Title ?? "Asset Administration Shell Repository";
+    ViewData["Title"] = settings.UserInterfaceConfig?.Title ?? "Asset Administration Shell Repository";
     ViewData["ApiRoot"] = AssetAdministrationShellRepositoryRoutes.SHELLS;
     ViewData["ApiType"] = "AssetAdministrationShellRepository";
 }

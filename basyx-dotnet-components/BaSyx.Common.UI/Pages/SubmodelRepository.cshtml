@@ -16,7 +16,7 @@
         submodelServiceProviders = retrievedSubmodelServiceProvider.Entity;
     }
 
-    ViewData["Title"] = settings.UIConfig?.Title ?? "Submodel Repository";
+    ViewData["Title"] = settings.UserInterfaceConfig?.Title ?? "Submodel Repository";
     ViewData["ApiRoot"] = SubmodelRepositoryRoutes.SUBMODELS;
     ViewData["ApiType"] = "SubmodelRepository";
     ViewData["aasId"] = string.Empty;
