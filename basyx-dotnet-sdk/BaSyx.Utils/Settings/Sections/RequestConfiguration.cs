@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 * Copyright (c) 2023 Bosch Rexroth AG
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
@@ -13,18 +13,9 @@ using System.Xml.Serialization;
 
 namespace BaSyx.Utils.Settings
 {
-    public class ClientConfiguration
+    public class RequestConfiguration
     {
         [XmlElement]
-        public string ClientId { get; set; }
-        [XmlElement]
-        public string Endpoint { get; set; }
-        [XmlElement]
-        public RequestConfiguration RequestConfig { get; set; }
-
-        public ClientConfiguration()
-        {
-            RequestConfig = new RequestConfiguration();
-        }
+        public int? RequestTimeout { get; set; }
     }
 }
