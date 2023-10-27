@@ -75,11 +75,11 @@ namespace BaSyx.Discovery.mDNS
                 }
                 if (aasDescriptor != null && assetAdministrationShellRegistry != null)
                 {
-                    var registeredResult = assetAdministrationShellRegistry.UpdateAssetAdministrationShellRegistration(aasDescriptor.Id.Id, aasDescriptor);
+                    var registeredResult = assetAdministrationShellRegistry.CreateAssetAdministrationShellRegistration(aasDescriptor);
                     if (registeredResult.Success)
-                        logger.LogInformation($"Successfully registered Asset Administration Shell with {aasDescriptor.Id.Id} at registry");
+                        logger.LogInformation($"Successfully registered Asset Administration Shell with {aasDescriptor.Id} at registry");
                     else
-                        registeredResult.LogResult(logger, LogLevel.Error, $"Could not register Asset Administration Shell with {aasDescriptor.Id.Id} at registry");
+                        registeredResult.LogResult(logger, LogLevel.Error, $"Could not register Asset Administration Shell with {aasDescriptor.Id} at registry");
                 }
             }
             catch (Exception exc)
