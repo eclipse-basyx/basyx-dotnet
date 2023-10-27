@@ -17,7 +17,7 @@ namespace BaSyx.Models.AdminShell
     public class LangString
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "language")]
-        [XmlAttribute("language")]
+        [XmlAttribute("lang")]
         public string Language { get; set; }
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "text")]
