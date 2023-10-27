@@ -19,6 +19,8 @@ using NLog.Web;
 using BaSyx.Models.AdminShell;
 using System.IO;
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace HelloAssetAdministrationShell
 {
@@ -31,24 +33,24 @@ namespace HelloAssetAdministrationShell
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
 
-            string[] files = Directory.GetFiles(@"C:\Development\basyx-dotnet-dev", "*.cs", SearchOption.AllDirectories);
-            foreach (string file in files)
-            {
-                if (file.Contains("\\bin\\") || file.Contains("\\obj\\"))
-                    continue;
+            var config = new ConfigurationBuilder();
+            config.AddCommandLine(args);
+            config.AddEnvironmentVariables();
+            config.AddJsonFile("appsettings.json");
 
-                string fileText = File.ReadAllText(file);
-                if (!fileText.StartsWith("/*"))
-                    logger.Warn(file);
-            }
-
-            Console.ReadKey();
+            IConfiguration configuration = config.Build();
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
 
             //Initialize generic HTTP-REST interface passing previously loaded server configuration
             AssetAdministrationShellHttpServer server = new AssetAdministrationShellHttpServer(serverSettings);
+
+            server.ConfigureServices(services =>
+            {
+                ServerSettings serverSettings1 = configuration.GetSection("ServerSettings").Get<ServerSettings>();
+                services.Configure<ServerSettings>(configuration.GetSection("ServerSettings"));
+            });
 
             //Configure the entire application to use your own logger library (here: Nlog)
             server.WebHostBuilder.UseNLog();
