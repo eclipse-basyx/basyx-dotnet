@@ -16,11 +16,9 @@ using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings;
 using NLog;
 using NLog.Web;
-using BaSyx.Models.AdminShell;
-using System.IO;
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using BaSyx.Deployment.AppDataService;
 
 namespace HelloAssetAdministrationShell
 {
@@ -29,28 +27,20 @@ namespace HelloAssetAdministrationShell
         //Create logger for the application
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
+        private static AppDataService AppDataService { get; set; }
+
         static void Main(string[] args)
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
 
-            var config = new ConfigurationBuilder();
-            config.AddCommandLine(args);
-            config.AddEnvironmentVariables();
-            config.AddJsonFile("appsettings.json");
-
-            IConfiguration configuration = config.Build();
+            IConfiguration configuration = AppDataService.LoadConfiguration("appsettings.json", args);
+            AppDataService = AppDataService.Create(configuration);            
 
             //Loading server configurations settings from ServerSettings.xml;
-            ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
+            ServerSettings serverSettings = AppDataService.GetSettings<ServerSettings>();
 
             //Initialize generic HTTP-REST interface passing previously loaded server configuration
             AssetAdministrationShellHttpServer server = new AssetAdministrationShellHttpServer(serverSettings);
-
-            server.ConfigureServices(services =>
-            {
-                ServerSettings serverSettings1 = configuration.GetSection("ServerSettings").Get<ServerSettings>();
-                services.Configure<ServerSettings>(configuration.GetSection("ServerSettings"));
-            });
 
             //Configure the entire application to use your own logger library (here: Nlog)
             server.WebHostBuilder.UseNLog();

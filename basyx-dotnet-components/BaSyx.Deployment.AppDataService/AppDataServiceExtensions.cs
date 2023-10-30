@@ -22,6 +22,8 @@ using BaSyx.API.ServiceProvider;
 using BaSyx.Utils.Settings;
 using BaSyx.Models.AdminShell;
 using Endpoint = BaSyx.Models.Connectivity.Endpoint;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace BaSyx.Deployment.AppDataService
 {
@@ -185,6 +187,12 @@ namespace BaSyx.Deployment.AppDataService
                     return null;
                 }                
             }
+        }
+
+        public static IServiceCollection AddSettings<T>(this IServiceCollection services, AppDataService appDataService) where T : Settings
+        {
+            services.Configure<T>(appDataService.Configuration.GetSection(typeof(T).Name));
+            return services;
         }
 
 

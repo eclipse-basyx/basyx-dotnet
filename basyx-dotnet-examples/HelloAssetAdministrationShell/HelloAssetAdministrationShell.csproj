@@ -36,10 +36,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Deployment.AppDataService\BaSyx.Deployment.AppDataService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Content\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ServerSettings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
