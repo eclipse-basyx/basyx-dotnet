@@ -102,6 +102,12 @@ namespace BaSyx.Deployment.AppDataService
             Configuration = configuration;
         }
 
+        public static AppDataService Create(string settingsJsonFile = "appsettings.json", string[] cmdLineArgs = null)
+        {
+            IConfiguration configuration = LoadConfiguration(settingsJsonFile, cmdLineArgs);
+            return Create(configuration);
+        }
+
         public static AppDataService Create(IConfiguration configuration)
         {
             try
