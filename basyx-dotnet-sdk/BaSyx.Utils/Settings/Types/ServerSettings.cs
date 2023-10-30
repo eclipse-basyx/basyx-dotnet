@@ -15,5 +15,6 @@ namespace BaSyx.Utils.Settings
         public ServerConfiguration ServerConfig { get; set; } = new ServerConfiguration();
         public ControllerConfiguration ControllerConfig { get; set; } = new ControllerConfiguration();
         public UserInterfaceConfiguration UserInterfaceConfig { get; set; } = new UserInterfaceConfiguration();
+        public DiscoveryConfiguration DiscoveryConfig { get; set; } = new DiscoveryConfiguration();
     }   
 }
