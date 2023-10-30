@@ -28,14 +28,6 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <Content Include="FileBasedRegistrySettings.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <PackageFlatten>true</PackageFlatten>
-      <PackagePath>contentFiles\any\$(TargetFramework)\</PackagePath>
-    </Content>
   </ItemGroup>
 
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-sdk\')">

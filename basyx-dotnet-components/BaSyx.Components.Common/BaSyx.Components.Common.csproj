@@ -54,15 +54,6 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <EmbeddedResource Include="..\resources\ServerSettings.xml">
-      <PackagePath>contentFiles\any\$(TargetFramework)\</PackagePath>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <PackageFlatten>true</PackageFlatten>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <Pack>true</Pack>
-    </EmbeddedResource>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
