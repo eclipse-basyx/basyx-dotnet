@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 * Copyright (c) 2023 Bosch Rexroth AG
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
@@ -8,23 +8,21 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Xml;
+
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace BaSyx.Utils.Settings
 {
-    public class ClientConfiguration
+    public class ControllerConfiguration
     {
-        [XmlElement]
-        public string ClientId { get; set; }
-        [XmlElement]
-        public string Endpoint { get; set; }
-        [XmlElement]
-        public RequestConfiguration RequestConfig { get; set; }
+        [XmlArray("Controllers")]
+        [XmlArrayItem("Controller")]
+        public List<string> Controllers { get; set; }
 
-        public ClientConfiguration()
+        public ControllerConfiguration()
         {
-            RequestConfig = new RequestConfiguration();
+            Controllers = new List<string>();
         }
     }
 }

@@ -8,13 +8,11 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace BaSyx.Utils.Settings
-{
-    
+{    
     public class ProxyConfiguration
     {
         [XmlElement]

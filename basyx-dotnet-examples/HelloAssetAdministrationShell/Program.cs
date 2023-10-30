@@ -16,9 +16,9 @@ using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings;
 using NLog;
 using NLog.Web;
-using BaSyx.Models.AdminShell;
-using System.IO;
-using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using BaSyx.Deployment.AppDataService;
 
 namespace HelloAssetAdministrationShell
 {
@@ -27,25 +27,17 @@ namespace HelloAssetAdministrationShell
         //Create logger for the application
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
+        private static AppDataService AppDataService { get; set; }
+
         static void Main(string[] args)
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
 
-            string[] files = Directory.GetFiles(@"C:\Development\basyx-dotnet-dev", "*.cs", SearchOption.AllDirectories);
-            foreach (string file in files)
-            {
-                if (file.Contains("\\bin\\") || file.Contains("\\obj\\"))
-                    continue;
-
-                string fileText = File.ReadAllText(file);
-                if (!fileText.StartsWith("/*"))
-                    logger.Warn(file);
-            }
-
-            Console.ReadKey();
+            IConfiguration configuration = AppDataService.LoadConfiguration("appsettings.json", args);
+            AppDataService = AppDataService.Create(configuration);            
 
             //Loading server configurations settings from ServerSettings.xml;
-            ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
+            ServerSettings serverSettings = AppDataService.GetSettings<ServerSettings>();
 
             //Initialize generic HTTP-REST interface passing previously loaded server configuration
             AssetAdministrationShellHttpServer server = new AssetAdministrationShellHttpServer(serverSettings);

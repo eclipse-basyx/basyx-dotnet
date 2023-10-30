@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Settings;
+using Microsoft.Extensions.Configuration;
 
 namespace BaSyx.Deployment.AppDataService
 {
@@ -70,6 +71,7 @@ namespace BaSyx.Deployment.AppDataService
 
         public Action LoadAction { get; set; }
         public Action SaveAction { get; set; }
+        public IConfiguration Configuration { get; private set; }
 
         private readonly AppDataServiceSettings _settings;
 
@@ -95,14 +97,54 @@ namespace BaSyx.Deployment.AppDataService
             Singleton = this;
         }     
 
+        private AppDataService(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public static AppDataService Create(IConfiguration configuration)
+        {
+            try
+            {
+                SetDefaultWorkingDirectory();
+                AppDataServiceSettings appDataServiceSettings = configuration.GetSection("AppDataServiceSettings").Get<AppDataServiceSettings>();
+                AppDataService appDataService = new AppDataService(appDataServiceSettings);
+                appDataService.LoadConfiguration(configuration);
+                appDataService.LoadAction = RestartAppAction();
+                var started = appDataService.Start();
+                if (!started.Success)
+                    throw new Exception("Error starting AppDataService");
+                return appDataService;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error starting AppDataService");
+                throw;
+            }
+        }
+
+        public void LoadConfiguration(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public static IConfiguration LoadConfiguration(string settingsJsonFile = "appsettings.json", string[] cmdLineArgs = null)
+        {
+            var config = new ConfigurationBuilder();
+            config.AddCommandLine(cmdLineArgs);
+            config.AddEnvironmentVariables();
+            config.AddJsonFile(settingsJsonFile, false, true);
+            return config.Build();
+        }
+
         public Settings GetSettings(Type type)
         {
-            if (AppDataContext.Settings.TryGetValue(type.Name + ".xml", out var settings))
+            if (AppDataContext.Settings.TryGetValue(type.Name, out var settings))
                 return settings;
             else
             {
                 AddSettings(type);
-                if (AppDataContext.Settings.TryGetValue(type.Name + ".xml", out var secondAttemptSettings))
+                if (AppDataContext.Settings.TryGetValue(type.Name, out var secondAttemptSettings))
                     return secondAttemptSettings;
             }
             return default;
@@ -110,7 +152,25 @@ namespace BaSyx.Deployment.AppDataService
 
         public T GetSettings<T>() where T : Settings
         {
-           return (T)GetSettings(typeof(T));
+            return (T)GetSettings(typeof(T));
+        }
+
+        public Settings GetXmlSettings(Type type)
+        {
+            if (AppDataContext.Settings.TryGetValue(type.Name + ".xml", out var settings))
+                return settings;
+            else
+            {
+                AddXmlSettings(type);
+                if (AppDataContext.Settings.TryGetValue(type.Name + ".xml", out var secondAttemptSettings))
+                    return secondAttemptSettings;
+            }
+            return default;
+        }
+
+        public T GetXmlSettings<T>() where T : Settings
+        {
+           return (T)GetXmlSettings(typeof(T));
         }
 
         public string GetFilePath(string fileName)
@@ -122,6 +182,14 @@ namespace BaSyx.Deployment.AppDataService
         }
 
         public void AddSettings(Type settingsType)
+        {
+            var settings = (Settings)Configuration.GetSection(settingsType.Name).Get(settingsType);
+            AppDataContext.Settings.Add(settingsType.Name, settings);
+            logger.LogInformation($"{settingsType.Name} loaded successfully");
+
+        }
+
+        public void AddXmlSettings(Type settingsType)
         {
             string settingsFileName = settingsType.Name + ".xml";
             string[] destinationFiles = Directory.GetFiles(BaseStorageLocation, settingsFileName, SearchOption.AllDirectories);

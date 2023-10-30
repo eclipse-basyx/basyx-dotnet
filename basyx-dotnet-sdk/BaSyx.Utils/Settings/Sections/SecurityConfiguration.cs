@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 * Copyright (c) 2023 Bosch Rexroth AG
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
@@ -8,13 +8,16 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using System.Xml;
+using System.Xml.Serialization;
+
 namespace BaSyx.Utils.Settings
 {
-    public enum ServiceType
+    public class SecurityConfiguration
     {
-        None,
-        Server,
-        Client,
-        Both
+        [XmlElement]
+        public string ServerCertificatePath { get; set; }
+        [XmlElement]
+        public string ServerCertificatePassword { get; set; }
     }
 }

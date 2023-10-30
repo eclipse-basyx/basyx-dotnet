@@ -29,7 +29,7 @@ namespace BaSyx.Common.UI
 
         public static void AddBaSyxUI(this IServerApplication serverApp, string pageName)
         {
-            string uiUrl = serverApp.Settings?.UIConfig?.Url ?? DEFAULT_UI_URL;
+            string uiUrl = serverApp.Settings?.UserInterfaceConfig?.Url ?? DEFAULT_UI_URL;
             serverApp.ConfigureServices(services =>
             {                
                 services.AddBaSyxUI(pageName, uiUrl);

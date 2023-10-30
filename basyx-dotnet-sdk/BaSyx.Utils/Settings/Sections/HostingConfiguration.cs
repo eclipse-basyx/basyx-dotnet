@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 * Copyright (c) 2023 Bosch Rexroth AG
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
@@ -8,29 +8,26 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace BaSyx.Utils.Settings
 {
-
-    public class ServerConfiguration
+    public class HostingConfiguration
     {
         [XmlElement]
-        public string ServerId { get; set; }
+        public string Environment { get; set; }
+        [XmlArrayItem("Url")]
+        public List<string> Urls { get; set; }
         [XmlElement]
-        public HostingConfiguration Hosting { get; set; }
+        public string ContentPath { get; set; }
         [XmlElement]
-        public string DefaultRoute { get; set; }
-        [XmlElement]
-        public string PathBase { get; set; }
-        [XmlElement]
-        public SecurityConfiguration Security { get; set; }
+        public bool? EnableIPv6 { get; set; }
 
-        public ServerConfiguration()
+        public HostingConfiguration()
         {
-            Hosting = new HostingConfiguration();
-            Security = new SecurityConfiguration();
+            Urls = new List<string>();
         }
     }
 }

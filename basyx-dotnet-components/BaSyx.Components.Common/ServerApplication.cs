@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Components.Common.Abstractions;
-using BaSyx.Models.Extensions;
 using BaSyx.Utils.Assembly;
 using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling;

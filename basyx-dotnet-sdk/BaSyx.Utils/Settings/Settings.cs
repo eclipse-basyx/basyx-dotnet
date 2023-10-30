@@ -33,24 +33,22 @@ namespace BaSyx.Utils.Settings
 
     public abstract class Settings : ISettings
     {
+        private static readonly ILogger logger = LoggingExtentions.CreateLogger<Settings>();
+        public static string WorkingDirectory => Environment.CurrentDirectory;
+
+        public const string FILE_EXTENSION = ".xml";
+        public const string MISCELLANEOUS_CONFIG = "Miscellaneous";
+
+        public static SettingsCollection SettingsCollection { get; } = new SettingsCollection();
+
         [XmlIgnore]
         public string Name => this.GetType().Name;
         [XmlIgnore]
         public string FilePath { get; set; }
         [XmlIgnore]
-        public Dictionary<string, string> Miscellaneous { get; set; } = new Dictionary<string, string>();
-        [XmlElement]
-        public ServiceType OperationMode { get; set; }
-        [XmlElement(IsNullable = true)]
-        public ServerConfiguration ServerConfig { get; set; } = new ServerConfiguration();
-        [XmlElement(IsNullable = true)]
-        public ClientConfiguration ClientConfig { get; set; } = new ClientConfiguration();
-        [XmlElement(IsNullable = true)]
-        public PathConfiguration PathConfig { get; set; } = new PathConfiguration();
-        [XmlElement(IsNullable = true)]
-        public ProxyConfiguration ProxyConfig { get; set; } = new ProxyConfiguration();
+        public Dictionary<string, string> Miscellaneous { get; set; } = new Dictionary<string, string>();       
 
-        [XmlElement]
+        [XmlIgnore]
         public string ExecutionPath
         {
             get
@@ -63,16 +61,7 @@ namespace BaSyx.Utils.Settings
             {
                 _executionPath = value.ReplaceWithEnvironmentVariable();
             }
-        }
-
-        public static string WorkingDirectory => Environment.CurrentDirectory;
-
-        public const string FileExtension = ".xml";
-        public const string MiscellaneousConfig = "Miscellaneous";
-
-        public static SettingsCollection SettingsCollection { get; } = new SettingsCollection();
-
-        private static readonly ILogger logger = LoggingExtentions.CreateLogger<Settings>();
+        }    
        
         private FileWatcher _fileWatcher;
         private string _executionPath;
@@ -122,12 +111,10 @@ namespace BaSyx.Utils.Settings
                 }
             }
         }
-
         public virtual void ConfigureSettingsWatcher(FileSystemChanged settingsFileChangedHandler)
         {
             _fileWatcher = new FileWatcher(FilePath, settingsFileChangedHandler);
         }       
-
         public static Settings LoadSettingsFromFile(string filePath, Type settingsType)
         {
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
@@ -146,7 +133,7 @@ namespace BaSyx.Utils.Settings
 
                 if (settings != null)
                 {
-                    var miscElement = XElement.Load(filePath).Element(MiscellaneousConfig);
+                    var miscElement = XElement.Load(filePath).Element(MISCELLANEOUS_CONFIG);
                     if (miscElement != null)
                         settings.Miscellaneous = miscElement.Elements().Where(e => !e.HasElements).ToDictionary(e => e.Name.LocalName, e => e.Value);
 
@@ -166,13 +153,11 @@ namespace BaSyx.Utils.Settings
                 logger.LogError(e, "Could not load " + filePath);
                 return null;
             }
-        } 
-        
+        }      
         public static T LoadSettingsFromFile<T>(string filePath) where T : Settings, new()
         {
             return (T)LoadSettingsFromFile(filePath, typeof(T));
         }
-
         public static T LoadSettingsByName<T>(string name) where T : Settings
         {
             Settings settings = SettingsCollection.Find(s => s.Name == typeof(T).Name);
@@ -180,7 +165,6 @@ namespace BaSyx.Utils.Settings
                 return (T)settings;
             return null;
         }
-
         public void SaveSettings(string filePath, Type settingsType)
         {
             try
@@ -202,17 +186,14 @@ namespace BaSyx.Utils.Settings
 
     public abstract class Settings<T> : Settings where T : Settings, new()
     {
-        public static string FileName => typeof(T).Name + FileExtension;
+        public static string FileName => typeof(T).Name + FILE_EXTENSION;
      
         protected Settings() : base()
         { }
 
-        public static T CreateSettings() => new T();
-       
+        public static T CreateSettings() => new T();       
         public void SaveSettings() => SaveSettings(FilePath);
-
         public void SaveSettings(string filePath) => SaveSettings(filePath, typeof(T));          
-
         public static T LoadSettings()
         {
             Settings settings = LoadSettingsByName(typeof(T).Name);
@@ -225,7 +206,6 @@ namespace BaSyx.Utils.Settings
                 return (T)settings;
             return null;
         }
-
         public static T LoadSettingsByName(string name) => LoadSettingsByName<T>(name);
         public static T LoadSettingsFromFile(string filePath) => LoadSettingsFromFile<T>(filePath);
     }

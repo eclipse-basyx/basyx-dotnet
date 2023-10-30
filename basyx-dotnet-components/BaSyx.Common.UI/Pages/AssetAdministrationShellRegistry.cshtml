@@ -20,7 +20,7 @@
         shellsDescriptors = retrievedShellDescriptors.Entity.Result;
     }
 
-    ViewData["Title"] = settings.UIConfig?.Title ?? "BaSyx Registry UI";
+    ViewData["Title"] = settings.UserInterfaceConfig?.Title ?? "BaSyx Registry UI";
     ViewData["ApiRoot"] = AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTORS;
 }
 
