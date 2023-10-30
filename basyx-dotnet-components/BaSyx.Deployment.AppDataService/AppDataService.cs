@@ -123,10 +123,22 @@ namespace BaSyx.Deployment.AppDataService
             }
         }
 
+        public bool TryGetValue<T>(string key, out T value)
+        {
+            value = Configuration.GetValue<T>(key);
+            return value != null;
+        }
+
         public void LoadConfiguration(IConfiguration configuration)
         {
             Configuration = configuration;
         }
+        public bool LoadSettings<T>(string key) where T: Settings
+        {
+            AddSettings(typeof(T), key);
+            return AppDataContext.Settings.ContainsKey(typeof(T).Name);
+        }
+
 
         public static IConfiguration LoadConfiguration(string settingsJsonFile = "appsettings.json", string[] cmdLineArgs = null)
         {
@@ -137,22 +149,22 @@ namespace BaSyx.Deployment.AppDataService
             return config.Build();
         }
 
-        public Settings GetSettings(Type type)
+        public Settings GetSettings(Type type, string key = null)
         {
             if (AppDataContext.Settings.TryGetValue(type.Name, out var settings))
                 return settings;
             else
             {
-                AddSettings(type);
+                AddSettings(type, key);
                 if (AppDataContext.Settings.TryGetValue(type.Name, out var secondAttemptSettings))
                     return secondAttemptSettings;
             }
             return default;
         }
 
-        public T GetSettings<T>() where T : Settings
+        public T GetSettings<T>(string key = null) where T : Settings
         {
-            return (T)GetSettings(typeof(T));
+            return (T)GetSettings(typeof(T), key);
         }
 
         public Settings GetXmlSettings(Type type)
@@ -181,9 +193,12 @@ namespace BaSyx.Deployment.AppDataService
                 return null;
         }
 
-        public void AddSettings(Type settingsType)
+        public void AddSettings(Type settingsType, string key = null)
         {
-            var settings = (Settings)Configuration.GetSection(settingsType.Name).Get(settingsType);
+            if(string.IsNullOrEmpty(key))
+                key = settingsType.Name;
+
+            var settings = (Settings)Configuration.GetSection(key).Get(settingsType);
             AppDataContext.Settings.Add(settingsType.Name, settings);
             logger.LogInformation($"{settingsType.Name} loaded successfully");
 
