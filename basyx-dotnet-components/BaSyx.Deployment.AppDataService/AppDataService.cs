@@ -123,6 +123,11 @@ namespace BaSyx.Deployment.AppDataService
             }
         }
 
+        public T GetValue<T>(string key)
+        {
+            return Configuration.GetValue<T>(key);
+        }
+
         public bool TryGetValue<T>(string key, out T value)
         {
             value = Configuration.GetValue<T>(key);
