@@ -15,7 +15,9 @@ namespace BaSyx.Registry.Client.Http
 {
     public class RegistryClientSettings : Settings<RegistryClientSettings>
     {        
-        public RegistryConfiguration RegistryConfig { get; set; } = new RegistryConfiguration();      
+        public RegistryConfiguration RegistryConfig { get; set; } = new RegistryConfiguration();
+        public ProxyConfiguration ProxyConfig { get; set; } = new ProxyConfiguration();
+        public ClientConfiguration ClientConfig { get; set; } = new ClientConfiguration();
     }
 
     public class RegistryConfiguration
