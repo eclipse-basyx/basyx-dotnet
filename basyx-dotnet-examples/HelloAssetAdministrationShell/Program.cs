@@ -16,7 +16,6 @@ using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings;
 using NLog;
 using NLog.Web;
-using Microsoft.Extensions.Configuration;
 using BaSyx.Deployment.AppDataService;
 
 namespace HelloAssetAdministrationShell
@@ -32,8 +31,7 @@ namespace HelloAssetAdministrationShell
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
 
-            IConfiguration configuration = AppDataService.LoadConfiguration("appsettings.json", args);
-            AppDataService = AppDataService.Create(configuration);            
+            AppDataService = AppDataService.Create("appsettings.json", args);            
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = AppDataService.GetSettings<ServerSettings>();
