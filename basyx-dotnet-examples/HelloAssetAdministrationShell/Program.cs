@@ -16,7 +16,6 @@ using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings;
 using NLog;
 using NLog.Web;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using BaSyx.Deployment.AppDataService;
 
