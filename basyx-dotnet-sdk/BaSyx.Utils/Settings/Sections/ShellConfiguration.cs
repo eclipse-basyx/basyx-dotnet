@@ -19,5 +19,7 @@ namespace BaSyx.Utils.Settings
         public string AASXFile { get; set; }
         [XmlElement]
         public string DefaultSubmodelNamespace { get; set; }
+        [XmlElement]
+        public string AssetAliveTopic { get; set; }
     }
 }
