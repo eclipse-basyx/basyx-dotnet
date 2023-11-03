@@ -9,10 +9,13 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
+using System.Text.Json.Serialization;
+
 namespace BaSyx.Utils.ResultHandling
 {
     public class TimeoutMessage : Message
     {
+        [JsonConstructor]
         public TimeoutMessage() : base(MessageType.Information, "Timeout", "408")
         { }
     }

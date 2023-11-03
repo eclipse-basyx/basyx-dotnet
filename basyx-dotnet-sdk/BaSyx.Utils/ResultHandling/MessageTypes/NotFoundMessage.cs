@@ -9,10 +9,13 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
+using System.Text.Json.Serialization;
+
 namespace BaSyx.Utils.ResultHandling
 {
     public class NotFoundMessage : Message
     {
+        [JsonConstructor]
         public NotFoundMessage() : base(MessageType.Information, "NotFound", "404")
         { }
 

@@ -9,10 +9,13 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
+using System.Text.Json.Serialization;
+
 namespace BaSyx.Utils.ResultHandling
 {
     public class EmptyMessage : Message
     {
+        [JsonConstructor]
         public EmptyMessage() : base(MessageType.Information, "Empty")
         { }
     }

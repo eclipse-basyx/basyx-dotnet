@@ -10,6 +10,7 @@
 *******************************************************************************/
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Utils.ResultHandling
 {
@@ -17,7 +18,8 @@ namespace BaSyx.Utils.ResultHandling
     {
         public ExceptionMessage InnerException { get; }
 
-        public ExceptionMessage(Exception exception) : this(exception, string.Empty)
+        [JsonConstructor]
+        public ExceptionMessage(Exception innerException) : this(innerException, string.Empty)
         { }
 
         public ExceptionMessage(Exception exception, string message) : base(MessageType.Exception, string.Format("{0} - {1}", message, exception.Message), exception.HResult.ToString())

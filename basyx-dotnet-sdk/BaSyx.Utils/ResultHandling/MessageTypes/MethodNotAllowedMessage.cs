@@ -9,10 +9,13 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
+using System.Text.Json.Serialization;
+
 namespace BaSyx.Utils.ResultHandling
 {
     public class MethodNotAllowedMessage : Message
     {
+        [JsonConstructor]
         public MethodNotAllowedMessage() : base(MessageType.Information, "MethodNotAllowed", "405")
         { }
 
