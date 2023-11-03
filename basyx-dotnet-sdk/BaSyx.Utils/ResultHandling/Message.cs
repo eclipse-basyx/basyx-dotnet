@@ -10,6 +10,7 @@
 *******************************************************************************/
 
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Utils.ResultHandling
 {
@@ -18,6 +19,9 @@ namespace BaSyx.Utils.ResultHandling
         public MessageType MessageType { get; set; }
         public string Text { get; set; }
         public string Code { get; set; }
+
+        [JsonConstructor]
+        public Message() { }
 
         public Message(MessageType messageType, string text) : this(messageType, text, null)
         { }
@@ -40,30 +44,45 @@ namespace BaSyx.Utils.ResultHandling
 
     public class ErrorMessage : Message
     {
+        [JsonConstructor]
+        public ErrorMessage() : base(MessageType.Error, string.Empty) { }
+
         public ErrorMessage(string text) : base(MessageType.Error, text) { }
         public ErrorMessage(string text, string code) : base(MessageType.Error, text, code) { }
     }
 
     public class InfoMessage : Message
     {
+        [JsonConstructor]
+        public InfoMessage() : base(MessageType.Information, string.Empty) { }
+
         public InfoMessage(string text) : base(MessageType.Information, text) { }
         public InfoMessage(string text, string code) : base(MessageType.Information, text, code) { }
     }
 
     public class WarningMessage : Message
     {
+        [JsonConstructor]
+        public WarningMessage() : base(MessageType.Warning, string.Empty) { }
+
         public WarningMessage(string text) : base(MessageType.Warning, text) { }
         public WarningMessage(string text, string code) : base(MessageType.Warning, text, code) { }
     }
 
     public class DebugMessage : Message
     {
+        [JsonConstructor]
+        public DebugMessage() : base(MessageType.Debug, string.Empty) { }
+
         public DebugMessage(string text) : base(MessageType.Debug, text) { }
         public DebugMessage(string text, string code) : base(MessageType.Debug, text, code) { }
     }
 
     public class FatalMessage : Message
     {
+        [JsonConstructor]
+        public FatalMessage() : base(MessageType.Fatal, string.Empty) { }
+
         public FatalMessage(string text) : base(MessageType.Fatal, text) { }
         public FatalMessage(string text, string code) : base(MessageType.Fatal, text, code) { }
     }
