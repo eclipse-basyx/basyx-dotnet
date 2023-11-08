@@ -30,8 +30,8 @@ namespace HelloAssetAdministrationShell
             helloSubmodelServiceProvider = new SubmodelServiceProvider();
             helloSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["HelloSubmodel"]);
             helloSubmodelServiceProvider.RegisterMethodCalledHandler("HelloOperation", HelloOperationHandler);
-            helloSubmodelServiceProvider.RegisterSubmodelElementHandler("HelloProperty",
-                new SubmodelElementHandler(HelloSubmodelElementGetHandler, HelloSubmodelElementSetHandler));
+            //helloSubmodelServiceProvider.RegisterSubmodelElementHandler("HelloProperty",
+            //    new SubmodelElementHandler(HelloSubmodelElementGetHandler, HelloSubmodelElementSetHandler));
             this.RegisterSubmodelServiceProvider(AssetAdministrationShell.Submodels["HelloSubmodel"].Id, helloSubmodelServiceProvider);
 
             assetIdentificationSubmodelProvider = new SubmodelServiceProvider();
@@ -86,12 +86,11 @@ namespace HelloAssetAdministrationShell
             string myTestProperty = "MyTestString";
             helloSubmodel.SubmodelElements = new ElementContainer<ISubmodelElement>
             {
-                new Property<string>("HelloProperty")
-                {
-                    Description = new LangStringSet() { new LangString("en", "This is an exemplary property") },
-                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn()))
-                },
-
+                //new Property<string>("HelloProperty")
+                //{
+                //    Description = new LangStringSet() { new LangString("en", "This is an exemplary property") },
+                //    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn()))
+                //},
                 new Property<string>("HelloPropertyInternal", "TestValue")
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary property with internal storage") },
@@ -129,7 +128,7 @@ namespace HelloAssetAdministrationShell
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary RelationshipElement") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloRelationshipElement", "1.0.0").ToUrn())),
-                    First = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()), 
+                    First = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
                                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
                     Second = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
                                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())),
@@ -156,7 +155,7 @@ namespace HelloAssetAdministrationShell
                     State = EventState.On,
                     MessageTopic = "boschrexroth/helloBasicEventElement",
                     LastUpdate = DateTime.UtcNow.ToString(),
-                    MinInterval = "PT3S"                    
+                    MinInterval = "PT3S"
                 },
                 new Blob("HelloBlob")
                 {
@@ -269,7 +268,6 @@ namespace HelloAssetAdministrationShell
                 }
             };
 
-            aas.Submodels = new ElementContainer<ISubmodel>();
             aas.Submodels.Add(helloSubmodel);
 
             var assetIdentificationSubmodel = new Submodel("AssetIdentification", new BaSyxSubmodelIdentifier("AssetIdentification", "1.0.0"))

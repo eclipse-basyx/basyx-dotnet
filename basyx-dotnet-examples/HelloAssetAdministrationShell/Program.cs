@@ -17,6 +17,7 @@ using BaSyx.Utils.Settings;
 using NLog;
 using NLog.Web;
 using BaSyx.Deployment.AppDataService;
+using BaSyx.Registry.Client.Http;
 
 namespace HelloAssetAdministrationShell
 {
@@ -24,6 +25,9 @@ namespace HelloAssetAdministrationShell
     {
         //Create logger for the application
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
+        //In case mDNS auto discovery is not available we use a client to register at the registry
+        private static RegistryHttpClient registryHttpClient;
 
         private static AppDataService AppDataService { get; set; }
 
@@ -36,6 +40,12 @@ namespace HelloAssetAdministrationShell
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = AppDataService.GetSettings<ServerSettings>();
 
+            //Loading registry client configuration settings from RegistryClientSettings.xml
+            RegistryClientSettings registryClientSettings = AppDataService.GetSettings<RegistryClientSettings>();
+
+            //Instantiate registry client passing previously loaded configuration
+            registryHttpClient = new RegistryHttpClient(registryClientSettings);
+
             //Initialize generic HTTP-REST interface passing previously loaded server configuration
             AssetAdministrationShellHttpServer server = new AssetAdministrationShellHttpServer(serverSettings);
 
@@ -46,7 +56,7 @@ namespace HelloAssetAdministrationShell
             HelloAssetAdministrationShellService shellService = new HelloAssetAdministrationShellService();
 
             //Dictate Asset Administration Shell service to use provided endpoints from the server configuration
-            shellService.UseAutoEndpointRegistration(serverSettings.ServerConfig);
+            shellService.UseUniversalEndpointRegistration(serverSettings.ServerConfig, serverSettings.ServerConfig.PathBase);
 
             //Assign Asset Administration Shell Service to the generic HTTP-REST interface
             server.SetServiceProvider(shellService);
@@ -61,14 +71,32 @@ namespace HelloAssetAdministrationShell
             server.ApplicationStarted = () =>
             {
                 //Use mDNS discovery mechanism in the network. It is used to register at the Registry automatically.
-                shellService.StartDiscovery();
+                if (serverSettings.DiscoveryConfig.AutoDiscovery)
+                {
+                    shellService.StartDiscovery();
+                }
+                else
+                {
+                    var result = registryHttpClient.CreateAssetAdministrationShellRegistration(shellService.ServiceDescriptor);
+
+                    logger.Info($"Success: {result.Success} | Messages: {result.Messages}");
+                }
             };
 
             //Action that gets executed when server is shutting down
             server.ApplicationStopping = () =>
             {
                 //Stop mDNS discovery thread
-                shellService.StopDiscovery();
+                if (serverSettings.DiscoveryConfig.AutoDiscovery)
+                {
+                    shellService.StopDiscovery();
+                }
+                else
+                {
+                    var result = registryHttpClient.DeleteAssetAdministrationShellRegistration(shellService.ServiceDescriptor.Id);
+
+                    logger.Info($"Success: {result.Success} | Messages: {result.Messages}");
+                }
             };
 
             //Run HTTP server
