@@ -14,20 +14,6 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="FileBasedRegistrySettings.xml" />
-    <None Remove="ServerSettings.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="FileBasedRegistrySettings.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ServerSettings.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI\BaSyx.Common.UI.csproj" />
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI.Swagger\BaSyx.Common.UI.Swagger.csproj" />
@@ -45,8 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Deployment.AppDataService\BaSyx.Deployment.AppDataService.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.InMemory\BaSyx.Registry.ReferenceImpl.InMemory.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,19 +8,16 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Registry.ReferenceImpl.FileBased;
 using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings;
-using CommandLine;
 using NLog;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using BaSyx.Common.UI;
 using BaSyx.Common.UI.Swagger;
 using NLog.Web;
 using Microsoft.AspNetCore.Hosting;
 using System.Security.Cryptography.X509Certificates;
+using BaSyx.Deployment.AppDataService;
+using BaSyx.Registry.ReferenceImpl.InMemory;
 
 namespace BaSyx.Registry.Server.Http.App
 {
@@ -28,48 +25,29 @@ namespace BaSyx.Registry.Server.Http.App
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public class ServerOptions
-        {
-            [Option('s', "settings", Required = false, HelpText = "Path to the ServerSettings.xml")]
-            public string SettingsFilePath { get; set; }
-
-            [Option('u', "urls", Required = false, HelpText = "Hosting Urls (semicolon separated), e.g. http://+:4999")]
-            public string Urls { get; set; }
-        }
+        private static AppDataService AppDataService { get; set; }
 
         static void Main(string[] args)
         {
-            ServerSettings serverSettings = null;
+            logger.Info("Starting AdminShell Registry HTTP server...");
 
-            //Parse command line arguments based on the options above
-            Parser.Default.ParseArguments<ServerOptions>(args)
-                   .WithParsed<ServerOptions>(o =>
-                   {
-                       if (!string.IsNullOrEmpty(o.SettingsFilePath))
-                           serverSettings = ServerSettings.LoadSettingsFromFile(o.SettingsFilePath);
-                       else
-                           serverSettings = ServerSettings.LoadSettings();
+            AppDataService = AppDataService.Create("appsettings.json", args);
 
-                       if(!string.IsNullOrEmpty(o.Urls))
-                       {
-                           if (o.Urls.Contains(";"))
-                           {
-                               string[] splittedUrls = o.Urls.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                               serverSettings.ServerConfig.Hosting.Urls = splittedUrls.ToList();
-                           }
-                           else
-                               serverSettings.ServerConfig.Hosting.Urls = new List<string>() { o.Urls };
-                       }
-                   });
-
-            if(args.Contains("--help") || args.Contains("--version"))
-                return;
+            //Loading server configurations settings from ServerSettings.xml;
+            ServerSettings serverSettings = AppDataService.GetSettings<ServerSettings>();
 
             //Instantiate blank Registry-Http-Server with previously loaded server settings
             RegistryHttpServer server = new RegistryHttpServer(serverSettings);
+            
+            //Configure the entire application to use your own logger library (here: Nlog)
+            server.WebHostBuilder.UseNLog();
+
+            //Configure the pathbase as default prefix for all routes
+            if (!string.IsNullOrEmpty(serverSettings.ServerConfig.PathBase))
+                server.UsePathBase(serverSettings.ServerConfig.PathBase);
 
             //Check if ServerCertificate is present
-            if(!string.IsNullOrEmpty(serverSettings.ServerConfig.Security.ServerCertificatePath))
+            if (!string.IsNullOrEmpty(serverSettings.ServerConfig.Security.ServerCertificatePath))
             {
                 server.WebHostBuilder.ConfigureKestrel(serverOptions =>
                 {
@@ -83,30 +61,27 @@ namespace BaSyx.Registry.Server.Http.App
                 });
             }
 
-            //Configure the entire application to use your own logger library (here: Nlog)
-            server.WebHostBuilder.UseNLog();
-
             //Instantiate implementation backend for the Registry
-            FileBasedRegistry fileBasedRegistry = new FileBasedRegistry();                       
+            InMemoryRegistry registryImpl = new InMemoryRegistry();                       
 
             //Assign implemenation backend to blank Registry-Http-Server
-            server.SetRegistryProvider(fileBasedRegistry);
+            server.SetRegistryProvider(registryImpl);
 
             //Start mDNS Discovery ability when the server successfully booted up
             server.ApplicationStarted = () =>
             {
-                if (serverSettings.Miscellaneous.ContainsKey("DiscoveryActivated") && serverSettings.Miscellaneous["DiscoveryActivated"] == "true")
+                if (serverSettings.DiscoveryConfig.AutoDiscovery)
                 {
-                    fileBasedRegistry.StartDiscovery();
+                    registryImpl.StartDiscovery();
                 }                
             };
 
             //Start mDNS Discovery when the server is shutting down
             server.ApplicationStopping = () =>
             {
-                if (serverSettings.Miscellaneous.ContainsKey("DiscoveryActivated") && serverSettings.Miscellaneous["DiscoveryActivated"] == "true")
+                if (serverSettings.DiscoveryConfig.AutoDiscovery)
                 {
-                    fileBasedRegistry.StopDiscovery();
+                    registryImpl.StopDiscovery();
                 }                
             };
 
