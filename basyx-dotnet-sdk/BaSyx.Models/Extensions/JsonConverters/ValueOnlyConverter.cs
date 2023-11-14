@@ -38,6 +38,21 @@ namespace BaSyx.Models.Extensions
                             Write(writer, submodelElementCollection.Value, options);
                             break;
                         }
+                    case ModelTypes.SubmodelElementList:
+                        {
+                            ISubmodelElementList submodelElementList = smElement.Cast<ISubmodelElementList>();
+                            writer.WritePropertyName(submodelElementList.IdShort);
+                            writer.WriteStartArray();
+                            foreach (var element in submodelElementList.Value)
+                            {
+                                if(element.ModelType == ModelType.Property)
+                                {
+                                    JsonSerializer.Serialize(writer, element.Value, options);
+                                }
+                            }
+                            writer.WriteEndArray();
+                            break;
+                        }
                     case ModelTypes.RelationshipElement:
                         {
                             IRelationshipElement relationshipElement = smElement.Cast<IRelationshipElement>();
