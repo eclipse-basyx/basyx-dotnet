@@ -15,6 +15,8 @@ using BaSyx.Models.Semantics;
 using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -209,6 +211,56 @@ namespace HelloAssetAdministrationShell
                         },
                         new Property<bool>("MySubBoolValue", true),
                         new Property<float>("MySubFloatValue", 3.4f)
+                    }
+                },
+                new Operation("ByteArrayToText")
+                {
+                    Description =
+                    {
+                        new LangString("en", "That's an operation that converts a byte array to UTF8 text")
+                    },
+                    InputVariables =
+                    {
+                         new SubmodelElementList<byte>("Bytes")
+                    },
+                    OutputVariables =
+                    {
+                         new Property<string>("Text"),
+                    },
+                    OnMethodCalled = (op, inArgs, inoutArgs, outArgs, ct) =>
+                    {
+                        byte[] bytes = inArgs.Get("Bytes").Cast<ISubmodelElementList>().ToEnumerable<byte>().ToArray();
+                        string word = Encoding.UTF8.GetString(bytes);
+
+                        outArgs.Add(new Property<string>("Text", word));
+
+                        return new OperationResult(true);
+                    }
+                },
+                new Operation("TextToByteArray")
+                {
+                    Description =
+                    {
+                        new LangString("en", "That's an operation that converts a an UTF8 text to a byte array")
+                    },
+                    InputVariables =
+                    {
+                         new Property<string>("Text"),
+                    },
+                    OutputVariables =
+                    {
+                          new SubmodelElementList<byte>("Bytes")
+                    },
+                    OnMethodCalled = (op, inArgs, inoutArgs, outArgs, ct) =>
+                    {
+                        string word = inArgs.Get("Text").GetValue<string>();
+                        byte[] bytes = Encoding.UTF8.GetBytes(word);
+
+                        SubmodelElementList<byte> collection = new SubmodelElementList<byte>("Bytes", bytes);
+
+                        outArgs.Add(collection);
+
+                        return new OperationResult(true);
                     }
                 },
                 new Operation("Calculate")
