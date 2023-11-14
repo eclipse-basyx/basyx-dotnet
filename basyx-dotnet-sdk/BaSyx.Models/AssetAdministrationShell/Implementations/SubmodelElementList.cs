@@ -9,9 +9,11 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Utils.ResultHandling;
+using BaSyx.Models.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -240,8 +242,8 @@ namespace BaSyx.Models.AdminShell
             return Value.Remove(item);            
         }
     }
-    /*
-    [DataContract, JsonObject]
+    
+    [DataContract]
     public class SubmodelElementList<T> : SubmodelElementList, ICollection<T>
     {       
         [JsonConstructor]
@@ -260,20 +262,23 @@ namespace BaSyx.Models.AdminShell
             }
         }
 
-        public SubmodelElementList(SubmodelElementList collection) : this(collection.IdShort)
+        public SubmodelElementList(SubmodelElementList list) : this(list.IdShort)
         {
-            Category = collection.Category;
-            Qualifiers = collection.Qualifiers;
-            EmbeddedDataSpecifications = collection.EmbeddedDataSpecifications;
-            ConceptDescription = collection.ConceptDescription;
-            Kind = collection.Kind;
-            Parent = collection.Parent;
-            Description = collection.Description;
-            SemanticId = collection.SemanticId;
-            Get = collection.Get;
-            Set = collection.Set;
+            Category = list.Category;
+            Qualifiers = list.Qualifiers;
+            EmbeddedDataSpecifications = list.EmbeddedDataSpecifications;
+            ConceptDescription = list.ConceptDescription;
+            Kind = list.Kind;
+            Parent = list.Parent;
+            Description = list.Description;
+            DisplayName = list.DisplayName;
+            SemanticId = list.SemanticId;
+            SupplementalSemanticIds = list.SupplementalSemanticIds;
+            
+            Get = list.Get;
+            Set = list.Set;
 
-            foreach (var element in collection.Value)
+            foreach (var element in list.Value)
             {
                 Add(element);
             }
@@ -290,7 +295,7 @@ namespace BaSyx.Models.AdminShell
         {
             get
             {
-                var enumerable = base.Value;
+                var enumerable = base.Value.Select(s => s.Cast<IProperty>().GetValue<T>()); 
                 return enumerable;
             }
             set
@@ -306,8 +311,8 @@ namespace BaSyx.Models.AdminShell
         }
 
         public new T this[int index] { 
-            get => base.Value[index].Cast<IProperty>().ToObject<T>(); 
-            set => base.Value[index].Cast<IProperty>().Value = value; }
+            get => base.Value[index].Cast<IProperty>().GetValue<T>(); 
+            set => base.Value[index].Cast<IProperty>().SetValue(value); }
 
         public static implicit operator List<T>(SubmodelElementList<T> collection)
         {
@@ -392,7 +397,7 @@ namespace BaSyx.Models.AdminShell
             return Value.GetEnumerator();
         }
     }
-
+    /*
     public class SubmodelElementCollectionOfEntity<T> : SubmodelElementCollection where T : class
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
@@ -416,7 +421,8 @@ namespace BaSyx.Models.AdminShell
                 }
             }
         }
-
+    */
+    /*
         [JsonConstructor]
         public SubmodelElementCollectionOfEntity(string idShort) : base(idShort)
         {

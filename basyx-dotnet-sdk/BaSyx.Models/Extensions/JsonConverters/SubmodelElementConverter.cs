@@ -276,6 +276,24 @@ namespace BaSyx.Models.Extensions
                                 smc.Value.Add(sme);
                             }
                         }
+                        else if (submodelElement is SubmodelElementList sml)
+                        {
+                            int i = 0;
+                            while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                            {
+                                if (reader.TokenType == JsonTokenType.StartObject)
+                                {
+                                    ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
+                                    sml.Value.Add(sme);
+                                }
+                                else
+                                {
+                                    ISubmodelElement sme = GetProperty(reader, i.ToString());
+                                    sml.Value.Add(sme);
+                                    i++;
+                                }
+                            }
+                        }
                         else if (submodelElement is MultiLanguageProperty mlp)
                         {
                             mlp.Value = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
@@ -307,6 +325,60 @@ namespace BaSyx.Models.Extensions
             WriteBaseObject(writer, value, options);
 
             writer.WriteEndObject();
+        }
+
+        public static Property GetProperty(Utf8JsonReader reader, string idShort)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.Null:
+                    return null;
+                case JsonTokenType.False:
+                    return new Property<bool>(idShort, false);
+                case JsonTokenType.True:
+                    return new Property<bool>(idShort, true);
+                case JsonTokenType.String:
+                    return new Property<string>(idShort, reader.GetString());
+                case JsonTokenType.Number:
+                    {
+                        if (reader.TryGetInt32(out int int32))
+                            return new Property<int>(idShort, int32);
+                        else if (reader.TryGetInt64(out long longVal))
+                            return new Property<long>(idShort, longVal);
+                        else if (reader.TryGetDouble(out double doubleVal))                        
+                            return new Property<double>(idShort, doubleVal);                        
+                        break;
+                    }                    
+            }
+            return null;
+        }
+
+        public static T GetValue<T>(Utf8JsonReader reader) => (T)GetValue(reader);
+
+        public static object GetValue(Utf8JsonReader reader)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.Null:
+                    return null;
+                case JsonTokenType.False:
+                    return false;
+                case JsonTokenType.True:
+                    return true;
+                case JsonTokenType.String:
+                    return reader.GetString();
+                case JsonTokenType.Number:
+                    {
+                        if (reader.TryGetInt32(out int int32))
+                            return int32;
+                        else if (reader.TryGetInt64(out long longVal))
+                            return longVal;
+                        else if (reader.TryGetDouble(out double doubleVal))
+                            return doubleVal;
+                        break;
+                    }
+            }
+            return null;
         }
 
         public static void WriteBaseObject(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options)

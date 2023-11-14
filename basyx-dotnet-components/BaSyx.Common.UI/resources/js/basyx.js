@@ -28,13 +28,28 @@ function ExecuteOperation(requestPath, className) {
         if (isNaN(_value) && (_valueType.includes('double') || _valueType.includes('float') || _valueType.includes('decimal'))) {
             _value = _value.replace(/,/g, '.')
         }
-
-        var value = {
-            idShort: argNames.item(i).innerText,
-            modelType: "Property",
-            valueType: _valueType,
-            value: _value
-        };
+        var value;
+        if (_valueType.includes("SubmodelElementList")) {
+            value = {
+                idShort: argNames.item(i).innerText,
+                modelType: "SubmodelElementList",
+                value: JSON.parse(_value)
+            };
+        } else if (_valueType.includes("SubmodelElementCollection")) {
+            value = {
+                idShort: argNames.item(i).innerText,
+                modelType: "SubmodelElementCollection",
+                value: JSON.parse(_value)
+            };
+        } else {
+            value = {
+                idShort: argNames.item(i).innerText,
+                modelType: "Property",
+                valueType: _valueType,
+                value: _value
+            };
+        }
+        
         var arg = {
             modelType: "OperationVariable",
             value

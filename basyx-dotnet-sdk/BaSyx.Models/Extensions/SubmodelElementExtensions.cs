@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -60,17 +61,17 @@ namespace BaSyx.Models.Extensions
             return JsonSerializer.SerializeToElement(elements, _jsonOptions);
         }
 
+    
+        public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementList list)
+        {
+            if (list != null)
+            {
+                return list.Value.Select(s => s.Cast<IProperty>().GetValue<T>());
+            }
+            else
+                return null;
+        }
         //TODO
-        //public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementCollection collection)
-        //{
-        //    if (collection != null)
-        //    {         
-        //        return collection.Value.Select(s => s.Cast<IProperty>().ToObject<T>());
-        //    }
-        //    else
-        //        return null;
-        //}
-
         //public static T ToEntity<T>(this ISubmodelElementCollection collection) where T : class
         //{
         //    if (collection != null)
