@@ -213,6 +213,53 @@ namespace HelloAssetAdministrationShell
                         new Property<float>("MySubFloatValue", 3.4f)
                     }
                 },
+                new Operation("SMCToObject")
+                {
+                    Description =
+                    {
+                        new LangString("en", "That's an operation that takes a SMC as input and converts it to a class")
+                    },
+                    InputVariables =
+                    {
+                         new SubmodelElementCollection<TestClass>("MyTestClassCollection")
+                    },
+                    OutputVariables =
+                    {
+                         new Property<string>("MyStringProperty"),
+                    },
+                    OnMethodCalled = (op, inArgs, inoutArgs, outArgs, ct) =>
+                    {
+                        TestClass myClass = inArgs.Get("MyTestClassCollection").Cast<ISubmodelElementCollection>().ToObject<TestClass>();
+
+                        outArgs.Add(new Property<string>("MyStringProperty", myClass.MyStringProperty));
+
+                        return new OperationResult(true);
+                    }
+                },
+                 new Operation("GetSMC")
+                {
+                    Description =
+                    {
+                        new LangString("en", "That's an operation that takes a SMC as input and converts it to a class")
+                    },
+                    OutputVariables =
+                    {
+                         new SubmodelElementCollection<TestClass>("MyTestClassCollection")
+                    },
+                    OnMethodCalled = (op, inArgs, inoutArgs, outArgs, ct) =>
+                    {
+                        TestClass myClass = new TestClass()
+                        {
+                            MyBoolProperty = true,
+                            MyIntProperty = 1,
+                            MyStringProperty = "hello",
+                        };
+
+                        outArgs.Add(new SubmodelElementCollection<TestClass>("MyTestClassCollection", myClass));
+
+                        return new OperationResult(true);
+                    }
+                },
                 new Operation("ByteArrayToText")
                 {
                     Description =
@@ -375,5 +422,12 @@ namespace HelloAssetAdministrationShell
             dataTable.Rows.Add(0);
             return (double)(dataTable.Rows[0][columnName]);
         }
+    }
+
+    public class TestClass
+    {
+        public int MyIntProperty { get; set; }
+        public bool MyBoolProperty { get; set; }
+        public string MyStringProperty { get; set; }
     }
 }

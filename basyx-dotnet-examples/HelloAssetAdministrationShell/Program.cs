@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Servers.AdminShell.Http;
-using BaSyx.API.ServiceProvider;
 using BaSyx.Common.UI;
 using BaSyx.Common.UI.Swagger;
 using BaSyx.Discovery.mDNS;
