@@ -71,17 +71,38 @@ namespace BaSyx.Models.Extensions
             else
                 return null;
         }
-        //TODO
-        //public static T ToEntity<T>(this ISubmodelElementCollection collection) where T : class
-        //{
-        //    if (collection != null)
-        //    {
-        //        return new SubmodelElementCollectionOfEntity<T>(collection).Value;
-        //    }
-        //    else
-        //        return null;
-        //}
-        //
+
+        public static T ToObject<T>(this ISubmodelElementCollection collection) where T : class
+        {
+            if (collection != null)
+            {
+                return new SubmodelElementCollection<T>(collection).Value;
+            }
+            else
+                return null;
+        }
+
+        public static T ToObject<T>(this IEnumerable<ISubmodelElement> container) where T : class
+        {
+            if (container != null)
+            {
+                Type type = typeof(T);
+                T instance = Activator.CreateInstance<T>();
+                foreach (var element in container)
+                {
+                    PropertyInfo info = type.GetProperty(element.IdShort);
+                    if(info != null && info.CanWrite)
+                    {
+                        var value = element.GetValue<object>();
+                        info.SetValue(instance, value, null);
+                    }
+                }
+                return instance;
+            }
+            else
+                return null;
+        }
+
         public static TValueScope GetValueScope<TValueScope>(this ISubmodelElement sme) where TValueScope : ValueScope
         {
             return GetValueScopeAsync<TValueScope>(sme).Result;

@@ -270,10 +270,30 @@ namespace BaSyx.Models.Extensions
                         } 
                         else if (submodelElement is SubmodelElementCollection smc)
                         {
-                            while(reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                            JsonTokenType endToken;
+                            if (reader.TokenType == JsonTokenType.StartObject)
+                                endToken = JsonTokenType.EndObject;
+                            else if (reader.TokenType == JsonTokenType.StartArray)
+                                endToken = JsonTokenType.EndArray;
+                            else
+                                continue;
+
+                            while(reader.Read() && reader.TokenType != endToken)
                             {
-                                ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
-                                smc.Value.Add(sme);
+                                if (endToken == JsonTokenType.EndArray)
+                                {
+                                    ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
+                                    smc.Value.Add(sme);
+                                }
+                                else if (endToken == JsonTokenType.EndObject)
+                                {
+                                    string smeIdShort = reader.GetString();
+                                    reader.Read();
+                                    ISubmodelElement sme = GetProperty(reader, smeIdShort);
+                                    smc.Value.Add(sme);
+                                }
+                                else
+                                    continue;                               
                             }
                         }
                         else if (submodelElement is SubmodelElementList sml)

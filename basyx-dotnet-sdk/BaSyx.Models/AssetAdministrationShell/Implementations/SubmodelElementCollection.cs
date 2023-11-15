@@ -8,10 +8,12 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -237,4 +239,70 @@ namespace BaSyx.Models.AdminShell
             return Value.Remove(item);            
         }
     }
+    
+    public class SubmodelElementCollection<T> : SubmodelElementCollection where T : class
+    {
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public IElementContainer<ISubmodelElement> BaseValue { get => base.Value; set => base.Value = value; }
+
+        [IgnoreDataMember]
+        [JsonIgnore]
+        public new T Value 
+        { 
+            get
+            {
+                T innerValue = base.Value.ToObject<T>();
+                return innerValue;
+            } 
+            set
+            {
+                var smc = value.CreateSubmodelElementCollectionFromObject(IdShort, BindingFlags.Public | BindingFlags.Instance);
+                foreach (var element in smc.Value)
+                {
+                    var vc = element.GetValueScope().Result;
+                    base[element.IdShort].SetValueScope(vc);
+                }
+            }
+        }
+
+        [JsonConstructor]
+        public SubmodelElementCollection(string idShort) : base(idShort)
+        {
+            var smc = typeof(T).CreateSubmodelElementCollectionFromType(this.IdShort);
+            foreach (var element in smc.Value)
+            {
+                base.Add(element);
+            }
+        }
+
+        public SubmodelElementCollection(string idShort, T entity) : this(idShort, entity, BindingFlags.Public | BindingFlags.Instance)
+        { }
+
+        public SubmodelElementCollection(string idShort, T entity, BindingFlags bindingFlags) : base(idShort)
+        {
+            var smc = entity.CreateSubmodelElementCollectionFromObject(this.IdShort, bindingFlags);
+            foreach (var element in smc.Value)
+            {
+                base.Add(element);
+            }
+        }
+
+        public SubmodelElementCollection(ISubmodelElementCollection collection) : this(collection.IdShort)
+        {
+            Category = collection.Category;
+            Qualifiers = collection.Qualifiers;
+            EmbeddedDataSpecifications = collection.EmbeddedDataSpecifications;
+            ConceptDescription = collection.ConceptDescription;
+            Kind = collection.Kind;
+            Parent = collection.Parent;
+            Description = collection.Description;
+            DisplayName = collection.DisplayName;
+            SemanticId = collection.SemanticId;
+            SupplementalSemanticIds = collection.SupplementalSemanticIds;
+            Get = collection.Get;
+            Set = collection.Set;
+            BaseValue = collection.Value;
+        }
+    }
+    
 }
