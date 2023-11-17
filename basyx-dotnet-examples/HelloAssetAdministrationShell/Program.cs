@@ -76,7 +76,7 @@ namespace HelloAssetAdministrationShell
                 }
                 else
                 {
-                    var result = registryHttpClient.CreateAssetAdministrationShellRegistration(shellService.ServiceDescriptor);
+                    var result = registryHttpClient.CreateOrUpdate(shellService.ServiceDescriptor);
 
                     logger.Info($"Success: {result.Success} | Messages: {result.Messages}");
                 }
