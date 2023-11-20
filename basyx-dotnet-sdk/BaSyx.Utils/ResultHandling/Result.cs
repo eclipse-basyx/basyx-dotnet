@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace BaSyx.Utils.ResultHandling
 {
@@ -132,6 +133,16 @@ namespace BaSyx.Utils.ResultHandling
                 return true;
             else
                 return false;
+        }
+
+        public static implicit operator Task<IResult>(Result result)
+        {
+            return Task.FromResult((IResult)result);
+        }
+
+        public static implicit operator Task<Result>(Result result)
+        {
+            return Task.FromResult(result);
         }
     }
 
