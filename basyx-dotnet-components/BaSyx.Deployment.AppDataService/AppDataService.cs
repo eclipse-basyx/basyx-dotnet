@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Settings;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 namespace BaSyx.Deployment.AppDataService
 {
@@ -65,9 +66,7 @@ namespace BaSyx.Deployment.AppDataService
         /// Snapped (Linux): $SNAP_COMMON/solutions/activeConfiguration/{{appName}}
         /// Windows: Current directory + default relative path (optional)
         /// </summary>
-        public string BaseStorageLocation => IsSnapped ?
-            Path.Combine(SnapCommonLocation, "solutions", "activeConfiguration", _settings.ServiceConfig.AppName) :
-            Environment.CurrentDirectory;
+        public string BaseStorageLocation => GetBaseStorageLocation(_settings.ServiceConfig.AppName);
 
         public Action LoadAction { get; set; }
         public Action SaveAction { get; set; }
@@ -97,14 +96,22 @@ namespace BaSyx.Deployment.AppDataService
             Singleton = this;
         }     
 
+        private static string GetBaseStorageLocation(string appName)
+        {
+            return IsSnapped ?
+			    Path.Combine(SnapCommonLocation, "solutions", "activeConfiguration", appName) :
+			    Environment.CurrentDirectory;
+		}
+
         private AppDataService(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public static AppDataService Create(string settingsJsonFile = "appsettings.json", string[] cmdLineArgs = null)
+        public static AppDataService Create(string appName, string settingsJsonFile = "appsettings.json", string[] cmdLineArgs = null)
         {
-            IConfiguration configuration = LoadConfiguration(settingsJsonFile, cmdLineArgs);
+			SetDefaultWorkingDirectory();
+			IConfiguration configuration = LoadConfiguration(appName, settingsJsonFile, cmdLineArgs);
             return Create(configuration);
         }
 
@@ -129,7 +136,24 @@ namespace BaSyx.Deployment.AppDataService
             }
         }
 
-        public T GetValue<T>(string key)
+		public static IConfiguration LoadConfiguration(string appName, string settingsJsonFile = "appsettings.json", string[] cmdLineArgs = null)
+		{
+			string baseStorageLocation = GetBaseStorageLocation(appName);
+			string settingsFilePath = GetOrCreateTargetFilePath(settingsJsonFile, baseStorageLocation);
+
+			var config = new ConfigurationBuilder();
+			config.AddCommandLine(cmdLineArgs);
+			config.AddEnvironmentVariables();
+			config.AddJsonFile(settingsFilePath, false, true);
+			return config.Build();
+		}
+
+		public void LoadConfiguration(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
+
+		public T GetValue<T>(string key)
         {
             return Configuration.GetValue<T>(key);
         }
@@ -139,26 +163,12 @@ namespace BaSyx.Deployment.AppDataService
             value = Configuration.GetValue<T>(key);
             return value != null;
         }
-
-        public void LoadConfiguration(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+  
         public bool LoadSettings<T>(string key) where T: Settings
         {
             AddSettings(typeof(T), key);
             return AppDataContext.Settings.ContainsKey(typeof(T).Name);
-        }
-
-
-        public static IConfiguration LoadConfiguration(string settingsJsonFile = "appsettings.json", string[] cmdLineArgs = null)
-        {
-            var config = new ConfigurationBuilder();
-            config.AddCommandLine(cmdLineArgs);
-            config.AddEnvironmentVariables();
-            config.AddJsonFile(settingsJsonFile, false, true);
-            return config.Build();
-        }
+        }        
 
         public Settings GetSettings(Type type, string key = null)
         {
@@ -218,43 +228,7 @@ namespace BaSyx.Deployment.AppDataService
         public void AddXmlSettings(Type settingsType)
         {
             string settingsFileName = settingsType.Name + ".xml";
-            string[] destinationFiles = Directory.GetFiles(BaseStorageLocation, settingsFileName, SearchOption.AllDirectories);
-            string filePathToReadFrom = null;
-
-            if (destinationFiles.Length == 0)
-            {
-                logger.LogInformation($"{settingsFileName} not found at {BaseStorageLocation}");
-                string[] sourceFiles = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, settingsFileName, SearchOption.AllDirectories);
-                if (sourceFiles.Length == 0)
-                    throw new Exception($"{settingsFileName} not found within {AppDomain.CurrentDomain.BaseDirectory}");
-                else if (sourceFiles.Length > 1)
-                    throw new Exception($"{settingsFileName} found multiple times in {AppDomain.CurrentDomain.BaseDirectory}");
-                else
-                {
-                    string sourceFilePath = sourceFiles[0];
-                    string relativeSourceFilePath = sourceFilePath.Replace(AppDomain.CurrentDomain.BaseDirectory, string.Empty);
-                    string destinationFilePath = Path.Combine(BaseStorageLocation, relativeSourceFilePath);
-                    try
-                    {
-                        string folderPath = Path.GetDirectoryName(destinationFilePath);
-                        Directory.CreateDirectory(folderPath);
-                        File.Copy(sourceFilePath, destinationFilePath, true);
-                        filePathToReadFrom = destinationFilePath;
-                        logger.LogInformation($"File {destinationFilePath} copied successfully");
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError(e, $"Unable to copy file to {destinationFilePath}");
-                    }
-                }              
-            }
-            else if (destinationFiles.Length > 1)
-            {
-                logger.LogWarning($"Multiple files found: {string.Join(";", destinationFiles)}");
-                throw new Exception($"{settingsFileName} found multiple times in {BaseStorageLocation} | {string.Join(";", destinationFiles)}");
-            }
-            else
-                filePathToReadFrom = destinationFiles[0];
+            string filePathToReadFrom = GetOrCreateTargetFilePath(settingsFileName, BaseStorageLocation);
 
             Settings settings = Settings.LoadSettingsFromFile(filePathToReadFrom, settingsType);
             AppDataContext.Settings.Add(settingsFileName, settings);
@@ -264,49 +238,54 @@ namespace BaSyx.Deployment.AppDataService
 
         public void AddFile(string fileName)
         {
-            fileName = Path.GetFileName(fileName);
-
-            string[] destinationFiles = Directory.GetFiles(BaseStorageLocation, fileName, SearchOption.AllDirectories);
-            string filePathToReadFrom = null;
-
-            if (destinationFiles.Length == 0)
-            {
-                logger.LogInformation($"{fileName} not found at {BaseStorageLocation}");
-                string[] sourceFiles = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, fileName, SearchOption.AllDirectories);
-                if (sourceFiles.Length == 0)
-                    throw new Exception($"{fileName} not found within {AppDomain.CurrentDomain.BaseDirectory}");
-                else if (sourceFiles.Length > 1)
-                    throw new Exception($"{fileName} found multiple times in {AppDomain.CurrentDomain.BaseDirectory}");
-                else
-                {
-                    string sourceFilePath = sourceFiles[0];
-                    string relativeSourceFilePath = sourceFilePath.Replace(AppDomain.CurrentDomain.BaseDirectory, string.Empty);
-                    string destinationFilePath = Path.Combine(BaseStorageLocation, relativeSourceFilePath);
-                    try
-                    {
-                        string folderPath = Path.GetDirectoryName(destinationFilePath);
-                        Directory.CreateDirectory(folderPath);
-                        File.Copy(sourceFilePath, destinationFilePath, true);
-                        filePathToReadFrom = destinationFilePath;
-                        logger.LogInformation($"File {destinationFilePath} copied successfully");
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError(e, $"Unable to copy file to {destinationFilePath}");
-                    }
-                }
-            }
-            else if (destinationFiles.Length > 1)
-            {
-                logger.LogWarning($"Multiple files found: {string.Join(";", destinationFiles)}");
-                throw new Exception($"{fileName} found multiple times in {BaseStorageLocation} | {string.Join(";", destinationFiles)}");
-            }
-            else
-                filePathToReadFrom = destinationFiles[0];
-
+            string filePathToReadFrom = GetOrCreateTargetFilePath(fileName, BaseStorageLocation);
             AppDataContext.Files.Add(fileName, filePathToReadFrom);
             logger.LogInformation($"File {filePathToReadFrom} loaded successfully");
         }
+
+        private static string GetOrCreateTargetFilePath(string fileName, string baseStorageLocation)
+        {
+			fileName = Path.GetFileName(fileName);
+
+			string[] destinationFiles = Directory.GetFiles(baseStorageLocation, fileName, SearchOption.AllDirectories);
+			string filePathToReadFrom = null;
+
+			if (destinationFiles.Length == 0)
+			{
+				logger.LogInformation($"{fileName} not found at {baseStorageLocation}");
+				string[] sourceFiles = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, fileName, SearchOption.AllDirectories);
+				if (sourceFiles.Length == 0)
+					throw new Exception($"{fileName} not found within {AppDomain.CurrentDomain.BaseDirectory}");
+				else if (sourceFiles.Length > 1)
+					throw new Exception($"{fileName} found multiple times in {AppDomain.CurrentDomain.BaseDirectory}");
+				else
+				{
+					string sourceFilePath = sourceFiles[0];
+					string relativeSourceFilePath = sourceFilePath.Replace(AppDomain.CurrentDomain.BaseDirectory, string.Empty);
+					string destinationFilePath = Path.Combine(baseStorageLocation, relativeSourceFilePath);
+					try
+					{
+						string folderPath = Path.GetDirectoryName(destinationFilePath);
+						Directory.CreateDirectory(folderPath);
+						File.Copy(sourceFilePath, destinationFilePath, true);
+						filePathToReadFrom = destinationFilePath;
+						logger.LogInformation($"File {destinationFilePath} copied successfully");
+					}
+					catch (Exception e)
+					{
+						logger.LogError(e, $"Unable to copy file to {destinationFilePath}");
+					}
+				}
+			}
+			else if (destinationFiles.Length > 1)
+			{
+				logger.LogWarning($"Multiple files found: {string.Join(";", destinationFiles)}");
+				throw new Exception($"{fileName} found multiple times in {baseStorageLocation} | {string.Join(";", destinationFiles)}");
+			}
+			else
+				filePathToReadFrom = destinationFiles[0];
+            return filePathToReadFrom;
+		}
         
 
         public Result Start()
@@ -417,8 +396,7 @@ namespace BaSyx.Deployment.AppDataService
 
         public static void SetDefaultWorkingDirectory()
         {
-            //if (!Debugger.IsAttached)
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
             logger.LogInformation($"Program launched from (Environment.CurrentDirectory): {Environment.CurrentDirectory}");
             logger.LogInformation($"Program physical location (AppDomain.CurrentDomain.BaseDirectory) : {AppDomain.CurrentDomain.BaseDirectory}");
