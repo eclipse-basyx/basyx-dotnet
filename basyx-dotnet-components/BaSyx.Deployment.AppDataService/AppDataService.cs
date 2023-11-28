@@ -247,7 +247,8 @@ namespace BaSyx.Deployment.AppDataService
         {
 			fileName = Path.GetFileName(fileName);
 
-			string[] destinationFiles = Directory.GetFiles(baseStorageLocation, fileName, SearchOption.AllDirectories);
+			string[] destinationFiles = Directory.Exists(baseStorageLocation) ? 
+                Directory.GetFiles(baseStorageLocation, fileName, SearchOption.AllDirectories) : new string[0];
 			string filePathToReadFrom = null;
 
 			if (destinationFiles.Length == 0)
