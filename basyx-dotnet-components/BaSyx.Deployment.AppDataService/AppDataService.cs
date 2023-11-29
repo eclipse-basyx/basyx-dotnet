@@ -216,16 +216,26 @@ namespace BaSyx.Deployment.AppDataService
 
         public void AddSettings(Type settingsType, string key = null)
         {
-            if(string.IsNullOrEmpty(key))
-                key = settingsType.Name;
+            Settings settings = ReadSettings(settingsType, key);
+			AppDataContext.Settings.Add(settingsType.Name, settings);
+		}
 
-            var settings = (Settings)Configuration.GetSection(key).Get(settingsType);
-            AppDataContext.Settings.Add(settingsType.Name, settings);
-            logger.LogInformation($"{settingsType.Name} loaded successfully");
+		public T ReadSettings<T>(string key = null) where T : Settings
+		{
+			return (T)ReadSettings(typeof(T), key);
+		}
 
-        }
+		public Settings ReadSettings(Type settingsType, string key = null)
+		{
+			if (string.IsNullOrEmpty(key))
+				key = settingsType.Name;
 
-        public void AddXmlSettings(Type settingsType)
+			Settings settings = (Settings)Configuration.GetSection(key).Get(settingsType);		
+			logger.LogInformation($"{settingsType.Name} loaded successfully");
+            return settings;
+		}
+
+		public void AddXmlSettings(Type settingsType)
         {
             string settingsFileName = settingsType.Name + ".xml";
             string filePathToReadFrom = GetOrCreateTargetFilePath(settingsFileName, BaseStorageLocation);
