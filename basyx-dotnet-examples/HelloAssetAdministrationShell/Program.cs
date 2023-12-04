@@ -34,7 +34,7 @@ namespace HelloAssetAdministrationShell
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
 
-            AppDataService = AppDataService.Create("appsettings.json", args);            
+            AppDataService = AppDataService.Create("hello-adminshell", "appsettings.json", args);            
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = AppDataService.GetSettings<ServerSettings>();

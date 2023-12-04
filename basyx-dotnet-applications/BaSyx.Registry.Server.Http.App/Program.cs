@@ -31,7 +31,7 @@ namespace BaSyx.Registry.Server.Http.App
         {
             logger.Info("Starting AdminShell Registry HTTP server...");
 
-            AppDataService = AppDataService.Create("appsettings.json", args);
+            AppDataService = AppDataService.Create("adminshell-registry", "appsettings.json", args);
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = AppDataService.GetSettings<ServerSettings>();
