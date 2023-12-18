@@ -21,7 +21,6 @@
 
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI\BaSyx.Common.UI.csproj" />
-    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI.Swagger\BaSyx.Common.UI.Swagger.csproj" />
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Discovery.mDNS\BaSyx.Discovery.mDNS.csproj" />
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.API.Http.Controllers.AASX\BaSyx.API.Http.Controllers.AASX.csproj" />
     <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Servers.Http\BaSyx.Servers.Http.csproj" />
@@ -32,7 +31,6 @@
   <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
     <PackageReference Include="BaSyx.Servers.Http" Version="*" />
     <PackageReference Include="BaSyx.Common.UI" Version="*" />
-    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="*" />
     <PackageReference Include="BaSyx.Discovery.mDNS" Version="*" />
     <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="*" />
     <PackageReference Include="BaSyx.Registry.Client.Http" Version="*" />
