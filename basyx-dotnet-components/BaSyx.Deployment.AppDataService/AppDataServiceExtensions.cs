@@ -23,11 +23,10 @@ using BaSyx.Utils.Settings;
 using BaSyx.Models.AdminShell;
 using Endpoint = BaSyx.Models.Connectivity.Endpoint;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 
 namespace BaSyx.Deployment.AppDataService
 {
-    public static class AppDataServiceExtensions
+	public static class AppDataServiceExtensions
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger("AppDataServiceExtensions");
 
@@ -45,16 +44,27 @@ namespace BaSyx.Deployment.AppDataService
                 if(serverConfiguration.Hosting.EnableIPv6.HasValue)
                     enableIPv6 = serverConfiguration.Hosting.EnableIPv6.Value;
 
-                var ips = NetworkUtils.GetIPAddresses(enableIPv6);
-                var urls = new List<string>();
-                foreach (var ip in ips)
-                {
-                    string url = $"https://{ip}{_pathBase}";
-                    urls.Add(url);
-                    logger.LogInformation($"Using Url: {url}");
-                }
+                IEnumerable<IPAddress> ips;
+				List<string> urls = new List<string>();
 
-                if(AppDataService.IsX64)
+				if (!AppDataService.IsVirtual)
+                {
+                    if (serverConfiguration.Hosting.Urls.FindIndex(u => u.Contains("+")) != -1)
+                        ips = NetworkUtils.GetIPAddresses(enableIPv6);
+                    else
+                        ips = serverConfiguration.Hosting.Urls.ConvertAll(c => IPAddress.Parse(new Uri(c).Host));
+                   
+                    foreach (var ip in ips)
+                    {
+                        if (ip == IPAddress.Loopback)
+                            continue;
+
+                        string url = $"https://{ip}{_pathBase}";
+                        urls.Add(url);
+                        logger.LogInformation($"Using Url: {url}");
+                    }
+                }
+                else
                     urls.Add($"https://127.0.0.1:8443{_pathBase}");
 
                 ServerConfiguration serverConfig = new ServerConfiguration()

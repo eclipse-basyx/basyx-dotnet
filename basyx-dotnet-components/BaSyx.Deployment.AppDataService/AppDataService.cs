@@ -31,7 +31,8 @@ namespace BaSyx.Deployment.AppDataService
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<AppDataService>();
 
-        public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+		public static bool IsVirtual {get; private set;} = false;
+		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         public static bool IsX86 => RuntimeInformation.OSArchitecture == Architecture.X86;
         public static bool IsX64 => RuntimeInformation.OSArchitecture == Architecture.X64;
@@ -122,6 +123,7 @@ namespace BaSyx.Deployment.AppDataService
                 SetDefaultWorkingDirectory();
                 AppDataServiceSettings appDataServiceSettings = configuration.GetSection("AppDataServiceSettings").Get<AppDataServiceSettings>();
                 AppDataService appDataService = new AppDataService(appDataServiceSettings);
+                AppDataService.IsVirtual = appDataServiceSettings.ServiceConfig.IsVirtual;
                 appDataService.LoadConfiguration(configuration);
                 appDataService.LoadAction = RestartAppAction();
                 var started = appDataService.Start();
