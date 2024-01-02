@@ -144,9 +144,9 @@ namespace BaSyx.API.ServiceProvider
                     continue;
 			}
 			return endpoints;
-		}
+		}		
 
-        public static void UseDefaultEndpointRegistration(this IAssetAdministrationShellRepositoryServiceProvider serviceProvider, IEnumerable<IEndpoint> endpoints)
+		public static void UseDefaultEndpointRegistration(this IAssetAdministrationShellRepositoryServiceProvider serviceProvider, IEnumerable<IEndpoint> endpoints)
         {
             List<IEndpoint> repositoryEndpoints = new List<IEndpoint>();
             foreach (var endpoint in endpoints)
