@@ -146,5 +146,27 @@ namespace BaSyx.Utils.Network
                 return false;
             }
         }
-    }
+
+        /// <summary>
+        /// Returns the external IP address
+        /// </summary>
+        /// <returns></returns>
+		public static IPAddress GetExternalIPAddress()
+		{
+			using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+			{
+				try
+				{
+					socket.Connect("8.8.8.8", 65530);
+					IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+					return endPoint.Address;
+				}
+				catch (Exception e)
+				{
+					logger.LogWarning(e, "Unable to get external IP address");
+					return null;
+				}
+			}
+		}
+	}
 }
