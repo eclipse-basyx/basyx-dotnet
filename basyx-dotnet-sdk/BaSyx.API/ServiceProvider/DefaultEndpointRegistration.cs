@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -33,7 +34,7 @@ namespace BaSyx.API.ServiceProvider
                 if (serverConfiguration.Hosting.EnableIPv6.HasValue && serverConfiguration.Hosting.EnableIPv6.Value)
                     includeIPv6 = true;
 
-                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.AssetAdministrationShellRepositoryInterface);
+                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.AssetAdministrationShellRepositoryInterface, serverConfiguration.PathBase);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
             else
@@ -53,7 +54,7 @@ namespace BaSyx.API.ServiceProvider
                 if (serverConfiguration.Hosting.EnableIPv6.HasValue && serverConfiguration.Hosting.EnableIPv6.Value)
                     includeIPv6 = true;
 
-                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.SubmodelRepositoryInterface);
+                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.SubmodelRepositoryInterface, serverConfiguration.PathBase);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
             else
@@ -91,7 +92,7 @@ namespace BaSyx.API.ServiceProvider
                 if (serverConfiguration.Hosting.EnableIPv6.HasValue && serverConfiguration.Hosting.EnableIPv6.Value)
                     includeIPv6 = true;
 
-                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.AssetAdministrationShellInterface);
+                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.AssetAdministrationShellInterface, serverConfiguration.PathBase);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
             else
@@ -111,7 +112,7 @@ namespace BaSyx.API.ServiceProvider
                 if (serverConfiguration.Hosting.EnableIPv6.HasValue && serverConfiguration.Hosting.EnableIPv6.Value)
                     includeIPv6 = true;
 
-                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.SubmodelInterface);
+                List<IEndpoint> endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.SubmodelInterface, serverConfiguration.PathBase);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
             else
@@ -121,29 +122,29 @@ namespace BaSyx.API.ServiceProvider
             }
         }
 
-        private static List<IEndpoint> GetNetworkInterfaceBasedEndpoints(string endpointType, int port, bool includeIPv6, InterfaceName interfaceName)
+        public static List<IEndpoint> GetNetworkInterfaceBasedEndpoints(string endpointType, int port, bool includeIPv6, InterfaceName interfaceName, string pathBase)
         {
-            IEnumerable<IPAddress> ipAddresses = NetworkUtils.GetIPAddresses(includeIPv6);
-            List<IEndpoint> aasEndpoints = new List<IEndpoint>();
-            foreach (var ipAddress in ipAddresses)
-            {
-                if (ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    string address = endpointType + "://" + ipAddress.ToString() + ":" + port;
-                    aasEndpoints.Add(new Endpoint(address, interfaceName));
-                    logger.LogInformation($"Using {address} as endpoint");
-                }
-                else if (includeIPv6 && ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-                {
-                    string address = endpointType + "://[" + ipAddress.ToString() + "]:" + port;
-                    aasEndpoints.Add(new Endpoint(address, interfaceName));
-                    logger.LogInformation($"Using {address} as endpoint");
-                }
+			IEnumerable<IPAddress> IPAddresses = NetworkUtils.GetIPAddresses(includeIPv6);
+			List<IEndpoint> endpoints = new List<IEndpoint>();
+			foreach (IPAddress address in IPAddresses)
+			{
+				if (address.AddressFamily == AddressFamily.InterNetwork)
+				{
+					string endpoint = endpointType + "://" + address.ToString() + ":" + port + pathBase;
+					endpoints.Add(new Endpoint(endpoint, interfaceName));
+					logger.LogInformation("Using " + endpoint + " as endpoint");
+				}
+				else if (includeIPv6 && address.AddressFamily == AddressFamily.InterNetworkV6)
+				{
+					string endpoint = endpointType + "://[" + address.ToString() + "]:" + port + pathBase;
+					endpoints.Add(new Endpoint(endpoint, interfaceName));
+					logger.LogInformation("Using " + endpoint + " as endpoint");
+				}
                 else
                     continue;
-            }
-            return aasEndpoints;
-        }
+			}
+			return endpoints;
+		}
 
         public static void UseDefaultEndpointRegistration(this IAssetAdministrationShellRepositoryServiceProvider serviceProvider, IEnumerable<IEndpoint> endpoints)
         {
