@@ -13,7 +13,6 @@ using BaSyx.Utils.Network;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Net;
 using System.Threading.Tasks;
 using BaSyx.Utils.ResultHandling;
@@ -129,31 +128,9 @@ namespace BaSyx.Deployment.AppDataService
                 _pathBase = uri.PathAndQuery;
 
             if (originalUrl.Contains("+") || originalUrl.Contains("*"))
-                endpoints = GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, _pathBase, includeIPv6);
+                endpoints = DefaultEndpointRegistration.GetNetworkInterfaceBasedEndpoints(uri.Scheme, uri.Port, includeIPv6, InterfaceName.AssetAdministrationShellInterface, _pathBase);
             else
                 endpoints.Add(new Endpoint(uri, InterfaceName.AssetAdministrationShellInterface));
-            return endpoints;
-        }
-
-        public static List<IEndpoint> GetNetworkInterfaceBasedEndpoints(string endpointType, int port, string pathBase, bool includeIPv6)
-        {
-            IEnumerable<IPAddress> IPAddresses = NetworkUtils.GetIPAddresses(includeIPv6);
-            List<IEndpoint> endpoints = new List<IEndpoint>();
-            foreach (IPAddress address in IPAddresses)
-            {
-                if (address.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    string endpoint = endpointType + "://" + address.ToString() + ":" + port + pathBase;
-                    endpoints.Add(new Endpoint(endpoint, InterfaceName.AssetAdministrationShellInterface));
-                    logger.LogInformation("Using " + endpoint + " as endpoint");
-                }
-                else if (includeIPv6 && address.AddressFamily == AddressFamily.InterNetworkV6)
-                {
-                    string endpoint = endpointType + "://[" + address.ToString() + "]:" + port + pathBase;
-                    endpoints.Add(new Endpoint(endpoint, InterfaceName.AssetAdministrationShellInterface));
-                    logger.LogInformation("Using " + endpoint + " as endpoint");
-                }
-            }
             return endpoints;
         }
 
@@ -163,7 +140,7 @@ namespace BaSyx.Deployment.AppDataService
             Uri uri = new Uri(originalUrl.Replace("+", "localhost").Replace("*", "localhost"));
             if (originalUrl.Contains("+") || originalUrl.Contains("*") || originalUrl.Contains("0.0.0.0"))
             {
-                string externalIP = GetExternalIPAddress();
+                string externalIP = NetworkUtils.GetExternalIPAddress().ToString();
                 if(!string.IsNullOrEmpty(externalIP))
                 {
                     string endpointString = uri.Scheme + "://" + externalIP + ":" + uri.Port + pathBase;
@@ -178,26 +155,7 @@ namespace BaSyx.Deployment.AppDataService
                 endpoints.Add(new Endpoint(new Uri(uri, pathBase), InterfaceName.AssetAdministrationShellInterface));
             }
             return endpoints;            
-        }
-
-        public static string GetExternalIPAddress()
-        {
-            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
-            {
-                try
-                {
-                    socket.Connect("8.8.8.8", 65530);
-                    IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
-                    string localIPAddress = endPoint.Address.ToString();
-                    return localIPAddress;
-                }
-                catch (Exception e)
-                {
-                    logger.LogWarning(e, "Unable to get external IP address");
-                    return null;
-                }                
-            }
-        }
+        }        
 
         public static IServiceCollection AddSettings<T>(this IServiceCollection services, AppDataService appDataService) where T : Settings
         {
