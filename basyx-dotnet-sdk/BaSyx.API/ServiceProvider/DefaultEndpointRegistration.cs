@@ -39,7 +39,7 @@ namespace BaSyx.API.ServiceProvider
             }
             else
             {
-                List<IEndpoint> endpoints = ConvertEndpoints(serverConfiguration.Hosting.Urls, InterfaceName.AssetAdministrationShellRepositoryInterface);
+                List<IEndpoint> endpoints = ConvertEndpoints(serverConfiguration.Hosting.Urls, InterfaceName.AssetAdministrationShellRepositoryInterface, serverConfiguration.PathBase);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
         }
@@ -59,19 +59,22 @@ namespace BaSyx.API.ServiceProvider
             }
             else
             {
-                List<IEndpoint> endpoints = ConvertEndpoints(serverConfiguration.Hosting.Urls, InterfaceName.SubmodelRepositoryInterface);
+                List<IEndpoint> endpoints = ConvertEndpoints(serverConfiguration.Hosting.Urls, InterfaceName.SubmodelRepositoryInterface, serverConfiguration.PathBase);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
         }
 
-        private static List<IEndpoint> ConvertEndpoints(List<string> urls, InterfaceName interfaceName)
+        private static List<IEndpoint> ConvertEndpoints(List<string> urls, InterfaceName interfaceName, string pathBase = null)
         {
             try
             {
                 List<IEndpoint> endpoints = new List<IEndpoint>();
                 foreach (var url in urls)
                 {
-                    endpoints.Add(new Endpoint(url, interfaceName));
+					Uri uri = new Uri(url);
+					if (!string.IsNullOrEmpty(pathBase))
+					    uri = new Uri(uri, pathBase);
+					endpoints.Add(new Endpoint(uri, interfaceName));
                 }
                 return endpoints;
             }
@@ -97,7 +100,7 @@ namespace BaSyx.API.ServiceProvider
             }
             else
             {
-                List<IEndpoint> endpoints = ConvertEndpoints(serverConfiguration.Hosting.Urls, InterfaceName.AssetAdministrationShellInterface);
+                List<IEndpoint> endpoints = ConvertEndpoints(serverConfiguration.Hosting.Urls, InterfaceName.AssetAdministrationShellInterface, serverConfiguration.PathBase);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
         }
@@ -117,7 +120,7 @@ namespace BaSyx.API.ServiceProvider
             }
             else
             {
-                List<IEndpoint> endpoints = ConvertEndpoints(serverConfiguration.Hosting.Urls, InterfaceName.SubmodelInterface);
+                List<IEndpoint> endpoints = ConvertEndpoints(serverConfiguration.Hosting.Urls, InterfaceName.SubmodelInterface, serverConfiguration.PathBase);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
             }
         }
