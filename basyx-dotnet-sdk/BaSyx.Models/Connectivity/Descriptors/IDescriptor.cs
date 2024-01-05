@@ -19,6 +19,7 @@ namespace BaSyx.Models.Connectivity
         IEnumerable<IEndpoint> Endpoints { get; }
 
         void AddEndpoints(IEnumerable<IEndpoint> endpoints);
+        void DeleteEndpoint(IEndpoint endpoint);
         void SetEndpoints(IEnumerable<IEndpoint> endpoints);
     }
 }

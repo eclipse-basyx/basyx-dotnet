@@ -25,6 +25,7 @@ namespace BaSyx.Discovery.mDNS
     {
         private static DiscoveryServer discoveryServer;
         private static DiscoveryClient discoveryClient;
+        private static List<DiscoveryClient> discoveryClients = new List<DiscoveryClient>();
         private static IAssetAdministrationShellRegistryInterface assetAdministrationShellRegistry;
 
         public const string ASSETADMINISTRATIONSHELL_ID = "aas.id";
@@ -51,27 +52,25 @@ namespace BaSyx.Discovery.mDNS
                 IAssetAdministrationShellDescriptor aasDescriptor = null;
                 if (e?.TxtRecords?.Count > 0)
                 {
-                    foreach (var txtRecord in e.TxtRecords)
+                    string aasIdRecord = e.TxtRecords.Where(s => s.StartsWith(ASSETADMINISTRATIONSHELL_ID))?.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(aasIdRecord))
                     {
-                        if (txtRecord.StartsWith(ASSETADMINISTRATIONSHELL_ID) && assetAdministrationShellRegistry != null)
+                        string[] splittedRecord = aasIdRecord.Split(new char[] { KEY_VALUE_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
+                        if (splittedRecord.Length == 2)
                         {
-                            string[] splittedEndpoint = txtRecord.Split(new char[] { KEY_VALUE_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
-                            if (splittedEndpoint.Length == 2)
+                            var retrieved = assetAdministrationShellRegistry.RetrieveAssetAdministrationShellRegistration(splittedRecord[1]);
+                            if (retrieved.SuccessAndContent)
+                                return;
+                            else
                             {
-                                var retrieved = assetAdministrationShellRegistry.RetrieveAssetAdministrationShellRegistration(splittedEndpoint[1]);
-                                if (retrieved.SuccessAndContent)
-                                    return;
-                            }                            
-                        }
-                        else if (txtRecord.StartsWith(ASSETADMINISTRATIONSHELL_ENDPOINT))
-                        {
-                            string[] splittedEndpoint = txtRecord.Split(new char[] { KEY_VALUE_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
-                            if (splittedEndpoint.Length == 2 && splittedEndpoint[0].ToLower().Contains("http"))
-                            {
-                                AssemblyDescriptor(ref aasDescriptor, new Uri(splittedEndpoint[1]));
+                                List<string> endpointRecords = e.TxtRecords.Where(s => s.StartsWith(ASSETADMINISTRATIONSHELL_ENDPOINT))?.ToList();
+                                if(endpointRecords?.Count > 0)
+                                    AssembleDescriptor(ref aasDescriptor, endpointRecords, e.Servers);
                             }
                         }
                     }
+                    else
+                        return;
                 }
                 if (aasDescriptor != null && assetAdministrationShellRegistry != null)
                 {
@@ -88,51 +87,76 @@ namespace BaSyx.Discovery.mDNS
             }
         }
 
-        private static void AssemblyDescriptor(ref IAssetAdministrationShellDescriptor aasDescriptor, Uri aasEndpoint)
+        private static void AssembleDescriptor(ref IAssetAdministrationShellDescriptor aasDescriptor, List<string> endpointRecords, List<Server> servers)
         {
+            //Get AAS descriptor initially if its first discovered
             if (aasDescriptor == null)
             {
-                using (var client = new AssetAdministrationShellHttpClient(aasEndpoint, SimpleHttpClient.DEFAULT_HTTP_CLIENT_HANDLER))
+                foreach (string endpointRecord in endpointRecords)
                 {
-                    var retrieveDescriptor = client.RetrieveAssetAdministrationShellDescriptor();
-                    if (retrieveDescriptor.SuccessAndContent)
-                        aasDescriptor = retrieveDescriptor.Entity;
-                    else
-                        return;
-                }
-                aasDescriptor.SetEndpoints(new List<IEndpoint>() { new Endpoint(aasEndpoint, InterfaceName.AssetAdministrationShellInterface) });
-
-                foreach (var submodelDescriptor in aasDescriptor.SubmodelDescriptors)
-                {
-                    List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
-                    foreach (var submodelEndpoint in submodelDescriptor.Endpoints)
+                    string[] splittedEndpoint = endpointRecord.Split(new char[] { KEY_VALUE_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
+                    if (splittedEndpoint.Length == 2 && (splittedEndpoint[0].ToLower().Contains("http") || splittedEndpoint[0].ToLower().Contains("https")))
                     {
-                        if (submodelEndpoint.ProtocolInformation.EndpointAddress.Contains(aasEndpoint.Host))
+                        Uri endpoint = new Uri(splittedEndpoint[1]);
+                        bool endpointValid = CheckEndpoint(endpoint, servers);
+                        if (endpointValid)
                         {
-                            submodelEndpoints.Add(submodelEndpoint);
+                            using (var client = new AssetAdministrationShellHttpClient(endpoint, SimpleHttpClient.DEFAULT_HTTP_CLIENT_HANDLER))
+                            {
+                                var retrieveDescriptor = client.RetrieveAssetAdministrationShellDescriptor();
+                                if (retrieveDescriptor.SuccessAndContent)
+                                {
+                                    aasDescriptor = retrieveDescriptor.Entity;
+                                    break;
+                                }
+                                else
+                                    continue;
+                            }
                         }
                     }
-                    aasDescriptor.SubmodelDescriptors.First(s => s.Id.Id == submodelDescriptor.Id.Id).SetEndpoints(submodelEndpoints);
                 }
             }
-            else
+            //Remove endpoints from the AAS descriptor that are not in the mDNS endpoint list
+            if(aasDescriptor != null)
             {
-                aasDescriptor.AddEndpoints(new List<IEndpoint>() { new Endpoint(aasEndpoint, InterfaceName.AssetAdministrationShellInterface) });
-
-                foreach (var submodelDescriptor in aasDescriptor.SubmodelDescriptors)
+                foreach (var aasEndpoint in aasDescriptor.Endpoints.ToList())
                 {
-                    List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
-                    foreach (var submodelEndpoint in submodelDescriptor.Endpoints)
+                    Uri endpoint = new Uri(aasEndpoint.ProtocolInformation.EndpointAddress);
+                    bool endpointValid = CheckEndpoint(endpoint, servers);
+                    if (!endpointValid)
+                        aasDescriptor.DeleteEndpoint(aasEndpoint);
+                }
+                foreach (var smDescriptor in aasDescriptor.SubmodelDescriptors)
+                {
+                    foreach (var smEndpoint in smDescriptor.Endpoints.ToList())
                     {
-                        if (submodelEndpoint.ProtocolInformation.EndpointAddress.Contains(aasEndpoint.Host))
-                        {
-                            if (aasDescriptor.SubmodelDescriptors.First(s => s.Id.Id == submodelDescriptor.Id.Id).Endpoints.FirstOrDefault(f => f.ProtocolInformation.EndpointAddress == submodelEndpoint.ProtocolInformation.EndpointAddress) == null)
-                                submodelEndpoints.Add(submodelEndpoint);
-                        }
+                        Uri endpoint = new Uri(smEndpoint.ProtocolInformation.EndpointAddress);
+                        bool endpointValid = CheckEndpoint(endpoint, servers);
+                        if (!endpointValid)
+                            smDescriptor.DeleteEndpoint(smEndpoint);
                     }
-                    aasDescriptor.SubmodelDescriptors.First(s => s.Id.Id == submodelDescriptor.Id.Id).AddEndpoints(submodelEndpoints);
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks whether the advertised endpoint is part of the mDNS published endpoints
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <param name="servers"></param>
+        /// <returns></returns>
+        private static bool CheckEndpoint(Uri endpoint, List<Server> servers)
+        {
+            if (endpoint.HostNameType == UriHostNameType.IPv4)
+            {
+                IPAddress iPAddress = IPAddress.Parse(endpoint.Host);
+                bool contained = servers.Select(s => s.Address).Contains(iPAddress);
+                return contained;
+            }
+            else if (endpoint.HostNameType == UriHostNameType.Dns)
+                return true;
+            else
+                return false;
         }
 
         private class EndpointComparer : IEqualityComparer<IEndpoint>
@@ -216,7 +240,7 @@ namespace BaSyx.Discovery.mDNS
         public static void StartDiscovery(this IAssetAdministrationShellServiceProvider serviceProvider, int port, IEnumerable<IPAddress> iPAddresses)
         {
             discoveryClient = new DiscoveryClient(serviceProvider.ServiceDescriptor.IdShort, (ushort)port, ServiceTypes.AAS_SERVICE_TYPE, iPAddresses);
-            discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_ID, serviceProvider.ServiceDescriptor.Id.Id);
+            discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_ID, serviceProvider.ServiceDescriptor.Id);
             discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_IDSHORT, serviceProvider.ServiceDescriptor.IdShort);
             for (int i = 0; i < serviceProvider.ServiceDescriptor.Endpoints.Count(); i++)
             {
@@ -227,9 +251,61 @@ namespace BaSyx.Discovery.mDNS
             discoveryClient.Start();
             
         }
+
+        /// <summary>
+        /// Starts mDNS dicovery for an Asset Administration Shell Repository Service Provider with included endpoints in its Service Descriptor
+        /// </summary>
+        /// <param name="serviceProvider">The Asset Administration Shell Repository Service Provider</param>
+        public static void StartDiscovery(this IAssetAdministrationShellRepositoryServiceProvider serviceProvider)
+        {
+            List<IPAddress> ipAddresses = new List<IPAddress>();
+            int port = -1;
+            foreach (var endpoint in serviceProvider.ServiceDescriptor.Endpoints)
+            {
+                Uri uriEndpoint = new Uri(endpoint.ProtocolInformation.EndpointAddress);
+                if (port == -1)
+                    port = uriEndpoint.Port;
+
+                if (IPAddress.TryParse(uriEndpoint.Host, out IPAddress address))
+                    ipAddresses.Add(address);
+            }
+            StartDiscovery(serviceProvider, port, ipAddresses);
+        }
+
+        /// <summary>
+        /// Starts mDNS discovery for an Asset Administration Shell Repository Service Provider with a list of given IP-addresses and a port
+        /// </summary>
+        /// <param name="serviceProvider">The Asset Administration Shell Service Provider</param>
+        /// <param name="port">The port to advertise</param>
+        /// <param name="iPAddresses">A list of IP-addresses to advertise, if empty uses locally dicoverable multicast IP addresses</param>
+        public static void StartDiscovery(this IAssetAdministrationShellRepositoryServiceProvider serviceProvider, int port, IEnumerable<IPAddress> iPAddresses)
+        {
+            foreach (var aasDescriptor in serviceProvider.ServiceDescriptor.AssetAdministrationShellDescriptors)
+            {
+                var discoveryClient = new DiscoveryClient(aasDescriptor.IdShort, (ushort)port, ServiceTypes.AAS_SERVICE_TYPE, iPAddresses);
+                discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_ID, aasDescriptor.Id);
+                discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_IDSHORT, aasDescriptor.IdShort);
+                for (int i = 0; i < aasDescriptor.Endpoints.Count(); i++)
+                {
+                    var endpoint = aasDescriptor.Endpoints.ElementAt(i);
+                    discoveryClient.AddProperty(ASSETADMINISTRATIONSHELL_ENDPOINT + "." + endpoint.ProtocolInformation.EndpointProtocol + "." + i, endpoint.ProtocolInformation.EndpointAddress);
+                }
+                discoveryClients.Add(discoveryClient);
+                discoveryClient.Start();
+            }           
+        }
+
         public static void StopDiscovery(this IAssetAdministrationShellServiceProvider serviceProvider)
         {
             discoveryClient.Stop();
-        }                   
+        }
+
+        public static void StopDiscovery(this IAssetAdministrationShellRepositoryServiceProvider serviceProvider)
+        {
+            foreach (var discoveryClient in discoveryClients)
+            {
+                discoveryClient.Stop();
+            }
+        }
     }
 }
