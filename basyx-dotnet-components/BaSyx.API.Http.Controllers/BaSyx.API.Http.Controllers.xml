@@ -187,6 +187,15 @@
             <response code="200">Returns the requested Asset Administration Shell</response>
             <response code="404">No Asset Administration Shell found</response>           
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.GetAssetAdministrationShellDescriptorById(System.String)">
+            <summary>
+            Returns a specific Asset Administration Shell Descriptor
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">Returns the requested Asset Administration Shell Descriptor</response>
+            <response code="404">No Asset Administration Shell Descriptor found</response>           
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.PutAssetAdministrationShellById(System.String,BaSyx.Models.AdminShell.IAssetAdministrationShell)">
             <summary>
             Updates an existing Asset Administration Shell

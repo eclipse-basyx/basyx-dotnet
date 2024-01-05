@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using System.Text.Json;
+using BaSyx.Models.Connectivity;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -96,6 +99,32 @@ namespace BaSyx.API.Http.Controllers
 
             var result = serviceProvider.RetrieveAssetAdministrationShell(aasIdentifier);
             return result.CreateActionResult(CrudOperation.Retrieve);
+        }
+
+        /// <summary>
+        /// Returns a specific Asset Administration Shell Descriptor
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Returns the requested Asset Administration Shell Descriptor</response>
+        /// <response code="404">No Asset Administration Shell Descriptor found</response>           
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + DescriptionRoutes.DESCRIPTOR, Name = "GetAssetAdministrationShellDescriptorById")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(AssetAdministrationShellDescriptor), 200)]
+        public IActionResult GetAssetAdministrationShellDescriptorById(string aasIdentifier)
+        {
+            if (string.IsNullOrEmpty(aasIdentifier))
+                return ResultHandling.NullResult(nameof(aasIdentifier));
+
+            aasIdentifier = ResultHandling.Base64UrlDecode(aasIdentifier);
+
+            var serviceDescriptor =
+                serviceProvider.ServiceDescriptor.AssetAdministrationShellDescriptors.FirstOrDefault(s => s.Id == aasIdentifier);
+
+            if (serviceDescriptor != null)
+                return new OkObjectResult(serviceDescriptor);
+            else
+                return NotFound();
         }
 
         /// <summary>
