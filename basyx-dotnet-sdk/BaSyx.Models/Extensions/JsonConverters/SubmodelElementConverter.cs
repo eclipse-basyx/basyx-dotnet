@@ -506,17 +506,17 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.Operation:
                     var op = (Operation)value;
-                    if (op.InputVariables.Count() > 0)
+                    if (op.InputVariables?.Count() > 0)
                     {
                         writer.WritePropertyName("inputVariables");
                         JsonSerializer.Serialize(writer, op.InputVariables, options);
                     }
-                    if (op.InOutputVariables.Count() > 0)
+                    if (op.InOutputVariables?.Count() > 0)
                     {
                         writer.WritePropertyName("inOutputVariables");
                         JsonSerializer.Serialize(writer, op.InOutputVariables, options);
                     }
-                    if (op.OutputVariables.Count() > 0)
+                    if (op.OutputVariables?.Count() > 0)
                     {
                         writer.WritePropertyName("outputVariables");
                         JsonSerializer.Serialize(writer, op.OutputVariables, options);
