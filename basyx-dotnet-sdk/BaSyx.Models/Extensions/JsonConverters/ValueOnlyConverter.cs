@@ -79,9 +79,12 @@ namespace BaSyx.Models.Extensions
                         {
                             IProperty property = smElement.Cast<IProperty>();
                             var valueScope = property.GetValueScope<PropertyValue>();
-                            writer.WritePropertyName(property.IdShort);
-                            var jValue = JsonValue.Create(valueScope.Value.Value);
-                            writer.WriteRawValue(jValue.ToString());
+                            if(valueScope != null && valueScope.Value != null)
+                            {
+                                writer.WritePropertyName(property.IdShort);
+                                var jValue = JsonValue.Create(valueScope.Value.Value);
+                                writer.WriteRawValue(jValue.ToString());
+                            }                           
                             break;
                         }
                     case ModelTypes.File:
