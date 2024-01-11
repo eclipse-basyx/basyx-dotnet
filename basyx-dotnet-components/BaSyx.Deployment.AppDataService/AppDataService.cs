@@ -251,7 +251,8 @@ namespace BaSyx.Deployment.AppDataService
         public void AddFile(string fileName)
         {
             string filePathToReadFrom = GetOrCreateTargetFilePath(fileName, BaseStorageLocation);
-            AppDataContext.Files.Add(fileName, filePathToReadFrom);
+            if(!AppDataContext.Files.ContainsKey(fileName))
+                AppDataContext.Files.Add(fileName, filePathToReadFrom);
             logger.LogInformation($"File {filePathToReadFrom} loaded successfully");
         }
 
