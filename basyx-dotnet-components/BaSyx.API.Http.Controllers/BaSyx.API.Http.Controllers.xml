@@ -187,7 +187,7 @@
             <response code="200">Returns the requested Asset Administration Shell</response>
             <response code="404">No Asset Administration Shell found</response>           
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.GetAssetAdministrationShellDescriptorById(System.String)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.GetAssetAdministrationShellDescriptorFromRepoById(System.String)">
             <summary>
             Returns a specific Asset Administration Shell Descriptor
             </summary>
