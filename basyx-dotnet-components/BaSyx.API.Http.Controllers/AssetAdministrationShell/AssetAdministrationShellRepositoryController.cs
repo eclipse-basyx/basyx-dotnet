@@ -108,10 +108,10 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Returns the requested Asset Administration Shell Descriptor</response>
         /// <response code="404">No Asset Administration Shell Descriptor found</response>           
-        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + DescriptionRoutes.DESCRIPTOR, Name = "GetAssetAdministrationShellDescriptorById")]
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + DescriptionRoutes.DESCRIPTOR, Name = "GetAssetAdministrationShellDescriptorFromRepoById")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(AssetAdministrationShellDescriptor), 200)]
-        public IActionResult GetAssetAdministrationShellDescriptorById(string aasIdentifier)
+        public IActionResult GetAssetAdministrationShellDescriptorFromRepoById(string aasIdentifier)
         {
             if (string.IsNullOrEmpty(aasIdentifier))
                 return ResultHandling.NullResult(nameof(aasIdentifier));
