@@ -229,6 +229,10 @@ namespace BaSyx.API.ServiceProvider
                 else
                     return new Result<InvocationResponse>(false, new NotFoundMessage($"MethodHandler for {pathToOperation}"));
 
+                IResult<IOperationVariableSet> checkedInputArguments = CheckInputArguments(operation_Retrieved.Entity, invocationRequest.InputArguments);
+                if(!checkedInputArguments.Success)
+                    return new Result<InvocationResponse>(checkedInputArguments);
+
                 InvocationResponse invocationResponse = new InvocationResponse(invocationRequest.RequestId, false);
                 invocationResponse.InOutputArguments = invocationRequest.InOutputArguments;
                 invocationResponse.OutputArguments = CreateOutputArguments(operation_Retrieved.Entity.OutputVariables);
@@ -244,7 +248,9 @@ namespace BaSyx.API.ServiceProvider
                         try
                         {
                             invocationResponse.ExecutionState = ExecutionState.Running;
-                            return await methodHandler.Invoke(operation_Retrieved.Entity, invocationRequest.InputArguments, invocationResponse.InOutputArguments, invocationResponse.OutputArguments, cancellationTokenSource.Token);                                                        
+                            return await methodHandler
+                            .Invoke(operation_Retrieved.Entity, checkedInputArguments.Entity, invocationResponse.InOutputArguments, invocationResponse.OutputArguments, cancellationTokenSource.Token)
+                            .ConfigureAwait(false);                                                        
                         }
                         catch (Exception e)
                         {
@@ -276,6 +282,46 @@ namespace BaSyx.API.ServiceProvider
                 }
             }
             return new Result<InvocationResponse>(operation_Retrieved);
+        }
+
+        private IResult<IOperationVariableSet> CheckInputArguments(IOperation operation, IOperationVariableSet inputArguments)
+        {
+            try
+            {
+                IOperationVariableSet checkedInputArguments = new OperationVariableSet();
+                foreach (var inputArgument in inputArguments)
+                {
+                    //Check whether input argument exists in the operation input variable definition
+                    var inputVariable = operation.InputVariables.Get(inputArgument.Value.IdShort);
+                    if (inputVariable == null)
+                        return new Result<IOperationVariableSet>(false, new NotFoundMessage($"InputVariable {inputArgument.Value.IdShort}"));
+
+                    //Check whether modeltype matches
+                    if(inputArgument.Value.ModelType != inputVariable.ModelType)
+                        return new Result<IOperationVariableSet>(false, new ErrorMessage($"ModelType of InputArgument {inputArgument.Value.ModelType} does not match with InputVariable definition {inputVariable.ModelType}"));
+
+                    //Special handling for properties
+                    if(inputArgument.Value is IProperty inArgProperty && inputVariable is IProperty inVariableProperty)
+                    {
+                        //Check if value types match, if not try to convert incoming value to expected value
+                        if (inArgProperty.ValueType == inVariableProperty.ValueType)
+                        {
+                            checkedInputArguments.Add(inArgProperty);
+                        }                            
+                        else
+                        {
+                            object value = inArgProperty.Value.Value.Value;
+                            Property newInArg = new Property(inVariableProperty.IdShort, inVariableProperty.ValueType, value);
+                            checkedInputArguments.Add(newInArg);
+                        }
+                    }
+                }
+                return new Result<IOperationVariableSet>(true, checkedInputArguments);
+            }
+            catch (Exception e)
+            {
+                return new Result<IOperationVariableSet>(e);
+            }            
         }
 
         private IOperationVariableSet CreateOutputArguments(IOperationVariableSet outputVariables)
@@ -326,11 +372,16 @@ namespace BaSyx.API.ServiceProvider
                     methodHandler = operation_Retrieved.Entity.OnMethodCalled;
                 else
                     return new Result<InvocationResponse>(false, new NotFoundMessage($"MethodHandler for {idShortPath}"));
-             
+
+                IResult<IOperationVariableSet> checkedInputArguments = CheckInputArguments(operation_Retrieved.Entity, invocationRequest.InputArguments);
+                if (!checkedInputArguments.Success)
+                    return new Result<InvocationResponse>(checkedInputArguments);
+
                 Task invocationTask = Task.Run(async() =>
                 {
                     InvocationResponse invocationResponse = new InvocationResponse(invocationRequest.RequestId, false);
                     invocationResponse.InOutputArguments = invocationRequest.InOutputArguments;
+                    invocationResponse.OutputArguments = CreateOutputArguments(operation_Retrieved.Entity.OutputVariables);
                     SetInvocationResult(idShortPath, invocationRequest.RequestId, ref invocationResponse);
 
                     int timeout = DEFAULT_TIMEOUT;
@@ -344,7 +395,9 @@ namespace BaSyx.API.ServiceProvider
                             try
                             {
                                 invocationResponse.ExecutionState = ExecutionState.Running;
-                                return await methodHandler.Invoke(operation_Retrieved.Entity, invocationRequest.InputArguments, invocationResponse.InOutputArguments, invocationResponse.OutputArguments, cancellationTokenSource.Token);                                                              
+                                return await methodHandler
+                                .Invoke(operation_Retrieved.Entity, checkedInputArguments.Entity, invocationResponse.InOutputArguments, invocationResponse.OutputArguments, cancellationTokenSource.Token)
+                                .ConfigureAwait(false);                                                              
                             }
                             catch (Exception e)
                             {
@@ -353,7 +406,7 @@ namespace BaSyx.API.ServiceProvider
                             }
                         }, cancellationTokenSource.Token);
 
-                        if (await Task.WhenAny(runner, Task.Delay(timeout, cancellationTokenSource.Token)) == runner)
+                        if (await Task.WhenAny(runner, Task.Delay(timeout, cancellationTokenSource.Token)).ConfigureAwait(false) == runner)
                         {
                             cancellationTokenSource.Cancel();
                             invocationResponse.Success = runner.Result.Success;
