@@ -288,6 +288,14 @@ namespace BaSyx.API.ServiceProvider
         {
             try
             {
+                if(inputArguments == null)
+                {
+                    if(operation.InputVariables.Count == 0)
+                        return new Result<IOperationVariableSet>(true, new OperationVariableSet());
+                    else
+                        return new Result<IOperationVariableSet>(false, new ErrorMessage("InputArgument are null but there are expected input variables"));
+                }
+
                 IOperationVariableSet checkedInputArguments = new OperationVariableSet();
                 foreach (var inputArgument in inputArguments)
                 {
