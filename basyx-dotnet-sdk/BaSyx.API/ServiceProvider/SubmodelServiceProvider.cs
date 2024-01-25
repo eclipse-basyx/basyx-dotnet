@@ -323,6 +323,10 @@ namespace BaSyx.API.ServiceProvider
                             checkedInputArguments.Add(newInArg);
                         }
                     }
+                    else
+                    {
+                        checkedInputArguments.Add(inputArgument);
+                    }
                 }
                 return new Result<IOperationVariableSet>(true, checkedInputArguments);
             }
