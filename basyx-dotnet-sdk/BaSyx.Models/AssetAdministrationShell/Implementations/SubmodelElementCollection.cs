@@ -49,7 +49,7 @@ namespace BaSyx.Models.AdminShell
         [IgnoreDataMember, JsonIgnore]
         public bool IsRoot => Value.IsRoot;
         [IgnoreDataMember, JsonIgnore]
-        public IElementContainer<ISubmodelElement> ParentContainer { get => this; set { } }
+        public IElementContainer<ISubmodelElement> ParentContainer { get => Value.ParentContainer; set { Value.ParentContainer = value; } }
         [IgnoreDataMember, JsonIgnore]
         public int Count => Value.Count;
         [IgnoreDataMember, JsonIgnore]
