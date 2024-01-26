@@ -32,9 +32,6 @@ namespace BaSyx.Clients.AdminShell.Http
         IAssetAdministrationShellClient
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<AssetAdministrationShellHttpClient>();
-        
-        public static bool USE_HTTPS = true;
-
         private bool _standalone;
 
         public IEndpoint Endpoint { get; }
@@ -57,23 +54,23 @@ namespace BaSyx.Clients.AdminShell.Http
             string endpointAddress = endpoint.ToString();
             Endpoint = new Endpoint(endpointAddress.RemoveFromEnd(AssetAdministrationShellRoutes.AAS), InterfaceName.AssetAdministrationShellInterface);
         }
-        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, bool standalone = true) : this(aasDescriptor, null, standalone)
+        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, bool standalone = true, bool preferHttps = true) : this(aasDescriptor, null, standalone, preferHttps)
         { }
 
-        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, HttpMessageHandler messageHandler, bool standalone = true) : this(messageHandler, standalone)
+        public AssetAdministrationShellHttpClient(IAssetAdministrationShellDescriptor aasDescriptor, HttpMessageHandler messageHandler, bool standalone = true, bool preferHttps = true) : this(messageHandler, standalone)
         {
             aasDescriptor = aasDescriptor ?? throw new ArgumentNullException(nameof(aasDescriptor));
-            IEnumerable<HttpProtocol> httpEndpoints = aasDescriptor.Endpoints?.OfType<HttpProtocol>();
-            HttpProtocol httpEndpoint = null;
-            if (USE_HTTPS)
-                httpEndpoint = httpEndpoints?.FirstOrDefault(p => p.EndpointProtocol == Uri.UriSchemeHttps);
+            IEndpoint httpEndpoint = null;
+            if (preferHttps)
+                httpEndpoint = aasDescriptor.Endpoints?.FirstOrDefault(p => p.ProtocolInformation?.EndpointProtocol == Uri.UriSchemeHttps);
             if (httpEndpoint == null)
-                httpEndpoint = httpEndpoints?.FirstOrDefault(p => p.EndpointProtocol == Uri.UriSchemeHttp);
+                httpEndpoint = aasDescriptor.Endpoints?.FirstOrDefault(p => p.ProtocolInformation?.EndpointProtocol == Uri.UriSchemeHttp);
 
-            if (httpEndpoint == null || string.IsNullOrEmpty(httpEndpoint.EndpointAddress))
+            if (httpEndpoint == null || string.IsNullOrEmpty(httpEndpoint.ProtocolInformation?.EndpointAddress))
                 throw new Exception("There is no http endpoint for instantiating a client");
 
-            Endpoint = new Endpoint(httpEndpoint.EndpointAddress.RemoveFromEnd(AssetAdministrationShellRoutes.AAS), InterfaceName.AssetAdministrationShellInterface);
+            Endpoint = new Endpoint(httpEndpoint.ProtocolInformation.EndpointAddress.RemoveFromEnd(AssetAdministrationShellRoutes.AAS), 
+                InterfaceName.AssetAdministrationShellInterface);
         }
 
         public Uri GetPath(string requestPath = null, Identifier id = null, string idShortPath = null)

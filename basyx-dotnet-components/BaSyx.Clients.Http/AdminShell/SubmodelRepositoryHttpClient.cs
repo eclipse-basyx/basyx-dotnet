@@ -32,8 +32,6 @@ namespace BaSyx.Clients.AdminShell.Http
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<SubmodelRepositoryHttpClient>();
 
-        public static bool USE_HTTPS = true;
-
         public IEndpoint Endpoint { get; }
 
         private SubmodelRepositoryHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
@@ -53,23 +51,23 @@ namespace BaSyx.Clients.AdminShell.Http
             string endpointAddress = endpoint.ToString();
             Endpoint = new Endpoint(endpointAddress.RemoveFromEnd(SubmodelRepositoryRoutes.SUBMODELS), InterfaceName.SubmodelRepositoryInterface);
         }
-        public SubmodelRepositoryHttpClient(ISubmodelRepositoryDescriptor submodelRepoDescriptor) : this(submodelRepoDescriptor, null)
+        public SubmodelRepositoryHttpClient(ISubmodelRepositoryDescriptor submodelRepoDescriptor, bool preferHttps = true) : this(submodelRepoDescriptor, null, preferHttps)
         { }
 
-        public SubmodelRepositoryHttpClient(ISubmodelRepositoryDescriptor submodelRepoDescriptor, HttpMessageHandler messageHandler) : this(messageHandler)
+        public SubmodelRepositoryHttpClient(ISubmodelRepositoryDescriptor submodelRepoDescriptor, HttpMessageHandler messageHandler, bool preferHttps = true) : this(messageHandler)
         {
             submodelRepoDescriptor = submodelRepoDescriptor ?? throw new ArgumentNullException(nameof(submodelRepoDescriptor));
-            IEnumerable<HttpProtocol> httpEndpoints = submodelRepoDescriptor.Endpoints?.OfType<HttpProtocol>();
-            HttpProtocol httpEndpoint = null;
-            if (USE_HTTPS)
-                httpEndpoint = httpEndpoints?.FirstOrDefault(p => p.EndpointProtocol == Uri.UriSchemeHttps);
+            IEndpoint httpEndpoint = null;
+            if (preferHttps)
+                httpEndpoint = submodelRepoDescriptor.Endpoints?.FirstOrDefault(p => p.ProtocolInformation?.EndpointProtocol == Uri.UriSchemeHttps);
             if (httpEndpoint == null)
-                httpEndpoint = httpEndpoints?.FirstOrDefault(p => p.EndpointProtocol == Uri.UriSchemeHttp);
+                httpEndpoint = submodelRepoDescriptor.Endpoints?.FirstOrDefault(p => p.ProtocolInformation?.EndpointProtocol == Uri.UriSchemeHttp);
 
-            if (httpEndpoint == null || string.IsNullOrEmpty(httpEndpoint.EndpointAddress))
+            if (httpEndpoint == null || string.IsNullOrEmpty(httpEndpoint.ProtocolInformation?.EndpointAddress))
                 throw new Exception("There is no http endpoint for instantiating a client");
-            
-            Endpoint = new Endpoint(httpEndpoint.EndpointAddress.RemoveFromEnd(SubmodelRepositoryRoutes.SUBMODELS), InterfaceName.SubmodelRepositoryInterface);
+
+            Endpoint = new Endpoint(httpEndpoint.ProtocolInformation.EndpointAddress.RemoveFromEnd(SubmodelRepositoryRoutes.SUBMODELS),
+                InterfaceName.SubmodelRepositoryInterface);           
         }
 
         public Uri GetPath(string requestPath, Identifier id = null, string idShortPath = null)
