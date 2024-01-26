@@ -14,7 +14,7 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <PackageIcon>basyxlogo.png</PackageIcon>
     <IsPackable>true</IsPackable>
-    <Version>2.0.2</Version>
+    <Version>2.0.3</Version>
   </PropertyGroup> 
 
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-sdk\')">
