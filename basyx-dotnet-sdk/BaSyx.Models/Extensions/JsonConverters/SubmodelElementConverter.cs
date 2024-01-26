@@ -544,6 +544,30 @@ namespace BaSyx.Models.Extensions
                         writer.WriteString("typeValueListElement", sml.TypeValueListElement.Name);
                     if (sml.ValueTypeListElement != null)
                         writer.WriteString("valueTypeListElement", sml.ValueTypeListElement.ToString());
+
+                    writer.WritePropertyName("value");
+                    writer.WriteStartArray();
+                    if (sml.Value?.Count > 0)
+                    {
+                        foreach (var element in sml.Value)
+                        {
+                            JsonSerializer.Serialize(writer, element, options);
+                        }
+                    }
+                    writer.WriteEndArray();
+                    break;
+                case ModelTypes.SubmodelElementCollection:
+                    var smc = (SubmodelElementCollection)value;
+                    writer.WritePropertyName("value");
+                    writer.WriteStartArray();
+                    if(smc.Value?.Count > 0)
+                    {
+                        foreach (var element in smc.Value)
+                        {
+                            JsonSerializer.Serialize(writer, element, options);
+                        }
+                    }                    
+                    writer.WriteEndArray();                  
                     break;
                 default:
                     break;
