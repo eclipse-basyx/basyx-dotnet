@@ -6,13 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="RegistryClientSettings.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="RegistryClientSettings.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="RegistryClientSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
