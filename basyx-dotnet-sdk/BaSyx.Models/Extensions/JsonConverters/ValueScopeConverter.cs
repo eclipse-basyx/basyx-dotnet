@@ -32,6 +32,11 @@ namespace BaSyx.Models.Extensions
                 string value = reader.GetString();
                 return new PropertyValue(new ElementValue(value, typeof(string)));
             }
+            else if (reader.TokenType == JsonTokenType.True ||  reader.TokenType == JsonTokenType.False)
+            {
+				bool value = reader.GetBoolean();
+				return new PropertyValue(new ElementValue(value, typeof(bool)));
+			}
             return null;
         }
 
