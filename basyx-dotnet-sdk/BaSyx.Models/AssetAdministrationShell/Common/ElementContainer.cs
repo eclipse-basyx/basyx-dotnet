@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -78,6 +79,14 @@ namespace BaSyx.Models.AdminShell
                 else
                     return default;
             }
+            set
+            {
+                if (i < this.Count())
+                {
+                    _children[i] = new ElementContainer<TElement>(Parent, value, null);
+					OnUpdated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, value, ChangedEventType.Updated));
+				}
+			}
         }
 
         public TElement this[string idShortPath]
@@ -90,6 +99,22 @@ namespace BaSyx.Models.AdminShell
                 else 
                     return default;
             }
+            set
+            {
+				if (HasChild(idShortPath))
+				{
+					int index = _children.FindIndex(c => c.IdShort == idShortPath);
+					if (index != -1)
+					{
+						if (value is IElementContainer<TElement> containerElement)
+							_children[index] = containerElement;
+						else
+							_children[index] = new ElementContainer<TElement>(Parent, value, this);
+
+						OnUpdated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, value, ChangedEventType.Updated));
+					}
+				}
+			}
         }
 
         public IEnumerable<TElement> Values
@@ -449,14 +474,21 @@ namespace BaSyx.Models.AdminShell
                 return this.Create(element);
             else
             {
-                var child = GetChild(idShortPath);
-                if (child != null)
+                if (HasChild(idShortPath))
                 {
-                    child.Value = element;
-                    OnUpdated?.Invoke(this, new ElementContainerEventArgs<TElement>(child.ParentContainer, element, ChangedEventType.Updated));
-                    return new Result<TElement>(true, element);
+                    int index = _children.FindIndex(c => c.IdShort == idShortPath);
+                    if (index != -1)
+                    {
+                        if(element is IElementContainer<TElement> containerElement)
+                            _children[index] = containerElement;
+                        else
+							_children[index] = new ElementContainer<TElement>(Parent, element, this);
+
+						OnUpdated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Updated));
+                        return new Result<TElement>(true, element);
+                    }
                 }
-                return new Result<TElement>(false, new NotFoundMessage());
+                return new Result<TElement>(false, new NotFoundMessage($"Element {idShortPath} not found"));
             }
         }
 

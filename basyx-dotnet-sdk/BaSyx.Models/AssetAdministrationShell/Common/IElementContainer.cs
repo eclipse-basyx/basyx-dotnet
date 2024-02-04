@@ -71,8 +71,8 @@ namespace BaSyx.Models.AdminShell
 
     public interface IElementContainer<TElement> : ICrudContainer<string, TElement> where TElement : IReferable, IModelElement
     {
-        TElement this[int i] { get; }
-        TElement this[string idShort] { get; }
+        TElement this[int i] { get; set; }
+        TElement this[string idShort] { get; set; }
 
         event EventHandler<ElementContainerEventArgs<TElement>> OnCreated;
         event EventHandler<ElementContainerEventArgs<TElement>> OnUpdated;
@@ -87,7 +87,7 @@ namespace BaSyx.Models.AdminShell
 
         [JsonIgnore]
         IReferable Parent { get; set; }
-        TElement Value { get; set; }
+        TElement Value { get; }
         string Path { get; set; }
         string IdShort { get; }
         bool IsRoot { get; }

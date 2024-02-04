@@ -25,7 +25,8 @@ namespace BaSyx.Models.AdminShell
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.SubmodelElementList;
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        public new IElementContainer<ISubmodelElement> Value { get; set; }
+        public new IElementContainer<ISubmodelElement> Value { get => _value; set => _value.AddRange(value); }
+        
         public bool OrderRelevant { get; set; }
         public IReference SemanticIdListElement { get; set; }
         public ModelType TypeValueListElement { get; set; }
@@ -37,19 +38,7 @@ namespace BaSyx.Models.AdminShell
         [IgnoreDataMember, JsonIgnore]
         public IEnumerable<ISubmodelElement> Values => Value.Values;
         [IgnoreDataMember, JsonIgnore]
-        ISubmodelElement IElementContainer<ISubmodelElement>.Value { get => this; set { } }
-        [IgnoreDataMember, JsonIgnore]
-        public string Path
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Value.Path))
-                    return IdShort;
-                else
-                    return Value.Path;
-            }
-            set { Value.Path = value; }
-        }
+        ISubmodelElement IElementContainer<ISubmodelElement>.Value { get => this; }
         [IgnoreDataMember, JsonIgnore]
         public bool IsRoot => Value.IsRoot;
         [IgnoreDataMember, JsonIgnore]
@@ -58,15 +47,31 @@ namespace BaSyx.Models.AdminShell
         public int Count => Value.Count;
         [IgnoreDataMember, JsonIgnore]
         public bool IsReadOnly => Value.IsReadOnly;     
-        [IgnoreDataMember, JsonIgnore]
-        public ISubmodelElement this[string idShort] => Value[idShort];
-        [IgnoreDataMember, JsonIgnore]
-        public ISubmodelElement this[int i] => Value[i];
 
-        public SubmodelElementList(string idShort) : base(idShort) 
+        [IgnoreDataMember, JsonIgnore]
+        public ISubmodelElement this[string idShort] { get => Value[idShort]; set => Value[idShort] = value; }
+        [IgnoreDataMember, JsonIgnore]
+        public ISubmodelElement this[int i] { get => Value[i]; set => Value[i] = value; }
+
+		[IgnoreDataMember, JsonIgnore]
+		public string Path
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(Value.Path))
+					return IdShort;
+				else
+					return Value.Path;
+			}
+			set { Value.Path = value; }
+		}
+
+		private readonly IElementContainer<ISubmodelElement> _value;
+
+		public SubmodelElementList(string idShort) : base(idShort) 
         {
-            Value = new ElementContainer<ISubmodelElement>(this.Parent, this, null);
-        }
+			_value = new ElementContainer<ISubmodelElement>(this.Parent, this, null);
+		}
 
         public event EventHandler<ElementContainerEventArgs<ISubmodelElement>> OnCreated
         {
