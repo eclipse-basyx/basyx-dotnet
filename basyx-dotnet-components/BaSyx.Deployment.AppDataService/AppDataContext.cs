@@ -11,6 +11,7 @@
 using BaSyx.API.Interfaces;
 using BaSyx.API.ServiceProvider;
 using BaSyx.Utils.Settings;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -30,11 +31,14 @@ namespace BaSyx.Deployment.AppDataService
         private Dictionary<Type, IAssetAdministrationShellServiceProvider> AdminShellServices { get; set; }
         private IAssetAdministrationShellRegistryInterface Registry { get; set; }
 
+        private IServiceCollection Services { get; set; }
+
         public AppDataContext()
         {
             Settings = new Dictionary<string, Settings>();
             Files= new Dictionary<string, string>();
             AdminShellServices = new Dictionary<Type, IAssetAdministrationShellServiceProvider>();
+            Services = new ServiceCollection();
         }
 
         public void AddRegistry(IAssetAdministrationShellRegistryInterface registry)
@@ -47,12 +51,23 @@ namespace BaSyx.Deployment.AppDataService
             return Registry; 
         }
 
-        public void AddService<T>(T service) where T : IAssetAdministrationShellServiceProvider
+        public void AddService<T>(T instance) where T : class
+        {
+            Services.AddSingleton<T>(instance);
+        }
+
+		public T GetService<T>() where T : class
+		{
+            var provider = Services.BuildServiceProvider();
+            return provider.GetService<T>();
+		}
+
+		public void AddAdminShellService<T>(T service) where T : IAssetAdministrationShellServiceProvider
         {
             AdminShellServices.TryAdd(typeof(T), service);                
         }
 
-        public T GetService<T>() where T : IAssetAdministrationShellServiceProvider
+        public T GetAdminShellService<T>() where T : IAssetAdministrationShellServiceProvider
         {
             if (AdminShellServices.TryGetValue(typeof(T), out var service))
                 return (T)service;
