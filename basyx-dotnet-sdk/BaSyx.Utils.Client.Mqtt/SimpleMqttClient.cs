@@ -109,6 +109,14 @@ namespace BaSyx.Utils.Client.Mqtt
             }
         }
 
+        public bool IsSubscribed(string topic)
+        {
+            if (msgReceivedHandler.ContainsKey(topic))
+                return true;
+            else
+                return false;
+        }
+
         public void SetDefaultQualityOfServiceLevel(byte qos)
         {
             DEFAULT_QOS_LEVEL = qos;
@@ -150,16 +158,21 @@ namespace BaSyx.Utils.Client.Mqtt
                 .WithTopicFilter(topic, level)
                 .Build();
 
-            msgReceivedHandler.TryAdd(topic, messageReceivedHandler);
-
-            var result = await mqttClient.SubscribeAsync(options, CancellationToken.None).ConfigureAwait(false);
-
-            foreach (var item in result.Items)
+            bool added = msgReceivedHandler.TryAdd(topic, messageReceivedHandler);
+            if (added)
             {
-                if ((int)item.ResultCode > DEFAULT_QOS_LEVEL)
-                    return new Result(false, new Message(MessageType.Error, "Unable to subscribe topic " + item.TopicFilter.Topic, Enum.GetName(typeof(MqttSubscribeReasonCode), item.ResultCode)));
+                var result = await mqttClient.SubscribeAsync(options, CancellationToken.None).ConfigureAwait(false);
+
+                foreach (var item in result.Items)
+                {
+                    if ((int)item.ResultCode > DEFAULT_QOS_LEVEL)
+                        return new Result(false, new Message(MessageType.Error, "Unable to subscribe topic " + item.TopicFilter.Topic, Enum.GetName(typeof(MqttSubscribeReasonCode), item.ResultCode)));
+                }
             }
-            return new Result(true);
+            else
+				logger.LogInformation($"Already subscribed to topic {topic}");
+
+			return new Result(true);
         }
 
         public async Task<IResult> UnsubscribeAsync(string topic)
