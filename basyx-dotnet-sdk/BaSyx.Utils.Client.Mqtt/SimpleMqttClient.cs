@@ -21,6 +21,7 @@ using MQTTnet.Protocol;
 using Microsoft.Extensions.Logging;
 using System.Security.Authentication;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace BaSyx.Utils.Client.Mqtt
 {
@@ -283,7 +284,9 @@ namespace BaSyx.Utils.Client.Mqtt
                     var result = await mqttClient.ConnectAsync(mqttOptions, CancellationToken.None).ConfigureAwait(false);
                     if (result.ResultCode == MqttClientConnectResultCode.Success)
                     {
-                        foreach (var handler in msgReceivedHandler)
+                        var tempHandler = CloneDictionary(msgReceivedHandler);
+						msgReceivedHandler.Clear();
+                        foreach (var handler in tempHandler)
                         {
                             _ = SubscribeAsync(handler.Key, handler.Value).ConfigureAwait(false);
                         }
@@ -300,7 +303,17 @@ namespace BaSyx.Utils.Client.Mqtt
             }
         }
 
-        protected virtual async void Dispose(bool disposing)
+		private static Dictionary<string, Action<IMessageReceivedEventArgs>> CloneDictionary(ConcurrentDictionary<string, Action<IMessageReceivedEventArgs>> source)
+		{
+			var target = new Dictionary<string, Action<IMessageReceivedEventArgs>>();
+			foreach (var kvp in source)
+			{
+				target.Add(kvp.Key, kvp.Value);
+			}
+			return target;
+		}
+
+		protected virtual async void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
