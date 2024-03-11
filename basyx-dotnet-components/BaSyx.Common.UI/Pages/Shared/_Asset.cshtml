@@ -9,7 +9,7 @@
             @await Html.PartialAsync("_Identifier", Model.GlobalAssetId)
             @if (ViewData.ContainsKey("Thumbnail") && ViewData["Thumbnail"] != null)
             {
-                string thumbnailSrc = ((IFileElement)ViewData["Thumbnail"]).Value;
+                string thumbnailSrc = ((Resource)ViewData["Thumbnail"]).Path;
                  <li class="list-group-item">
                     <div class="row justify-content-center align-items-center">
                         <img src="@("/files" + thumbnailSrc)" style="display:block; max-width:100%; height:auto" /> 
