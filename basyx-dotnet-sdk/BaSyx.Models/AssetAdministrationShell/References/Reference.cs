@@ -94,7 +94,7 @@ namespace BaSyx.Models.AdminShell
                 throw new ArgumentNullException(nameof(element));
 
             List<IKey> keys = new List<IKey>();
-
+            
             if (element is IIdentifiable identifiable)
             {
                 keys.Add(new Key(Key.GetKeyElementFromType(identifiable.GetType()), identifiable.Id));
@@ -107,7 +107,8 @@ namespace BaSyx.Models.AdminShell
                 keys.Add(new Key(Key.GetKeyElementFromType(referable.GetType()), referable.IdShort));
             }
 
-            Keys = keys;
+			Type = ReferenceType.ModelReference;
+			Keys = keys;
         }
     }
 }
