@@ -14,7 +14,9 @@ namespace BaSyx.Models.AdminShell
 {
     public enum ReferenceType
     {
-        [EnumMember(Value = "ExternalReference")]
+		[EnumMember(Value = "Undefined")]
+		Undefined,
+		[EnumMember(Value = "ExternalReference")]
         ExternalReference,
         [EnumMember(Value = "ModelReference")]
         ModelReference
