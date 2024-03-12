@@ -109,7 +109,10 @@ namespace BaSyx.Models.AdminShell
 
         internal DataObjectType(string name)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            if(string.IsNullOrEmpty(name)) 
+                throw new ArgumentNullException("name");
+            
+            Name = name.Replace("xs:", "");
         }
 
         public static DataObjectType GetDataObjectType(DataObjectTypes dataObjectTypeEnum)
@@ -122,7 +125,13 @@ namespace BaSyx.Models.AdminShell
 
         public static bool TryParse(string dataObjectTypeString, out DataObjectType dataObjectType)
         {
-            dataObjectTypeString = dataObjectTypeString.ToLowerFirstChar();
+            if (string.IsNullOrEmpty(dataObjectTypeString))
+            {
+                dataObjectType = DataObjectType.None;
+                return false;
+            }
+
+			dataObjectTypeString = dataObjectTypeString.Replace("xs:", "").ToLowerFirstChar();
             if (_dataObjectTypes.TryGetValue(dataObjectTypeString, out dataObjectType))
                 return true;
             else
@@ -131,7 +140,7 @@ namespace BaSyx.Models.AdminShell
 
         public override string ToString()
         {
-            return Name;
+            return "xs:" + Name;
         }
 
         public bool Equals(DataObjectType other)
@@ -212,7 +221,8 @@ namespace BaSyx.Models.AdminShell
             if (string.IsNullOrEmpty(dataObjectType))
                 return None;
 
-            return _dataObjectTypes[dataObjectType.ToLowerFirstChar()];
+            string type = dataObjectType.Replace("xs:", "").ToLowerFirstChar();
+			return _dataObjectTypes[type];
         }
     }
 }

@@ -46,7 +46,7 @@ namespace BaSyx.Models.AdminShell
 
         public override string ToString()
         {
-            return DataObjectType?.Name;
+            return DataObjectType?.ToString();
         }
 
         public static DataType GetDataTypeFromSystemType(Type type)
