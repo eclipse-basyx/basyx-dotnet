@@ -33,7 +33,7 @@ namespace BaSyx.Models.Export
         public static readonly char[] InvalidFileNameChars = GetInvalidFileNameChars();
         public static readonly Uri ORIGIN_URI = new Uri("/aasx/aasx-origin", UriKind.RelativeOrAbsolute);
 
-        private static readonly ILogger logger = LoggingExtentions.CreateLogger<AASX>();
+        private static readonly ILogger logger = LoggingExtentions.CreateLogger<AASX_V3_0>();
 
         public List<PackagePart> SupplementaryFiles { get; } = new List<PackagePart>();
 
@@ -41,7 +41,7 @@ namespace BaSyx.Models.Export
         private PackagePart originPart;
         private PackagePart specPart;
 
-        public AASX(Package aasxPackage)
+        public AASX_V3_0(Package aasxPackage)
         {
             _aasxPackage = aasxPackage ?? throw new ArgumentNullException(nameof(aasxPackage));
 
@@ -50,11 +50,11 @@ namespace BaSyx.Models.Export
             LoadSupplementaryFiles();
         }
 
-        public AASX(string aasxFilePath) 
+        public AASX_V3_0(string aasxFilePath) 
             : this(Package.Open(aasxFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read))
         { }
 
-        public AASX(string aasxFilePath, FileMode fileMode, FileAccess fileAccess, FileShare fileShare) 
+        public AASX_V3_0(string aasxFilePath, FileMode fileMode, FileAccess fileAccess, FileShare fileShare) 
             : this(Package.Open(aasxFilePath, fileMode, fileAccess, fileShare))
         { }
 
@@ -283,83 +283,53 @@ namespace BaSyx.Models.Export
             CopyFileToPackagePart(specPart, aasEnvironmentFilePath);
         }
 
-        public void AddEnvironment(Identifier aasId, AssetAdministrationShellEnvironment_V2_0 environment, ExportType exportType)
-        {
-            if (aasId == null)
-                throw new ArgumentNullException(nameof(aasId));
-            if (environment == null)
-                throw new ArgumentNullException(nameof(environment));
+        //public void AddEnvironment(Identifier aasId, AssetAdministrationShellEnvironment_V2_0 environment, ExportType exportType)
+        //{
+        //    if (aasId == null)
+        //        throw new ArgumentNullException(nameof(aasId));
+        //    if (environment == null)
+        //        throw new ArgumentNullException(nameof(environment));
 
-            string aasIdName = aasId.Id;
-            foreach (char invalidChar in InvalidFileNameChars)
-                aasIdName = aasIdName.Replace(invalidChar, '_');
+        //    string aasIdName = aasId.Id;
+        //    foreach (char invalidChar in InvalidFileNameChars)
+        //        aasIdName = aasIdName.Replace(invalidChar, '_');
 
-            string aasFilePath = AASX_FOLDER + "/" + aasIdName + "/" + aasIdName + ".aas." + exportType.ToString().ToLower();
+        //    string aasFilePath = AASX_FOLDER + "/" + aasIdName + "/" + aasIdName + ".aas." + exportType.ToString().ToLower();
 
-            Uri partUri = PackUriHelper.CreatePartUri(new Uri(aasFilePath, UriKind.RelativeOrAbsolute));
-            ClearRelationshipAndPartFromPackagePart(originPart, SPEC_RELATIONSHIP_TYPE, partUri);
+        //    Uri partUri = PackUriHelper.CreatePartUri(new Uri(aasFilePath, UriKind.RelativeOrAbsolute));
+        //    ClearRelationshipAndPartFromPackagePart(originPart, SPEC_RELATIONSHIP_TYPE, partUri);
 
-            specPart = _aasxPackage.CreatePart(partUri, GetContentType(aasFilePath), CompressionOption.Maximum);
-            originPart.CreateRelationship(specPart.Uri, TargetMode.Internal, SPEC_RELATIONSHIP_TYPE);
+        //    specPart = _aasxPackage.CreatePart(partUri, GetContentType(aasFilePath), CompressionOption.Maximum);
+        //    originPart.CreateRelationship(specPart.Uri, TargetMode.Internal, SPEC_RELATIONSHIP_TYPE);
 
-            string environmentTemp = Path.GetRandomFileName() + "." + exportType.ToString().ToLower();
-            environment.WriteEnvironment_V2_0(exportType, environmentTemp);
+        //    string environmentTemp = Path.GetRandomFileName() + "." + exportType.ToString().ToLower();
+        //    environment.WriteEnvironment_V3_0(exportType, environmentTemp);
 
-            CopyFileToPackagePart(specPart, environmentTemp);
+        //    CopyFileToPackagePart(specPart, environmentTemp);
 
-            File.Delete(environmentTemp);
-        }
+        //    File.Delete(environmentTemp);
+        //}
 
-        public AssetAdministrationShellEnvironment_V1_0 GetEnvironment_V1_0()
-        {
-            if(specPart?.Uri != null)
-            {
-                string specFilePath = specPart.Uri.ToString();
-                string extension = Path.GetExtension(specFilePath)?.ToLower();
-                AssetAdministrationShellEnvironment_V1_0 environment;
-                switch (extension)
-                {
-                    case ".json":
-                        {
-                            using (Stream file = specPart.GetStream(FileMode.Open, FileAccess.Read))
-                                environment = AssetAdministrationShellEnvironment_V1_0.ReadEnvironment_V1_0(file, ExportType.Json);
-                        }
-                        break;
-                    case ".xml":
-                        {
-                            using (Stream file = specPart.GetStream(FileMode.Open, FileAccess.Read))
-                                environment = AssetAdministrationShellEnvironment_V1_0.ReadEnvironment_V1_0(file, ExportType.Xml);
-                        }
-                        break;
-                    default:
-                        logger.LogError("Not supported file format: " + extension);
-                        environment = null;
-                        break;
-                }
-                return environment;
-            }
-            return null;
-        }
 
-        public AssetAdministrationShellEnvironment_V2_0 GetEnvironment_V2_0()
+        public AssetAdministrationShellEnvironment_V3_0 GetEnvironment_V3_0()
         {
             if (specPart?.Uri != null)
             {
                 string specFilePath = specPart.Uri.ToString();
                 string extension = Path.GetExtension(specFilePath)?.ToLower();
-                AssetAdministrationShellEnvironment_V2_0 environment;
+                AssetAdministrationShellEnvironment_V3_0 environment;
                 switch (extension)
                 {
                     case ".json":
                         {
                             using (Stream file = specPart.GetStream(FileMode.Open, FileAccess.Read))
-                                environment = AssetAdministrationShellEnvironment_V2_0.ReadEnvironment_V2_0(file, ExportType.Json);
+                                environment = AssetAdministrationShellEnvironment_V3_0.ReadEnvironment_V3_0(file, ExportType.Json);
                         }
                         break;
                     case ".xml":
                         {
                             using (Stream file = specPart.GetStream(FileMode.Open, FileAccess.Read))
-                                environment = AssetAdministrationShellEnvironment_V2_0.ReadEnvironment_V2_0(file, ExportType.Xml);
+                                environment = AssetAdministrationShellEnvironment_V3_0.ReadEnvironment_V3_0(file, ExportType.Xml);
                         }
                         break;
                     default:

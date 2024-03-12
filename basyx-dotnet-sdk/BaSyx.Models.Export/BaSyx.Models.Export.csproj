@@ -14,37 +14,13 @@
     <PackageIcon>basyxlogo.png</PackageIcon>
     <PackageTags>BaSys BaSyx Models Export</PackageTags>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="aas-spec-v2.0\Resources\**\*" />
+    <EmbeddedResource Include="aas-spec-v3.0\Resources\**\*" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="aas-spec-v3.0\**\*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="AASX_V3_0.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="aas-spec-v2.0\Resources\EnvironmentKeyType_V2_0.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="aas-spec-v3.0\Resources\AAS.xsd" />
-    <None Remove="aas-spec-v3.0\Resources\AAS_ABAC.xsd" />
-    <None Remove="aas-spec-v3.0\Resources\IEC61360.xsd" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="aas-spec-v3.0\Resources\AAS.xsd" />
-    <EmbeddedResource Include="aas-spec-v3.0\Resources\AAS_ABAC.xsd" />
-    <EmbeddedResource Include="aas-spec-v3.0\Resources\IEC61360.xsd" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
@@ -66,7 +42,6 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="AASX_V3_0.cs" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
