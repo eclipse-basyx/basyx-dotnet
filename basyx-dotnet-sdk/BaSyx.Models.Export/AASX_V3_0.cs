@@ -24,9 +24,9 @@ namespace BaSyx.Models.Export
         public const string ROOT_FOLDER = "/";
         public const string AASX_FOLDER = "/aasx";
 
-        public const string ORIGIN_RELATIONSHIP_TYPE = "http://www.admin-shell.io/aasx/relationships/aasx-origin";
-        public const string SPEC_RELATIONSHIP_TYPE = "http://www.admin-shell.io/aasx/relationships/aas-spec";
-        public const string SUPPLEMENTAL_RELATIONSHIP_TYPE = "http://www.admin-shell.io/aasx/relationships/aas-suppl";
+        public const string ORIGIN_RELATIONSHIP_TYPE = "http://admin-shell.io/aasx/relationships/aasx-origin";
+        public const string SPEC_RELATIONSHIP_TYPE = "http://admin-shell.io/aasx/relationships/aas-spec";
+        public const string SUPPLEMENTAL_RELATIONSHIP_TYPE = "http://admin-shell.io/aasx/relationships/aas-suppl";
         public const string THUMBNAIL_RELATIONSHIP_TYPE = "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail";
         public const string MIMETYPE = "application/asset-administration-shell-package";
 
@@ -67,8 +67,12 @@ namespace BaSyx.Models.Export
                 {
                     try
                     {
-                        PackagePart file = _aasxPackage.GetPart(relationship.TargetUri);
-                        SupplementaryFiles.Add(file);
+						var absoluteURI = PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri);
+						if (_aasxPackage.PartExists(absoluteURI))
+						{
+							PackagePart file = _aasxPackage.GetPart(absoluteURI);
+							SupplementaryFiles.Add(file);
+						}					
                     }
                     catch(Exception e)
                     {
@@ -83,7 +87,15 @@ namespace BaSyx.Models.Export
         private void LoadOrCreateOrigin()
         {
             PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(ORIGIN_RELATIONSHIP_TYPE);
-            originPart = relationships?.Where(r => r.TargetUri == ORIGIN_URI)?.Select(p => _aasxPackage.GetPart(p.TargetUri))?.FirstOrDefault();
+            foreach (var relationship in relationships)
+            {
+				var absoluteURI = PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri);
+                if (_aasxPackage.PartExists(absoluteURI))
+                {
+                    originPart = _aasxPackage.GetPart(absoluteURI);
+                    break;
+                }
+			}
             if(originPart == null)
             {
                 originPart = _aasxPackage.CreatePart(ORIGIN_URI, System.Net.Mime.MediaTypeNames.Text.Plain, CompressionOption.Maximum);
@@ -97,7 +109,15 @@ namespace BaSyx.Models.Export
             if(originPart != null)
             {
                 PackageRelationshipCollection relationships = originPart.GetRelationshipsByType(SPEC_RELATIONSHIP_TYPE);
-                specPart = relationships?.Select(s => _aasxPackage.GetPart(s.TargetUri))?.FirstOrDefault();
+				foreach (var relationship in relationships)
+				{
+					var absoluteURI = PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri);
+                    if (_aasxPackage.PartExists(absoluteURI))
+                    {
+                        specPart = _aasxPackage.GetPart(absoluteURI);
+                        break;
+                    }
+				}
             }
         }
 
@@ -167,38 +187,56 @@ namespace BaSyx.Models.Export
         /// <returns></returns>
         public Stream GetThumbnailAsStream()
         {
-            PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(THUMBNAIL_RELATIONSHIP_TYPE);
-            foreach (var relationship in relationships)
-            {
-                try
-                {
-                    PackagePart packagePart = _aasxPackage.GetPart(relationship.TargetUri);
-                    if(packagePart != null)
-                        return packagePart.GetStream(FileMode.Open, FileAccess.Read);
-                }
-                catch (Exception e)
-                {
-                    logger.LogWarning(e, "Relationsship " + relationship.TargetUri + "does not exist in the package - Exception: " + e.Message);
-                    continue;
-                }
-            }
-            return null;
-        }
+			PackagePart packagePart;
+			PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(THUMBNAIL_RELATIONSHIP_TYPE);
+			foreach (var relationship in relationships)
+			{
+				try
+				{
+					if (relationship.SourceUri.ToString() == "/")
+					{
+						var absoluteURI = PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri);
+						if (_aasxPackage.PartExists(absoluteURI))
+						{
+							packagePart = _aasxPackage.GetPart(absoluteURI);
+							if (packagePart != null)
+								return packagePart.GetStream(FileMode.Open, FileAccess.Read); ;
+						}
+						break;
+					}
+				}
+				catch (Exception e)
+				{
+					logger.LogWarning(e, "Relationsship " + relationship.TargetUri + "does not exist in the package - Exception: " + e.Message);
+					continue;
+				}
+			}
+			return null;
+		}
         /// <summary>
         /// Returns the AASX-Package thumbnail as PackagePart
         /// </summary>
         /// <returns></returns>
         public PackagePart GetThumbnailAsPackagePart()
         {
-            PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(THUMBNAIL_RELATIONSHIP_TYPE);
+			PackagePart packagePart;
+			PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(THUMBNAIL_RELATIONSHIP_TYPE);
             foreach (var relationship in relationships)
             {
                 try
                 {
-                    PackagePart packagePart = _aasxPackage.GetPart(relationship.TargetUri);
-                    if (packagePart != null)
-                        return packagePart;
-                }
+					if (relationship.SourceUri.ToString() == "/")
+					{
+						var absoluteURI = PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri);
+						if (_aasxPackage.PartExists(absoluteURI))
+						{
+							packagePart = _aasxPackage.GetPart(absoluteURI);
+							if (packagePart != null)
+								return packagePart;
+						}
+						break;
+					}
+				}
                 catch (Exception e)
                 {
                     logger.LogWarning(e, "Relationsship " + relationship.TargetUri + "does not exist in the package - Exception: " + e.Message);
