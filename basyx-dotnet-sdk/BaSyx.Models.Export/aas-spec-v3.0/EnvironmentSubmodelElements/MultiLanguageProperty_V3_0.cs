@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace BaSyx.Models.Export
@@ -18,8 +19,8 @@ namespace BaSyx.Models.Export
     {
         [JsonProperty("value")]
         [XmlArray("value")]
-        [XmlArrayItem("langString")]
-        public LangStringSet Value { get; set; }
+        [XmlArrayItem("langStringTextType")]
+        public List<EnvironmentLangString_V3_0> Value { get; set; }
 
         [JsonProperty("valueId")]
         [XmlElement("valueId")]
