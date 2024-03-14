@@ -25,25 +25,18 @@ namespace BaSyx.Models.Export
 		[XmlArrayItem(ElementName = "file", Type = typeof(File_V3_0))]
 		[XmlArrayItem(ElementName = "blob", Type = typeof(Blob_V3_0))]
 		[XmlArrayItem(ElementName = "capability", Type = typeof(Capability_V3_0))]
-		[XmlArrayItem(ElementName = "event", Type = typeof(Event_V3_0))]
-		[XmlArrayItem(ElementName = "basicEvent", Type = typeof(BasicEvent_V3_0))]
+		[XmlArrayItem(ElementName = "eventElement", Type = typeof(EventElement_V3_0))]
+		[XmlArrayItem(ElementName = "basicEventElement", Type = typeof(BasicEventElement_V3_0))]
 		[XmlArrayItem(ElementName = "range", Type = typeof(Range_V3_0))]
 		[XmlArrayItem(ElementName = "entity", Type = typeof(Entity_V3_0))]
 		[XmlArrayItem(ElementName = "referenceElement", Type = typeof(ReferenceElement_V3_0))]
 		[XmlArrayItem(ElementName = "annotatedRelationshipElement", Type = typeof(AnnotatedRelationshipElement_V3_0))]
 		[XmlArrayItem(ElementName = "relationshipElement", Type = typeof(RelationshipElement_V3_0))]
 		[XmlArrayItem(ElementName = "submodelElementCollection", Type = typeof(SubmodelElementCollection_V3_0))]
+		[XmlArrayItem(ElementName = "submodelElementList", Type = typeof(SubmodelElementList_V3_0))]
 		[XmlArrayItem(ElementName = "operation", Type = typeof(Operation_V3_0))]
 		public List<SubmodelElementType_V3_0> Value { get; set; }
-
-        [JsonProperty("ordered")]
-        [XmlElement("ordered")]
-        public bool Ordered { get; set; }
-
-        [JsonProperty("allowDuplicates")]
-        [XmlElement("allowDuplicates")]
-        public bool AllowDuplicates { get; set; }
-              
+             
         [JsonProperty("modelType")]
         [XmlIgnore]
         public override ModelType ModelType => ModelType.SubmodelElementCollection;

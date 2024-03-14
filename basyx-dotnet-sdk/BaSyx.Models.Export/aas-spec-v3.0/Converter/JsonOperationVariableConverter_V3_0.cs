@@ -89,7 +89,7 @@ namespace BaSyx.Models.Export.Converter
             else if (modelType == ModelType.MultiLanguageProperty)
                 return new MultiLanguageProperty_V3_0();
             else if (modelType == ModelType.BasicEventElement)
-                return new BasicEvent_V3_0();
+                return new BasicEventElement_V3_0();
             else if (modelType == ModelType.AnnotatedRelationshipElement)
                 return new AnnotatedRelationshipElement_V3_0();
             else if (modelType == ModelType.Range)
@@ -97,7 +97,7 @@ namespace BaSyx.Models.Export.Converter
             else if (modelType == ModelType.Operation)
                 return new Operation_V3_0();
             else if (modelType == ModelType.EventElement)
-                return new Event_V3_0();
+                return new EventElement_V3_0();
             else if (modelType == ModelType.Blob)
                 return new Blob_V3_0();
             else if (modelType == ModelType.File)

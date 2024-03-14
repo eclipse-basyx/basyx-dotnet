@@ -12,19 +12,14 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Models.Export.Converter;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace BaSyx.Models.Export
 {
-    public class Entity_V3_0 : SubmodelElementType_V3_0
+    public class SubmodelElementList_V3_0 : SubmodelElementType_V3_0, IModelType
     {
-        [JsonProperty("entityType")]
-        [XmlElement("entityType")]
-        public EnvironmentEntityType_V3_0 EntityType { get; set; }
-
-        [JsonProperty("statements"), JsonConverter(typeof(JsonSubmodelElementConverter_V3_0))]
-        [XmlArray("statements")]
+        [JsonProperty("value"), JsonConverter(typeof(JsonSubmodelElementConverter_V3_0))]
+        [XmlArray("value")]
 		[XmlArrayItem(ElementName = "property", Type = typeof(Property_V3_0))]
 		[XmlArrayItem(ElementName = "multiLanguageProperty", Type = typeof(MultiLanguageProperty_V3_0))]
 		[XmlArrayItem(ElementName = "file", Type = typeof(File_V3_0))]
@@ -40,25 +35,39 @@ namespace BaSyx.Models.Export
 		[XmlArrayItem(ElementName = "submodelElementCollection", Type = typeof(SubmodelElementCollection_V3_0))]
 		[XmlArrayItem(ElementName = "submodelElementList", Type = typeof(SubmodelElementList_V3_0))]
 		[XmlArrayItem(ElementName = "operation", Type = typeof(Operation_V3_0))]
-		public List<SubmodelElementType_V3_0> Statements { get; set; }
+		public List<SubmodelElementType_V3_0> Value { get; set; }
 
-        [JsonProperty("asset")]
-        [XmlElement("assetRef")]
-        public EnvironmentReference_V3_0 AssetReference { get; set; }
+        [JsonProperty("orderRelevant")]
+        [XmlElement("orderRelevant")]
+        public bool OrderRelevant { get; set; }
 
-        [JsonProperty("modelType")]
+		[JsonProperty("semanticIdListElement")]
+		[XmlElement("semanticIdListElement")]
+		public EnvironmentReference_V3_0 SemanticIdListElement { get; set; }
+
+		[JsonProperty("typeValueListElement")]
+		[XmlElement("typeValueListElement")]
+		public string TypeValueListElement { get; set; }
+
+		[JsonProperty("valueTypeListElement")]
+		[XmlElement("valueTypeListElement")]
+		public string ValueTypeListElement { get; set; }
+
+		[JsonProperty("modelType")]
         [XmlIgnore]
-        public override ModelType ModelType => ModelType.Entity;
+        public override ModelType ModelType => ModelType.SubmodelElementList;
 
-        public Entity_V3_0() { }
-        public Entity_V3_0(SubmodelElementType_V3_0 submodelElementType) : base(submodelElementType) { }
-    }
+        public SubmodelElementList_V3_0() { }
+        public SubmodelElementList_V3_0(SubmodelElementType_V3_0 submodelElementType) : base(submodelElementType) { }
 
-    public enum EnvironmentEntityType_V3_0
-    {
-        [EnumMember(Value = "CoManagedEntity")]
-        CoManagedEntity,
-        [EnumMember(Value = "SelfManagedEntity")]
-        SelfManagedEntity
+        /*
+        public bool ShouldSerializeValue()
+        {
+            if (Value == null || Value.Count == 0)
+                return false;
+            else
+                return true;
+        }
+        */
     }
 }

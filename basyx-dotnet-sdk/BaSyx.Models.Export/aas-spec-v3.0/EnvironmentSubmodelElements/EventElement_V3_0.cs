@@ -14,17 +14,13 @@ using System.Xml.Serialization;
 
 namespace BaSyx.Models.Export
 {
-    public class BasicEvent_V3_0 : Event_V3_0
+    public class EventElement_V3_0 : SubmodelElementType_V3_0
     {
-        [JsonProperty("observed")]
-        [XmlElement("observed")]
-        public EnvironmentReference_V3_0 Observed { get; set; }
-
         [JsonProperty("modelType")]
         [XmlIgnore]
-        public override ModelType ModelType => ModelType.BasicEvent;
+        public override ModelType ModelType => ModelType.Event;
 
-        public BasicEvent_V3_0() { }
-        public BasicEvent_V3_0(SubmodelElementType_V3_0 submodelElementType) : base(submodelElementType) { }
+        public EventElement_V3_0() { }
+        public EventElement_V3_0(SubmodelElementType_V3_0 submodelElementType) : base(submodelElementType) { }
     }
 }

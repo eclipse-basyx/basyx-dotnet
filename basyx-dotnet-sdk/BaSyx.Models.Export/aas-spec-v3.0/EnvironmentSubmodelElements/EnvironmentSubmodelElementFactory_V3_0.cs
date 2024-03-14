@@ -127,13 +127,13 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
                 submodelElement = referenceElement;
             }
-            else if (modelType == ModelType.Capability && envSubmodelElement is Event_V3_0 castedCapability)
+            else if (modelType == ModelType.Capability && envSubmodelElement is Capability_V3_0 castedCapability)
             {
                 Capability capability = new Capability(castedCapability.IdShort);
 
                 submodelElement = capability;
             }
-            else if (modelType == ModelType.BasicEvent && envSubmodelElement is BasicEvent_V3_0 castedBasicEvent)
+            else if (modelType == ModelType.BasicEvent && envSubmodelElement is BasicEventElement_V3_0 castedBasicEvent)
             {
                 BasicEventElement basicEvent = new BasicEventElement(castedBasicEvent.IdShort)
                 {
@@ -197,9 +197,32 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
                 submodelElement = submodelElementCollection;
             }
+			else if (modelType == ModelType.SubmodelElementList && envSubmodelElement is SubmodelElementList_V3_0 castedSubmodelElementList)
+			{
+				SubmodelElementList submodelElementList = new SubmodelElementList(castedSubmodelElementList.IdShort);
+
+				if (castedSubmodelElementList.Value?.Count > 0)
+				{
+					submodelElementList.Value = new ElementContainer<ISubmodelElement>(parent, submodelElementList, null);
+					List<ISubmodelElement> smElements = castedSubmodelElementList.Value?.ConvertAll(c => c?.ToSubmodelElement(conceptDescriptions, parent));
+					foreach (var smElement in smElements)
+						submodelElementList.Value.Create(smElement);
+				}
+
+                submodelElementList.OrderRelevant = castedSubmodelElementList.OrderRelevant;
+                submodelElementList.SemanticIdListElement = castedSubmodelElementList.SemanticIdListElement?.ToReference_V3_0();
+
+                if(!string.IsNullOrEmpty(castedSubmodelElementList.TypeValueListElement))
+                    submodelElementList.TypeValueListElement = castedSubmodelElementList.TypeValueListElement;
+
+				if (!string.IsNullOrEmpty(castedSubmodelElementList.ValueTypeListElement))
+					submodelElementList.ValueTypeListElement = castedSubmodelElementList.ValueTypeListElement;
+
+				submodelElement = submodelElementList;
+			}
 
 
-            if (submodelElement == null)
+			if (submodelElement == null)
                 return null;
 
             submodelElement.Category = envSubmodelElement.Category;
