@@ -16,9 +16,9 @@ namespace BaSyx.Models.Export
 {
     public class File_V3_0 : SubmodelElementType_V3_0
     {
-        [JsonProperty("mimeType")]
-        [XmlElement("mimeType")]
-        public string MimeType { get; set; }
+        [JsonProperty("contentType")]
+        [XmlElement("contentType")]
+        public string ContentType { get; set; }
 
         [JsonProperty("value")]
         [XmlElement("value")]
