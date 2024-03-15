@@ -95,7 +95,7 @@ namespace BaSyx.Models.Export
         {
             PackageRelationshipCollection relationships = _aasxPackage.GetRelationshipsByType(ORIGIN_RELATIONSHIP_TYPE);
             if (relationships == null || relationships.Count() == 0)
-                relationships = specPart.GetRelationshipsByType(ORIGIN_RELATIONSHIP_TYPE_WWW);
+                relationships = _aasxPackage.GetRelationshipsByType(ORIGIN_RELATIONSHIP_TYPE_WWW);
             foreach (var relationship in relationships)
             {
 				var absoluteURI = PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri);
@@ -119,7 +119,7 @@ namespace BaSyx.Models.Export
             {
                 PackageRelationshipCollection relationships = originPart.GetRelationshipsByType(SPEC_RELATIONSHIP_TYPE);
                 if (relationships == null || relationships.Count() == 0)
-                    relationships = specPart.GetRelationshipsByType(SPEC_RELATIONSHIP_TYPE_WWW);
+                    relationships = originPart.GetRelationshipsByType(SPEC_RELATIONSHIP_TYPE_WWW);
                 foreach (var relationship in relationships)
 				{
 					var absoluteURI = PackUriHelper.ResolvePartUri(relationship.SourceUri, relationship.TargetUri);
