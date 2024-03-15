@@ -115,7 +115,7 @@
                             {
                                 <iframe src="@result.AbsoluteUri" style="min-height:500px; width:100%"></iframe>
                             }
-                            else if (file.ContentType.StartsWith("image"))
+                            else if (!string.IsNullOrEmpty(file.ContentType) && file.ContentType.StartsWith("image"))
                             {
                                 <img src="@("/files" + separator + path)" style="display:block; max-width:100%; height:auto" />
                             }
