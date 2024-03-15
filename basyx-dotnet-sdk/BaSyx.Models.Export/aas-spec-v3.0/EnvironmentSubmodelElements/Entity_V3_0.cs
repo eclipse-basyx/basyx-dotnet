@@ -23,6 +23,15 @@ namespace BaSyx.Models.Export
         [XmlElement("entityType")]
         public EnvironmentEntityType_V3_0 EntityType { get; set; }
 
+        [JsonProperty("globalAssetId")]
+        [XmlElement("globalAssetId")]
+        public string GlobalAssetId { get; set; }
+
+        [JsonProperty("specificAssetIds")]
+        [XmlArray("specificAssetIds")]
+        [XmlArrayItem("specificAssetId")]
+        public List<EnvironmentSpecificAssetId_V3_0> SpecificAssetIds { get; set; } = new List<EnvironmentSpecificAssetId_V3_0>();
+
         [JsonProperty("statements"), JsonConverter(typeof(JsonSubmodelElementConverter_V3_0))]
         [XmlArray("statements")]
 		[XmlArrayItem(ElementName = "property", Type = typeof(Property_V3_0))]
@@ -41,10 +50,6 @@ namespace BaSyx.Models.Export
 		[XmlArrayItem(ElementName = "submodelElementList", Type = typeof(SubmodelElementList_V3_0))]
 		[XmlArrayItem(ElementName = "operation", Type = typeof(Operation_V3_0))]
 		public List<SubmodelElementType_V3_0> Statements { get; set; }
-
-        [JsonProperty("asset")]
-        [XmlElement("assetRef")]
-        public EnvironmentReference_V3_0 AssetReference { get; set; }
 
         [JsonProperty("modelType")]
         [XmlIgnore]

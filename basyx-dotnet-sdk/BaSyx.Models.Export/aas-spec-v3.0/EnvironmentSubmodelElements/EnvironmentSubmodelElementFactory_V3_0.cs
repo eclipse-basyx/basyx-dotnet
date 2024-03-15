@@ -147,7 +147,15 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 Entity entity = new Entity(castedEntity.IdShort)
                 {
                     EntityType = (EntityType)Enum.Parse(typeof(EntityType), castedEntity.EntityType.ToString()),
-                    GlobalAssetId = castedEntity.AssetReference?.Keys?.First()?.Value
+                    GlobalAssetId = castedEntity.GlobalAssetId,
+                    SpecificAssetIds = castedEntity.SpecificAssetIds?.ConvertAll(s => new SpecificAssetId()
+                    {
+                        ExternalSubjectId = s.ExternalSubjectId?.ToReference_V3_0(),
+                        Name = s.Name,
+                        SemanticId = s.SemanticId?.ToReference_V3_0(),
+                        SupplementalSemanticIds = s.SupplementalSemanticIds?.ConvertAll(r => r.ToReference_V3_0()),
+                        Value = s.Value
+                    })
                 };
 
                 var statements = castedEntity.Statements?.ConvertAll(c => c.ToSubmodelElement(conceptDescriptions, parent));

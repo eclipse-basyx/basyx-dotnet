@@ -267,7 +267,15 @@ namespace BaSyx.Models.Export
 					AssetInformation = new AssetInformation()
 					{
 						GlobalAssetId = envAssetAdministrationShell.AssetInformation?.GlobalAssetId,
-						AssetKind = envAssetAdministrationShell.AssetInformation.AssetKind
+						AssetKind = envAssetAdministrationShell.AssetInformation.AssetKind,
+                        SpecificAssetIds = envAssetAdministrationShell.AssetInformation.SpecificAssetIds?.ConvertAll(s => new SpecificAssetId()
+                        {
+                            ExternalSubjectId = s.ExternalSubjectId?.ToReference_V3_0(),
+                            Name = s.Name,
+                            SemanticId = s.SemanticId?.ToReference_V3_0(),
+                            SupplementalSemanticIds = s.SupplementalSemanticIds?.ConvertAll(r => r.ToReference_V3_0()),
+                            Value = s.Value
+                        })
 					},
 				    Category = envAssetAdministrationShell.Category,
                     DerivedFrom = envAssetAdministrationShell.DerivedFrom?.ToReference_V3_0<IAssetAdministrationShell>()

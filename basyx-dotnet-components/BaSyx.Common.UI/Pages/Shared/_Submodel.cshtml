@@ -129,6 +129,14 @@ ShowSubmodelElement = @<text>@{
                         }
                     </div>
                 }
+                else if (submodelElement is IEntity entity){
+                    <div class="card-body">
+                        @foreach (var child in entity.Statements.Children)
+                        {
+                            @ShowSubmodelElement(new List<object>() { item[0], child })
+                        }
+                    </div>
+                }
                 else if (submodelElement is IBasicEventElement eventElement)
                 {
                     <div class="card-body">

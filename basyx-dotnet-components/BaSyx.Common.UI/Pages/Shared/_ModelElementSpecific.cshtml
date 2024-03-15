@@ -130,7 +130,21 @@
             }
             return;
         case KeyType.Entity:
-            break;
+            {
+                IEntity entity = Model.Cast<IEntity>();
+                if (entity == null)
+                {
+                    return;
+                }
+                @await Html.PartialAsync("_Identifier", entity.GlobalAssetId)
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2"><b>EntityType</b></div>
+                        <div class="col-sm-10">@entity.EntityType.ToString()</div>
+                    </div>
+                </li>
+            }
+            return;
         case KeyType.BasicEventElement:
             {
                 IBasicEventElement eventable = Model.Cast<IBasicEventElement>();
