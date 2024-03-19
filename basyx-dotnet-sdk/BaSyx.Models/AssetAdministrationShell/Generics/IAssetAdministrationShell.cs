@@ -10,6 +10,7 @@
 *******************************************************************************/
 using System.Runtime.Serialization;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -42,7 +43,7 @@ namespace BaSyx.Models.AdminShell
         /// The asset of an Asset Administration Shell is typically described by one or more submodels.
         /// Temporarily, no submodel might be assigned to the Asset Administration Shell.
         /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "submodels")]
+        [JsonPropertyName("submodels"), DataMember(EmitDefaultValue = false, IsRequired = false, Name = "submodels")]
         IEnumerable<IReference<ISubmodel>> SubmodelReferences { get; }
     }
 }
