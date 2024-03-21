@@ -353,6 +353,40 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_GetSubmodelElementByPath(submodelIdentifier, idShortPath, level, extent);
         }
 
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetFileByPath(string, string)"/>
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "ShellRepo_GetFileByPath")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 405)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_GetFileByPath(string aasIdentifier, string submodelIdentifier, string idShortPath)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetFileByPath(submodelIdentifier, idShortPath);
+        }
+
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutFileByPath(string, string, IFormFile)"/>
+        [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "ShellRepo_PutFileByPath")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 405)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public async Task<IActionResult> ShellRepo_PutFileByPath(string aasIdentifier, string submodelIdentifier, string idShortPath, IFormFile file)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return await service.Shell_PutFileByPath(submodelIdentifier, idShortPath, file);
+        }
+
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(string, string, RequestLevel)"/>
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "ShellRepo_GetSubmodelElementByPathValueOnly")]
         [Produces("application/json")]
@@ -426,7 +460,7 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_DeleteSubmodelElementByPath(submodelIdentifier, idShortPath);
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_UploadFileContentByIdShort(string, string, IFormFile)"/>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutFileByPath(string, string, IFormFile)"/>
         [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "ShellRepo_UploadFileContentByIdShort")]
         [Produces("application/json")]
         [Consumes("multipart/form-data")]
@@ -439,7 +473,7 @@ namespace BaSyx.API.Http.Controllers
                 return result;
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return await service.Shell_UploadFileContentByIdShort(submodelIdentifier, idShortPath, file);
+            return await service.Shell_PutFileByPath(submodelIdentifier, idShortPath, file);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_InvokeOperationSync(string, string, InvocationRequest)"/>

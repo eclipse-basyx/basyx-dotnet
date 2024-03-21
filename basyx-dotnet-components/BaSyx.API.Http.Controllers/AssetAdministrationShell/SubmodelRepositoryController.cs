@@ -300,6 +300,23 @@ namespace BaSyx.API.Http.Controllers
             return service.DeleteSubmodelElementByPath(idShortPath);
         }
 
+        /// <inheritdoc cref="SubmodelController.GetFileByPath(string)"/>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "SubmodelRepo_GetFileByPath")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 405)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_GetFileByPath(string submodelIdentifier, string idShortPath)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetFileByPath(idShortPath);
+        }
+
         /// <inheritdoc cref="SubmodelController.PutFileByPath(string, IFormFile)"/>
         [HttpPost(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "SubmodelRepo_UploadFileContentByIdShort")]
         [Produces("application/json")]

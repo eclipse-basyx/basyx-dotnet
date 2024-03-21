@@ -24,6 +24,8 @@ using System.Text.Json.Nodes;
 using System.Text.Json;
 using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.FileSystem;
+using Microsoft.Extensions.FileProviders;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -739,7 +741,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
         /// <returns></returns>
         /// <response code="200">Requested file</response>
-        [HttpPost(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "GetFileByPath")]
+        [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "GetFileByPath")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
@@ -748,7 +750,24 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetFileByPath(string idShortPath)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+
+            var fileElementRetrieved = serviceProvider.RetrieveSubmodelElement(idShortPath);
+            if (!fileElementRetrieved.Success || fileElementRetrieved.Entity == null)
+                return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
+
+            IFileElement fileElement = fileElementRetrieved.Entity.Cast<IFileElement>();
+            string fileName = fileElement.Value.TrimStart('/');
+
+            IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
+            var file = fileProvider.GetFileInfo(fileName);
+            if (file.Exists)
+            {
+                if (MimeTypes.TryGetContentType(file.PhysicalPath, out string contentType))
+                    return File(file.CreateReadStream(), contentType);
+            }
+            return NotFound();
         }
 
 

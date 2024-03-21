@@ -138,7 +138,10 @@
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_DeleteSubmodelElementByPath(System.String,System.String)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.DeleteSubmodelElementByPath(System.String)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_UploadFileContentByIdShort(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetFileByPath(System.String,System.String)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetFileByPath(System.String)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutFileByPath(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutFileByPath(System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_InvokeOperationSync(System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)">
@@ -249,6 +252,12 @@
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelElementByPath(System.String,System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetFileByPath(System.String,System.String,System.String)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetFileByPath(System.String,System.String)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PutFileByPath(System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutFileByPath(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelElementByPathValueOnly(System.String,System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
         </member>
@@ -265,7 +274,7 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_DeleteSubmodelElementByPath(System.String,System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_UploadFileContentByIdShort(System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_UploadFileContentByIdShort(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutFileByPath(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_InvokeOperationSync(System.String,System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_InvokeOperationSync(System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)"/>
@@ -725,6 +734,9 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_DeleteSubmodelElementByPath(System.String,System.String)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.DeleteSubmodelElementByPath(System.String)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetFileByPath(System.String,System.String)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetFileByPath(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_UploadFileContentByIdShort(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutFileByPath(System.String,Microsoft.AspNetCore.Http.IFormFile)"/>

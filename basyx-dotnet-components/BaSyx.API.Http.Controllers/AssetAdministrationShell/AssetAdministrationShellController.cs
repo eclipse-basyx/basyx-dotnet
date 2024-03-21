@@ -463,14 +463,31 @@ namespace BaSyx.API.Http.Controllers
             return service.DeleteSubmodelElementByPath(idShortPath);
         }
 
+        /// <inheritdoc cref="SubmodelController.GetFileByPath(string)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "Shell_GetFileByPath")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 405)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetFileByPath(string submodelIdentifier, string idShortPath)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetFileByPath(idShortPath);
+        }
+
         /// <inheritdoc cref="SubmodelController.PutFileByPath(string, IFormFile)"/>
-        [HttpPost(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "Shell_UploadFileContentByIdShort")]
+        [HttpPut(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "Shell_PutFileByPath")]
         [Produces("application/json")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 404)]
-        public async Task<IActionResult> Shell_UploadFileContentByIdShort(string submodelIdentifier, string idShortPath, IFormFile file)
+        public async Task<IActionResult> Shell_PutFileByPath(string submodelIdentifier, string idShortPath, IFormFile file)
         {
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
