@@ -112,9 +112,11 @@ namespace BaSyx.Common.UI.Swagger
                 services.AddSwaggerGen(c =>
                 {
                     c.SwaggerDoc("v1", info);
-                    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
-					string xmlPath = null;
+					// this operations resolves path conflicts (double route path). Commented out for better error detection (swagger fails).
+                    // c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
+                    string xmlPath = null;
 
                     // Set the comments path for the Swagger JSON and UI.
                     if (string.IsNullOrEmpty(xmlCommentFilePath))
