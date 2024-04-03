@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Servers.AdminShell.Http;
 using BaSyx.Common.UI;
+using BaSyx.Common.UI.Swagger;
 using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings;
 using NLog;
@@ -60,7 +61,7 @@ namespace HelloAssetAdministrationShell
             server.SetServiceProvider(shellService);
 
             //Add Swagger documentation and UI
-            //server.AddSwagger(Interface.AssetAdministrationShell);
+            server.AddSwagger(Interface.AssetAdministrationShell);
 
             //Add BaSyx Web UI
             server.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
