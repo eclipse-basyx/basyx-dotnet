@@ -41,6 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Deployment.AppDataService\BaSyx.Deployment.AppDataService.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.InMemory\BaSyx.Registry.ReferenceImpl.InMemory.csproj" />
     <ProjectReference Include="..\SimpleAssetAdministrationShell\SimpleAssetAdministrationShell.csproj" />
   </ItemGroup>
 
