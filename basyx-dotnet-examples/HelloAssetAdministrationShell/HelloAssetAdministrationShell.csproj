@@ -37,6 +37,10 @@
     <PackageReference Include="BaSyx.Deployment.AppDataService" Version="*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI.Swagger\BaSyx.Common.UI.Swagger.csproj" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <None Update="Content\**\*">
