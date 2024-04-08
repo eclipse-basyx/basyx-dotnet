@@ -39,7 +39,7 @@ namespace BaSyx.API.Http
         /// <summary>
         /// Submodels References by id
         /// </summary>
-        public const string AAS_SUBMODEL_REFS_BYID = "/submodel-refs{submodelIdentifier}/";
+        public const string AAS_SUBMODEL_REFS_BYID = "/submodel-refs/{submodelIdentifier}";
         /// <summary>
         /// Submodels by id
         /// </summary>
