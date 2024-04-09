@@ -9,24 +9,24 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
-using BaSyx.Models.Connectivity;
-using BaSyx.Models.Extensions;
-using BaSyx.Utils.Client;
 using BaSyx.Utils.ResultHandling;
-using BaSyx.Utils.ResultHandling.ResultTypes;
-using Microsoft.Extensions.Logging;
-using System;
+using BaSyx.Utils.Client;
 using System.Collections.Generic;
-using System.Text.Json;
-using System.Threading;
+using System;
+using BaSyx.Models.Connectivity;
 using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Extensions.Logging;
+using BaSyx.Models.Extensions;
+using System.Text.Json;
+using BaSyx.Utils.ResultHandling.ResultTypes;
 
 namespace BaSyx.API.ServiceProvider
 {
-	/// <summary>
-	/// Reference implementation of ISubmodelServiceProvider interface
-	/// </summary>
-	public class SubmodelServiceProvider : ISubmodelServiceProvider
+    /// <summary>
+    /// Reference implementation of ISubmodelServiceProvider interface
+    /// </summary>
+    public class SubmodelServiceProvider : ISubmodelServiceProvider
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<SubmodelServiceProvider>();
 
@@ -603,38 +603,7 @@ namespace BaSyx.API.ServiceProvider
             if (_submodel == null)
                 return new Result<ISubmodel>(false, new ErrorMessage("The service provider's inner Submodel object is null"));
 
-            // if level is 'Core', 
-			if (level == RequestLevel.Core)
-				// return only the meta data
-				return new Result<ISubmodel>(true, _submodel.GetMetadata());
-
-			// if extent is 'WithoutBlobValue'
-			if (extent == RequestExtent.WithoutBlobValue)
-			{
-                // clone the submodel
-				var submodelClone = _submodel.Clone();
-                // and remove the blob values from the clone
-				RemoveBlobValues(submodelClone.SubmodelElements);
-				return new Result<ISubmodel>(true, submodelClone);
-            }
-
-			return new Result<ISubmodel>(true, _submodel);
-        }
-
-		/// <summary>
-		/// Remove the values from all blob elements recursively from a given list of submodel elements
-		/// </summary>
-		/// <param name="submodelElements">given list of</param>
-		private void RemoveBlobValues(IEnumerable<ISubmodelElement> submodelElements)
-        {
-	        foreach (var submodelElement in submodelElements)
-	        {
-		        if (submodelElement is Blob blob)
-			        blob.SetValue("");
-
-		        if (submodelElement is SubmodelElementCollection collection)
-			        RemoveBlobValues(collection);
-	        }
+            return new Result<ISubmodel>(true, _submodel);
         }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
