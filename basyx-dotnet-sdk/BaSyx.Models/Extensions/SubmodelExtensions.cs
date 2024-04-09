@@ -72,70 +72,22 @@ namespace BaSyx.Models.Extensions
             return submodel;
         }
 
-		/// <summary>
-		/// Returns a clone of a given submodel
-		/// </summary>
-		/// <param name="submodel">Given submodel</param>
-		/// <returns>Cloned submodel</returns>
-		public static ISubmodel Clone(this ISubmodel submodel)
-        {
-            // use existing function to clone (without submodel elements)
-	        var submodelClone = GetMetadata(submodel) as Submodel;
-
-			// backup case if casting went wrong
-			if (submodelClone == null)
-                return null;
-
-            // clone the submodel elements
-            var submodelElementsClone = CloneSubElements(submodel.SubmodelElements);
-            submodelElementsClone.Parent = submodelClone;
-            submodelClone.SubmodelElements = submodelElementsClone;
-
-			return submodelClone;
-        }
-
-		/// <summary>
-		/// Clone a list of given submodel elements
-		/// </summary>
-		/// <param name="submodelodelElements">Given submodel elements</param>
-		/// <returns>List of cloned submodel elements</returns>
-		private static IElementContainer<ISubmodelElement> CloneSubElements(IElementContainer<ISubmodelElement> submodelodelElements)
-        {
-	        IElementContainer<ISubmodelElement> submodelElementsClone = new ElementContainer<ISubmodelElement>();
-
-			foreach (var submodelElement in submodelodelElements)
-	        {
-				// copy each submodel element
-				var submodelElementClone = submodelElement.Clone() as ISubmodelElement;
-
-                // backup case if casting went wrong
-                if (submodelElementClone == null)
-                    continue;
-
-                submodelElementsClone.Add(submodelElementClone);
-			}
-
-            return submodelElementsClone;
-        }
-
         public static ISubmodel GetMetadata(this ISubmodel submodel)
         {
-            var trimmedSubModel = new Submodel(submodel.Id, submodel.Id)
-            {
-	            Administration = submodel.Administration,
-	            Category = submodel.Category,
-	            Kind = submodel.Kind,
-	            SemanticId = submodel.SemanticId,
-	            SupplementalSemanticIds = submodel.SupplementalSemanticIds,
-	            Qualifiers = submodel.Qualifiers,
-	            Description = submodel.Description,
-	            DisplayName = submodel.DisplayName,
-	            EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications,
-	            ConceptDescription = submodel.ConceptDescription,
-	            SubmodelElements = null
-            };
+            Submodel trimmedSubmodel = new Submodel(submodel.Id, submodel.Id);
+            trimmedSubmodel.Administration = submodel.Administration;
+            trimmedSubmodel.Category = submodel.Category;
+            trimmedSubmodel.Kind = submodel.Kind;
+            trimmedSubmodel.SemanticId  = submodel.SemanticId;
+            trimmedSubmodel.SupplementalSemanticIds = submodel.SupplementalSemanticIds;
+            trimmedSubmodel.Qualifiers = submodel.Qualifiers;
+            trimmedSubmodel.Description = submodel.Description;
+            trimmedSubmodel.DisplayName = submodel.DisplayName;
+            trimmedSubmodel.EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications;
+            trimmedSubmodel.ConceptDescription = submodel.ConceptDescription;
+            trimmedSubmodel.SubmodelElements = null;
 
-			return trimmedSubModel;
+            return trimmedSubmodel;
         }
 
         #endregion
