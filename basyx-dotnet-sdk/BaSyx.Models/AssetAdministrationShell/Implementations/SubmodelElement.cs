@@ -121,6 +121,11 @@ namespace BaSyx.Models.AdminShell
         {
             await Set(this, value).ConfigureAwait(false);
         }
+
+        public object Clone()
+        {
+	        return (ISubmodelElement)MemberwiseClone();
+        }
     }
 
     [DataContract]
