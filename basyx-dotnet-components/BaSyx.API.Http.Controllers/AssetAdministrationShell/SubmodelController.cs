@@ -765,7 +765,10 @@ namespace BaSyx.API.Http.Controllers
             if (file.Exists)
             {
                 if (MimeTypes.TryGetContentType(file.PhysicalPath, out string contentType))
-                    return File(file.CreateReadStream(), contentType);
+                {
+                    string fileNameOnly = Path.GetFileName(file.PhysicalPath);
+                    return File(file.CreateReadStream(), contentType, fileNameOnly);
+                }                   
             }
             return NotFound();
         }
