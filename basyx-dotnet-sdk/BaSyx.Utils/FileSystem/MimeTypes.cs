@@ -150,6 +150,7 @@ namespace BaSyx.Utils.FileSystem
             { ".js", "application/javascript" },
             { ".json", "application/json" },
             { ".jsx", "text/jscript" },
+            { ".jt", "model/jt" },
             { ".key", "application/pkcs8" },
             { ".latex", "application/x-latex" },
             { ".lit", "application/x-ms-reader" },
