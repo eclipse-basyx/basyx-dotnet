@@ -140,8 +140,8 @@ namespace BaSyx.Models.AdminShell
 
         public override string ToString()
         {
-            return "xs:" + Name;
-        }
+            return Name; //Todo: "xs:" + 
+		}
 
         public bool Equals(DataObjectType other)
         {
