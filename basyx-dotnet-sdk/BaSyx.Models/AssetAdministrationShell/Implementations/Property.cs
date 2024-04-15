@@ -48,7 +48,7 @@ namespace BaSyx.Models.AdminShell
                 else if (value.GetType() == valueType.SystemType)
                     _valueScope = new PropertyValue(new ElementValue(value, valueType));
                 else
-                    _valueScope = new PropertyValue(new ElementValue(ElementValue.ToObject(value, valueType.SystemType)));
+                    _valueScope = new PropertyValue(new ElementValue(ElementValue.ToObject(value, valueType.SystemType), valueType.SystemType));
             }
         }
     }
