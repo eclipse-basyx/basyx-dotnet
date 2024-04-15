@@ -69,6 +69,25 @@ namespace BaSyx.Deployment.AppDataService
         /// </summary>
         public string BaseStorageLocation => GetBaseStorageLocation(_settings.ServiceConfig.AppName);
 
+        public static string HostingEnvironment
+        {
+            get
+            {
+                string environmentName;
+
+#if DEBUG
+                environmentName = "development";
+#elif STAGING
+                environmentName = "staging";
+#elif AZURE
+                environmentName = "azure";
+#elif RELEASE
+                environmentName = "production";
+#endif
+                return environmentName;
+            }
+        }
+
         public Action LoadAction { get; set; }
         public Action SaveAction { get; set; }
         public IConfiguration Configuration { get; private set; }
