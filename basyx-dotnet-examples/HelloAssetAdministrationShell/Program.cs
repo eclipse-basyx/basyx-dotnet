@@ -16,6 +16,8 @@ using NLog;
 using NLog.Web;
 using BaSyx.Deployment.AppDataService;
 using BaSyx.Registry.Client.Http;
+using System;
+using System.IO;
 
 namespace HelloAssetAdministrationShell
 {
@@ -99,6 +101,22 @@ namespace HelloAssetAdministrationShell
 
             //Run HTTP server
             server.Run();           
+        }
+
+        private static void RemoveElement()
+        {
+            string workflowPath = @"C:\Development\modelfab40\workflows";
+
+            string[] files = Directory.GetFiles(workflowPath, "*.bpmn");
+            foreach ( string file in files )
+            {
+                string content = File.ReadAllText(file);
+                //content = content.Replace("<camunda:outputParameter name=\"messages\">${messages}</camunda:outputParameter>\n", "");
+                //content = content.Replace("<camunda:outputParameter name=\"success\">${success}</camunda:outputParameter>\n", "");
+                //content = content.Replace("<camunda:inputParameter name=\"isParallel\">false</camunda:inputParameter>\n", "");
+                //content = content.Replace("<camunda:inputParameter name=\"isParallel\">true</camunda:inputParameter>\n", "");
+                File.WriteAllText(file, content);
+            }
         }
     }
 }

@@ -10,11 +10,13 @@
 *******************************************************************************/
 using BaSyx.API.ServiceProvider;
 using BaSyx.Models.AdminShell;
+using BaSyx.Models.Export;
 using BaSyx.Models.Extensions;
 using BaSyx.Models.Semantics;
 using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -40,6 +42,12 @@ namespace HelloAssetAdministrationShell
             assetIdentificationSubmodelProvider.BindTo(AssetAdministrationShell.Submodels["AssetIdentification"]);
             assetIdentificationSubmodelProvider.UseInMemorySubmodelElementHandler();
             this.RegisterSubmodelServiceProvider(AssetAdministrationShell.Submodels["AssetIdentification"].Id, assetIdentificationSubmodelProvider);
+
+            foreach(Submodel submodel in AssetAdministrationShell.Submodels)
+            {
+                var sp = submodel.CreateServiceProvider();
+                this.RegisterSubmodelServiceProvider(submodel.Id, sp);
+            }
         }
 
         private async Task HelloSubmodelElementSetHandler(ISubmodelElement submodelElement, ValueScope value)
@@ -68,16 +76,38 @@ namespace HelloAssetAdministrationShell
 
         public override IAssetAdministrationShell BuildAssetAdministrationShell()
         {
-            AssetAdministrationShell aas = new AssetAdministrationShell("HelloAAS", new BaSyxShellIdentifier("HelloAAS", "1.0.0"))
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset Administration Shell for starters") },
+            //string aasxFile = @"C:\temp\aasx\v3\aasx-999999100000400000000001337484.aasx";
+            //string aasxFile = @"C:\temp\aasx\v3\aasx-999999100000400000000002079408.aasx";
+            //string aasxFile = @"C:\temp\aasx\v3\HARTING_Smart-Connector-SmEC_V1.3.aasx";
+            //string aasxFile = @"C:\temp\aasx\v3\Rexroth_R901496427.aasx";
+            string aasxFile = @"C:\temp\aasx\v3\Special\SIEMENS_CPU1511_MLFB_6ES75111AL030AB0.aasx";
+			IAssetAdministrationShell aas;
+			try
+			{
+				using (AASX_V3_0 aasx = new AASX_V3_0(aasxFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+				{
+					AssetAdministrationShellEnvironment_V3_0 environment = aasx.GetEnvironment_V3_0();
+					aas = environment.AssetAdministrationShells.FirstOrDefault();
+					if (aas == null)
+						throw new Exception("Asset Administration Shell cannot be obtained from AASX-Package");
+				}
+			}
+			catch (Exception e)
+			{
+				
+				throw;
+			}
 
-                AssetInformation = new AssetInformation()
-                {                    
-                    AssetKind = AssetKind.Instance,
-                    GlobalAssetId = new BaSyxAssetIdentifier("HelloAsset", "1.0.0")
-                }
-            };
+			//AssetAdministrationShell aas = new AssetAdministrationShell("HelloAAS", new BaSyxShellIdentifier("HelloAAS", "1.0.0"))
+   //         {
+   //             Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset Administration Shell for starters") },
+
+   //             AssetInformation = new AssetInformation()
+   //             {                    
+   //                 AssetKind = AssetKind.Instance,
+   //                 GlobalAssetId = new BaSyxAssetIdentifier("HelloAsset", "1.0.0")
+   //             }
+   //         };
 
             Submodel helloSubmodel = new Submodel("HelloSubmodel", new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0"))
             {
