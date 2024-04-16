@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;Azure</Configurations>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <Authors>Constantin Ziesche</Authors>
     <Company>Bosch Rexroth AG</Company>

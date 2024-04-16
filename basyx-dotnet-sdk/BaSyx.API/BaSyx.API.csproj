@@ -13,7 +13,7 @@
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <PackageIcon>basyxlogo.png</PackageIcon>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;Azure</Configurations>
     <Version>2.0.3</Version>
   </PropertyGroup>
 
