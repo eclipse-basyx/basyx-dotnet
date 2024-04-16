@@ -723,7 +723,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">Requested submodel element in its ValueOnly representation</response>
-        [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.REFERENCE, Name = "GetSubmodelElementByPathPath")]
+        [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.PATH, Name = "GetSubmodelElementByPathPath")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
         [ProducesResponseType(typeof(Result), 400)]

@@ -23,16 +23,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BaSyx.Deployment.AppDataService;
+using BaSyx.Registry.ReferenceImpl.InMemory;
 
 namespace ComplexAssetAdministrationShellScenario
 {
     class Program
     {
         static RegistryHttpClient registryClient;
+        private static AppDataService AppDataService { get; set; }
         static async Task Main(string[] args)
         {
             await Task.Delay(5000);
-            registryClient = new RegistryHttpClient();
+            AppDataService = AppDataService.Create("adminshell", "appsettings.json", args);
+            RegistryClientSettings registryClientSettings = AppDataService.GetSettings<RegistryClientSettings>();
+            registryClient = new RegistryHttpClient(registryClientSettings);
             LoadScenario();
 
             Console.WriteLine("Press enter to quit...");
@@ -250,8 +255,8 @@ namespace ComplexAssetAdministrationShellScenario
             {
                 Urls = new List<string>()
                 {
-                    "http://localhost:4999",
-                    "https://localhost:4499"
+                    "http://localhost:3999",
+                    "https://localhost:3399"
                 },
                 Environment = "Development",
                 ContentPath = "Content"
@@ -259,8 +264,9 @@ namespace ComplexAssetAdministrationShellScenario
 
             RegistryHttpServer registryServer = new RegistryHttpServer(registrySettings);
             registryServer.WebHostBuilder.UseNLog();
-            FileBasedRegistry fileBasedRegistry = new FileBasedRegistry();
-            registryServer.SetRegistryProvider(fileBasedRegistry);
+            //FileBasedRegistry fileBasedRegistry = new FileBasedRegistry();
+            InMemoryRegistry inMemoryRegistry = new InMemoryRegistry();
+            registryServer.SetRegistryProvider(inMemoryRegistry);
             registryServer.AddBaSyxUI(PageNames.AssetAdministrationShellRegistryServer);
             registryServer.AddSwagger(Interface.AssetAdministrationShellRegistry);
             _ = registryServer.RunAsync();

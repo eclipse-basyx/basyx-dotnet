@@ -113,6 +113,9 @@ namespace BaSyx.Common.UI.Swagger
                 {
                     c.SwaggerDoc("v1", info);
 
+					// this operations resolves path conflicts (double route path). Commented out for better error detection (swagger fails).
+                    // c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
                     string xmlPath = null;
 
                     // Set the comments path for the Swagger JSON and UI.
@@ -137,9 +140,10 @@ namespace BaSyx.Common.UI.Swagger
             {
                 // Enable middleware to serve generated Swagger as a JSON endpoint.
                 app.UseSwagger();
+                app.UseDeveloperExceptionPage();
 
-                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-                app.UseSwaggerUI(c =>
+				// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+				app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", info.Title);
                 });
