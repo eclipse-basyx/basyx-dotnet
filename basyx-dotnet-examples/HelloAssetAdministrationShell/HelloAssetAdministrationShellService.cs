@@ -80,34 +80,34 @@ namespace HelloAssetAdministrationShell
             //string aasxFile = @"C:\temp\aasx\v3\aasx-999999100000400000000002079408.aasx";
             //string aasxFile = @"C:\temp\aasx\v3\HARTING_Smart-Connector-SmEC_V1.3.aasx";
             //string aasxFile = @"C:\temp\aasx\v3\Rexroth_R901496427.aasx";
-            string aasxFile = @"C:\temp\aasx\v3\Special\SIEMENS_CPU1511_MLFB_6ES75111AL030AB0.aasx";
-			IAssetAdministrationShell aas;
-			try
-			{
-				using (AASX_V3_0 aasx = new AASX_V3_0(aasxFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-				{
-					AssetAdministrationShellEnvironment_V3_0 environment = aasx.GetEnvironment_V3_0();
-					aas = environment.AssetAdministrationShells.FirstOrDefault();
-					if (aas == null)
-						throw new Exception("Asset Administration Shell cannot be obtained from AASX-Package");
-				}
-			}
-			catch (Exception e)
-			{
+   //         string aasxFile = @"C:\temp\aasx\v3\Special\SIEMENS_CPU1511_MLFB_6ES75111AL030AB0.aasx";
+			//IAssetAdministrationShell aas;
+			//try
+			//{
+			//	using (AASX_V3_0 aasx = new AASX_V3_0(aasxFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+			//	{
+			//		AssetAdministrationShellEnvironment_V3_0 environment = aasx.GetEnvironment_V3_0();
+			//		aas = environment.AssetAdministrationShells.FirstOrDefault();
+			//		if (aas == null)
+			//			throw new Exception("Asset Administration Shell cannot be obtained from AASX-Package");
+			//	}
+			//}
+			//catch (Exception e)
+			//{
 				
-				throw;
-			}
+			//	throw;
+			//}
 
-			//AssetAdministrationShell aas = new AssetAdministrationShell("HelloAAS", new BaSyxShellIdentifier("HelloAAS", "1.0.0"))
-   //         {
-   //             Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset Administration Shell for starters") },
+            AssetAdministrationShell aas = new AssetAdministrationShell("HelloAAS", new BaSyxShellIdentifier("HelloAAS", "1.0.0"))
+            {
+                Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset Administration Shell for starters") },
 
-   //             AssetInformation = new AssetInformation()
-   //             {                    
-   //                 AssetKind = AssetKind.Instance,
-   //                 GlobalAssetId = new BaSyxAssetIdentifier("HelloAsset", "1.0.0")
-   //             }
-   //         };
+                AssetInformation = new AssetInformation()
+                {
+                    AssetKind = AssetKind.Instance,
+                    GlobalAssetId = new BaSyxAssetIdentifier("HelloAsset", "1.0.0")
+                }
+            };
 
             Submodel helloSubmodel = new Submodel("HelloSubmodel", new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0"))
             {
@@ -223,6 +223,7 @@ namespace HelloAssetAdministrationShell
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary SubmodelElementList") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
+                    TypeValueListElement = ModelType.Property,
                     Value =
                     {
                         new Property<int>("MySubIntValue")
@@ -298,7 +299,7 @@ namespace HelloAssetAdministrationShell
                     },
                     InputVariables =
                     {
-                         new SubmodelElementList<byte>("Bytes")
+                         new SubmodelElementList<byte>("Bytes") { TypeValueListElement = ModelType.Property }
                     },
                     OutputVariables =
                     {
@@ -326,7 +327,7 @@ namespace HelloAssetAdministrationShell
                     },
                     OutputVariables =
                     {
-                          new SubmodelElementList<byte>("Bytes")
+                          new SubmodelElementList<byte>("Bytes") { TypeValueListElement = ModelType.Property }
                     },
                     OnMethodCalled = (op, inArgs, inoutArgs, outArgs, ct) =>
                     {
