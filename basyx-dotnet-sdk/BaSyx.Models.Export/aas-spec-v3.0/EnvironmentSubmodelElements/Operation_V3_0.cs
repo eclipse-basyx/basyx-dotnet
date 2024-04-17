@@ -18,16 +18,16 @@ namespace BaSyx.Models.Export
 {
     public class Operation_V3_0 : SubmodelElementType_V3_0
     {
-        [JsonProperty("inputVariable"), JsonConverter(typeof(JsonOperationVariableConverter_V3_0))]
-        [XmlElement(ElementName = "inputVariable")]
+        [JsonProperty("inputVariables"), JsonConverter(typeof(JsonOperationVariableConverter_V3_0))]
+        [XmlArray(ElementName = "inputVariables"), XmlArrayItem(ElementName = "operationVariable")]
         public List<OperationVariable_V3_0> InputVariables { get; set; }
 
-        [JsonProperty("outputVariable")]
-        [XmlElement(ElementName = "outputVariable"), JsonConverter(typeof(JsonOperationVariableConverter_V3_0))]
+        [JsonProperty("outputVariables")]
+        [XmlArray(ElementName = "outputVariables"), XmlArrayItem(ElementName = "operationVariable"), JsonConverter(typeof(JsonOperationVariableConverter_V3_0))]
         public List<OperationVariable_V3_0> OutputVariables { get; set; }
 
-        [JsonProperty("inoutputVariable")]
-        [XmlElement(ElementName = "inoutputVariable"), JsonConverter(typeof(JsonOperationVariableConverter_V3_0))]
+        [JsonProperty("inoutputVariables")]
+        [XmlArray(ElementName = "inoutputVariables"), XmlArrayItem(ElementName = "operationVariable"), JsonConverter(typeof(JsonOperationVariableConverter_V3_0))]
         public List<OperationVariable_V3_0> InOutputVariables { get; set; }
 
         [JsonProperty("modelType")]

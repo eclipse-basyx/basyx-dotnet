@@ -12,7 +12,6 @@
 using BaSyx.Models.AdminShell;
 using BaSyx.Models.Export.Converter;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -20,11 +19,6 @@ namespace BaSyx.Models.Export
 {
     public class SubmodelElementType_V3_0 : EnvironmentReferable_V3_0, IModelType
     {
-        [JsonProperty("kind")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        [XmlElement("kind")]
-        public ModelingKind Kind { get; set; }
-
         [JsonProperty("semanticId")]
         [XmlElement("semanticId")]
         public EnvironmentReference_V3_0 SemanticId { get; set; }
@@ -42,7 +36,6 @@ namespace BaSyx.Models.Export
             this.Category = submodelElementType.Category;
             this.Description = submodelElementType.Description;
             this.IdShort = submodelElementType.IdShort;
-            this.Kind = submodelElementType.Kind;
             this.Parent = submodelElementType.Parent;
             this.Qualifier = submodelElementType.Qualifier;
             this.SemanticId = submodelElementType.SemanticId;

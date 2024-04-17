@@ -57,6 +57,43 @@ namespace BaSyx.Models.Export.Converter
 
             DataSpecificationIEC61360 dataSpecification = new DataSpecificationIEC61360(content);
             return dataSpecification;
-        }    
+        }
+
+        public static EnvironmentDataSpecificationIEC61360_V3_0 ToEnvironmentDataSpecificationIEC61360_V3_0(this DataSpecificationIEC61360Content dataSpecificationContent)
+        {
+            if (dataSpecificationContent == null)
+                return null;
+
+            if (!Enum.TryParse<EnvironmentDataTypeIEC61360_V3_0>(dataSpecificationContent.DataType.ToString(), out EnvironmentDataTypeIEC61360_V3_0 dataType))
+                dataType = EnvironmentDataTypeIEC61360_V3_0.UNDEFINED;
+
+            EnvironmentDataSpecificationIEC61360_V3_0 environmentDataSpecification = new EnvironmentDataSpecificationIEC61360_V3_0()
+            {
+                DataType = dataType,
+                Definition = dataSpecificationContent.Definition?.ToEnvironmentLangStringSet(),
+                PreferredName = dataSpecificationContent.PreferredName?.ToEnvironmentLangStringSet(),
+                ShortName = dataSpecificationContent.ShortName?.ToEnvironmentLangStringSet(),
+                SourceOfDefinition = dataSpecificationContent.SourceOfDefinition,
+                Symbol = dataSpecificationContent.Symbol,
+                Unit = dataSpecificationContent.Unit,
+                UnitId = dataSpecificationContent.UnitId?.ToEnvironmentReference_V3_0(),
+                Value = dataSpecificationContent.Value,
+                ValueFormat = dataSpecificationContent.ValueFormat,
+                ValueList = dataSpecificationContent.ValueList?.ValueReferencePairs?.ConvertAll(c => new ValueReferencePair_V3_0()
+                {
+                    Value = c.Value,
+                    ValueId = c.ValueId?.ToEnvironmentReference_V3_0()
+                }),
+                LevelType = new EnvironmentLevelType_V3_0()
+                {
+                    Min = dataSpecificationContent.LevelType?.Min ?? false,
+                    Nom = dataSpecificationContent.LevelType?.Nom ?? false,
+                    Typ = dataSpecificationContent.LevelType?.Typ ?? false,
+                    Max = dataSpecificationContent.LevelType?.Max ?? false
+                }
+            };
+
+            return environmentDataSpecification;
+        }
     }
 }

@@ -43,7 +43,7 @@ namespace BaSyx.Models.Export.Converter
                         serializer.Populate(variable.CreateReader(), submodelElementType);
                         operationVariables.Add(new OperationVariable_V3_0()
                         {
-                            Value = submodelElementType
+                            Value = new OperationVariableValue_V3_0() { Value = submodelElementType }
 						});
                     }
                 }

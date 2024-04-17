@@ -13,6 +13,7 @@ using BaSyx.Models.Export.Converter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using Range = BaSyx.Models.AdminShell.Range;
 
 namespace BaSyx.Models.Export.EnvironmentSubmodelElements
@@ -174,17 +175,17 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                     InOutputVariables = new OperationVariableSet()
                 };
 
-                var operationInElements = castedOperation.InputVariables?.ConvertAll(c => c.Value?.ToSubmodelElement(conceptDescriptions, parent));
+                var operationInElements = castedOperation.InputVariables?.ConvertAll(c => c.Value?.Value?.ToSubmodelElement(conceptDescriptions, parent));
                 if(operationInElements?.Count > 0)
                     foreach (var element in operationInElements)
                         operation.InputVariables.Add(element);
                 
-                var operationOutElements = castedOperation.OutputVariables?.ConvertAll(c => c.Value?.ToSubmodelElement(conceptDescriptions, parent));
+                var operationOutElements = castedOperation.OutputVariables?.ConvertAll(c => c.Value?.Value?.ToSubmodelElement(conceptDescriptions, parent));
                 if (operationOutElements?.Count > 0)
                     foreach (var element in operationOutElements)
                         operation.OutputVariables.Add(element);
 
-                var operationInOutElements = castedOperation.InOutputVariables?.ConvertAll(c => c.Value?.ToSubmodelElement(conceptDescriptions, parent));
+                var operationInOutElements = castedOperation.InOutputVariables?.ConvertAll(c => c.Value?.Value?.ToSubmodelElement(conceptDescriptions, parent));
                 if (operationInOutElements?.Count > 0)
                     foreach (var element in operationInOutElements)
                         operation.InOutputVariables.Add(element);
@@ -237,7 +238,6 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             if(envSubmodelElement.Description?.Count  > 0)
                 submodelElement.Description = new LangStringSet(envSubmodelElement.Description.ConvertAll(l => new LangString(l.Language, l.Text)));
             submodelElement.IdShort = envSubmodelElement.IdShort;
-            submodelElement.Kind = envSubmodelElement.Kind;
             submodelElement.SemanticId = envSubmodelElement.SemanticId?.ToReference_V3_0();
             submodelElement.Qualifiers = ConvertToConstraints(envSubmodelElement.Qualifier);
 
@@ -251,7 +251,33 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
             return submodelElement;
         }
-        
+
+        private static List<EnvironmentConstraint_V3_0> ConvertToEnvironmentConstraints(IEnumerable<IQualifier> qualifiers)
+        {
+            if (qualifiers?.Count() > 0)
+            {
+                List<EnvironmentConstraint_V3_0> envConstraints = new List<EnvironmentConstraint_V3_0>();
+                foreach (var constraint in qualifiers)
+                {
+                    if (constraint is Qualifier q)
+                    {
+                        EnvironmentQualifier_V3_0 envQualifier = new EnvironmentQualifier_V3_0()
+                        {
+                            Type = q.Type,
+                            Value = q.Value?.ToString(),
+                            ValueId = q.ValueId?.ToEnvironmentReference_V3_0(),
+                            ValueType = q.ValueType?.ToString()
+                        };
+                        envConstraints.Add(new EnvironmentConstraint_V3_0() { Constraint = envQualifier });
+                    }                    
+                    else
+                        continue;
+                }
+                return envConstraints;
+            }
+            return null;
+        }
+
         private static IEnumerable<IQualifier> ConvertToConstraints(List<EnvironmentConstraint_V3_0> envConstraints)
         {
             if(envConstraints?.Count > 0)
@@ -277,6 +303,184 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 return qualifiers;
             }
             return null;
-        }     
+        }
+
+        public static SubmodelElementType_V3_0 ToEnvironmentSubmodelElement_V3_0(this ISubmodelElement element)
+        {
+            if (element == null)
+                return null;
+            ModelType modelType = element.ModelType;
+
+            if (modelType == null)
+                return null;
+
+            SubmodelElementType_V3_0 environmentSubmodelElement;
+
+            SubmodelElementType_V3_0 submodelElementType = new SubmodelElementType_V3_0()
+            {
+                Category = element.Category,
+                Description = element.Description?.ToEnvironmentLangStringSet(),
+                IdShort = element.IdShort,
+                Qualifier = ConvertToEnvironmentConstraints(element.Qualifiers),
+                SemanticId = element.SemanticId?.ToEnvironmentReference_V3_0()
+            };
+
+            if (modelType == ModelType.Property && element is IProperty castedProperty)
+            {
+                environmentSubmodelElement = new Property_V3_0(submodelElementType)
+                {
+                    Value = castedProperty.Value?.ToString(),
+                    ValueId = castedProperty.ValueId?.ToEnvironmentReference_V3_0(),
+                    ValueType = "xs:" + castedProperty.ValueType?.ToString()
+                };
+            }
+            else if (modelType == ModelType.MultiLanguageProperty && element is IMultiLanguageProperty castedMultiLanguageProperty)
+            {
+                environmentSubmodelElement = new MultiLanguageProperty_V3_0(submodelElementType)
+                {
+                    Value = castedMultiLanguageProperty.Value?.ToEnvironmentLangStringSet(),
+                    ValueId = castedMultiLanguageProperty.ValueId?.ToEnvironmentReference_V3_0()
+                };
+            }
+            else if (modelType == ModelType.Range && element is IRange castedRange)
+            {
+                environmentSubmodelElement = new Range_V3_0(submodelElementType)
+                {                    
+                    ValueType = "xs:" + castedRange.ValueType?.ToString()
+                };
+                if(castedRange.Value?.Min != null && environmentSubmodelElement is Range_V3_0 range1)
+                {
+                    range1.Min = JsonValue.Create(castedRange.Value.Min.Value).ToString();                  
+                }
+                if (castedRange.Value?.Max != null && environmentSubmodelElement is Range_V3_0 range2)
+                {
+                    range2.Max = JsonValue.Create(castedRange.Value.Max.Value).ToString();
+                }
+            }
+            else if (modelType == ModelType.Operation && element is IOperation castedOperation)
+            {
+                environmentSubmodelElement = new Operation_V3_0(submodelElementType);
+                List<OperationVariable_V3_0> inputs = new List<OperationVariable_V3_0>();
+                List<OperationVariable_V3_0> outputs = new List<OperationVariable_V3_0>();
+                List<OperationVariable_V3_0> inoutputs = new List<OperationVariable_V3_0>();
+
+                if (castedOperation.InputVariables?.Count > 0)
+                    foreach (var inputVar in castedOperation.InputVariables)
+                        inputs.Add(new OperationVariable_V3_0() { Value = new OperationVariableValue_V3_0() { Value = inputVar.Value.ToEnvironmentSubmodelElement_V3_0() } });
+                if (castedOperation.OutputVariables?.Count > 0)
+                    foreach (var outputVar in castedOperation.OutputVariables)
+                        outputs.Add(new OperationVariable_V3_0() { Value = new OperationVariableValue_V3_0() { Value = outputVar.Value.ToEnvironmentSubmodelElement_V3_0() } });
+                if (castedOperation.InOutputVariables?.Count > 0)
+                    foreach (var inoutputVar in castedOperation.InOutputVariables)
+                        inoutputs.Add(new OperationVariable_V3_0() { Value = new OperationVariableValue_V3_0() { Value = inoutputVar.Value.ToEnvironmentSubmodelElement_V3_0() } });
+
+                (environmentSubmodelElement as Operation_V3_0).InputVariables = inputs;
+                (environmentSubmodelElement as Operation_V3_0).OutputVariables = outputs;
+                (environmentSubmodelElement as Operation_V3_0).InOutputVariables = inoutputs;
+            }
+            else if (modelType == ModelType.Capability && element is ICapability castedCapability)
+                environmentSubmodelElement = new Capability_V3_0(submodelElementType) { };
+            else if (modelType == ModelType.BasicEventElement && element is IBasicEventElement castedBasicEvent) //TODO
+            {
+                environmentSubmodelElement = new BasicEventElement_V3_0(submodelElementType)
+                {
+                    Observed = castedBasicEvent.Observed.ToEnvironmentReference_V3_0(),
+                    Direction = castedBasicEvent.Direction,
+                    State = castedBasicEvent.State,
+                    MessageTopic = castedBasicEvent.MessageTopic,
+                    MessageBroker = castedBasicEvent.MessageBroker.ToEnvironmentReference_V3_0(),
+                    LastUpdate = castedBasicEvent.LastUpdate,
+                    MinInterval = castedBasicEvent.MinInterval,
+                    MaxInterval = castedBasicEvent.MaxInterval
+                };
+            }
+            else if (modelType == ModelType.Entity && element is IEntity castedEntity)
+            {
+                environmentSubmodelElement = new Entity_V3_0(submodelElementType)
+                {
+                    EntityType = (EnvironmentEntityType_V3_0)Enum.Parse(typeof(EnvironmentEntityType_V3_0), castedEntity.EntityType.ToString()),
+                    GlobalAssetId = castedEntity.GlobalAssetId,
+                    SpecificAssetIds = castedEntity.SpecificAssetIds?.ToList().ConvertAll(c => new EnvironmentSpecificAssetId_V3_0()
+                    {
+                        Name = c.Name,
+                        ExternalSubjectId = c.ExternalSubjectId?.ToEnvironmentReference_V3_0(),
+                        SemanticId = c.SemanticId?.ToEnvironmentReference_V3_0(),
+                        SupplementalSemanticIds = c.SupplementalSemanticIds?.ToList().ConvertAll(d => d.ToEnvironmentReference_V3_0()),
+                        Value = c.Value
+                    })
+                };
+
+                List<SubmodelElementType_V3_0> statements = new List<SubmodelElementType_V3_0>();
+                if (castedEntity.Statements?.Count() > 0)
+                    foreach (var smElement in castedEntity.Statements)
+                        statements.Add(smElement.ToEnvironmentSubmodelElement_V3_0());
+                (environmentSubmodelElement as Entity_V3_0).Statements = statements;
+            }
+            else if (modelType == ModelType.Blob && element is IBlob castedBlob)
+                environmentSubmodelElement = new Blob_V3_0(submodelElementType)
+                {
+                    Value = castedBlob.Value,
+                    ContentType = castedBlob.ContentType
+                };
+            else if (modelType == ModelType.File && element is IFileElement castedFile)
+                environmentSubmodelElement = new File_V3_0(submodelElementType)
+                {                    
+                    Value = castedFile.Value,
+                    ContentType = castedFile.ContentType,
+                };
+            else if (modelType == ModelType.ReferenceElement && element is IReferenceElement castedReferenceElement)
+                environmentSubmodelElement = new ReferenceElement_V3_0(submodelElementType)
+                {
+                    Value = castedReferenceElement.Value?.ToEnvironmentReference_V3_0()
+                };
+            else if (modelType == ModelType.RelationshipElement && element is IRelationshipElement castedRelationshipElement)
+                environmentSubmodelElement = new RelationshipElement_V3_0(submodelElementType)
+                {
+                    First = castedRelationshipElement.First?.ToEnvironmentReference_V3_0(),
+                    Second = castedRelationshipElement.Second?.ToEnvironmentReference_V3_0()
+                };
+            else if (modelType == ModelType.AnnotatedRelationshipElement && element is IAnnotatedRelationshipElement castedAnnotatedRelationshipElement)
+            {
+                environmentSubmodelElement = new AnnotatedRelationshipElement_V3_0(submodelElementType)
+                {
+                    First = castedAnnotatedRelationshipElement.First?.ToEnvironmentReference_V3_0(),
+                    Second = castedAnnotatedRelationshipElement.Second?.ToEnvironmentReference_V3_0()
+                };
+                List<SubmodelElementType_V3_0> environmentSubmodelElements = new List<SubmodelElementType_V3_0>();
+                if (castedAnnotatedRelationshipElement.Annotations?.Count() > 0)
+                    foreach (var smElement in castedAnnotatedRelationshipElement.Annotations)
+                        environmentSubmodelElements.Add(smElement.ToEnvironmentSubmodelElement_V3_0());
+                (environmentSubmodelElement as AnnotatedRelationshipElement_V3_0).Annotations = environmentSubmodelElements;
+
+            }
+            else if (modelType == ModelType.SubmodelElementCollection && element is ISubmodelElementCollection castedSubmodelElementCollection)
+            {
+                environmentSubmodelElement = new SubmodelElementCollection_V3_0(submodelElementType);
+                List<SubmodelElementType_V3_0> environmentSubmodelElements = new List<SubmodelElementType_V3_0>();
+                if (castedSubmodelElementCollection.Value?.Count() > 0)
+                    foreach (var smElement in castedSubmodelElementCollection.Value)
+                        environmentSubmodelElements.Add(smElement.ToEnvironmentSubmodelElement_V3_0());
+                (environmentSubmodelElement as SubmodelElementCollection_V3_0).Value = environmentSubmodelElements;
+            }
+            else if (modelType == ModelType.SubmodelElementList && element is ISubmodelElementList castedSubmodelElementList)
+            {
+                environmentSubmodelElement = new SubmodelElementList_V3_0(submodelElementType)
+                {
+                    OrderRelevant = castedSubmodelElementList.OrderRelevant,
+                    TypeValueListElement = castedSubmodelElementList.TypeValueListElement?.Name,
+                    SemanticIdListElement = castedSubmodelElementList.SemanticIdListElement?.ToEnvironmentReference_V3_0(),
+                    ValueTypeListElement = castedSubmodelElementList.ValueTypeListElement?.DataObjectType?.Name
+                };
+                List<SubmodelElementType_V3_0> environmentSubmodelElements = new List<SubmodelElementType_V3_0>();
+                if (castedSubmodelElementList.Value?.Count() > 0)
+                    foreach (var smElement in castedSubmodelElementList.Value)
+                        environmentSubmodelElements.Add(smElement.ToEnvironmentSubmodelElement_V3_0());
+                (environmentSubmodelElement as SubmodelElementList_V3_0).Value = environmentSubmodelElements;
+            }
+            else
+                return null;
+
+            return environmentSubmodelElement;
+        }
     }
 }
