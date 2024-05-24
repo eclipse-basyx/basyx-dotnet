@@ -176,7 +176,7 @@ namespace BaSyx.Models.Extensions
                             string max = reader.GetString();
                             var vc = r2.GetValueScope<RangeValue>();
                             if (vc == null)
-                                _ = r2.SetValueScope(new RangeValue { Max = new ElementValue(max, r2.ValueType) });
+                                _ = r2.SetValueScope(new RangeValue { Min = new ElementValue(max, r2.ValueType) });
                             else
                                 vc.Max = new ElementValue(max, r2.ValueType);
                         }
