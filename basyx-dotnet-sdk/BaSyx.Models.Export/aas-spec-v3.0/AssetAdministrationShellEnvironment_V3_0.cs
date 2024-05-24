@@ -25,6 +25,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
+using BaSyx.Models.Connectivity;
 
 namespace BaSyx.Models.Export
 {
@@ -111,8 +112,144 @@ namespace BaSyx.Models.Export
             EnvironmentAssetAdministrationShells = new List<EnvironmentAssetAdministrationShell_V3_0>();
             EnvironmentSubmodels = new List<EnvironmentSubmodel_V3_0>();
             EnvironmentConceptDescriptions = new List<EnvironmentConceptDescription_V3_0>();
-        }   
-     
+        }
+
+        public AssetAdministrationShellEnvironment_V3_0(params IAssetAdministrationShell[] assetAdministrationShells) : this()
+        {
+            foreach (var aas in assetAdministrationShells)
+                AddAssetAdministrationShell(aas);
+
+            ConvertToEnvironment();
+        }
+
+        public void AddAssetAdministrationShell(IAssetAdministrationShell aas)
+        {
+            AssetAdministrationShells.Add(aas);
+            if (aas.Submodels?.Count() > 0)
+            {
+                Submodels.AddRange(aas.Submodels.Values);
+                foreach (var submodel in aas.Submodels.Values)
+                {
+                    ExtractAndClearConceptDescriptions(submodel.SubmodelElements);
+                    ExtractSupplementalFiles(submodel.SubmodelElements);
+                }
+            }
+        }
+
+        private void ConvertToEnvironment()
+        {
+            foreach (var conceptDescription in ConceptDescriptions)
+            {
+                EmbeddedDataSpecification_V3_0 embeddedDataSpecification = null;
+                var dataSpecification = conceptDescription.EmbeddedDataSpecifications?.FirstOrDefault();
+                if (dataSpecification != null && dataSpecification.DataSpecificationContent is DataSpecificationIEC61360Content dataSpecificationContent)
+                {
+                    embeddedDataSpecification = new EmbeddedDataSpecification_V3_0()
+                    {
+                        DataSpecification = dataSpecification.DataSpecification?.ToEnvironmentReference_V3_0(),
+                        DataSpecificationContent = new DataSpecificationContent_V3_0()
+                        {
+                            DataSpecificationIEC61360 = dataSpecificationContent.ToEnvironmentDataSpecificationIEC61360_V3_0()
+                        }
+                    };
+                }
+
+                EnvironmentConceptDescription_V3_0 environmentConceptDescription = new EnvironmentConceptDescription_V3_0();
+                environmentConceptDescription.Category = conceptDescription.Category;
+                environmentConceptDescription.Description = conceptDescription.Description?.ToEnvironmentLangStringSet();
+                environmentConceptDescription.Id = conceptDescription.Id;
+                environmentConceptDescription.IdShort = conceptDescription.IdShort;
+                environmentConceptDescription.IsCaseOf = conceptDescription.IsCaseOf?.ToList().ConvertAll(c => c.ToEnvironmentReference_V3_0());
+                environmentConceptDescription.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification_V3_0> { embeddedDataSpecification };
+
+                if (conceptDescription.Administration != null)
+                {
+                    environmentConceptDescription.Administration = new EnvironmentAdministrativeInformation_V3_0()
+                    {
+                        Version = conceptDescription.Administration.Version,
+                        Revision = conceptDescription.Administration.Revision
+                    };
+                }
+
+                if (EnvironmentConceptDescriptions.Find(m => m.Id == conceptDescription.Id) == null)
+                    EnvironmentConceptDescriptions.Add(environmentConceptDescription);
+            }
+            foreach (var assetAdministrationShell in AssetAdministrationShells)
+            {
+                EnvironmentAssetAdministrationShell_V3_0 environmentAssetAdministrationShell = new EnvironmentAssetAdministrationShell_V3_0();
+                environmentAssetAdministrationShell.Category = assetAdministrationShell.Category;
+                environmentAssetAdministrationShell.Description = assetAdministrationShell.Description?.ToEnvironmentLangStringSet();
+                environmentAssetAdministrationShell.Id = assetAdministrationShell.Id;
+                environmentAssetAdministrationShell.IdShort = assetAdministrationShell.IdShort;
+
+                if (assetAdministrationShell.AssetInformation != null)
+                {
+                    environmentAssetAdministrationShell.AssetInformation = new EnvironmentAssetInformation_V3_0()
+                    {
+                        AssetKind = assetAdministrationShell.AssetInformation.AssetKind,
+                        AssetType = assetAdministrationShell.AssetInformation.AssetType,
+                        GlobalAssetId = assetAdministrationShell.AssetInformation.GlobalAssetId,
+                        SpecificAssetIds = assetAdministrationShell.AssetInformation.SpecificAssetIds?.ToList().ConvertAll(c => new EnvironmentSpecificAssetId_V3_0()
+                        {
+                            Name = c.Name,
+                            ExternalSubjectId = c.ExternalSubjectId?.ToEnvironmentReference_V3_0(),
+                            SemanticId = c.SemanticId?.ToEnvironmentReference_V3_0(),
+                            SupplementalSemanticIds = c.SupplementalSemanticIds?.ToList().ConvertAll(d => d.ToEnvironmentReference_V3_0()),
+                            Value = c.Value
+                        }),                        
+                    };
+                    if(assetAdministrationShell.AssetInformation.DefaultThumbnail != null)
+                    {
+                        environmentAssetAdministrationShell.AssetInformation.DefaultThumbnail = new EnvironmentResource_V3_0()
+                        {
+                            ContentType = assetAdministrationShell.AssetInformation.DefaultThumbnail?.ContentType,
+                            Path = assetAdministrationShell.AssetInformation.DefaultThumbnail?.Path
+                        };
+                    }
+                }
+                if (assetAdministrationShell.Administration != null)
+                {
+                    environmentAssetAdministrationShell.Administration = new EnvironmentAdministrativeInformation_V3_0()
+                    {
+                        Version = assetAdministrationShell.Administration.Version,
+                        Revision = assetAdministrationShell.Administration.Revision
+                    };
+                }
+
+                environmentAssetAdministrationShell.SubmodelReferences = new List<EnvironmentReference_V3_0>();
+                foreach (var submodel in assetAdministrationShell.Submodels)
+                    environmentAssetAdministrationShell.SubmodelReferences.Add(submodel.ToEnvironmentReference_V3_0());
+
+                EnvironmentAssetAdministrationShells.Add(environmentAssetAdministrationShell);
+            }
+            foreach (var submodel in Submodels)
+            {
+                EnvironmentSubmodel_V3_0 environmentSubmodel = new EnvironmentSubmodel_V3_0();
+                environmentSubmodel.Category = submodel.Category;
+                environmentSubmodel.Description = submodel.Description?.ToEnvironmentLangStringSet();
+                environmentSubmodel.Id = submodel.Id;
+                environmentSubmodel.IdShort = submodel.IdShort;
+                environmentSubmodel.Kind = submodel.Kind;
+                environmentSubmodel.Qualifier = null; //TODO
+                environmentSubmodel.SemanticId = submodel.SemanticId?.ToEnvironmentReference_V3_0();
+                if(submodel.Administration != null)
+                {
+                    environmentSubmodel.Administration = new EnvironmentAdministrativeInformation_V3_0()
+                    {
+                        Version = submodel.Administration.Version,
+                        Revision = submodel.Administration.Revision
+                    };
+                }
+
+                environmentSubmodel.SubmodelElements = new List<SubmodelElementType_V3_0>();
+                foreach (var submodelElement in submodel.SubmodelElements)
+                    environmentSubmodel.SubmodelElements.Add(submodelElement.ToEnvironmentSubmodelElement_V3_0());
+
+
+                EnvironmentSubmodels.Add(environmentSubmodel);
+            }
+        }
+
         private void ExtractSupplementalFiles(IElementContainer<ISubmodelElement> submodelElements)
         {
             foreach (var smElement in submodelElements)
@@ -132,6 +269,67 @@ namespace BaSyx.Models.Export
                 }
                 else if (smElement.ModelType == ModelType.SubmodelElementCollection)
                     ExtractSupplementalFiles((smElement as SubmodelElementCollection).Value);
+            }
+        }
+
+        private void ExtractAndClearConceptDescriptions(IElementContainer<ISubmodelElement> submodelElements)
+        {
+            foreach (var smElement in submodelElements)
+            {
+                if (smElement.ConceptDescription != null)
+                {
+                    ConceptDescriptions.Add(smElement.ConceptDescription);
+                    (smElement as SubmodelElement).SemanticId = new Reference(new Key(KeyType.ConceptDescription, smElement.ConceptDescription.Id));
+                    (smElement as SubmodelElement).ConceptDescription = null;
+                    (smElement as SubmodelElement).EmbeddedDataSpecifications = null;
+                }
+                if (smElement.ModelType == ModelType.SubmodelElementCollection)
+                    ExtractAndClearConceptDescriptions((smElement as SubmodelElementCollection).Value);
+            }
+        }
+
+        public void SetContentRoot(string contentRoot) => ContentRoot = contentRoot;
+
+        public void WriteEnvironment_V3_0(ExportType exportType, string filePath) => WriteEnvironment_V3_0(this, exportType, filePath);
+
+        public static void WriteEnvironment_V3_0(AssetAdministrationShellEnvironment_V3_0 environment, ExportType exportType, string filePath)
+        {
+            if (environment == null)
+                return;
+
+            switch (exportType)
+            {
+                case ExportType.Json:
+                    try
+                    {
+                        string serialized = JsonConvert.SerializeObject(environment, JsonSettings);
+                        System.IO.File.WriteAllText(filePath, serialized);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "Exception while writing environment to JSON");
+                    }
+                    break;
+                case ExportType.Xml:
+                    try
+                    {
+                        using (StreamWriter writer = new StreamWriter(filePath))
+                        {
+                            XmlSerializer serializer = new XmlSerializer(typeof(AssetAdministrationShellEnvironment_V3_0), AAS_NAMESPACE);
+                            XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+                            namespaces.Add("xsi", XmlSchema.InstanceNamespace);
+                            namespaces.Add("aas", AAS_NAMESPACE);
+                            serializer.Serialize(writer, environment, namespaces);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "Exception while writing environment to XML");
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
