@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Configurations>Debug;Release;Azure</Configurations>
+    <Authors>Constantin Ziesche</Authors>
+    <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
+    <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
+    <Description>The official BaSyx Registry Http Server Component Reference Implementation</Description>
+    <Company>Bosch Rexroth AG</Company>
+    <PackageTags>BaSys BaSyx Registry Server Component</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI\BaSyx.Common.UI.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI.Swagger\BaSyx.Common.UI.Swagger.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Discovery.mDNS\BaSyx.Discovery.mDNS.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.FileBased\BaSyx.Registry.ReferenceImpl.FileBased.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.Server.Http\BaSyx.Registry.Server.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
+    <PackageReference Include="BaSyx.Common.UI" Version="*" />
+    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="*" />
+    <PackageReference Include="BaSyx.Discovery.mDNS" Version="*" />
+    <PackageReference Include="BaSyx.Registry.ReferenceImpl.FileBased" Version="*" />
+    <PackageReference Include="BaSyx.Registry.Server.Http" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Deployment.AppDataService\BaSyx.Deployment.AppDataService.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.InMemory\BaSyx.Registry.ReferenceImpl.InMemory.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

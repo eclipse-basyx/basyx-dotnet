@@ -2,6 +2,7 @@
 SET currentPath=%~dp0
 echo New NuGet-Repository Path: %currentPath:~0,-1%\basyx-dotnet-nuget-packages
 setx BASYX_REPO %currentPath:~0,-1%\basyx-dotnet-nuget-packages
+setx BASYX_SDK %currentPath:~0,-1%
 mkdir basyx-dotnet-nuget-packages
 dotnet nuget remove source BaSyx.Packages
 dotnet nuget add source %currentPath:~0,-1%\basyx-dotnet-nuget-packages --name BaSyx.Packages

@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Configurations>Debug;Release</Configurations>
+    <Authors>Constantin Ziesche</Authors>
+    <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
+    <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
+    <Description>The official BaSyx WebUI Implementation</Description>
+    <Company>Bosch Rexroth AG</Company>
+    <PackageTags>BaSys BaSyx Web UI</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ServerSettings.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ServerSettings.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI\BaSyx.Common.UI.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI.Swagger\BaSyx.Common.UI.Swagger.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.API.Http.Controllers.AASX\BaSyx.API.Http.Controllers.AASX.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Clients.Http\BaSyx.Clients.Http.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Servers.Http\BaSyx.Servers.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
+    <PackageReference Include="BaSyx.Common.UI" Version="*" />
+    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="*" />
+    <PackageReference Include="BaSyx.Servers.Http" Version="*" />
+    <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="*" />
+    <PackageReference Include="BaSyx.Clients.Http" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

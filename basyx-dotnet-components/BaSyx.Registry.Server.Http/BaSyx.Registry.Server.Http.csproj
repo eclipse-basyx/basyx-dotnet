@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <OutputType>Library</OutputType>
+    <Configurations>Debug;Release;Azure</Configurations>
+    <Authors>Constantin Ziesche</Authors>
+    <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
+    <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <Description>The official BaSyx Registry Http Server</Description>
+    <Company>Bosch Rexroth AG</Company>
+    <PackageTags>BaSys BaSyx Registry Server</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>    
+    <PackageIcon>basyxlogo.png</PackageIcon>
+    <IsPackable>true</IsPackable>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <Version>2.0.5</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BaSyx.API.Http.Controllers\BaSyx.API.Http.Controllers.csproj" />
+    <ProjectReference Include="..\BaSyx.Components.Common\BaSyx.Components.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-sdk\')">
+    <ProjectReference Include="..\..\basyx-dotnet-sdk\BaSyx.API\BaSyx.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-sdk\')">
+    <PackageReference Include="BaSyx.API" Version="*" />
+  </ItemGroup>
+
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\resources\basyxlogo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Exec Command="IF EXIST %25BASYX_REPO%25 ( dotnet pack &quot;$(ProjectPath)&quot; -c Release --no-build --include-source --include-symbols --output &quot;%25BASYX_REPO%25&quot; ) ELSE ( ECHO BASYX_REPO Environment Variable not found)" />
+  </Target>
+
+</Project>

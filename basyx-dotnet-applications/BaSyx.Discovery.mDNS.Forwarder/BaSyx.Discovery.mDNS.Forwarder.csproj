@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Configurations>Debug;Release;Azure</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="RegistryClientSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Discovery.mDNS\BaSyx.Discovery.mDNS.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.Client.Http\BaSyx.Registry.Client.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
+    <PackageReference Include="BaSyx.Discovery.mDNS" Version="*" />
+    <PackageReference Include="BaSyx.Registry.Client.Http" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+  </ItemGroup>
+
+</Project>

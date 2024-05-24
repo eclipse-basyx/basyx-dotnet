@@ -1,0 +1,101 @@
+﻿@page
+@model BaSyx.Common.UI.Pages.AssetAdministrationShellRepositoryModel
+@using BaSyx.API.Http
+@using BaSyx.API.ServiceProvider;
+@using BaSyx.Models.AdminShell;
+@using BaSyx.Utils.Settings;
+@using System.Security.Cryptography;
+@using System.Text;
+@using System.Text.RegularExpressions;
+
+@{
+    IAssetAdministrationShellRepositoryServiceProvider sp = Model.ServiceProvider;
+    ServerSettings settings = Model.Settings;
+
+    IEnumerable<IAssetAdministrationShellServiceProvider> shellServiceProviders = null;
+    var retrievedShellServiceProviders = sp.ShellProviderRegistry.GetAssetAdministrationShellServiceProviders();
+    if (retrievedShellServiceProviders.Success && retrievedShellServiceProviders.Entity != null)
+    {
+        shellServiceProviders = retrievedShellServiceProviders.Entity;
+    }
+
+    ViewData["Title"] = settings.UserInterfaceConfig?.Title ?? "Asset Administration Shell Repository";
+    ViewData["ApiRoot"] = AssetAdministrationShellRepositoryRoutes.SHELLS;
+    ViewData["ApiType"] = "AssetAdministrationShellRepository";
+}
+
+@functions
+    {
+
+    private static string GetHashString(string input)
+    {
+        SHA256 shaAlgorithm = SHA256.Create();
+        byte[] data = Encoding.UTF8.GetBytes(input);
+
+        byte[] bHash = shaAlgorithm.ComputeHash(data);
+
+        string hashString = string.Empty;
+        for (int i = 0; i < bHash.Length; i++)
+        {
+            hashString += bHash[i].ToString("x2");
+        }
+        var output = Regex.Replace(hashString, @"[\d-]", string.Empty);
+        return output;
+    }
+}
+
+<div class="starter-template">
+    <h1>Asset Administration Shell Repository UI</h1>
+    <p class="lead">Generic UI to display many Asset Administration Shells</p>
+</div>
+
+
+@if (shellServiceProviders?.Count() > 0)
+{
+    foreach (var shellServiceProvider in shellServiceProviders)
+    {
+        IAssetAdministrationShell aas = shellServiceProvider.GetBinding();
+        if(aas.AssetInformation != null && aas.AssetInformation.DefaultThumbnail != null)
+        {
+            ViewData["Thumbnail"] = aas.AssetInformation.DefaultThumbnail;
+        }
+        else
+        {
+            ViewData["Thumbnail"] = null;
+        }
+        <div class="card border-dark mb-3">
+            <div class="card-header bg-dark">
+                <h4>
+                    <a class="text-white" data-toggle="collapse" href="#@GetHashString(aas.IdShort)">@aas.IdShort</a>
+                </h4>
+            </div>
+            <div id="@GetHashString(aas.IdShort)" class="collapse">
+                <ul class="list-group list-group-flush">
+                    @await Html.PartialAsync("_IdShort", aas.IdShort)
+                    @await Html.PartialAsync("_Identifier", aas.Id)
+                    @await Html.PartialAsync("_Description", aas.Description)
+                </ul>
+                <div class="card-body">
+                    @await Html.PartialAsync("_Asset", aas.AssetInformation, ViewData)
+                    @{
+                        IEnumerable<ISubmodelServiceProvider> submodelServiceProviders = null;
+                        var retrievedSubmodelServiceProvider = shellServiceProvider.SubmodelProviderRegistry.GetSubmodelServiceProviders();
+                        if (retrievedSubmodelServiceProvider.Success && retrievedSubmodelServiceProvider.Entity != null)
+                        {
+                            submodelServiceProviders = retrievedSubmodelServiceProvider.Entity;
+                        }
+                    }
+
+                    @if (submodelServiceProviders?.Count() > 0)
+                    {
+                        foreach (var submodelServiceProvider in submodelServiceProviders)
+                        {
+                            ISubmodel submodel = submodelServiceProvider.GetBinding();
+                            @await Html.PartialAsync("_Submodel", submodel, new ViewDataDictionary(ViewData) { { "aasId", aas.Id.Id } })
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}

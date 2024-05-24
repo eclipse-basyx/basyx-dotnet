@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Authors>Constantin Ziesche</Authors>
+    <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
+    <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet-examples</RepositoryUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <Description>The official BaSyx Complex Asset Administration Shell Scenario</Description>
+    <Company>Bosch Rexroth AG</Company>
+    <PackageTags>BaSys BaSyx Complex Asset Administration Shell Scenario</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.5" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Clients.Http\BaSyx.Clients.Http.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Servers.Http\BaSyx.Servers.Http.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI\BaSyx.Common.UI.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI.Swagger\BaSyx.Common.UI.Swagger.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.Server.Http\BaSyx.Registry.Server.Http.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.Client.Http\BaSyx.Registry.Client.Http.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.FileBased\BaSyx.Registry.ReferenceImpl.FileBased.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.API.Http.Controllers.AASX\BaSyx.API.Http.Controllers.AASX.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
+    <PackageReference Include="BaSyx.Common.UI" Version="*" />
+    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="*" />
+    <PackageReference Include="BaSyx.Registry.Server.Http" Version="*" />
+    <PackageReference Include="BaSyx.Registry.Client.Http" Version="*" />
+    <PackageReference Include="BaSyx.Registry.ReferenceImpl.FileBased" Version="*" />
+    <PackageReference Include="BaSyx.Servers.Http" Version="*" />
+    <PackageReference Include="BaSyx.Clients.Http" Version="*" />
+    <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Deployment.AppDataService\BaSyx.Deployment.AppDataService.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.ReferenceImpl.InMemory\BaSyx.Registry.ReferenceImpl.InMemory.csproj" />
+    <ProjectReference Include="..\SimpleAssetAdministrationShell\SimpleAssetAdministrationShell.csproj" />
+  </ItemGroup>
+
+</Project>

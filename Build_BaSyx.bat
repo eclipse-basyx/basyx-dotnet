@@ -1,4 +1,4 @@
-IF "%BASYX_REPO%"=="" OR IF NOT EXIST basyx-dotnet-nuget-packages\NUL (
+IF "%BASYX_REPO%"=="" (
 	start /w Setup_BaSyx.bat
 )
 

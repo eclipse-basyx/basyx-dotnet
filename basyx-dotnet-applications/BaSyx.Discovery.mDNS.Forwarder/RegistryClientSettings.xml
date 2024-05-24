@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RegistryClientSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RegistryConfig>
+    <RegistryUrl>http://10.139.174.70:4999/registry</RegistryUrl>
+  </RegistryConfig>
+  <ProxyConfig>
+    <UseProxy>true</UseProxy>
+    <ProxyAddress>http://localhost:3128</ProxyAddress>
+  </ProxyConfig>
+</RegistryClientSettings>
