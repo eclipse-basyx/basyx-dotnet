@@ -112,8 +112,9 @@ namespace BaSyx.Common.UI.Swagger
                 services.AddSwaggerGen(c =>
                 {
                     c.SwaggerDoc("v1", info);
+                    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
-                    string xmlPath = null;
+					string xmlPath = null;
 
                     // Set the comments path for the Swagger JSON and UI.
                     if (string.IsNullOrEmpty(xmlCommentFilePath))
@@ -137,9 +138,10 @@ namespace BaSyx.Common.UI.Swagger
             {
                 // Enable middleware to serve generated Swagger as a JSON endpoint.
                 app.UseSwagger();
+                app.UseDeveloperExceptionPage();
 
-                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-                app.UseSwaggerUI(c =>
+				// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+				app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", info.Title);
                 });
