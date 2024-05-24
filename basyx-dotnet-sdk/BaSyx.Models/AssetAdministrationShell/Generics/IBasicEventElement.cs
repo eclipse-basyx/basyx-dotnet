@@ -72,22 +72,22 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public enum EventDirection : int
     {
-        [XmlEnum("None")]
+        [XmlEnum("none")]
         None = 0,
-        [XmlEnum("Input")]
+        [XmlEnum("input")]
         Input = 1,
-        [XmlEnum("Output")]
+        [XmlEnum("output")]
         Output = 2
     }
 
     [DataContract]
     public enum EventState : int
     {
-        [XmlEnum("None")]
+        [XmlEnum("none")]
         None = 0,
-        [XmlEnum("On")]
+        [XmlEnum("on")]
         On,
-        [XmlEnum("Off")]
+        [XmlEnum("off")]
         Off
     }
 }
