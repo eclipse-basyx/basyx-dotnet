@@ -7,7 +7,7 @@
     <Authors>Constantin Ziesche</Authors>
     <Company>Bosch Rexroth AG</Company>
     <Description>The official BaSyx Collection of Information Model Classes for Export</Description>
-    <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
+    <Copyright>Copyright 2024 - Bosch Rexroth AG</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>

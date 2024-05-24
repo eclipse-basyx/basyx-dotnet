@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
     <Authors>Constantin Ziesche</Authors>
-    <Copyright>Copyright 2023 - Bosch Rexroth AG</Copyright>
+    <Copyright>Copyright 2024 - Bosch Rexroth AG</Copyright>
     <Description>AppDataService for Asset Administration Shell projects</Description>
     <Company>Bosch Rexroth AG</Company>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
