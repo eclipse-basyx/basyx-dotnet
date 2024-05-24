@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Range = BaSyx.Models.AdminShell.Range;
 
 namespace BaSyx.Models.Extensions
 {

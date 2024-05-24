@@ -12,6 +12,7 @@ using BaSyx.Models.AdminShell;
 using System;
 using System.Linq;
 using System.Text.Json;
+using Range = BaSyx.Models.AdminShell.Range;
 
 namespace BaSyx.Models.Extensions
 {
