@@ -40,6 +40,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\basyx-dotnet-sdk\BaSyx.Models.Export\BaSyx.Models.Export.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI.Swagger\BaSyx.Common.UI.Swagger.csproj" />
+  </ItemGroup>
 
 
   <ItemGroup>
