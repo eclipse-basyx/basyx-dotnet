@@ -94,6 +94,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaSyx.Deployment.AppDataService", "basyx-dotnet-components\BaSyx.Deployment.AppDataService\BaSyx.Deployment.AppDataService.csproj", "{DA3A403B-09E9-43DA-9949-8958D96EE790}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubmodelDev", "basyx-dotnet-examples\SubmodelDev\SubmodelDev.csproj", "{CA130730-497A-468A-AC0B-DA08C765E7CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -248,6 +250,10 @@ Global
 		{DA3A403B-09E9-43DA-9949-8958D96EE790}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA3A403B-09E9-43DA-9949-8958D96EE790}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA3A403B-09E9-43DA-9949-8958D96EE790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA130730-497A-468A-AC0B-DA08C765E7CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA130730-497A-468A-AC0B-DA08C765E7CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA130730-497A-468A-AC0B-DA08C765E7CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA130730-497A-468A-AC0B-DA08C765E7CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -290,6 +296,7 @@ Global
 		{F9D73225-00A0-413D-A22D-05A22B011FA8} = {355B90BE-8EF1-4803-84AA-C6AF306E3577}
 		{96724E51-4714-4C98-B632-B043CDF984EA} = {355B90BE-8EF1-4803-84AA-C6AF306E3577}
 		{DA3A403B-09E9-43DA-9949-8958D96EE790} = {355B90BE-8EF1-4803-84AA-C6AF306E3577}
+		{CA130730-497A-468A-AC0B-DA08C765E7CE} = {ABAA386C-F692-4397-968F-12C674FF0825}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B028A9A2-E37C-44AF-8032-C8F0492BDB00}
