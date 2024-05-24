@@ -11,6 +11,10 @@
 using Microsoft.AspNetCore.Mvc;
 using BaSyx.API.ServiceProvider;
 using Microsoft.AspNetCore.Hosting;
+using BaSyx.Models.AdminShell;
+using System.IO;
+using Microsoft.Extensions.FileProviders;
+using BaSyx.Models.Export;
 
 namespace BaSyx.API.Http.Controllers.PackageService
 {
@@ -43,28 +47,26 @@ namespace BaSyx.API.Http.Controllers.PackageService
         [ProducesResponseType(200)]
         public IActionResult GetAASXPackage()
         {
-            //TODO
-            return BadRequest();
-            //IAssetAdministrationShell aas = (serviceProvider as IAssetAdministrationShellServiceProvider).GetBinding();
-            //string aasxFileName = aas.IdShort + ".aasx";
-            //string aasxFilePath = Path.Combine(hostingEnvironment.ContentRootPath, aasxFileName);
-            //IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
+            IAssetAdministrationShell aas = (serviceProvider as IAssetAdministrationShellServiceProvider).GetBinding();
+            string aasxFileName = aas.IdShort + ".aasx";
+            string aasxFilePath = Path.Combine(hostingEnvironment.ContentRootPath, aasxFileName);
+            IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
 
-            //using (AASX_V2_0 aasx = new AASX_V2_0(aasxFilePath))
-            //{
-            //    AssetAdministrationShellEnvironment_V2_0 env = new AssetAdministrationShellEnvironment_V2_0(aas);
-            //    aasx.AddEnvironment(aas.Id, env, ExportType.Xml);
+            using (AASX_V3_0 aasx = new AASX_V3_0(aasxFilePath))
+            {
+                AssetAdministrationShellEnvironment_V3_0 env = new AssetAdministrationShellEnvironment_V3_0(aas);
+                aasx.AddEnvironment(aas.Id, env, ExportType.Xml);
 
-            //    AddFilesToAASX(fileProvider, "aasx", aasx);
-            //    AddThumbnailToAASX(fileProvider, aasx);
+                AddFilesToAASX(fileProvider, "aasx", aasx);
+                AddThumbnailToAASX(fileProvider, aasx);
 
-            //}
-            //var fileInfo = fileProvider.GetFileInfo(aasxFileName);
-            //var fileResult = new PhysicalFileResult(fileInfo.PhysicalPath, "application/asset-administration-shell-package")
-            //{
-            //    FileDownloadName = aasxFileName
-            //};
-            //return fileResult;
+            }
+            var fileInfo = fileProvider.GetFileInfo(aasxFileName);
+            var fileResult = new PhysicalFileResult(fileInfo.PhysicalPath, "application/asset-administration-shell-package")
+            {
+                FileDownloadName = aasxFileName
+            };
+            return fileResult;
         }
 
         ///// <summary>
@@ -101,41 +103,39 @@ namespace BaSyx.API.Http.Controllers.PackageService
         //    return NotFound();
         //}
 
-        //TODO
-        //private void AddThumbnailToAASX(IFileProvider fileProvider, AASX_V2_0 aasx)
-        //{
-        //    foreach (var item in fileProvider.GetDirectoryContents(""))
-        //    {
-        //        if (item.IsDirectory)
-        //            continue;
+        private void AddThumbnailToAASX(IFileProvider fileProvider, AASX_V3_0 aasx)
+        {
+            foreach (var item in fileProvider.GetDirectoryContents(""))
+            {
+                if (item.IsDirectory)
+                    continue;
 
-        //        string fileName = item.Name.ToLower();
-        //        if (fileName.Contains(".jpg") ||
-        //            fileName.Contains(".jpeg") ||
-        //            fileName.Contains(".png") ||
-        //            fileName.Contains(".bmp") ||
-        //            fileName.Contains(".gif"))
-        //        {
-        //            aasx.AddThumbnail(item.PhysicalPath);
-        //        }
-        //    }
-        //}
+                string fileName = item.Name.ToLower();
+                if (fileName.Contains(".jpg") ||
+                    fileName.Contains(".jpeg") ||
+                    fileName.Contains(".png") ||
+                    fileName.Contains(".bmp") ||
+                    fileName.Contains(".gif"))
+                {
+                    aasx.AddThumbnail(item.PhysicalPath);
+                }
+            }
+        }
 
-        //TODO
-        //private void AddFilesToAASX(IFileProvider fileProvider, string path, AASX_V2_0 aasx)
-        //{
-        //    foreach (var item in fileProvider.GetDirectoryContents(path))
-        //    {
-        //        if (item.IsDirectory)
-        //        {
-        //            AddFilesToAASX(fileProvider, path + "/" + item.Name, aasx);
-        //        }
-        //        else
-        //        {
-        //            if (item.Exists)
-        //                aasx.AddFileToAASX("/" + path + "/" + item.Name, item.PhysicalPath);
-        //        }
-        //    }
-        //}
+        private void AddFilesToAASX(IFileProvider fileProvider, string path, AASX_V3_0 aasx)
+        {
+            foreach (var item in fileProvider.GetDirectoryContents(path))
+            {
+                if (item.IsDirectory)
+                {
+                    AddFilesToAASX(fileProvider, path + "/" + item.Name, aasx);
+                }
+                else
+                {
+                    if (item.Exists)
+                        aasx.AddFileToAASX("/" + path + "/" + item.Name, item.PhysicalPath);
+                }
+            }
+        }
     }
 }
