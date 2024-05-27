@@ -15,9 +15,6 @@ namespace BaSyx.Models.AdminShell
     [DataContract]
     public class Range : SubmodelElement<RangeValue>, IRange
     {
-        [IgnoreDataMember]
-        public new RangeValue Value { get => base.Value; set => base.Value = value; }
-
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Range;
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueId")]
