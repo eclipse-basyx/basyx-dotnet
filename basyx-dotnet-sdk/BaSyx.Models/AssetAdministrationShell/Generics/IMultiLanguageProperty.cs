@@ -15,14 +15,8 @@ namespace BaSyx.Models.AdminShell
     /// <summary>
     /// A property is a data element that has a multi language value. 
     /// </summary>
-    public interface IMultiLanguageProperty : ISubmodelElement
+    public interface IMultiLanguageProperty : ISubmodelElement<MultiLanguagePropertyValue>
     {
-        /// <summary>
-        /// The value of the property instance.
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        LangStringSet Value { get; }
-
         /// <summary>
         /// Reference to the global unqiue id of a coded value.
         /// </summary>
