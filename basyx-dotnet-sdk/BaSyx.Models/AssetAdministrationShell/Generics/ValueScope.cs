@@ -10,7 +10,6 @@
 *******************************************************************************/
 
 using System.Globalization;
-using System.Text.Json.Nodes;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -23,8 +22,5 @@ namespace BaSyx.Models.AdminShell
             _nfi.NumberDecimalSeparator = ".";
         }
         public abstract ModelType ModelType { get; }
-
-        public abstract JsonValue ToJson();
-       
     }
 }

@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Runtime.Serialization;
-using System.Text.Json.Nodes;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -24,11 +23,6 @@ namespace BaSyx.Models.AdminShell
         public SubmodelElementCollectionValue(IElementContainer<ISubmodelElement> valueElements)
         {
             Value = valueElements;
-        }
-
-        public override JsonValue ToJson()
-        {
-            return JsonValue.Create(Value);
         }
     }
 }

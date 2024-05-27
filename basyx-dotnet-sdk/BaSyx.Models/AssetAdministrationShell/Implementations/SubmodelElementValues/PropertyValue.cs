@@ -9,13 +9,11 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-using System.Globalization;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
 {
-    public class PropertyValue : ValueScope
+	public class PropertyValue : ValueScope
     {    
         public override ModelType ModelType => ModelType.Property;
 
@@ -29,11 +27,6 @@ namespace BaSyx.Models.AdminShell
         public static implicit operator Task<PropertyValue>(PropertyValue value)
         {
             return Task.FromResult(value);
-        }
-
-        public override JsonValue ToJson()
-        {
-            return JsonValue.Create(Value.Value);
         }
 
         public override string ToString()
