@@ -191,7 +191,8 @@ namespace SimpleAssetAdministrationShell
 
         private static void SimpleAssetAdministrationShell_ValueChanged(object sender, ValueChangedArgs e)
         {
-            logger.Info($"Property {e.IdShort} changed to {e.ValueScope.ToJson()}");
+            var propertyValue = e.ValueScope as PropertyValue;
+            logger.Info($"Property {e.IdShort} changed to {propertyValue.Value.Value}");
         }
 
         public static double CalulcateExpression(string expression)
