@@ -26,6 +26,8 @@ using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
+using Range = BaSyx.Models.AdminShell.Range;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -623,9 +625,14 @@ namespace BaSyx.API.Http.Controllers
             var result = serviceProvider.RetrieveSubmodelElementValue(idShortPath);
             if (result.Success && result.Entity != null)
             {
-                JsonValue value = result.Entity.ToJson();
-                return new OkObjectResult(value);
-            }
+                string value = JsonSerializer.Serialize<ValueScope>(result.Entity, new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter() }
+                });
+				return Content(value, "application/json");
+				//JsonValue value = result.Entity.ToJson();
+				//return new OkObjectResult(value);
+			}
             else
                 return result.CreateActionResult(CrudOperation.Retrieve);
         }
@@ -645,7 +652,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult PatchSubmodelElementValueByPathValueOnly(string idShortPath, [FromBody] JsonElement requestBody, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult PatchSubmodelElementValueByPathValueOnly(string idShortPath, [FromBody] JsonDocument requestBody, [FromQuery] RequestLevel level = RequestLevel.Core)
         {
             if (string.IsNullOrEmpty(idShortPath))
                 return ResultHandling.NullResult(nameof(idShortPath));
@@ -657,43 +664,55 @@ namespace BaSyx.API.Http.Controllers
                 return sme_retrieved.CreateActionResult(CrudOperation.Retrieve);
 
             SubmodelElement sme = sme_retrieved.Entity as SubmodelElement;
+            ValueScope valueScope;
 
-            ElementValue elementValue = null;
-            switch (requestBody.ValueKind)
+            if(sme.ModelType == ModelType.Property)
             {
-                case JsonValueKind.Undefined:
-                    break;
-                case JsonValueKind.Object:
-                    break;
-                case JsonValueKind.Array:
-                    break;
-                case JsonValueKind.String:
-                    if (sme is Property propString)
-                        elementValue = new ElementValue(requestBody.GetString(), propString.ValueType);
-                    else
-                        return new Result(false, new ErrorMessage("SubmodelElement is not a Property")).CreateActionResult(CrudOperation.Update);
-                    break;
-                case JsonValueKind.Number:
-                    if (sme is Property propNumber)
-                        elementValue = new ElementValue(requestBody.GetRawText(), propNumber.ValueType);
-                    else
-                        return new Result(false, new ErrorMessage("SubmodelElement is not a Property")).CreateActionResult(CrudOperation.Update);
-                    break;
-                case JsonValueKind.True:
-                case JsonValueKind.False:
-                    if (sme is Property propBoolean)
-                        elementValue = new ElementValue(requestBody.GetBoolean(), propBoolean.ValueType);
-                    else
-                        return new Result(false, new ErrorMessage("SubmodelElement is not a Property")).CreateActionResult(CrudOperation.Update);
-                    break;
-                case JsonValueKind.Null:
-                    break;
-                default:
-                    break;
-            }
+				Property property = sme as Property;
+				//ElementValue elementValue;
+				//switch (requestBody.ValueKind)
+				//{
+				//	case JsonValueKind.String:
+				//		elementValue = new ElementValue(requestBody.GetString(), property.ValueType);
+				//		break;
+				//	case JsonValueKind.Number:
+				//	    elementValue = new ElementValue(requestBody.GetRawText(), property.ValueType);
+				//		break;
+				//	case JsonValueKind.True:
+				//	case JsonValueKind.False:
+				//		elementValue = new ElementValue(requestBody.GetBoolean(), property.ValueType);
+				//		break;
+				//	default:
+				//		return new Result(false, new ErrorMessage($"JsonValueKind {requestBody.ValueKind} is not accepted")).CreateActionResult(CrudOperation.Update);
+				//}
+				//valueScope = new PropertyValue(elementValue);
 
-            PropertyValue propertyValue = new PropertyValue(elementValue);
-            var result = serviceProvider.UpdateSubmodelElementValue(idShortPath, propertyValue);
+				valueScope = requestBody.Deserialize<PropertyValue>(new JsonSerializerOptions()
+				{
+					Converters = { new ValueScopeConverter<PropertyValue>(property.ValueType) }
+				});
+			}
+            else if (sme.ModelType == ModelType.Range)
+            {
+                Range range = sme as Range;
+                valueScope = requestBody.Deserialize<RangeValue>(new JsonSerializerOptions() 
+                { 
+                    Converters = { new ValueScopeConverter<RangeValue>(range.ValueType) }
+                });
+            }
+            else if (sme.ModelType == ModelType.MultiLanguageProperty)
+            {
+				valueScope = requestBody.Deserialize<MultiLanguagePropertyValue>(new JsonSerializerOptions()
+				{
+					Converters = { new ValueScopeConverter<MultiLanguagePropertyValue>() }
+				});
+			}
+            else
+            {
+				return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
+			}
+
+            var result = serviceProvider.UpdateSubmodelElementValue(idShortPath, valueScope);
             return result.CreateActionResult(CrudOperation.Update);
         }
 
