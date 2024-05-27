@@ -26,7 +26,8 @@ namespace BaSyx.Models.Extensions
         {
 			_options = new JsonSerializerOptions();
 			_options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull | JsonIgnoreCondition.WhenWritingDefault;
-			_options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            _options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+			_options.Converters.Add(new JsonStringEnumConverter());
 		}
 
         public JsonSerializerOptions Build() { return _options; }
@@ -44,8 +45,7 @@ namespace BaSyx.Models.Extensions
         }
 
         public DefaultJsonSerializerOptions() : base()
-        {
-            _options.Converters.Add(new JsonStringEnumConverter());
+        {            
             _options.Converters.Add(new DataTypeConverter());
             _options.Converters.Add(new ModelTypeConverter());
             _options.Converters.Add(new ValueScopeConverter());
