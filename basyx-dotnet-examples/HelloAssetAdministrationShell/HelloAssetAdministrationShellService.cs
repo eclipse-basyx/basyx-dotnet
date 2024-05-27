@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Range = BaSyx.Models.AdminShell.Range;
 
 namespace HelloAssetAdministrationShell
 {
@@ -116,6 +117,8 @@ namespace HelloAssetAdministrationShell
                 SemanticId = new Reference(new Key(KeyType.GlobalReference, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
             };
             string myTestProperty = "MyTestString";
+            RangeValue myTestRangeValue = new RangeValue() { Min = new ElementValue<int>(3), Max = new ElementValue<int>(5) };
+
             helloSubmodel.SubmodelElements = new ElementContainer<ISubmodelElement>
             {
                 //new Property<string>("HelloProperty")
@@ -139,21 +142,24 @@ namespace HelloAssetAdministrationShell
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary MultiLanguageProperty") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloMultiLanguageProperty", "1.0.0").ToUrn())),
-                    Value = new LangStringSet()
+                    Value = new MultiLanguagePropertyValue(new LangStringSet()
                     {
                         new LangString("en", "This is a label in English"),
                         new LangString("de", "Das ist ein Bezeichner in deutsch")
-                    }
+                    })
                 },
-                new BaSyx.Models.AdminShell.Range("HelloRange")
+                new Range("HelloRange")
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary Range") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloRange", "1.0.0").ToUrn())),
                     ValueType = new DataType(DataObjectType.Int32),
-                    Value = new RangeValue()
+                    Get = (r) =>
                     {
-                        Min = new ElementValue<int>(3),
-                        Max = new ElementValue<int>(5)
+                        return Task.FromResult(myTestRangeValue);
+                    },
+                    Set = (r, v) =>
+                    {
+                        myTestRangeValue = v; return Task.CompletedTask;
                     }
                 },
                 new RelationshipElement("HelloRelationshipElement")
