@@ -52,11 +52,13 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 MultiLanguageProperty multiLanguageProperty = new MultiLanguageProperty(castedMultiLanguageProperty.IdShort)
                 {
-                    Value = castedMultiLanguageProperty.Value?.ConvertAll(l => new LangString(l.Language, l.Text))?.ToLangStringSet(),
                     ValueId = castedMultiLanguageProperty.ValueId?.ToReference_V3_0()
                 };
+                var value = castedMultiLanguageProperty.Value?.ConvertAll(l => new LangString(l.Language, l.Text))?.ToLangStringSet();
+                if(value != null)
+                    multiLanguageProperty.Value = new MultiLanguagePropertyValue(value);
 
-                submodelElement = multiLanguageProperty;
+				submodelElement = multiLanguageProperty;
             }
             else if (modelType == ModelType.Range && envSubmodelElement is Range_V3_0 castedRange)
             {
@@ -338,10 +340,15 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 environmentSubmodelElement = new MultiLanguageProperty_V3_0(submodelElementType)
                 {
-                    Value = castedMultiLanguageProperty.Value?.ToEnvironmentLangStringSet(),
                     ValueId = castedMultiLanguageProperty.ValueId?.ToEnvironmentReference_V3_0()
                 };
-            }
+
+                var value = castedMultiLanguageProperty.GetValueScope().Result;
+                if (value is MultiLanguagePropertyValue mlpValue)
+                    (environmentSubmodelElement as MultiLanguageProperty_V3_0).Value = mlpValue.Value.ToEnvironmentLangStringSet();
+
+
+			}
             else if (modelType == ModelType.Range && element is IRange castedRange)
             {
                 environmentSubmodelElement = new Range_V3_0(submodelElementType)

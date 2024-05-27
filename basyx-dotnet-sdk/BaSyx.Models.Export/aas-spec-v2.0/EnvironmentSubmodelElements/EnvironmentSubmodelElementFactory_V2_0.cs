@@ -51,7 +51,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 MultiLanguageProperty multiLanguageProperty = new MultiLanguageProperty(castedMultiLanguageProperty.IdShort)
                 {
-                    Value = castedMultiLanguageProperty.Value,
+                    Value = new MultiLanguagePropertyValue(castedMultiLanguageProperty.Value),
                     ValueId = castedMultiLanguageProperty.ValueId?.ToReference_V2_0()
                 };
 
