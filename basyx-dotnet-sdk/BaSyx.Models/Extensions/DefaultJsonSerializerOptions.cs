@@ -19,10 +19,21 @@ using System.Linq;
 
 namespace BaSyx.Models.Extensions
 {
-    public class DefaultJsonSerializerOptions
+    public class GlobalJsonSerializerOptions
     {
-        JsonSerializerOptions _options;
+		protected JsonSerializerOptions _options;
+		public GlobalJsonSerializerOptions()
+        {
+			_options = new JsonSerializerOptions();
+			_options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull | JsonIgnoreCondition.WhenWritingDefault;
+			_options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+		}
 
+        public JsonSerializerOptions Build() { return _options; }
+	}
+
+    public class DefaultJsonSerializerOptions : GlobalJsonSerializerOptions
+    {
         public static JsonSerializerOptions CreateDefaultJsonSerializerOptions(IDependencyInjectionExtension extension = null)
         {
             DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
@@ -32,12 +43,8 @@ namespace BaSyx.Models.Extensions
             return options.Build();
         }
 
-        public DefaultJsonSerializerOptions()
+        public DefaultJsonSerializerOptions() : base()
         {
-            _options = new JsonSerializerOptions();
-            _options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull | JsonIgnoreCondition.WhenWritingDefault;
-            _options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-
             _options.Converters.Add(new JsonStringEnumConverter());
             _options.Converters.Add(new DataTypeConverter());
             _options.Converters.Add(new ModelTypeConverter());
@@ -81,9 +88,6 @@ namespace BaSyx.Models.Extensions
             _options.Converters.Add(new SubmodelElementConverter());
             return this;
         }
-
-        public JsonSerializerOptions Build() => _options;
-
 
         private static void DefaultValueModifier(JsonTypeInfo info)
         {
