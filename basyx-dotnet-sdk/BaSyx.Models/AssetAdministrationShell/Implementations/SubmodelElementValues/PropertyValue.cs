@@ -28,16 +28,6 @@ namespace BaSyx.Models.AdminShell
         {
             return Task.FromResult(value);
         }
-
-        public override string ToString()
-        {
-            if(Value?.Value is double dbl)
-                return dbl.ToString(_nfi);
-            else if (Value?.Value is float flt)
-                return flt.ToString(_nfi);
-            else
-                return Value?.Value?.ToString();
-        }
     }
 
     public class PropertyValue<T> : PropertyValue

@@ -21,12 +21,12 @@
                     return;
                 }
 
-                if (relationship.Annotations != null)
+                if (relationship.Value?.Annotations != null)
                 {
                     <li class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-sm-2"><b>Value</b></div>
-                            <div class="col-sm-10">Count: @relationship.Annotations.Count()</div>
+                            <div class="col-sm-10">Count: @relationship.Value.Annotations.Count()</div>
                         </div>
                     </li>
                 }
@@ -58,13 +58,13 @@
                 <li class="list-group-item">
                     <div class="row align-items-center">
                         <div class="col-sm-2"><b>ContentType</b></div>
-                        <div class="col-sm-10">@blob.ContentType</div>
+                        <div class="col-sm-10">@blob.Value.ContentType</div>
                     </div>
                 </li>
                 <li class="list-group-item">
                     <div class="row align-items-center">
                         <div class="col-sm-2"><b>Value</b></div>
-                        <div class="col-sm-10">@blob.Value</div>
+                        <div class="col-sm-10">@blob.Value.Value</div>
                     </div>
                 </li>
             }
@@ -86,7 +86,7 @@
                 <li class="list-group-item">
                     <div class="row align-items-center">
                         <div class="col-sm-2"><b>ContentType</b></div>
-                        <div class="col-sm-10">@file.ContentType</div>
+                        <div class="col-sm-10">@file.Value.ContentType</div>
                     </div>
                 </li>
                 <li class="list-group-item">
@@ -115,7 +115,7 @@
                             {
                                 <iframe src="@result.AbsoluteUri" style="min-height:500px; width:100%"></iframe>
                             }
-                            else if (!string.IsNullOrEmpty(file.ContentType) && file.ContentType.StartsWith("image"))
+                            else if (!string.IsNullOrEmpty(file.Value.ContentType) && file.Value.ContentType.StartsWith("image"))
                             {
                                 <img src="@("/files" + separator + path)" style="display:block; max-width:100%; height:auto" />
                             }
@@ -335,7 +335,7 @@
 {
     public string GetPath(IFileElement file)
     {
-        string content = file.Value;
+        string content = file.Value.Value;
         if (string.IsNullOrEmpty(content))
             return string.Empty;
 

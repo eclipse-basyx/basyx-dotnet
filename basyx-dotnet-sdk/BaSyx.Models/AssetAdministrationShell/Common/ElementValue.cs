@@ -110,6 +110,16 @@ namespace BaSyx.Models.AdminShell
         {
             return new ElementValue(iValue.Result.Value, iValue.Result.ValueType);
         }
+
+        public override string ToString()
+        {
+            if (Value is double dbl)
+                return dbl.ToString(IValue._nfi);
+            else if (Value is float flt)
+                return flt.ToString(IValue._nfi);
+            else
+                return Value.ToString();
+        }
     }
 
     [DataContract]

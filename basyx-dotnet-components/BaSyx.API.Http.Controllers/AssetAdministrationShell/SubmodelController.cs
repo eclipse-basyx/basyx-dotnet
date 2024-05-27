@@ -627,7 +627,14 @@ namespace BaSyx.API.Http.Controllers
             {
                 string value = JsonSerializer.Serialize<ValueScope>(result.Entity, new JsonSerializerOptions()
                 {
-                    Converters = { new ValueScopeConverter() }
+                    Converters =
+                    {
+                        new ValueScopeConverter(options: new ValueScopeConverterOptions()
+                        {
+                            SerializationOption = SerializationOption.ValueOnly,
+                            ValueAsString = false
+                        })
+                    }
                 });
 				return Content(value, "application/json");
 			}
@@ -687,7 +694,7 @@ namespace BaSyx.API.Http.Controllers
 
 				valueScope = requestBody.Deserialize<PropertyValue>(new JsonSerializerOptions()
 				{
-					Converters = { new ValueScopeConverter<PropertyValue>(property.ValueType) }
+					Converters = { new ValueScopeConverter<PropertyValue>(dataType: property.ValueType) }
 				});
 			}
             else if (sme.ModelType == ModelType.Range)
@@ -695,7 +702,7 @@ namespace BaSyx.API.Http.Controllers
                 Range range = sme as Range;
                 valueScope = requestBody.Deserialize<RangeValue>(new JsonSerializerOptions() 
                 { 
-                    Converters = { new ValueScopeConverter<RangeValue>(range.ValueType) }
+                    Converters = { new ValueScopeConverter<RangeValue>(dataType: range.ValueType) }
                 });
             }
             else if (sme.ModelType == ModelType.MultiLanguageProperty)
@@ -717,6 +724,30 @@ namespace BaSyx.API.Http.Controllers
                 valueScope = requestBody.Deserialize<RelationshipElementValue>(new JsonSerializerOptions()
                 {
                     Converters = { new ValueScopeConverter<RelationshipElementValue>(jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.AnnotatedRelationshipElement)
+            {
+                valueScope = requestBody.Deserialize<AnnotatedRelationshipElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<AnnotatedRelationshipElementValue>(
+                        sme: sme, 
+                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly }, 
+                        jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.File)
+            {
+                valueScope = requestBody.Deserialize<FileElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<FileElementValue>() }
+                });
+            }
+            else if (sme.ModelType == ModelType.Blob)
+            {
+                valueScope = requestBody.Deserialize<BlobValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<BlobValue>() }
                 });
             }
             else
@@ -789,7 +820,7 @@ namespace BaSyx.API.Http.Controllers
                 return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
 
             IFileElement fileElement = fileElementRetrieved.Entity.Cast<IFileElement>();
-            string fileName = fileElement.Value.TrimStart('/');
+            string fileName = fileElement.Value.Value.TrimStart('/');
 
             IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
             var file = fileProvider.GetFileInfo(fileName);
@@ -832,7 +863,7 @@ namespace BaSyx.API.Http.Controllers
                 return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
 
             IFileElement fileElement = fileElementRetrieved.Entity.Cast<IFileElement>();
-            string fileName = fileElement.Value.TrimStart('/');
+            string fileName = fileElement.Value.Value.TrimStart('/');
             string filePath = Path.Combine(hostingEnvironment.ContentRootPath, fileName);
             
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));

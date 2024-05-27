@@ -132,7 +132,7 @@ namespace BaSyx.Models.Extensions
                             while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                             {
                                 ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
-                                arel3.Annotations.Add(sme);
+                                arel3.Value.Annotations.Add(sme);
                             }
                         }
                         break;
@@ -140,9 +140,9 @@ namespace BaSyx.Models.Extensions
                     #region File/Blob
                     case "contentType":
                         if (submodelElement is Blob b1)
-                            b1.ContentType = reader.GetString();
+                            b1.Value.ContentType = reader.GetString();
                         else if (submodelElement is FileElement f1)
-                            f1.ContentType = reader.GetString();
+                            f1.Value.ContentType = reader.GetString();
                         break;
                     #endregion
                     #region Operation
@@ -329,11 +329,11 @@ namespace BaSyx.Models.Extensions
 						}
                         else if (submodelElement is Blob blob)
                         {
-                            blob.Value = reader.GetString();
+                            blob.Value.Value = reader.GetString();
                         }
                         else if (submodelElement is FileElement file)
                         {
-                            file.Value = reader.GetString();
+                            file.Value.Value = reader.GetString();
                         }
 
                         break;

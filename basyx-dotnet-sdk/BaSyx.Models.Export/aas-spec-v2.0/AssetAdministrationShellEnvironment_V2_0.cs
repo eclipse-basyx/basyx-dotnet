@@ -138,16 +138,16 @@ namespace BaSyx.Models.Export
         {
             foreach (var smElement in submodelElements)
             {
-                if (smElement is AdminShell.FileElement file)
+                if (smElement is FileElement file)
                 {
-                    string filePath = ContentRoot + file.Value.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-                    if (System.IO.File.Exists(filePath))
+                    string filePath = ContentRoot + file.Value.Value.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+                    if (File.Exists(filePath))
                     {
-                        string destinationPath = file.Value;
+                        string destinationPath = file.Value.Value;
                         if (!destinationPath.StartsWith(AASX_V2_0.AASX_FOLDER))
                             destinationPath = AASX_V2_0.AASX_FOLDER + destinationPath;
 
-                        file.Value = destinationPath;
+                        file.Value.Value = destinationPath;
                         SupplementalFiles.Add(filePath, file);
                     }
                 }

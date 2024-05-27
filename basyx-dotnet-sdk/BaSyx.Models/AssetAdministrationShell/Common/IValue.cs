@@ -9,12 +9,20 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System;
+using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     public interface IValue
     {
+        internal static NumberFormatInfo _nfi;
+        static IValue()
+        {
+            _nfi = new NumberFormatInfo();
+            _nfi.NumberDecimalSeparator = ".";
+        }
+
         [IgnoreDataMember]
         object Value { get; set; }
         [IgnoreDataMember]

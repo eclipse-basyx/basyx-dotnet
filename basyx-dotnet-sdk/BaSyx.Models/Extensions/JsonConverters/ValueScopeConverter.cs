@@ -15,17 +15,25 @@ using System.Buffers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Nodes;
+using System.Reflection.Metadata;
 
 namespace BaSyx.Models.Extensions
 {
+	public enum SerializationOption
+	{
+		FullModel,
+		ValueOnly
+	}
 	public class ValueScopeConverterOptions
 	{
 		public bool EnclosingObject { get; set; } = true;
-	}
+        public bool ValueAsString { get; set; } = false;
+        public SerializationOption SerializationOption { get; set; } = SerializationOption.FullModel;
+    }
 	public class ValueScopeConverter : ValueScopeConverter<ValueScope> 
 	{ 
 		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null):
-			base(null, options, jsonOptions)
+			base(null, null, options, jsonOptions)
 		{ }
 	}
     public class ValueScopeConverter<TValueScope> : JsonConverter<ValueScope> where TValueScope : ValueScope
@@ -39,11 +47,14 @@ namespace BaSyx.Models.Extensions
 		private DataType _dataType;
 		private ValueScopeConverterOptions _converterOptions;
 		private JsonSerializerOptions _jsonOptions;
-		public ValueScopeConverter(DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null) 
+		private ISubmodelElement _sme;
+
+		public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null) 
 		{
 			_dataType = dataType;
 			_converterOptions = options ?? new ValueScopeConverterOptions();
 			_jsonOptions = jsonOptions;
+			_sme = sme;
 		}
 		public override bool CanConvert(Type typeToConvert)
 		{
@@ -54,12 +65,12 @@ namespace BaSyx.Models.Extensions
 		}
 		public override ValueScope Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if(typeof(TValueScope) == typeof(PropertyValue))
+            if(typeof(TValueScope) == typeof(PropertyValue) || typeToConvert == typeof(PropertyValue))
             {
 				ElementValue elementValue = GetElementValue(ref reader, _dataType);
 				return new PropertyValue(elementValue);
 			}
-			else if (typeof(TValueScope) == typeof(RangeValue))
+			else if (typeof(TValueScope) == typeof(RangeValue) || typeToConvert == typeof(RangeValue))
 			{
 				RangeValue rangeValue = new RangeValue();
 
@@ -85,7 +96,7 @@ namespace BaSyx.Models.Extensions
 				}
 				throw new JsonException("Utf8JsonReader did not finished reading");
 			}
-			else if(typeof(TValueScope) == typeof(MultiLanguagePropertyValue))
+			else if(typeof(TValueScope) == typeof(MultiLanguagePropertyValue) || typeToConvert == typeof(MultiLanguagePropertyValue))
 			{
 				MultiLanguagePropertyValue mlpValue = new MultiLanguagePropertyValue();
 
@@ -103,7 +114,7 @@ namespace BaSyx.Models.Extensions
 				}
 				throw new JsonException("Utf8JsonReader did not finished reading");
 			}
-			else if (typeof(TValueScope) == typeof(ReferenceElementValue))
+			else if (typeof(TValueScope) == typeof(ReferenceElementValue) || typeToConvert == typeof(ReferenceElementValue))
 			{
 				ReferenceElementValue refValue = new ReferenceElementValue();
 				var reference = JsonSerializer.Deserialize<IReference>(ref reader, _jsonOptions);
@@ -113,7 +124,7 @@ namespace BaSyx.Models.Extensions
 				return refValue;
 				throw new JsonException("Utf8JsonReader did not finished reading");
 			}
-            else if (typeof(TValueScope) == typeof(RelationshipElementValue))
+            else if (typeof(TValueScope) == typeof(RelationshipElementValue) || typeToConvert == typeof(RelationshipElementValue))
             {
 				RelationshipElementValue relValue = new RelationshipElementValue();
 
@@ -137,7 +148,90 @@ namespace BaSyx.Models.Extensions
                             break;
                     }
                 }
-                return relValue;
+                throw new JsonException("Utf8JsonReader did not finished reading");
+            }
+            else if (typeof(TValueScope) == typeof(AnnotatedRelationshipElementValue) || typeToConvert == typeof(AnnotatedRelationshipElementValue))
+            {
+                AnnotatedRelationshipElementValue arelValue = new AnnotatedRelationshipElementValue();
+
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonTokenType.EndObject)
+                        return arelValue;
+
+                    if (reader.TokenType != JsonTokenType.PropertyName)
+                        continue;
+
+                    string propertyName = reader.GetString();
+                    reader.Read();
+                    switch (propertyName)
+                    {
+                        case "first":
+                            arelValue.First = JsonSerializer.Deserialize<IReference>(ref reader, _jsonOptions);
+                            break;
+                        case "second":
+                            arelValue.Second = JsonSerializer.Deserialize<IReference>(ref reader, _jsonOptions);
+                            break;
+                        case "annotations":
+							if(_converterOptions.SerializationOption == SerializationOption.FullModel)
+								arelValue.Annotations = JsonSerializer.Deserialize<IElementContainer<ISubmodelElement>>(ref reader, _jsonOptions);
+							else
+								arelValue.Annotations = UpdateElementContainer((_sme as AnnotatedRelationshipElement).Value.Annotations, ref reader, _jsonOptions);
+                            break;
+                    }
+                }
+                throw new JsonException("Utf8JsonReader did not finished reading");
+            }
+            else if (typeof(TValueScope) == typeof(BlobValue) || typeToConvert == typeof(BlobValue))
+            {
+                BlobValue blobValue = new BlobValue();
+
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonTokenType.EndObject)
+                        return blobValue;
+
+                    if (reader.TokenType != JsonTokenType.PropertyName)
+                        continue;
+
+                    string propertyName = reader.GetString();
+                    reader.Read();
+                    switch (propertyName)
+                    {
+                        case "contentType":
+                            blobValue.ContentType = reader.GetString();
+                            break;
+                        case "value":
+                            blobValue.Value = reader.GetString();
+                            break;
+                    }
+                }
+                throw new JsonException("Utf8JsonReader did not finished reading");
+            }
+            else if (typeof(TValueScope) == typeof(FileElementValue) || typeToConvert == typeof(FileElementValue))
+            {
+                FileElementValue fileElementValue = new FileElementValue();
+
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonTokenType.EndObject)
+                        return fileElementValue;
+
+                    if (reader.TokenType != JsonTokenType.PropertyName)
+                        continue;
+
+                    string propertyName = reader.GetString();
+                    reader.Read();
+                    switch (propertyName)
+                    {
+                        case "contentType":
+                            fileElementValue.ContentType = reader.GetString();
+                            break;
+                        case "value":
+                            fileElementValue.Value = reader.GetString();
+                            break;
+                    }
+                }
                 throw new JsonException("Utf8JsonReader did not finished reading");
             }
             else
@@ -146,11 +240,43 @@ namespace BaSyx.Models.Extensions
 			}                    
         }
 
+        private IElementContainer<ISubmodelElement> UpdateElementContainer(IElementContainer<ISubmodelElement> sourceContainer, ref Utf8JsonReader reader, JsonSerializerOptions jsonOptions)
+        {
+			if(sourceContainer == null)
+                throw new JsonException("SubmodelElement-SourceContainer is null");
+
+            while (reader.TokenType != JsonTokenType.StartArray)
+                reader.Read();
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndArray)
+                    return sourceContainer;
+
+                if(reader.TokenType != JsonTokenType.PropertyName)
+                        continue;
+
+                string propertyName = reader.GetString();
+                reader.Read();
+
+				var sme = sourceContainer.GetChild(propertyName).Value;
+				if(sme.ModelType == ModelType.Property)
+				{
+					var valueScope = Read(ref reader, typeof(PropertyValue), jsonOptions);
+                    sme.SetValueScope(valueScope);
+                }
+            }
+            throw new JsonException("Malformed json");
+        }
+
         public override void Write(Utf8JsonWriter writer, ValueScope value, JsonSerializerOptions options)
         {
             if (value is PropertyValue propValue)
             {
-                JsonSerializer.Serialize(writer, JsonValue.Create(propValue.Value.Value), _options);
+				if(_converterOptions.ValueAsString)
+					writer.WriteStringValue(propValue.Value.ToString());                
+				else
+					JsonSerializer.Serialize(writer, JsonValue.Create(propValue.Value.Value), _options);
             }
 			else if (value is RangeValue rangeValue)
 			{
@@ -158,47 +284,95 @@ namespace BaSyx.Models.Extensions
 					JsonSerializer.Serialize(writer, JsonValue.Create(new { Min = rangeValue.Min.Value, Max = rangeValue.Max.Value }), _options);
 				else
 				{
-					writer.WriteString("min", rangeValue.Min.Value.ToString());
-					writer.WriteString("max", rangeValue.Max.Value.ToString());
+					writer.WriteString("min", rangeValue.Min.ToString());
+					writer.WriteString("max", rangeValue.Max.ToString());
 				}
 			}
 			else if (value is MultiLanguagePropertyValue mlpValue)
 			{
-				JsonArray mlpValueArray = new JsonArray();
-				foreach (var item in mlpValue.Value)
-				{
-					JsonObject itemObj = new JsonObject
-					{
-						{ item.Language, JsonValue.Create(item.Text) }
-					};
-					mlpValueArray.Add(itemObj);
-				}
-				JsonSerializer.Serialize(writer, mlpValueArray, _options);
+                writer.WriteStartArray();
+                foreach (var langPair in mlpValue.Value)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString(langPair.Language, langPair.Text);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
 			}
 			else if (value is ReferenceElementValue refValue)
 			{
 				JsonSerializer.Serialize(writer, refValue.Value, _options);
 			}
-			else if (value is RelationshipElementValue relValue)
-			{
-				if (_converterOptions.EnclosingObject)
-				{
-					JsonSerializer.Serialize(writer, JsonValue.Create(new 
-					{ 
-						First = JsonValue.Create(relValue.First), 
-						Second = JsonValue.Create(relValue.Second)
-					}), _options);
-				}					
-				else
-				{
-					writer.WritePropertyName("first");
-					JsonSerializer.Serialize(writer, relValue.First, _options);
+            else if (value is AnnotatedRelationshipElementValue arelValue)
+            {
+                if (_converterOptions.EnclosingObject)
+					writer.WriteStartObject();
 
-					writer.WritePropertyName("second");
-					JsonSerializer.Serialize(writer, relValue.Second, _options);
-				}
+                writer.WritePropertyName("first");
+                JsonSerializer.Serialize(writer, arelValue.First, _options);
+
+                writer.WritePropertyName("second");
+                JsonSerializer.Serialize(writer, arelValue.Second, _options);
+
+                writer.WritePropertyName("annotations");
+                writer.WriteStartArray();
+                foreach (var annotation in arelValue.Annotations)
+                {
+					if (_converterOptions.SerializationOption == SerializationOption.FullModel)
+					{
+						JsonSerializer.Serialize(writer, annotation, _jsonOptions);
+					}
+                    else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
+					{
+                        var annotationValueScope = annotation.GetValueScope().Result;
+                        writer.WriteStartObject();
+                        writer.WritePropertyName(annotation.IdShort);
+                        Write(writer, annotationValueScope, _options);
+                        writer.WriteEndObject();
+                    }                   
+                }
+                writer.WriteEndArray();
+
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteEndObject();
+            }
+            else if (value is RelationshipElementValue relValue)
+			{
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteStartObject();
+
+                writer.WritePropertyName("first");
+                JsonSerializer.Serialize(writer, relValue.First, _options);
+
+                writer.WritePropertyName("second");
+                JsonSerializer.Serialize(writer, relValue.Second, _options);
+
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteEndObject();
 			}
-		}
+            else if (value is BlobValue blobValue)
+            {
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteStartObject();
+
+                writer.WriteString("contentType", blobValue.ContentType);
+                writer.WriteString("value", blobValue.Value);
+
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteEndObject();
+            }
+            else if (value is FileElementValue fileElementValue)
+            {
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteStartObject();
+
+                writer.WriteString("contentType", fileElementValue.ContentType);
+                writer.WriteString("value", fileElementValue.Value);
+
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteEndObject();
+            }
+        }
 
 		public ElementValue GetElementValue(ref Utf8JsonReader reader, DataType dataType = null)
 		{

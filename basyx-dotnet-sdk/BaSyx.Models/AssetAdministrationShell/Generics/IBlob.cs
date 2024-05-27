@@ -8,27 +8,14 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     /// <summary>
     /// A BLOB is a data element that represents a file that is contained with its source code in the value attribute.
     /// </summary>
-    public interface IBlob : ISubmodelElement
+    public interface IBlob : ISubmodelElement<BlobValue>
     {
-        /// <summary>
-        /// Mime type of the content of the BLOB.  
-        ///  The mime type states which file extension the file has. e.g. “application/json”, “application/xls”, ”image/jpg” 
-        ///  The allowed values are defined as in RFC2046.
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "contentType")]
-        string ContentType { get; }
 
-        /// <summary>
-        /// The value of the BLOB instance of a blob data element.  
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        string Value { get; }
     }
 }

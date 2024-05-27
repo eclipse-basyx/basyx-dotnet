@@ -8,19 +8,12 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Runtime.Serialization;
-
 namespace BaSyx.Models.AdminShell
 {
     /// <summary>
     /// An annotated relationship element is a relationship element that can be annotated with additional data elements. 
     /// </summary>
-    public interface IAnnotatedRelationshipElement : IRelationshipElement
-    {
-        /// <summary>
-        /// Annotations that hold for the relationships between the two elements.
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "annotation")]
-        IElementContainer<ISubmodelElement> Annotations { get; set; }
+    public interface IAnnotatedRelationshipElement : ISubmodelElement<AnnotatedRelationshipElementValue>
+    {      
     }
 }

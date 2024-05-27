@@ -76,8 +76,11 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 FileElement file = new FileElement(castedFile.IdShort)
                 {
-                    ContentType = castedFile.MimeType,
-                    Value = castedFile.Value
+                  Value = new FileElementValue()
+                  {
+                      ContentType = castedFile.MimeType,
+                      Value = castedFile.Value
+                  }
                 };
 
                 submodelElement = file;
@@ -86,10 +89,12 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 Blob blob = new Blob(castedBlob.IdShort)
                 {
-                    ContentType = castedBlob.MimeType
+                    Value = new BlobValue
+                    {
+                        ContentType = castedBlob.MimeType,
+                        Value = castedBlob.Value
+                    }
                 };
-                if(castedBlob.Value != null)
-                    blob.SetValue(castedBlob.Value);
 
                 submodelElement = blob;
             }

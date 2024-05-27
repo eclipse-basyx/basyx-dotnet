@@ -174,6 +174,23 @@ namespace HelloAssetAdministrationShell
                                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
                     }                 
                 },
+                new AnnotatedRelationshipElement("HelloAnnotatedRelationshipElement")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary RelationshipElement") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloRelationshipElement", "1.0.0").ToUrn())),
+                    Value = new AnnotatedRelationshipElementValue()
+                    {
+                           First = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
+                           Second = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
+                           Annotations = new ElementContainer<ISubmodelElement>()
+                           {
+                               new Property<string>("MyConnectionValueString", "TestConnectionValue"),
+                               new Property<int>("MyConnectionValueInt", 5)
+                           }
+                    }
+                },
                 new ReferenceElement("HelloReferenceElement")
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary ReferenceElement") },
@@ -203,14 +220,20 @@ namespace HelloAssetAdministrationShell
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary Blob") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloBlob", "1.0.0").ToUrn())),
-                    ContentType = "application/octet-stream"      ,
-                    Value = "decaf"
+                    Value = new BlobValue()
+                    {
+                        ContentType = "application/octet-stream"      ,
+                        Value = "decaf"
+                    }                    
                 },
                 new FileElement("HelloFile")
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary file attached to the Asset Administration Shell") },
-                    ContentType = "application/pdf",
-                    Value = "/HelloAssetAdministrationShell.pdf"
+                    Value = new FileElementValue()
+                    {
+                        ContentType = "application/pdf",
+                        Value = "/HelloAssetAdministrationShell.pdf"
+                    }
                 },
                 new Operation("HelloOperation")
                 {

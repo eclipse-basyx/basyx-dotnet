@@ -11,14 +11,13 @@
 
 namespace BaSyx.Models.AdminShell
 {
-    public class AnnotatedRelationshipElement : RelationshipElement, IAnnotatedRelationshipElement
+    public class AnnotatedRelationshipElement : SubmodelElement<AnnotatedRelationshipElementValue>, IAnnotatedRelationshipElement
     {
         public override ModelType ModelType => ModelType.AnnotatedRelationshipElement;
-        public IElementContainer<ISubmodelElement> Annotations { get; set; }
 
         public AnnotatedRelationshipElement(string idShort) : base(idShort) 
         {
-            Annotations = new ElementContainer<ISubmodelElement>(this);
+
         }     
     }
 }

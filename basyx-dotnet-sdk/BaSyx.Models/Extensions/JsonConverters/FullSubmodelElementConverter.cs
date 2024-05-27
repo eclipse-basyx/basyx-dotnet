@@ -34,25 +34,36 @@ namespace BaSyx.Models.Extensions
                     var property = (Property)value;
                     var propValue = property.GetValueScope<PropertyValue>();
                     if (propValue != null)
-                        writer.WriteString("value", propValue.ToString());
+                    {
+                        writer.WritePropertyName("value");
+                        JsonSerializer.Serialize(writer, propValue, new JsonSerializerOptions()
+                        {
+                            Converters =
+                            {
+                                new ValueScopeConverter<PropertyValue>(options: new ValueScopeConverterOptions()
+                                {
+                                    ValueAsString = true
+                                }, jsonOptions: options)
+                            }
+                        });
+                    }
                     break;
                 case ModelTypes.AnnotatedRelationshipElement:
                     var are = (AnnotatedRelationshipElement)value;
-                    //if (are.First != null)
-                    //{
-                    //    writer.WritePropertyName("first");
-                    //    JsonSerializer.Serialize(writer, are.First, options);
-                    //}
-                    //if (are.Second != null)
-                    //{
-                    //    writer.WritePropertyName("second");
-                    //    JsonSerializer.Serialize(writer, are.Second, options);
-                    //}
-                    //if (are.Annotations != null)
-                    //{
-                    //    writer.WritePropertyName("annotations");
-                    //    JsonSerializer.Serialize(writer, are.Annotations, options);
-                    //}
+                    var areValue = are.GetValueScope<AnnotatedRelationshipElementValue>();
+                    if(areValue != null)
+                    {
+                        JsonSerializer.Serialize(writer, areValue, new JsonSerializerOptions()
+                        {
+                            Converters =
+                            {
+                                new ValueScopeConverter<AnnotatedRelationshipElementValue>(options: new ValueScopeConverterOptions()
+                                {
+                                    EnclosingObject = false
+                                }, jsonOptions: options)
+                            }
+                        });
+                    }
                     break;
                 case ModelTypes.RelationshipElement:
                     var re = (RelationshipElement)value;
@@ -81,17 +92,37 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.Blob:
                     var blob = (Blob)value;
-                    if (!string.IsNullOrEmpty(blob.ContentType))
-                        writer.WriteString("contentType", blob.ContentType);
-                    if (!string.IsNullOrEmpty(blob.Value))
-                        writer.WriteString("value", blob.Value);
+                    var blobValue = blob.GetValueScope<BlobValue>();
+                    if (blobValue != null)
+                    {
+                        JsonSerializer.Serialize(writer, blobValue, new JsonSerializerOptions()
+                        {
+                            Converters =
+                            {
+                                new ValueScopeConverter<BlobValue>(options: new ValueScopeConverterOptions()
+                                {
+                                    EnclosingObject = false
+                                })
+                            }
+                        });
+                    }                
                     break;
                 case ModelTypes.File:
                     var file = (FileElement)value;
-                    if (!string.IsNullOrEmpty(file.ContentType))
-                        writer.WriteString("contentType", file.ContentType);
-                    if (!string.IsNullOrEmpty(file.Value))
-                        writer.WriteString("value", file.Value);
+                    var fileElementValue = file.GetValueScope<FileElementValue>();
+                    if (fileElementValue != null)
+                    {
+                        JsonSerializer.Serialize(writer, fileElementValue, new JsonSerializerOptions()
+                        {
+                            Converters =
+                            {
+                                new ValueScopeConverter<FileElementValue>(options: new ValueScopeConverterOptions()
+                                {
+                                    EnclosingObject = false
+                                })
+                            }
+                        });
+                    }
                     break;
                 case ModelTypes.Entity:
                     var entity = (Entity)value;
@@ -127,7 +158,7 @@ namespace BaSyx.Models.Extensions
 						{
 							Converters = 
                             { 
-                                new ValueScopeConverter<RangeValue>(range.ValueType, new ValueScopeConverterOptions()
+                                new ValueScopeConverter<RangeValue>(null, range.ValueType, new ValueScopeConverterOptions()
                                 {
                                     EnclosingObject = false
                                 }) 

@@ -8,43 +8,18 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Utils.Extensions;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
-    public class Blob : SubmodelElement, IBlob
+    public class Blob : SubmodelElement<BlobValue>, IBlob
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.Blob;
 
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "contentType")]
-        public string ContentType { get; set; }
-
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        public new string Value { get; set; }
-
         public Blob(string idShort) : base(idShort) 
         {
-        }
-
-        public void SetValue(byte[] bytes)
-        {
-            Value = StringOperations.Base64Encode(bytes);
-        }
-
-        public void SetValue(string value)
-        {
-            if (StringOperations.IsBase64String(value))
-                Value = value;
-            else
-                Value = StringOperations.Base64Encode(value);
-        }
-
-        public byte[] GetBytes()
-        {
-            return StringOperations.GetBytesFromBase64String(Value);
         }
     }
 }

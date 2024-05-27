@@ -79,8 +79,11 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 FileElement file = new FileElement(castedFile.IdShort)
                 {
-                    ContentType = castedFile.ContentType,
-                    Value = castedFile.Value
+                    Value = new FileElementValue()
+                    {
+                        ContentType = castedFile.ContentType,
+                        Value = castedFile.Value
+                    }
                 };
 
                 submodelElement = file;
@@ -89,10 +92,12 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 Blob blob = new Blob(castedBlob.IdShort)
                 {
-                    ContentType = castedBlob.ContentType
+                    Value = new BlobValue()
+                    {
+                        ContentType = castedBlob.ContentType,
+                        Value = castedBlob.Value
+                    }
                 };
-                if(castedBlob.Value != null)
-                    blob.SetValue(castedBlob.Value);
 
                 submodelElement = blob;
             }
@@ -430,14 +435,14 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             else if (modelType == ModelType.Blob && element is IBlob castedBlob)
                 environmentSubmodelElement = new Blob_V3_0(submodelElementType)
                 {
-                    Value = castedBlob.Value,
-                    ContentType = castedBlob.ContentType
+                    Value = castedBlob.Value?.Value,
+                    ContentType = castedBlob.Value?.ContentType
                 };
             else if (modelType == ModelType.File && element is IFileElement castedFile)
                 environmentSubmodelElement = new File_V3_0(submodelElementType)
                 {                    
-                    Value = castedFile.Value,
-                    ContentType = castedFile.ContentType,
+                    Value = castedFile.Value?.Value,
+                    ContentType = castedFile.Value?.ContentType,
                 };
             else if (modelType == ModelType.ReferenceElement && element is IReferenceElement castedReferenceElement)
                 environmentSubmodelElement = new ReferenceElement_V3_0(submodelElementType)
@@ -458,8 +463,8 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                     Second = castedAnnotatedRelationshipElement.Value?.Second?.ToEnvironmentReference_V3_0()
                 };
                 List<SubmodelElementType_V3_0> environmentSubmodelElements = new List<SubmodelElementType_V3_0>();
-                if (castedAnnotatedRelationshipElement.Annotations?.Count() > 0)
-                    foreach (var smElement in castedAnnotatedRelationshipElement.Annotations)
+                if (castedAnnotatedRelationshipElement.Value?.Annotations?.Count() > 0)
+                    foreach (var smElement in castedAnnotatedRelationshipElement.Value.Annotations)
                         environmentSubmodelElements.Add(smElement.ToEnvironmentSubmodelElement_V3_0());
                 (environmentSubmodelElement as AnnotatedRelationshipElement_V3_0).Annotations = environmentSubmodelElements;
 

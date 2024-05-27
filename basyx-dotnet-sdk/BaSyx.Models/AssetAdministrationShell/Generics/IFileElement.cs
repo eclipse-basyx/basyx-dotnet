@@ -8,25 +8,14 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     /// <summary>
     /// A File is a data element that represents an address to a file. The value is an URI that can represent an absolute or relative path. 
     /// </summary>
-    public interface IFileElement : ISubmodelElement
+    public interface IFileElement : ISubmodelElement<FileElementValue>
     {
-        /// <summary>
-        /// Mime type of the content of the file. 
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "contentType")]
-        string ContentType { get; }
 
-        /// <summary>
-        /// Path and name of the referenced file (with file extension).  The path can be absolute or relative
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        string Value { get; }
     }
 }

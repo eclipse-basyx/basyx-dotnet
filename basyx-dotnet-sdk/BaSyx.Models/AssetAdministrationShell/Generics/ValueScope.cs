@@ -9,18 +9,10 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-using System.Globalization;
-
 namespace BaSyx.Models.AdminShell
 {
     public abstract class ValueScope
-    {
-        internal static NumberFormatInfo _nfi;
-        static ValueScope()
-        {
-            _nfi = new NumberFormatInfo();
-            _nfi.NumberDecimalSeparator = ".";
-        }
+    {    
         public abstract ModelType ModelType { get; }
     }
 }

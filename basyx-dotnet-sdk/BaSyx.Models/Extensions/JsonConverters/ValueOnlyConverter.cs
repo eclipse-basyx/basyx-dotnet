@@ -90,22 +90,22 @@ namespace BaSyx.Models.Extensions
                         }
                     case ModelTypes.File:
                         {
-                            IFileElement file = smElement.Cast<IFileElement>();
-                            writer.WritePropertyName(file.IdShort);
-                            writer.WriteStartObject();
-                            writer.WriteString("contentType", file.ContentType);
-                            writer.WriteString("value", file.Value);
-                            writer.WriteEndObject();
+                            //IFileElement file = smElement.Cast<IFileElement>();
+                            //writer.WritePropertyName(file.IdShort);
+                            //writer.WriteStartObject();
+                            //writer.WriteString("contentType", file.ContentType);
+                            //writer.WriteString("value", file.Value);
+                            //writer.WriteEndObject();
                             break;
                         }
                     case ModelTypes.Blob:
                         {
-                            IBlob blob = smElement.Cast<IBlob>();
-                            writer.WritePropertyName(blob.IdShort);
-                            writer.WriteStartObject();
-                            writer.WriteString("contentType", blob.ContentType);
-                            writer.WriteString("value", blob.Value);
-                            writer.WriteEndObject();
+                            //IBlob blob = smElement.Cast<IBlob>();
+                            //writer.WritePropertyName(blob.IdShort);
+                            //writer.WriteStartObject();
+                            //writer.WriteString("contentType", blob.ContentType);
+                            //writer.WriteString("value", blob.Value);
+                            //writer.WriteEndObject();
                             break;
                         }
                     case ModelTypes.ReferenceElement:

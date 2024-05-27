@@ -399,18 +399,18 @@ namespace BaSyx.Models.Export
                 IFileElement file = fileDestinationMapping.ElementAt(i).Value;
 
                 string relativeDestination;
-                if (!file.Value.StartsWith(AASX_FOLDER))
-                    relativeDestination = AASX_FOLDER + file.Value;
+                if (!file.Value.Value.StartsWith(AASX_FOLDER))
+                    relativeDestination = AASX_FOLDER + file.Value?.Value;
                 else
-                    relativeDestination = file.Value;
+                    relativeDestination = file.Value?.Value;
 
                 Uri uri = PackUriHelper.CreatePartUri(new Uri(relativeDestination, UriKind.Relative));
 
                 ClearRelationshipAndPartFromPackagePart(specPart, SUPPLEMENTAL_RELATIONSHIP_TYPE, uri);
 
                 string contentType;
-                if (!string.IsNullOrEmpty(file.ContentType))
-                    contentType = file.ContentType;
+                if (!string.IsNullOrEmpty(file.Value?.ContentType))
+                    contentType = file.Value.ContentType;
                 else
                     contentType = GetContentType(filePath);
 
