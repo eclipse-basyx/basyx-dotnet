@@ -123,12 +123,13 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             }
             else if (modelType == ModelType.ReferenceElement && envSubmodelElement is ReferenceElement_V3_0 castedReferenceElement)
             {
-                ReferenceElement referenceElement = new ReferenceElement(castedReferenceElement.IdShort)
-                {
-                    Value = castedReferenceElement.Value?.ToReference_V3_0()
-                };
+                ReferenceElement referenceElement = new ReferenceElement(castedReferenceElement.IdShort);
 
-                submodelElement = referenceElement;
+                var reference = castedReferenceElement.Value?.ToReference_V3_0();
+                if(reference != null)
+                    referenceElement.Value = new ReferenceElementValue(reference);
+
+				submodelElement = referenceElement;
             }
             else if (modelType == ModelType.Capability && envSubmodelElement is Capability_V3_0 castedCapability)
             {
@@ -438,7 +439,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             else if (modelType == ModelType.ReferenceElement && element is IReferenceElement castedReferenceElement)
                 environmentSubmodelElement = new ReferenceElement_V3_0(submodelElementType)
                 {
-                    Value = castedReferenceElement.Value?.ToEnvironmentReference_V3_0()
+                    Value = castedReferenceElement.Value?.Value?.ToEnvironmentReference_V3_0()
                 };
             else if (modelType == ModelType.RelationshipElement && element is IRelationshipElement castedRelationshipElement)
                 environmentSubmodelElement = new RelationshipElement_V3_0(submodelElementType)

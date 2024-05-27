@@ -111,7 +111,7 @@ namespace BaSyx.Models.Extensions
                     case ModelTypes.ReferenceElement:
                         {
                             IReferenceElement referenceElement = smElement.Cast<IReferenceElement>();
-                            writer.WriteString(referenceElement.IdShort, referenceElement.Value.ToStandardizedString());
+                            writer.WriteString(referenceElement.IdShort, referenceElement.Value.Value.ToStandardizedString());
                             break;
                         }
                     case ModelTypes.MultiLanguageProperty:

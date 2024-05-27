@@ -22,7 +22,12 @@ namespace BaSyx.Models.Extensions
 	{
 		public bool EnclosingObject { get; set; } = true;
 	}
-	public class ValueScopeConverter : ValueScopeConverter<ValueScope> { }
+	public class ValueScopeConverter : ValueScopeConverter<ValueScope> 
+	{ 
+		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null):
+			base(null, options, jsonOptions)
+		{ }
+	}
     public class ValueScopeConverter<TValueScope> : JsonConverter<ValueScope> where TValueScope : ValueScope
     {
 		private static JsonSerializerOptions _options;
@@ -33,10 +38,12 @@ namespace BaSyx.Models.Extensions
 
 		private DataType _dataType;
 		private ValueScopeConverterOptions _converterOptions;
-		public ValueScopeConverter(DataType dataType = null, ValueScopeConverterOptions options = null) 
+		private JsonSerializerOptions _jsonOptions;
+		public ValueScopeConverter(DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null) 
 		{
 			_dataType = dataType;
 			_converterOptions = options ?? new ValueScopeConverterOptions();
+			_jsonOptions = jsonOptions;
 		}
 		public override bool CanConvert(Type typeToConvert)
 		{
@@ -96,6 +103,16 @@ namespace BaSyx.Models.Extensions
 				}
 				throw new JsonException("Utf8JsonReader did not finished reading");
 			}
+			else if (typeof(TValueScope) == typeof(ReferenceElementValue))
+			{
+				ReferenceElementValue refValue = new ReferenceElementValue();
+				var reference = JsonSerializer.Deserialize<IReference>(ref reader, _jsonOptions);
+				if (reference != null)
+					refValue = new ReferenceElementValue(reference);
+
+				return refValue;
+				throw new JsonException("Utf8JsonReader did not finished reading");
+			}
 			else
 			{
 				throw new JsonException($"Unsupported modeltype: {typeof(TValueScope).Name}");
@@ -130,6 +147,10 @@ namespace BaSyx.Models.Extensions
 					mlpValueArray.Add(itemObj);
 				}
 				JsonSerializer.Serialize(writer, mlpValueArray, _options);
+			}
+			else if (value is ReferenceElementValue refValue)
+			{
+				JsonSerializer.Serialize(writer, refValue.Value, _options);
 			}
 		}
 

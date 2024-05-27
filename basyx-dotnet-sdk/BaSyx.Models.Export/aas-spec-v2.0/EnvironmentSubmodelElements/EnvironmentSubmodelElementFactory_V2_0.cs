@@ -120,12 +120,13 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             }
             else if (modelType == ModelType.ReferenceElement && envSubmodelElement is ReferenceElement_V2_0 castedReferenceElement)
             {
-                ReferenceElement referenceElement = new ReferenceElement(castedReferenceElement.IdShort)
-                {
-                    Value = castedReferenceElement.Value?.ToReference_V2_0()
-                };
+                ReferenceElement referenceElement = new ReferenceElement(castedReferenceElement.IdShort);
 
-                submodelElement = referenceElement;
+                var reference = castedReferenceElement.Value?.ToReference_V2_0();
+                if(reference != null)
+                    referenceElement.Value = new ReferenceElementValue(reference);
+
+				submodelElement = referenceElement;
             }
             else if (modelType == ModelType.Capability && envSubmodelElement is Event_V2_0 castedCapability)
             {

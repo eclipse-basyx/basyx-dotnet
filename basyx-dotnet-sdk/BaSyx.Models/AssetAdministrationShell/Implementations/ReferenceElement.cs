@@ -13,12 +13,10 @@ using System.Runtime.Serialization;
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
-    public class ReferenceElement : SubmodelElement, IReferenceElement
+    public class ReferenceElement : SubmodelElement<ReferenceElementValue>, IReferenceElement
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.ReferenceElement;
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        public new IReference Value { get; set; }
 
         public ReferenceElement(string idShort) : base(idShort) 
         {

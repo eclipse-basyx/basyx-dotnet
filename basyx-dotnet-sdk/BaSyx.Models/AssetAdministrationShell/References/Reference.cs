@@ -44,7 +44,8 @@ namespace BaSyx.Models.AdminShell
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "keys")]
         public IEnumerable<IKey> Keys { get; set; }
 
-        public ReferenceType Type { get; set; }
+		[DataMember(EmitDefaultValue = false, IsRequired = false, Name = "type")]
+		public ReferenceType Type { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IReference ReferredSemanticId { get; set; }

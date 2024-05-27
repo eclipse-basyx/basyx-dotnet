@@ -630,8 +630,6 @@ namespace BaSyx.API.Http.Controllers
                     Converters = { new ValueScopeConverter() }
                 });
 				return Content(value, "application/json");
-				//JsonValue value = result.Entity.ToJson();
-				//return new OkObjectResult(value);
 			}
             else
                 return result.CreateActionResult(CrudOperation.Retrieve);
@@ -707,7 +705,14 @@ namespace BaSyx.API.Http.Controllers
 					Converters = { new ValueScopeConverter<MultiLanguagePropertyValue>() }
 				});
 			}
-            else
+			else if (sme.ModelType == ModelType.ReferenceElement)
+			{
+				valueScope = requestBody.Deserialize<ReferenceElementValue>(new JsonSerializerOptions()
+				{
+					Converters = { new ValueScopeConverter<ReferenceElementValue>(jsonOptions: _fullSerializerOptions) }
+				});
+			}
+			else
             {
 				return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
 			}

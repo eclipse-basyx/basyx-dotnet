@@ -8,26 +8,14 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Runtime.Serialization;
-
 namespace BaSyx.Models.AdminShell
 {
     /// <summary>
     /// A reference element is a data element that defines a logical reference to another element within the same or another AAS or a reference to an external object or entity. 
     /// </summary>
-    public interface IReferenceElement : ISubmodelElement
-    {
-        /// <summary>
-        /// Reference to any other referable element of the same of any other AAS or a reference to an external object or entity. 
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        IReference Value { get; set; }
-    }
+    public interface IReferenceElement : ISubmodelElement<ReferenceElementValue>
+	{
 
-    public interface IReferenceElement<T> where T : IReferable
-    {
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        IReference<T> Value { get; set; }
     }
 }
 

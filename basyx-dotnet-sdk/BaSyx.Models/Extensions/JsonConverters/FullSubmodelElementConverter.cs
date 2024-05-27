@@ -133,10 +133,14 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.ReferenceElement:
                     var refElem = (ReferenceElement)value;
-                    if (refElem.Value != null)
+					var refValue = refElem.GetValueScope<ReferenceElementValue>();
+					if (refValue != null)
                     {
                         writer.WritePropertyName("value");
-                        JsonSerializer.Serialize(writer, refElem.Value, options);
+						JsonSerializer.Serialize(writer, refValue, new JsonSerializerOptions()
+						{
+							Converters = { new ValueScopeConverter<ReferenceElementValue>(jsonOptions: options) }
+						});
                     }
                     break;
                 case ModelTypes.SubmodelElementCollection:

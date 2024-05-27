@@ -317,12 +317,16 @@ namespace BaSyx.Models.Extensions
                         }
                         else if (submodelElement is MultiLanguageProperty mlp)
                         {
-                            //mlp.Value = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
+                            var langStringSet = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
+                            if(langStringSet != null)
+                                mlp.Value = new MultiLanguagePropertyValue(langStringSet);
                         }
                         else if (submodelElement is ReferenceElement re)
                         {
-                            re.Value = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        }
+                            var reference = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                            if(reference != null)
+							    re.Value = new ReferenceElementValue(reference);
+						}
                         else if (submodelElement is Blob blob)
                         {
                             blob.Value = reader.GetString();
