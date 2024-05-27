@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
 using System;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -116,9 +117,10 @@ namespace BaSyx.Models.Extensions
                     case ModelTypes.MultiLanguageProperty:
                         {
                             IMultiLanguageProperty multiLanguageProperty = smElement.Cast<IMultiLanguageProperty>();
-                            writer.WritePropertyName(multiLanguageProperty.IdShort);
+							var mlpValue = multiLanguageProperty.GetValueScope<MultiLanguagePropertyValue>();
+							writer.WritePropertyName(multiLanguageProperty.IdShort);
                             writer.WriteStartArray();
-                            foreach (var langPair in multiLanguageProperty.Value)
+                            foreach (var langPair in mlpValue.Value)
                             {
                                 writer.WriteStartObject();
                                 writer.WriteString(langPair.Language, langPair.Text);

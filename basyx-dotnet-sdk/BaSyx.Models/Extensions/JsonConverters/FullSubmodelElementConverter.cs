@@ -10,7 +10,6 @@
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
 using System;
-using System.Linq;
 using System.Text.Json;
 using Range = BaSyx.Models.AdminShell.Range;
 
@@ -105,20 +104,32 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.MultiLanguageProperty:
                     var mlp = (MultiLanguageProperty)value;
-                    if (mlp.Value?.Count() > 0)
+					var mlpValue = mlp.GetValueScope<MultiLanguagePropertyValue>();
+					if (mlpValue != null)
                     {
-                        writer.WritePropertyName("value");
-                        JsonSerializer.Serialize(writer, mlp.Value, options);
-                    }
+						writer.WritePropertyName("value");
+						JsonSerializer.Serialize(writer, mlpValue, new JsonSerializerOptions()
+                        {
+                            Converters = { new ValueScopeConverter<MultiLanguagePropertyValue>() }
+                        });
+					}				   
                     break;
                 case ModelTypes.Range:
                     var range = (Range)value;
                     var rangeValue = range.GetValueScope<RangeValue>();
                     if (rangeValue != null)
                     {
-                        writer.WriteString("min", rangeValue.Min.Value.ToString());
-                        writer.WriteString("max", rangeValue.Max.Value.ToString());
-                    }
+						JsonSerializer.Serialize(writer, rangeValue, new JsonSerializerOptions()
+						{
+							Converters = 
+                            { 
+                                new ValueScopeConverter<RangeValue>(range.ValueType, new ValueScopeConverterOptions()
+                                {
+                                    EnclosingObject = false
+                                }) 
+                            }
+						});
+					}
                     break;
                 case ModelTypes.ReferenceElement:
                     var refElem = (ReferenceElement)value;

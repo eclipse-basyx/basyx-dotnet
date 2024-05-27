@@ -317,7 +317,7 @@ namespace BaSyx.Models.Extensions
                         }
                         else if (submodelElement is MultiLanguageProperty mlp)
                         {
-                            mlp.Value = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
+                            //mlp.Value = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
                         }
                         else if (submodelElement is ReferenceElement re)
                         {
