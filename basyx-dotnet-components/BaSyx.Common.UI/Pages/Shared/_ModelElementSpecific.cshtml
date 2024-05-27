@@ -30,18 +30,18 @@
                         </div>
                     </li>
                 }
-                if (relationship.First != null && relationship.Second != null)
+                if (relationship.Value?.First != null && relationship.Value?.Second != null)
                 {
                     <li class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-sm-2"><b>First</b></div>
-                            <div class="col-sm-10">@relationship.First.ToStandardizedString()</div>
+                            <div class="col-sm-10">@relationship.Value.First.ToStandardizedString()</div>
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-sm-2"><b>Second</b></div>
-                            <div class="col-sm-10">@relationship.Second.ToStandardizedString()</div>
+                            <div class="col-sm-10">@relationship.Value.Second.ToStandardizedString()</div>
                         </div>
                     </li>
                 }
@@ -307,18 +307,18 @@
                     return;
                 }
 
-                if (relationship.First != null && relationship.Second != null)
+                if (relationship.Value?.First != null && relationship.Value?.Second != null)
                 {
                     <li class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-sm-2"><b>First</b></div>
-                            <div class="col-sm-10">@relationship.First.ToStandardizedString()</div>
+                            <div class="col-sm-10">@relationship.Value.First.ToStandardizedString()</div>
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-sm-2"><b>Second</b></div>
-                            <div class="col-sm-10">@relationship.Second.ToStandardizedString()</div>
+                            <div class="col-sm-10">@relationship.Value.Second.ToStandardizedString()</div>
                         </div>
                     </li>
                 }

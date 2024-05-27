@@ -13,16 +13,10 @@ using System.Runtime.Serialization;
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
-    public class RelationshipElement : SubmodelElement, IRelationshipElement
+    public class RelationshipElement : SubmodelElement<RelationshipElementValue>, IRelationshipElement
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
-        public override ModelType ModelType => ModelType.RelationshipElement;
-
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "first")]
-        public IReference First { get; set; }
-
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "second")]
-        public IReference Second { get; set; }      
+        public override ModelType ModelType => ModelType.RelationshipElement; 
 
         public RelationshipElement(string idShort) : base(idShort) 
         {

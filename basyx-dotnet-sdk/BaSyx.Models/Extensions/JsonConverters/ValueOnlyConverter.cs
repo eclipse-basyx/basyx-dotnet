@@ -56,24 +56,24 @@ namespace BaSyx.Models.Extensions
                         }
                     case ModelTypes.RelationshipElement:
                         {
-                            IRelationshipElement relationshipElement = smElement.Cast<IRelationshipElement>();
-                            writer.WritePropertyName(relationshipElement.IdShort);
-                            writer.WriteStartObject();
-                            writer.WriteString("first", relationshipElement.First.ToStandardizedString());
-                            writer.WriteString("second", relationshipElement.Second.ToStandardizedString());
-                            writer.WriteEndObject();
+                            //IRelationshipElement relationshipElement = smElement.Cast<IRelationshipElement>();
+                            //writer.WritePropertyName(relationshipElement.IdShort);
+                            //writer.WriteStartObject();
+                            //writer.WriteString("first", relationshipElement.First.ToStandardizedString());
+                            //writer.WriteString("second", relationshipElement.Second.ToStandardizedString());
+                            //writer.WriteEndObject();
                             break;
                         }
                     case ModelTypes.AnnotatedRelationshipElement:
                         {
-                            IAnnotatedRelationshipElement annotatedRelationshipElement = smElement.Cast<IAnnotatedRelationshipElement>();
-                            writer.WritePropertyName(annotatedRelationshipElement.IdShort);
-                            writer.WriteStartObject();
-                            writer.WriteString("first", annotatedRelationshipElement.First.ToStandardizedString());
-                            writer.WriteString("second", annotatedRelationshipElement.Second.ToStandardizedString());
-                            writer.WritePropertyName("annotations");
-                            Write(writer, annotatedRelationshipElement.Annotations, options);
-                            writer.WriteEndObject();
+                            //IAnnotatedRelationshipElement annotatedRelationshipElement = smElement.Cast<IAnnotatedRelationshipElement>();
+                            //writer.WritePropertyName(annotatedRelationshipElement.IdShort);
+                            //writer.WriteStartObject();
+                            //writer.WriteString("first", annotatedRelationshipElement.First.ToStandardizedString());
+                            //writer.WriteString("second", annotatedRelationshipElement.Second.ToStandardizedString());
+                            //writer.WritePropertyName("annotations");
+                            //Write(writer, annotatedRelationshipElement.Annotations, options);
+                            //writer.WriteEndObject();
                             break;
                         }
                     case ModelTypes.Property:

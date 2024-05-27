@@ -38,33 +38,37 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.AnnotatedRelationshipElement:
                     var are = (AnnotatedRelationshipElement)value;
-                    if (are.First != null)
-                    {
-                        writer.WritePropertyName("first");
-                        JsonSerializer.Serialize(writer, are.First, options);
-                    }
-                    if (are.Second != null)
-                    {
-                        writer.WritePropertyName("second");
-                        JsonSerializer.Serialize(writer, are.Second, options);
-                    }
-                    if (are.Annotations != null)
-                    {
-                        writer.WritePropertyName("annotations");
-                        JsonSerializer.Serialize(writer, are.Annotations, options);
-                    }
+                    //if (are.First != null)
+                    //{
+                    //    writer.WritePropertyName("first");
+                    //    JsonSerializer.Serialize(writer, are.First, options);
+                    //}
+                    //if (are.Second != null)
+                    //{
+                    //    writer.WritePropertyName("second");
+                    //    JsonSerializer.Serialize(writer, are.Second, options);
+                    //}
+                    //if (are.Annotations != null)
+                    //{
+                    //    writer.WritePropertyName("annotations");
+                    //    JsonSerializer.Serialize(writer, are.Annotations, options);
+                    //}
                     break;
                 case ModelTypes.RelationshipElement:
                     var re = (RelationshipElement)value;
-                    if (re.First != null)
+                    var reValue = re.GetValueScope<RelationshipElementValue>();
+                    if (reValue != null)
                     {
-                        writer.WritePropertyName("first");
-                        JsonSerializer.Serialize(writer, re.First, options);
-                    }
-                    if (re.Second != null)
-                    {
-                        writer.WritePropertyName("second");
-                        JsonSerializer.Serialize(writer, re.Second, options);
+                        JsonSerializer.Serialize(writer, reValue, new JsonSerializerOptions()
+                        {
+                            Converters =
+                            {
+                                new ValueScopeConverter<RelationshipElementValue>(options: new ValueScopeConverterOptions()
+                                {
+                                    EnclosingObject = false
+                                })
+                            }
+                        });
                     }
                     break;
                 case ModelTypes.BasicEventElement:

@@ -113,7 +113,34 @@ namespace BaSyx.Models.Extensions
 				return refValue;
 				throw new JsonException("Utf8JsonReader did not finished reading");
 			}
-			else
+            else if (typeof(TValueScope) == typeof(RelationshipElementValue))
+            {
+				RelationshipElementValue relValue = new RelationshipElementValue();
+
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonTokenType.EndObject)
+                        return relValue;
+
+                    if (reader.TokenType != JsonTokenType.PropertyName)
+                        continue;
+
+                    string propertyName = reader.GetString();
+                    reader.Read();
+                    switch (propertyName)
+                    {
+                        case "first":
+                            relValue.First = JsonSerializer.Deserialize<IReference>(ref reader, _jsonOptions);
+                            break;
+                        case "second":
+                            relValue.Second = JsonSerializer.Deserialize<IReference>(ref reader, _jsonOptions);
+                            break;
+                    }
+                }
+                return relValue;
+                throw new JsonException("Utf8JsonReader did not finished reading");
+            }
+            else
 			{
 				throw new JsonException($"Unsupported modeltype: {typeof(TValueScope).Name}");
 			}                    
@@ -151,6 +178,25 @@ namespace BaSyx.Models.Extensions
 			else if (value is ReferenceElementValue refValue)
 			{
 				JsonSerializer.Serialize(writer, refValue.Value, _options);
+			}
+			else if (value is RelationshipElementValue relValue)
+			{
+				if (_converterOptions.EnclosingObject)
+				{
+					JsonSerializer.Serialize(writer, JsonValue.Create(new 
+					{ 
+						First = JsonValue.Create(relValue.First), 
+						Second = JsonValue.Create(relValue.Second)
+					}), _options);
+				}					
+				else
+				{
+					writer.WritePropertyName("first");
+					JsonSerializer.Serialize(writer, relValue.First, _options);
+
+					writer.WritePropertyName("second");
+					JsonSerializer.Serialize(writer, relValue.Second, _options);
+				}
 			}
 		}
 

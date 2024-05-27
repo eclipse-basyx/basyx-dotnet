@@ -114,18 +114,18 @@ namespace BaSyx.Models.Extensions
                             r3.ValueType = valueType;
                         break;
                     #region RelationshipElement
-                    case "first":
-                        if (submodelElement is AnnotatedRelationshipElement arel1)
-                            arel1.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        else if (submodelElement is RelationshipElement rel1)
-                            rel1.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        break;
-                    case "second":
-                        if (submodelElement is AnnotatedRelationshipElement arel2)
-                            arel2.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        else if (submodelElement is RelationshipElement rel2)
-                            rel2.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        break;
+                    //case "first":
+                    //    if (submodelElement is AnnotatedRelationshipElement arel1)
+                    //        arel1.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                    //    else if (submodelElement is RelationshipElement rel1)
+                    //        rel1.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                    //    break;
+                    //case "second":
+                    //    if (submodelElement is AnnotatedRelationshipElement arel2)
+                    //        arel2.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                    //    else if (submodelElement is RelationshipElement rel2)
+                    //        rel2.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                    //    break;
                     case "annotations":
                         if (submodelElement is AnnotatedRelationshipElement arel3)
                         {

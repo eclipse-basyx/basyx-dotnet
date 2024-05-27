@@ -712,7 +712,14 @@ namespace BaSyx.API.Http.Controllers
 					Converters = { new ValueScopeConverter<ReferenceElementValue>(jsonOptions: _fullSerializerOptions) }
 				});
 			}
-			else
+            else if (sme.ModelType == ModelType.RelationshipElement)
+            {
+                valueScope = requestBody.Deserialize<RelationshipElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<RelationshipElementValue>(jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else
             {
 				return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
 			}

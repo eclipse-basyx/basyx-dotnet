@@ -95,28 +95,31 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             }
             else if (modelType == ModelType.RelationshipElement && envSubmodelElement is RelationshipElement_V2_0 castedRelationshipElement)
             {
-                RelationshipElement relationshipElement = new RelationshipElement(castedRelationshipElement.IdShort)
+                RelationshipElement relationshipElement = new RelationshipElement(castedRelationshipElement.IdShort);
+                RelationshipElementValue relValue = new RelationshipElementValue()
                 {
                     First = castedRelationshipElement.First?.ToReference_V2_0<IReferable>(),
                     Second = castedRelationshipElement.Second?.ToReference_V2_0<IReferable>()
                 };
 
+                relationshipElement.Value = relValue;
+
                 submodelElement = relationshipElement;
             }
             else if (modelType == ModelType.AnnotatedRelationshipElement && envSubmodelElement is AnnotatedRelationshipElement_V2_0 castedAnnotatedRelationshipElement)
             {
-                AnnotatedRelationshipElement annotatedRelationshipElement = new AnnotatedRelationshipElement(castedAnnotatedRelationshipElement.IdShort)
-                {
-                    First = castedAnnotatedRelationshipElement.First?.ToReference_V2_0<IReferable>(),
-                    Second = castedAnnotatedRelationshipElement.Second?.ToReference_V2_0<IReferable>()                    
-                };
+                //AnnotatedRelationshipElement annotatedRelationshipElement = new AnnotatedRelationshipElement(castedAnnotatedRelationshipElement.IdShort)
+                //{
+                //    First = castedAnnotatedRelationshipElement.First?.ToReference_V2_0<IReferable>(),
+                //    Second = castedAnnotatedRelationshipElement.Second?.ToReference_V2_0<IReferable>()                    
+                //};
 
-                var annotations = castedAnnotatedRelationshipElement.Annotations?.ConvertAll(c => c.submodelElement.ToSubmodelElement(conceptDescriptions, parent));
-                if (annotations?.Count > 0)
-                    foreach (var element in annotations)
-                        annotatedRelationshipElement.Annotations.Add(element);
+                //var annotations = castedAnnotatedRelationshipElement.Annotations?.ConvertAll(c => c.submodelElement.ToSubmodelElement(conceptDescriptions, parent));
+                //if (annotations?.Count > 0)
+                //    foreach (var element in annotations)
+                        //annotatedRelationshipElement.Annotations.Add(element);
 
-                submodelElement = annotatedRelationshipElement;
+                //submodelElement = annotatedRelationshipElement;
             }
             else if (modelType == ModelType.ReferenceElement && envSubmodelElement is ReferenceElement_V2_0 castedReferenceElement)
             {

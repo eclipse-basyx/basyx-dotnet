@@ -166,10 +166,13 @@ namespace HelloAssetAdministrationShell
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary RelationshipElement") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloRelationshipElement", "1.0.0").ToUrn())),
-                    First = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
-                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
-                    Second = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
-                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())),
+                    Value = new RelationshipElementValue()
+                    {
+                           First = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
+                           Second = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
+                    }                 
                 },
                 new ReferenceElement("HelloReferenceElement")
                 {
