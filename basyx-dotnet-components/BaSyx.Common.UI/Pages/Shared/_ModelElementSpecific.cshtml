@@ -211,9 +211,9 @@
                     return;
                 }
 
-                if (multiLanguageProperty.Value?.Count > 0)
+                if (multiLanguageProperty.Value?.Value?.Count > 0)
                 {
-                    foreach (var langString in multiLanguageProperty.Value)
+                    foreach (var langString in multiLanguageProperty.Value.Value)
                     {
                         <li class="list-group-item">
                             <div class="row align-items-center">
