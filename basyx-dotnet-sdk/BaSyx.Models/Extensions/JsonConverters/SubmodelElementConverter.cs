@@ -254,7 +254,10 @@ namespace BaSyx.Models.Extensions
                     #region BasicEventElement
                     case "observed":
                         if (submodelElement is BasicEventElement bee1)
-                            bee1.Observed = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        {
+                            var reference = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                            bee1.Value = new BasicEventElementValue(reference);
+                        }                            
                         break;
                     case "observableReference":
                         if (submodelElement is BasicEventElement bee2)

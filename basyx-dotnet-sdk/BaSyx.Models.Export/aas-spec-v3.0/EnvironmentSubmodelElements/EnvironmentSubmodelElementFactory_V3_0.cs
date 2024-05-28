@@ -149,7 +149,10 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 BasicEventElement basicEvent = new BasicEventElement(castedBasicEvent.IdShort)
                 {
-                    Observed = castedBasicEvent.Observed.ToReference_V3_0<IReferable>()
+                    Value = new BasicEventElementValue()
+                    {
+                        Observed = castedBasicEvent.Observed?.ToReference_V3_0<IReferable>()
+                    }
                 };
 
                 submodelElement = basicEvent;
@@ -400,11 +403,11 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 environmentSubmodelElement = new BasicEventElement_V3_0(submodelElementType)
                 {
-                    Observed = castedBasicEvent.Observed.ToEnvironmentReference_V3_0(),
+                    Observed = castedBasicEvent.Value?.Observed?.ToEnvironmentReference_V3_0(),
                     Direction = castedBasicEvent.Direction,
                     State = castedBasicEvent.State,
                     MessageTopic = castedBasicEvent.MessageTopic,
-                    MessageBroker = castedBasicEvent.MessageBroker.ToEnvironmentReference_V3_0(),
+                    MessageBroker = castedBasicEvent.MessageBroker?.ToEnvironmentReference_V3_0(),
                     LastUpdate = castedBasicEvent.LastUpdate,
                     MinInterval = castedBasicEvent.MinInterval,
                     MaxInterval = castedBasicEvent.MaxInterval

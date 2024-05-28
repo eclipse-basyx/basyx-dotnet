@@ -721,6 +721,13 @@ namespace BaSyx.API.Http.Controllers
 					Converters = { new ValueScopeConverter<ReferenceElementValue>(jsonOptions: _fullSerializerOptions) }
 				});
 			}
+            else if (sme.ModelType == ModelType.BasicEventElement)
+            {
+                valueScope = requestBody.Deserialize<BasicEventElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<BasicEventElementValue>(jsonOptions: _fullSerializerOptions) }
+                });
+            }
             else if (sme.ModelType == ModelType.RelationshipElement)
             {
                 valueScope = requestBody.Deserialize<RelationshipElementValue>(new JsonSerializerOptions()

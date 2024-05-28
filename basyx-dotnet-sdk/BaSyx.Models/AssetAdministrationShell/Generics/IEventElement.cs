@@ -10,6 +10,6 @@
 *******************************************************************************/
 namespace BaSyx.Models.AdminShell
 {
-    public interface IEventElement : ISubmodelElement
+    public interface IEventElement : ISubmodelElement<BasicEventElementValue>
     { }
 }

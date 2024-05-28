@@ -13,13 +13,10 @@ using System.Runtime.Serialization;
 namespace BaSyx.Models.AdminShell
 {
     [DataContract]
-    public class BasicEventElement : SubmodelElement, IBasicEventElement
+    public class BasicEventElement : SubmodelElement<BasicEventElementValue>, IBasicEventElement
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.BasicEventElement;
-
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "observed")]
-        public IReference Observed { get; set; }
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "observableReference")]
         public IReference ObservableReference { get; set; }

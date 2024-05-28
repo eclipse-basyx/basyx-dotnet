@@ -14,13 +14,7 @@ using System.Xml.Serialization;
 namespace BaSyx.Models.AdminShell
 {
     public interface IBasicEventElement : IEventElement, IHasSemantics
-    {
-        /// <summary>
-        /// Reference to the data or other elements that are being observed.
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "observed")]
-        IReference Observed { get; set; }
-
+    {      
         /// <summary>
         /// Can be { Input, Output }.
         /// </summary>

@@ -84,10 +84,14 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.BasicEventElement:
                     var bee = (BasicEventElement)value;
-                    if (bee.Observed != null)
+                    var beeValue = bee.GetValueScope<BasicEventElementValue>();
+                    if (beeValue != null)
                     {
                         writer.WritePropertyName("observed");
-                        JsonSerializer.Serialize(writer, bee.Observed, options);
+                        JsonSerializer.Serialize(writer, beeValue, new JsonSerializerOptions()
+                        {
+                            Converters = { new ValueScopeConverter<BasicEventElementValue>(jsonOptions: options) }
+                        });
                     } 
                     break;
                 case ModelTypes.Blob:

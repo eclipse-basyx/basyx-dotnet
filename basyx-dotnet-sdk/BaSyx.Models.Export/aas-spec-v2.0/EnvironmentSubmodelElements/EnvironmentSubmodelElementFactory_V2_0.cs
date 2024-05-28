@@ -146,7 +146,10 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 BasicEventElement basicEvent = new BasicEventElement(castedBasicEvent.IdShort)
                 {
-                    Observed = castedBasicEvent.Observed.ToReference_V2_0<IReferable>()
+                    Value = new BasicEventElementValue()
+                    {
+                        Observed = castedBasicEvent.Observed?.ToReference_V2_0<IReferable>()
+                    }
                 };
 
                 submodelElement = basicEvent;

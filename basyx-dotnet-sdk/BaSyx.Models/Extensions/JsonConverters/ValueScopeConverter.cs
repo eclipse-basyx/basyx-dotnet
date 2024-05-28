@@ -15,13 +15,11 @@ using System.Buffers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Nodes;
-using System.Reflection.Metadata;
-using System.Xml;
 using System.Linq;
 
 namespace BaSyx.Models.Extensions
 {
-	public enum SerializationOption
+    public enum SerializationOption
 	{
 		FullModel,
 		ValueOnly
@@ -140,6 +138,16 @@ namespace BaSyx.Models.Extensions
 				return refValue;
 				throw new JsonException("Utf8JsonReader did not finished reading");
 			}
+            else if (typeof(TValueScope) == typeof(BasicEventElementValue) || typeToConvert == typeof(BasicEventElementValue))
+            {
+                BasicEventElementValue basicEventElementValue = new BasicEventElementValue();
+                var reference = JsonSerializer.Deserialize<IReference>(ref reader, _jsonOptions);
+                if (reference != null)
+                    basicEventElementValue = new BasicEventElementValue(reference);
+
+                return basicEventElementValue;
+                throw new JsonException("Utf8JsonReader did not finished reading");
+            }
             else if (typeof(TValueScope) == typeof(RelationshipElementValue) || typeToConvert == typeof(RelationshipElementValue))
             {
 				RelationshipElementValue relValue = new RelationshipElementValue();
@@ -404,6 +412,10 @@ namespace BaSyx.Models.Extensions
 			{
 				JsonSerializer.Serialize(writer, refValue.Value, _options);
 			}
+            else if (value is BasicEventElementValue basicEventElementValue)
+            {
+                JsonSerializer.Serialize(writer, basicEventElementValue.Observed, _options);
+            }
             else if (value is AnnotatedRelationshipElementValue arelValue)
             {
                 if (_converterOptions.EnclosingObject)

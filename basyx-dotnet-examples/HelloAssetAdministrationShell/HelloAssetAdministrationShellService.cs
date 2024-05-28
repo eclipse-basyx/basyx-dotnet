@@ -185,14 +185,17 @@ namespace HelloAssetAdministrationShell
                 new BasicEventElement("HelloBasicEventElement")
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary BasicEventElement") },
-                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),
-                    Observed = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
-                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),                   
                     Direction = EventDirection.Output,
                     State = EventState.On,
                     MessageTopic = "boschrexroth/helloBasicEventElement",
                     LastUpdate = DateTime.UtcNow.ToString(),
-                    MinInterval = "PT3S"
+                    MinInterval = "PT3S",
+                    Value = new BasicEventElementValue()
+                    {
+                         Observed = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
+                    }
                 },
                 new Blob("HelloBlob")
                 {
