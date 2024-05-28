@@ -17,12 +17,17 @@ namespace BaSyx.Models.AdminShell
         public override ModelType ModelType => ModelType.SubmodelElementCollection;
 
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-		public IElementContainer<ISubmodelElement> Value { get; set; }
+		public IElementContainer<ISubmodelElement> Value { get => _value; set => _value.AddRange(value); }
 
-        public SubmodelElementCollectionValue() { }
+        private readonly IElementContainer<ISubmodelElement> _value;
+
+        public SubmodelElementCollectionValue() 
+        {
+            _value = new ElementContainer<ISubmodelElement>();
+        }
         public SubmodelElementCollectionValue(IElementContainer<ISubmodelElement> valueElements)
         {
-            Value = valueElements;
+            _value = valueElements;
         }
     }
 }

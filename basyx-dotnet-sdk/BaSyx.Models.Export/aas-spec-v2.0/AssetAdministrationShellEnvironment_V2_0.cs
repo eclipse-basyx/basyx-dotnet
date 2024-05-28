@@ -152,7 +152,7 @@ namespace BaSyx.Models.Export
                     }
                 }
                 else if (smElement.ModelType == ModelType.SubmodelElementCollection)
-                    ExtractSupplementalFiles((smElement as SubmodelElementCollection).Value);
+                    ExtractSupplementalFiles((smElement as SubmodelElementCollection).Value.Value);
             }
         }
 

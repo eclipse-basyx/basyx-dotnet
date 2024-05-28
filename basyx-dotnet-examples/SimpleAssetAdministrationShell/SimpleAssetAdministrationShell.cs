@@ -91,28 +91,31 @@ namespace SimpleAssetAdministrationShell
                     new Property<string>("TestValueChanged1", "InitialValue"),
                     new SubmodelElementCollection("TestSubmodelElementCollection")
                     {
-                        Value =
+                        Value = new SubmodelElementCollectionValue()
                         {
-                            new Property<string>("TestSubProperty1")
+                            Value = new ElementContainer<ISubmodelElement>()
                             {
-                                Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
-                                Get = prop => { return Task.FromResult(propertyValue + "_" + i--); }
-                            },
-                            new Property<string>("TestSubProperty2")
-                            {
-                                Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
-                                Get = prop => { return Task.FromResult(propertyValue + "_" + i--); }
-                            },
-                            new Property<int>("TestSubProperty3")
-                            {
-                                Set = (prop, val) => { i = val; return Task.CompletedTask; },
-                                Get = prop => { return Task.FromResult(i--); }
-                            },
-                            new Property<double>("TestSubProperty4")
-                            {
-                                Set = (prop, val) => { y = val; return Task.CompletedTask; },
-                                Get = prop => { return Task.FromResult(Math.Pow(y, i)); }
-                            }
+                                 new Property<string>("TestSubProperty1")
+                                {
+                                    Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                    Get = prop => { return Task.FromResult(propertyValue + "_" + i--); }
+                                },
+                                new Property<string>("TestSubProperty2")
+                                {
+                                    Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                    Get = prop => { return Task.FromResult(propertyValue + "_" + i--); }
+                                },
+                                new Property<int>("TestSubProperty3")
+                                {
+                                    Set = (prop, val) => { i = val; return Task.CompletedTask; },
+                                    Get = prop => { return Task.FromResult(i--); }
+                                },
+                                new Property<double>("TestSubProperty4")
+                                {
+                                    Set = (prop, val) => { y = val; return Task.CompletedTask; },
+                                    Get = prop => { return Task.FromResult(Math.Pow(y, i)); }
+                                }
+                            }                          
                         }
                     },
                     new Operation("GetTime")

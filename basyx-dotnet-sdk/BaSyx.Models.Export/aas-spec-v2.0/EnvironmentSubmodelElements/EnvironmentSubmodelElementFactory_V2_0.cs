@@ -198,10 +198,10 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
                 if (castedSubmodelElementCollection.Value?.Count > 0)
                 {
-                    submodelElementCollection.Value = new ElementContainer<ISubmodelElement>(parent, submodelElementCollection, null);
+                    submodelElementCollection.Value.Value = new ElementContainer<ISubmodelElement>(parent, submodelElementCollection, null);
                     List<ISubmodelElement> smElements = castedSubmodelElementCollection.Value?.ConvertAll(c => c.submodelElement?.ToSubmodelElement(conceptDescriptions, parent));
                     foreach (var smElement in smElements)
-                        submodelElementCollection.Value.Create(smElement);
+                        submodelElementCollection.Value.Value.Create(smElement);
                 }
 
                 submodelElement = submodelElementCollection;

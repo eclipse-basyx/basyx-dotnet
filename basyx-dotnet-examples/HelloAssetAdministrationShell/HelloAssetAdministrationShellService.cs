@@ -247,9 +247,12 @@ namespace HelloAssetAdministrationShell
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementCollection", "1.0.0").ToUrn())),
                     Value =
                     {
-                        new Property<int>("MySubIntValue", 4),
-                        new Property<bool>("MySubBoolValue", true),
-                        new Property<float>("MySubFloatValue", 3.4f)
+                        Value =
+                        {
+                            new Property<int>("MySubIntValue", 4),
+                            new Property<bool>("MySubBoolValue", true),
+                            new Property<float>("MySubFloatValue", 3.4f)
+                        }
                     }
                 },
                 new SubmodelElementList("HelloSubmodelElementList")

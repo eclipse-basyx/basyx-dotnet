@@ -171,7 +171,7 @@ namespace BaSyx.Deployment.AppDataService
             foreach (var settingsEntry in appDataService.AppDataContext.Settings)
             {
                 var settingsSmc = settingsEntry.Value.CreateSubmodelElementCollectionFromObject(settingsEntry.Value.Name);
-                settingsSmc.Value.Add(
+                settingsSmc.Value.Value.Add(
                 new Operation("Save")
                 {
                     OnMethodCalled = (op, inArgs, inoutArgs, outArgs, ct) =>

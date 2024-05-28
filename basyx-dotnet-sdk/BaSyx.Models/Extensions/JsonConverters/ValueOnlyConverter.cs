@@ -36,7 +36,7 @@ namespace BaSyx.Models.Extensions
                         {
                             ISubmodelElementCollection submodelElementCollection = smElement.Cast<ISubmodelElementCollection>();
                             writer.WritePropertyName(submodelElementCollection.IdShort);
-                            Write(writer, submodelElementCollection.Value, options);
+                            Write(writer, submodelElementCollection.Value.Value, options);
                             break;
                         }
                     case ModelTypes.SubmodelElementList:

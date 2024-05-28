@@ -206,7 +206,7 @@ namespace BaSyx.Models.Extensions
                     {
                         ISubmodelElement smElement = CreateSubmodelElementFromPropertyInfo(propertyInfo, propertyInfo.Name, bindingFlags, item);
                         if (smElement != null)
-                            smCollection.Value.Create(smElement);
+                            smCollection.Value.Value.Create(smElement);
                     }
                 }
                 i++;
@@ -244,7 +244,7 @@ namespace BaSyx.Models.Extensions
             {
                 ISubmodelElement smElement = CreateSubmodelElementFromPropertyInfo(propertyInfo, propertyInfo.Name, bindingFlags, target);
                 if (smElement != null)
-                    smCollection.Value.Create(smElement);
+                    smCollection.Value.Value.Create(smElement);
             }
             return smCollection;
         }
@@ -293,7 +293,7 @@ namespace BaSyx.Models.Extensions
                         else
                             tempSeCollection = new SubmodelElementCollection(idShort);
 
-                        seCollection.Value.AddRange(tempSeCollection.Value);
+                        seCollection.Value.Value.AddRange(tempSeCollection.Value.Value);
 
                         return seCollection;
                     }
@@ -307,7 +307,7 @@ namespace BaSyx.Models.Extensions
                         {
                             ISubmodelElement smElement = CreateSubmodelElementFromPropertyInfo(subPropertyInfo, subPropertyInfo.Name, bindingFlags, subTarget);
                             if (smElement != null)
-                                seCollection.Value.Create(smElement);
+                                seCollection.Value.Value.Create(smElement);
                         }
                     }
                     return seCollection;
@@ -426,7 +426,7 @@ namespace BaSyx.Models.Extensions
                     {
                         ISubmodelElement smElement = CreateSubmodelElementFromPropertyInfo(subPropertyInfo, subPropertyInfo.Name, bindingFlags, subTarget);
                         if (smElement != null)
-                            smCollection.Value.Create(smElement);
+                            smCollection.Value.Value.Create(smElement);
                     }
 
                     smCollection.ConceptDescription = conceptDescription;

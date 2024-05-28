@@ -180,10 +180,20 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.SubmodelElementCollection:
                     var smc = (SubmodelElementCollection)value;
-                    if (smc.Value != null)
+                    var smcValue = smc.GetValueScope<SubmodelElementCollectionValue>();
+                    if (smcValue != null)
                     {
-                        writer.WritePropertyName("value");
-                        JsonSerializer.Serialize(writer, smc.Value, options);
+                        JsonSerializer.Serialize(writer, smcValue, new JsonSerializerOptions()
+                        {
+                            Converters =
+                            {
+                                new ValueScopeConverter<SubmodelElementCollectionValue>(options: new ValueScopeConverterOptions()
+                                {
+                                    EnclosingObject = false,
+                                    SerializationOption = SerializationOption.FullModel
+                                }, jsonOptions: options)
+                            }
+                        });
                     }
                     break;
                 case ModelTypes.SubmodelElementList:

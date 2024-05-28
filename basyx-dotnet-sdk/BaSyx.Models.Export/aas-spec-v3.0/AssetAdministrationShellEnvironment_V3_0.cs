@@ -268,7 +268,7 @@ namespace BaSyx.Models.Export
                     }
                 }
                 else if (smElement.ModelType == ModelType.SubmodelElementCollection)
-                    ExtractSupplementalFiles((smElement as SubmodelElementCollection).Value);
+                    ExtractSupplementalFiles((smElement as SubmodelElementCollection).Value.Value);
             }
         }
 
@@ -284,7 +284,7 @@ namespace BaSyx.Models.Export
                     (smElement as SubmodelElement).EmbeddedDataSpecifications = null;
                 }
                 if (smElement.ModelType == ModelType.SubmodelElementCollection)
-                    ExtractAndClearConceptDescriptions((smElement as SubmodelElementCollection).Value);
+                    ExtractAndClearConceptDescriptions((smElement as SubmodelElementCollection).Value.Value);
             }
         }
 

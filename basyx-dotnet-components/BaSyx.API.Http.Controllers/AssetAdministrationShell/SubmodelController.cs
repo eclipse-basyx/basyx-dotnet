@@ -697,6 +697,16 @@ namespace BaSyx.API.Http.Controllers
 					Converters = { new ValueScopeConverter<PropertyValue>(dataType: property.ValueType) }
 				});
 			}
+            else if (sme.ModelType == ModelType.SubmodelElementCollection)
+            {
+                valueScope = requestBody.Deserialize<SubmodelElementCollectionValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<SubmodelElementCollectionValue>(
+                        sme: sme,
+                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
+                        jsonOptions: _fullSerializerOptions) }
+                });
+            }
             else if (sme.ModelType == ModelType.Range)
             {
                 Range range = sme as Range;

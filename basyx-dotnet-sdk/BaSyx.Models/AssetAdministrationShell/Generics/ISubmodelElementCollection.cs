@@ -8,16 +8,14 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     /// <summary>
     /// A submodel element collection is a set or list of submodel elements.
     /// </summary>
-    public interface ISubmodelElementCollection : ISubmodelElement
+    public interface ISubmodelElementCollection : ISubmodelElement<SubmodelElementCollectionValue>, IGetSet
     {
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        IElementContainer<ISubmodelElement> Value { get; set; }
+
     }
 }

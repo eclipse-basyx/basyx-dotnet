@@ -114,18 +114,38 @@ namespace BaSyx.Models.Extensions
                             r3.ValueType = valueType;
                         break;
                     #region RelationshipElement
-                    //case "first":
-                    //    if (submodelElement is AnnotatedRelationshipElement arel1)
-                    //        arel1.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                    //    else if (submodelElement is RelationshipElement rel1)
-                    //        rel1.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                    //    break;
-                    //case "second":
-                    //    if (submodelElement is AnnotatedRelationshipElement arel2)
-                    //        arel2.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                    //    else if (submodelElement is RelationshipElement rel2)
-                    //        rel2.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                    //    break;
+                    case "first":
+                        if (submodelElement is AnnotatedRelationshipElement arel1)
+                        {
+                            if (arel1.Value == null)
+                                arel1.Value = new AnnotatedRelationshipElementValue();
+
+                            arel1.Value.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        }                            
+                        else if (submodelElement is RelationshipElement rel1)
+                        {
+                            if (rel1.Value == null)
+                                rel1.Value = new AnnotatedRelationshipElementValue();
+
+                            rel1.Value.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        }                           
+                        break;
+                    case "second":
+                        if (submodelElement is AnnotatedRelationshipElement arel2)
+                        {
+                            if (arel2.Value == null)
+                                arel2.Value = new AnnotatedRelationshipElementValue();
+
+                            arel2.Value.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        }                            
+                        else if (submodelElement is RelationshipElement rel2)
+                        {
+                            if (rel2.Value == null)
+                                rel2.Value = new AnnotatedRelationshipElementValue();
+
+                            rel2.Value.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
+                        }                           
+                        break;
                     case "annotations":
                         if (submodelElement is AnnotatedRelationshipElement arel3)
                         {
@@ -140,9 +160,19 @@ namespace BaSyx.Models.Extensions
                     #region File/Blob
                     case "contentType":
                         if (submodelElement is Blob b1)
+                        {
+                            if (b1.Value == null)
+                                b1.Value = new BlobValue();
+
                             b1.Value.ContentType = reader.GetString();
+                        }                            
                         else if (submodelElement is FileElement f1)
+                        {
+                            if (f1.Value == null)
+                                f1.Value = new FileElementValue();
+
                             f1.Value.ContentType = reader.GetString();
+                        }                           
                         break;
                     #endregion
                     #region Operation
@@ -284,14 +314,14 @@ namespace BaSyx.Models.Extensions
                                 if (endToken == JsonTokenType.EndArray)
                                 {
                                     ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
-                                    smc.Value.Add(sme);
+                                    smc.Value.Value.Add(sme);
                                 }
                                 else if (endToken == JsonTokenType.EndObject)
                                 {
                                     string smeIdShort = reader.GetString();
                                     reader.Read();
                                     ISubmodelElement sme = GetProperty(reader, smeIdShort);
-                                    smc.Value.Add(sme);
+                                    smc.Value.Value.Add(sme);
                                 }
                                 else
                                     continue;                               
@@ -329,13 +359,18 @@ namespace BaSyx.Models.Extensions
 						}
                         else if (submodelElement is Blob blob)
                         {
+                            if (blob.Value == null)
+                                blob.Value = new BlobValue();
+
                             blob.Value.Value = reader.GetString();
                         }
                         else if (submodelElement is FileElement file)
                         {
+                            if (file.Value == null)
+                                file.Value = new FileElementValue();
+
                             file.Value.Value = reader.GetString();
                         }
-
                         break;
                 }
             }
@@ -561,19 +596,19 @@ namespace BaSyx.Models.Extensions
                     }
                     writer.WriteEndArray();
                     break;
-                case ModelTypes.SubmodelElementCollection:
-                    var smc = (SubmodelElementCollection)value;
-                    writer.WritePropertyName("value");
-                    writer.WriteStartArray();
-                    if(smc.Value?.Count > 0)
-                    {
-                        foreach (var element in smc.Value)
-                        {
-                            JsonSerializer.Serialize(writer, element, options);
-                        }
-                    }                    
-                    writer.WriteEndArray();                  
-                    break;
+                //case ModelTypes.SubmodelElementCollection:
+                //    var smc = (SubmodelElementCollection)value;
+                //    writer.WritePropertyName("value");
+                //    writer.WriteStartArray();
+                //    if(smc.Value?.Count > 0)
+                //    {
+                //        foreach (var element in smc.Value)
+                //        {
+                //            JsonSerializer.Serialize(writer, element, options);
+                //        }
+                //    }                    
+                //    writer.WriteEndArray();                  
+                //    break;
                 default:
                     break;
             }

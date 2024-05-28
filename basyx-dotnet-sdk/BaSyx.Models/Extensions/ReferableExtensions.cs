@@ -43,7 +43,7 @@ namespace BaSyx.Models.Extensions
             }
             else if (referable is ISubmodelElementCollection seCollection)
             {
-                foreach (var subElement in seCollection.Value.Values)
+                foreach (var subElement in seCollection.Value.Value.Values)
                 {
                     ElementTree subElementTree = GetElementTree(subElement);
                     elementTree.AddChild(subElementTree);
@@ -87,7 +87,7 @@ namespace BaSyx.Models.Extensions
                     foreach (var child in elementTree.Children)
                     {
                         ISubmodelElement submodelElementChild = (ISubmodelElement)GetReferable(child);
-                        seCollection.Value.Create(submodelElementChild);
+                        seCollection.Value.Value.Create(submodelElementChild);
                     }
                 }
             }

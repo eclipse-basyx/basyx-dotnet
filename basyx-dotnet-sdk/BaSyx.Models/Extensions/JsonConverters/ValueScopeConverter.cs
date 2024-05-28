@@ -16,6 +16,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Nodes;
 using System.Reflection.Metadata;
+using System.Xml;
 
 namespace BaSyx.Models.Extensions
 {
@@ -70,7 +71,14 @@ namespace BaSyx.Models.Extensions
 				ElementValue elementValue = GetElementValue(ref reader, _dataType);
 				return new PropertyValue(elementValue);
 			}
-			else if (typeof(TValueScope) == typeof(RangeValue) || typeToConvert == typeof(RangeValue))
+            else if (typeof(TValueScope) == typeof(SubmodelElementCollectionValue) || typeToConvert == typeof(SubmodelElementCollectionValue))
+            {
+                var smc = _sme as SubmodelElementCollection;
+                var elementContainer = smc.Value.Value;
+                UpdateElementContainer(ref elementContainer, ref reader, _jsonOptions, JsonTokenType.StartObject, JsonTokenType.EndObject);
+                return smc.Value;
+            }
+            else if (typeof(TValueScope) == typeof(RangeValue) || typeToConvert == typeof(RangeValue))
 			{
 				RangeValue rangeValue = new RangeValue();
 
@@ -176,7 +184,11 @@ namespace BaSyx.Models.Extensions
 							if(_converterOptions.SerializationOption == SerializationOption.FullModel)
 								arelValue.Annotations = JsonSerializer.Deserialize<IElementContainer<ISubmodelElement>>(ref reader, _jsonOptions);
 							else
-								arelValue.Annotations = UpdateElementContainer((_sme as AnnotatedRelationshipElement).Value.Annotations, ref reader, _jsonOptions);
+                            {
+                                var annotations = (_sme as AnnotatedRelationshipElement).Value.Annotations;
+                                UpdateElementContainer(ref annotations, ref reader, _jsonOptions, JsonTokenType.StartArray, JsonTokenType.EndArray);
+                                arelValue.Annotations = annotations;
+                            }								
                             break;
                     }
                 }
@@ -240,18 +252,18 @@ namespace BaSyx.Models.Extensions
 			}                    
         }
 
-        private IElementContainer<ISubmodelElement> UpdateElementContainer(IElementContainer<ISubmodelElement> sourceContainer, ref Utf8JsonReader reader, JsonSerializerOptions jsonOptions)
+        private void UpdateElementContainer(ref IElementContainer<ISubmodelElement> sourceContainer, ref Utf8JsonReader reader, JsonSerializerOptions jsonOptions, JsonTokenType startToken, JsonTokenType endToken)
         {
 			if(sourceContainer == null)
                 throw new JsonException("SubmodelElement-SourceContainer is null");
 
-            while (reader.TokenType != JsonTokenType.StartArray)
+            while (reader.TokenType != startToken)
                 reader.Read();
 
             while (reader.Read())
             {
-                if (reader.TokenType == JsonTokenType.EndArray)
-                    return sourceContainer;
+                if (reader.TokenType == endToken)
+                    return;
 
                 if(reader.TokenType != JsonTokenType.PropertyName)
                         continue;
@@ -278,7 +290,35 @@ namespace BaSyx.Models.Extensions
 				else
 					JsonSerializer.Serialize(writer, JsonValue.Create(propValue.Value.Value), _options);
             }
-			else if (value is RangeValue rangeValue)
+            else if (value is SubmodelElementCollectionValue smcValue)
+            {
+                if (_converterOptions.SerializationOption == SerializationOption.FullModel)
+                {
+                    writer.WritePropertyName("value");
+                    writer.WriteStartArray();
+                    foreach (var smcElement in smcValue.Value)
+                    {
+                        if (_converterOptions.SerializationOption == SerializationOption.FullModel)
+                        {
+                            JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
+                        }
+                        
+                    }
+                    writer.WriteEndArray();
+                }
+                else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
+                {
+                    writer.WriteStartObject();
+                    foreach (var smcElement in smcValue.Value)
+                    {
+                        var smcElementValueScope = smcElement.GetValueScope().Result;
+                        writer.WritePropertyName(smcElement.IdShort);
+                        Write(writer, smcElementValueScope, _options);
+                    }
+                    writer.WriteEndObject();
+                }
+            }
+            else if (value is RangeValue rangeValue)
 			{
 				if(_converterOptions.EnclosingObject)
 					JsonSerializer.Serialize(writer, JsonValue.Create(new { Min = rangeValue.Min.Value, Max = rangeValue.Max.Value }), _options);
