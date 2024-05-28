@@ -66,7 +66,7 @@ namespace BaSyx.Models.Extensions
         {
             if (list != null)
             {
-                return list.Value.Select(s => s.Cast<IProperty>().GetValue<T>());
+                return list.Value.Value.Select(s => s.Cast<IProperty>().GetValue<T>());
             }
             else
                 return null;

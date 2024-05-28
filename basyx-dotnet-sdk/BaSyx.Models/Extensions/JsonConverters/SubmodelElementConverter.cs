@@ -335,12 +335,12 @@ namespace BaSyx.Models.Extensions
                                 if (reader.TokenType == JsonTokenType.StartObject)
                                 {
                                     ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
-                                    sml.Value.Add(sme);
+                                    sml.Value.Value.Add(sme);
                                 }
                                 else
                                 {
                                     ISubmodelElement sme = GetProperty(reader, i.ToString());
-                                    sml.Value.Add(sme);
+                                    sml.Value.Value.Add(sme);
                                     i++;
                                 }
                             }
@@ -585,16 +585,16 @@ namespace BaSyx.Models.Extensions
                     if (sml.ValueTypeListElement != null)
                         writer.WriteString("valueTypeListElement", sml.ValueTypeListElement.ToString());
 
-                    writer.WritePropertyName("value");
-                    writer.WriteStartArray();
-                    if (sml.Value?.Count > 0)
-                    {
-                        foreach (var element in sml.Value)
-                        {
-                            JsonSerializer.Serialize(writer, element, options);
-                        }
-                    }
-                    writer.WriteEndArray();
+                    //writer.WritePropertyName("value");
+                    //writer.WriteStartArray();
+                    //if (sml.Value?.Value?.Count > 0)
+                    //{
+                    //    foreach (var element in sml.Value.Value)
+                    //    {
+                    //        JsonSerializer.Serialize(writer, element, options);
+                    //    }
+                    //}
+                    //writer.WriteEndArray();
                     break;
                 //case ModelTypes.SubmodelElementCollection:
                 //    var smc = (SubmodelElementCollection)value;

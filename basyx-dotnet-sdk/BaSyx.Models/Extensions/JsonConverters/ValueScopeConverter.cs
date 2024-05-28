@@ -17,6 +17,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Nodes;
 using System.Reflection.Metadata;
 using System.Xml;
+using System.Linq;
 
 namespace BaSyx.Models.Extensions
 {
@@ -75,8 +76,15 @@ namespace BaSyx.Models.Extensions
             {
                 var smc = _sme as SubmodelElementCollection;
                 var elementContainer = smc.Value.Value;
-                UpdateElementContainer(ref elementContainer, ref reader, _jsonOptions, JsonTokenType.StartObject, JsonTokenType.EndObject);
+                UpdateSmcElementContainer(ref elementContainer, ref reader, _jsonOptions, JsonTokenType.StartObject, JsonTokenType.EndObject);
                 return smc.Value;
+            }
+            else if (typeof(TValueScope) == typeof(SubmodelElementListValue) || typeToConvert == typeof(SubmodelElementListValue))
+            {
+                var sml = _sme as SubmodelElementList;
+                var elementContainer = sml.Value.Value;
+                UpdateSmlElementContainer(ref elementContainer, ref reader, _jsonOptions, JsonTokenType.StartArray, JsonTokenType.EndArray);
+                return sml.Value;
             }
             else if (typeof(TValueScope) == typeof(RangeValue) || typeToConvert == typeof(RangeValue))
 			{
@@ -186,7 +194,7 @@ namespace BaSyx.Models.Extensions
 							else
                             {
                                 var annotations = (_sme as AnnotatedRelationshipElement).Value.Annotations;
-                                UpdateElementContainer(ref annotations, ref reader, _jsonOptions, JsonTokenType.StartArray, JsonTokenType.EndArray);
+                                UpdateSmcElementContainer(ref annotations, ref reader, _jsonOptions, JsonTokenType.StartArray, JsonTokenType.EndArray);
                                 arelValue.Annotations = annotations;
                             }								
                             break;
@@ -252,7 +260,41 @@ namespace BaSyx.Models.Extensions
 			}                    
         }
 
-        private void UpdateElementContainer(ref IElementContainer<ISubmodelElement> sourceContainer, ref Utf8JsonReader reader, JsonSerializerOptions jsonOptions, JsonTokenType startToken, JsonTokenType endToken)
+        private void UpdateSmlElementContainer(ref IElementContainer<ISubmodelElement> sourceContainer, ref Utf8JsonReader reader, JsonSerializerOptions jsonOptions, JsonTokenType startToken, JsonTokenType endToken)
+        {
+            if (sourceContainer == null || sourceContainer.Children?.Count() == 0)
+                throw new JsonException("SubmodelElement-SourceContainer is null");
+
+            while (reader.TokenType != startToken)
+                reader.Read();
+
+            int i = 0;
+            while (reader.Read())
+            {
+                if (reader.TokenType == endToken || i == sourceContainer.Children.Count())
+                    return;
+
+                object value = null;
+                switch(reader.TokenType)
+                {
+                    case JsonTokenType.True:
+                    case JsonTokenType.False: value = reader.GetBoolean();break;
+                    case JsonTokenType.String: value = reader.GetString(); break;
+                    case JsonTokenType.Number: value = reader.GetDouble(); break;
+                }
+
+                var sme = sourceContainer.Children.ElementAt(i).Value;
+                if (sme.ModelType == ModelType.Property)
+                {
+                    PropertyValue propertyValue = new PropertyValue(new ElementValue(value));
+                    sme.SetValueScope(propertyValue);
+                }
+                i++;
+            }
+            throw new JsonException("Malformed json");
+        }
+
+        private void UpdateSmcElementContainer(ref IElementContainer<ISubmodelElement> sourceContainer, ref Utf8JsonReader reader, JsonSerializerOptions jsonOptions, JsonTokenType startToken, JsonTokenType endToken)
         {
 			if(sourceContainer == null)
                 throw new JsonException("SubmodelElement-SourceContainer is null");
@@ -298,11 +340,7 @@ namespace BaSyx.Models.Extensions
                     writer.WriteStartArray();
                     foreach (var smcElement in smcValue.Value)
                     {
-                        if (_converterOptions.SerializationOption == SerializationOption.FullModel)
-                        {
-                            JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
-                        }
-                        
+                        JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
                     }
                     writer.WriteEndArray();
                 }
@@ -316,6 +354,29 @@ namespace BaSyx.Models.Extensions
                         Write(writer, smcElementValueScope, _options);
                     }
                     writer.WriteEndObject();
+                }
+            }
+            else if (value is SubmodelElementListValue smlValue)
+            {
+                if (_converterOptions.SerializationOption == SerializationOption.FullModel)
+                {
+                    writer.WritePropertyName("value");
+                    writer.WriteStartArray();
+                    foreach (var smcElement in smlValue.Value)
+                    {
+                        JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
+                    }
+                    writer.WriteEndArray();
+                }
+                else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
+                {
+                    writer.WriteStartArray();
+                    foreach (var smcElement in smlValue.Value)
+                    {
+                        var smcElementValueScope = smcElement.GetValueScope().Result;
+                        Write(writer, smcElementValueScope, _options);
+                    }
+                    writer.WriteEndArray();
                 }
             }
             else if (value is RangeValue rangeValue)
@@ -418,7 +479,8 @@ namespace BaSyx.Models.Extensions
 		{
 			if (reader.TokenType == JsonTokenType.Number)
 			{
-				ReadOnlySpan<byte> span = reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan;
+                //Eventually requestBody.GetRawText() passed to ElementValue instead of parsed Double value
+                ReadOnlySpan<byte> span = reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan;
 				if (Utf8Parser.TryParse(span, out double number, out int bytesConsumed) && span.Length == bytesConsumed)
 					return new ElementValue(number, dataType ?? typeof(double));
 				throw new JsonException($"Unsupported NumberFormat");

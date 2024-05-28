@@ -77,28 +77,6 @@ namespace HelloAssetAdministrationShell
 
         public override IAssetAdministrationShell BuildAssetAdministrationShell()
         {
-            //string aasxFile = @"C:\temp\aasx\v3\aasx-999999100000400000000001337484.aasx";
-            //string aasxFile = @"C:\temp\aasx\v3\aasx-999999100000400000000002079408.aasx";
-            //string aasxFile = @"C:\temp\aasx\v3\HARTING_Smart-Connector-SmEC_V1.3.aasx";
-            //string aasxFile = @"C:\temp\aasx\v3\Rexroth_R901496427.aasx";
-   //         string aasxFile = @"C:\temp\aasx\v3\Special\SIEMENS_CPU1511_MLFB_6ES75111AL030AB0.aasx";
-			//IAssetAdministrationShell aas;
-			//try
-			//{
-			//	using (AASX_V3_0 aasx = new AASX_V3_0(aasxFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-			//	{
-			//		AssetAdministrationShellEnvironment_V3_0 environment = aasx.GetEnvironment_V3_0();
-			//		aas = environment.AssetAdministrationShells.FirstOrDefault();
-			//		if (aas == null)
-			//			throw new Exception("Asset Administration Shell cannot be obtained from AASX-Package");
-			//	}
-			//}
-			//catch (Exception e)
-			//{
-				
-			//	throw;
-			//}
-
             AssetAdministrationShell aas = new AssetAdministrationShell("HelloAAS", new BaSyxShellIdentifier("HelloAAS", "1.0.0"))
             {
                 Description = new LangStringSet() { new LangString("en", "This is an exemplary Asset Administration Shell for starters") },
@@ -260,24 +238,28 @@ namespace HelloAssetAdministrationShell
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary SubmodelElementList") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
                     TypeValueListElement = ModelType.Property,
+                    ValueTypeListElement = typeof(int),
                     Value =
                     {
-                        new Property<int>("MySubIntValue")
+                        Value =
                         {
-                            Get = (prop) =>
+                            new Property<int>("0")
                             {
-                                Random random = new Random();
-                                int val = random.Next(1, 500);
-                                return Task.FromResult(val);
+                                Get = (prop) =>
+                                {
+                                    Random random = new Random();
+                                    int val = random.Next(1, 500);
+                                    return Task.FromResult(val);
+                                },
+                                Set = (prop, val) =>
+                                {
+                                    int myVal = val;
+                                    return Task.CompletedTask;
+                                }
                             },
-                            Set = (prop, val) =>
-                            {
-                                int myVal = val;
-                                return Task.CompletedTask;
-                            }
-                        },
-                        new Property<bool>("MySubBoolValue", true),
-                        new Property<float>("MySubFloatValue", 3.4f)
+                            new Property<int>("1", 42),
+                            new Property<int>("2", 4711)
+                        }                  
                     }
                 },
                 new Operation("SMCToObject")

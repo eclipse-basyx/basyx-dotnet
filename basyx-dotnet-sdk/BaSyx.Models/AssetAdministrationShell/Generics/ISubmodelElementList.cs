@@ -37,7 +37,7 @@ namespace BaSyx.Models.AdminShell
     /// all first level child elements in the SubmodelElementList shall have the value type
     /// as specified in SubmodelElementList/valueTypeListElement.
     /// </summary>
-    public interface ISubmodelElementList : ISubmodelElement
+    public interface ISubmodelElementList : ISubmodelElement<SubmodelElementListValue>
     {
         /// <summary>
         /// Defines whether order in list is relevant. If orderRelevant = false, the list represents a set or a bag.
@@ -45,12 +45,6 @@ namespace BaSyx.Models.AdminShell
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "orderRelevant")]
         bool OrderRelevant { get; set; }
-
-        /// <summary>
-        /// Submodel element contained in the list.
-        /// </summary>
-        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
-        IElementContainer<ISubmodelElement> Value { get; set; }
 
         /// <summary>
         /// Semantic ID which the submodel elements contained in the list match

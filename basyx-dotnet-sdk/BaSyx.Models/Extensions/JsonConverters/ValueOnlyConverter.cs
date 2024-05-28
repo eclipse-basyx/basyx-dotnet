@@ -44,7 +44,7 @@ namespace BaSyx.Models.Extensions
                             ISubmodelElementList submodelElementList = smElement.Cast<ISubmodelElementList>();
                             writer.WritePropertyName(submodelElementList.IdShort);
                             writer.WriteStartArray();
-                            foreach (var element in submodelElementList.Value)
+                            foreach (var element in submodelElementList.Value.Value)
                             {
                                 if(element.ModelType == ModelType.Property)
                                 {

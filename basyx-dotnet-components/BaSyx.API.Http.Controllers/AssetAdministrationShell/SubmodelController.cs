@@ -674,24 +674,6 @@ namespace BaSyx.API.Http.Controllers
             if(sme.ModelType == ModelType.Property)
             {
 				Property property = sme as Property;
-				//ElementValue elementValue;
-				//switch (requestBody.ValueKind)
-				//{
-				//	case JsonValueKind.String:
-				//		elementValue = new ElementValue(requestBody.GetString(), property.ValueType);
-				//		break;
-				//	case JsonValueKind.Number:
-				//	    elementValue = new ElementValue(requestBody.GetRawText(), property.ValueType);
-				//		break;
-				//	case JsonValueKind.True:
-				//	case JsonValueKind.False:
-				//		elementValue = new ElementValue(requestBody.GetBoolean(), property.ValueType);
-				//		break;
-				//	default:
-				//		return new Result(false, new ErrorMessage($"JsonValueKind {requestBody.ValueKind} is not accepted")).CreateActionResult(CrudOperation.Update);
-				//}
-				//valueScope = new PropertyValue(elementValue);
-
 				valueScope = requestBody.Deserialize<PropertyValue>(new JsonSerializerOptions()
 				{
 					Converters = { new ValueScopeConverter<PropertyValue>(dataType: property.ValueType) }
@@ -702,6 +684,16 @@ namespace BaSyx.API.Http.Controllers
                 valueScope = requestBody.Deserialize<SubmodelElementCollectionValue>(new JsonSerializerOptions()
                 {
                     Converters = { new ValueScopeConverter<SubmodelElementCollectionValue>(
+                        sme: sme,
+                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
+                        jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.SubmodelElementList)
+            {
+                valueScope = requestBody.Deserialize<SubmodelElementListValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<SubmodelElementListValue>(
                         sme: sme,
                         options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
                         jsonOptions: _fullSerializerOptions) }

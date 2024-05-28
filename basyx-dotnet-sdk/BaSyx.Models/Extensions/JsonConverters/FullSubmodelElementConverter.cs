@@ -198,10 +198,20 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.SubmodelElementList:
                     var sml = (SubmodelElementList)value;
-                    if (sml.Value != null)
+                    var smlValue = sml.GetValueScope<SubmodelElementListValue>();
+                    if (smlValue != null)
                     {
-                        writer.WritePropertyName("value");
-                        JsonSerializer.Serialize(writer, sml.Value, options);
+                        JsonSerializer.Serialize(writer, smlValue, new JsonSerializerOptions()
+                        {
+                            Converters =
+                            {
+                                new ValueScopeConverter<SubmodelElementListValue>(options: new ValueScopeConverterOptions()
+                                {
+                                    EnclosingObject = false,
+                                    SerializationOption = SerializationOption.FullModel
+                                }, jsonOptions: options)
+                            }
+                        });
                     }
                     break;
                 default:

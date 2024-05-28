@@ -223,10 +223,10 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
 
 				if (castedSubmodelElementList.Value?.Count > 0)
 				{
-					submodelElementList.Value = new ElementContainer<ISubmodelElement>(parent, submodelElementList, null);
+					submodelElementList.Value.Value = new ElementContainer<ISubmodelElement>(parent, submodelElementList, null);
 					List<ISubmodelElement> smElements = castedSubmodelElementList.Value?.ConvertAll(c => c?.ToSubmodelElement(conceptDescriptions, parent));
 					foreach (var smElement in smElements)
-						submodelElementList.Value.Create(smElement);
+						submodelElementList.Value.Value.Create(smElement);
 				}
 
                 submodelElementList.OrderRelevant = castedSubmodelElementList.OrderRelevant;
@@ -488,8 +488,8 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                     ValueTypeListElement = castedSubmodelElementList.ValueTypeListElement?.DataObjectType?.Name
                 };
                 List<SubmodelElementType_V3_0> environmentSubmodelElements = new List<SubmodelElementType_V3_0>();
-                if (castedSubmodelElementList.Value?.Count() > 0)
-                    foreach (var smElement in castedSubmodelElementList.Value)
+                if (castedSubmodelElementList.Value?.Value?.Count() > 0)
+                    foreach (var smElement in castedSubmodelElementList.Value.Value)
                         environmentSubmodelElements.Add(smElement.ToEnvironmentSubmodelElement_V3_0());
                 (environmentSubmodelElement as SubmodelElementList_V3_0).Value = environmentSubmodelElements;
             }
