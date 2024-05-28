@@ -112,23 +112,34 @@ namespace BaSyx.Models.Extensions
 				throw new JsonException("Utf8JsonReader did not finished reading");
 			}
 			else if(typeof(TValueScope) == typeof(MultiLanguagePropertyValue) || typeToConvert == typeof(MultiLanguagePropertyValue))
-			{
-				MultiLanguagePropertyValue mlpValue = new MultiLanguagePropertyValue();
+			{				
+                if(_converterOptions.SerializationOption == SerializationOption.ValueOnly)
+                {
+                    MultiLanguagePropertyValue mlpValue = new MultiLanguagePropertyValue();
+                    while (reader.Read())
+                    {
+                        if (reader.TokenType == JsonTokenType.EndArray)
+                            return mlpValue;
 
-				while (reader.Read())
-				{
-					if (reader.TokenType == JsonTokenType.EndArray)
-						return mlpValue;
+                        if (reader.TokenType != JsonTokenType.PropertyName)
+                            continue;
 
-					if (reader.TokenType != JsonTokenType.PropertyName)
-						continue;
-
-					string propertyName = reader.GetString();
-					reader.Read();
-					mlpValue.Value.AddLangString(propertyName, reader.GetString());
-				}
-				throw new JsonException("Utf8JsonReader did not finished reading");
-			}
+                        string propertyName = reader.GetString();
+                        reader.Read();
+                        mlpValue.Value.AddLangString(propertyName, reader.GetString());
+                    }
+                    throw new JsonException("Utf8JsonReader did not finished reading");
+                }
+                else if (_converterOptions.SerializationOption == SerializationOption.FullModel)
+                {
+                    MultiLanguagePropertyValue mlpValue = new MultiLanguagePropertyValue();
+                    var langStringSet = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
+                    if (langStringSet != null)
+                        mlpValue.Value = langStringSet;
+                    return mlpValue;
+                }
+                throw new JsonException("Utf8JsonReader did not finished reading");
+            }
 			else if (typeof(TValueScope) == typeof(ReferenceElementValue) || typeToConvert == typeof(ReferenceElementValue))
 			{
 				ReferenceElementValue refValue = new ReferenceElementValue();
@@ -136,8 +147,7 @@ namespace BaSyx.Models.Extensions
 				if (reference != null)
 					refValue = new ReferenceElementValue(reference);
 
-				return refValue;
-				throw new JsonException("Utf8JsonReader did not finished reading");
+				return refValue;				
 			}
             else if (typeof(TValueScope) == typeof(BasicEventElementValue) || typeToConvert == typeof(BasicEventElementValue))
             {
