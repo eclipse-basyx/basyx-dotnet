@@ -234,19 +234,32 @@ namespace BaSyx.Models.Extensions
                     #region Entity
                     case "globalAssetId":
                         if (submodelElement is Entity e1)
-                            e1.GlobalAssetId = reader.GetString();
+                        {
+                            if (e1.Value == null)
+                                e1.Value = new EntityValue();
+
+                            e1.Value.GlobalAssetId = reader.GetString();
+                        }
                         break;
                     case "specificAssetIds":
                         if (submodelElement is Entity e2)
-                            e2.SpecificAssetIds = JsonSerializer.Deserialize<IEnumerable<SpecificAssetId>>(ref reader, options);
+                        {
+                            if (e2.Value == null)
+                                e2.Value = new EntityValue();
+
+                            e2.Value.SpecificAssetIds = JsonSerializer.Deserialize<IEnumerable<SpecificAssetId>>(ref reader, options);
+                        }
                         break;
                     case "statements":
                         if (submodelElement is Entity e3)
                         {
+                            if (e3.Value == null)
+                                e3.Value = new EntityValue();
+
                             while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                             {
                                 ISubmodelElement sme = Read(ref reader, typeof(ISubmodelElement), options);
-                                e3.Statements.Add(sme);
+                                e3.Value.Statements.Add(sme);
                             }
                         }
                         break;
@@ -528,16 +541,21 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.Entity:
                     var entity = (Entity)value;   
-                    if (entity.GlobalAssetId != null)
+                    if(entity.EntityType != EntityType.None)
                     {
-                        writer.WritePropertyName("globalAssetId");
-                        JsonSerializer.Serialize(writer, entity.GlobalAssetId, options);
+                        writer.WritePropertyName("entityType");
+                        JsonSerializer.Serialize(writer, entity.EntityType, options);
                     }
-                    if (entity.SpecificAssetIds?.Count() > 0)
-                    {
-                        writer.WritePropertyName("specificAssetIds");
-                        JsonSerializer.Serialize(writer, entity.SpecificAssetIds, options);
-                    }
+                    //if (entity.GlobalAssetId != null)
+                    //{
+                    //    writer.WritePropertyName("globalAssetId");
+                    //    JsonSerializer.Serialize(writer, entity.GlobalAssetId, options);
+                    //}
+                    //if (entity.SpecificAssetIds?.Count() > 0)
+                    //{
+                    //    writer.WritePropertyName("specificAssetIds");
+                    //    JsonSerializer.Serialize(writer, entity.SpecificAssetIds, options);
+                    //}
                     break;
                 case ModelTypes.MultiLanguageProperty:
                     var mlp = (MultiLanguageProperty)value;

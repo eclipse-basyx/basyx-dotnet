@@ -136,7 +136,7 @@
                 {
                     return;
                 }
-                @await Html.PartialAsync("_Identifier", entity.GlobalAssetId)
+                @await Html.PartialAsync("_Identifier", entity.Value?.GlobalAssetId)
                 <li class="list-group-item">
                     <div class="row align-items-center">
                         <div class="col-sm-2"><b>EntityType</b></div>

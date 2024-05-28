@@ -146,14 +146,14 @@ namespace BaSyx.Models.Extensions
                         }
                     case ModelTypes.Entity:
                         {
-                            IEntity entity = smElement.Cast<IEntity>();
-                            writer.WritePropertyName(entity.IdShort);
-                            writer.WriteStartObject();
-                            writer.WritePropertyName("statements");
-                            Write(writer, entity.Statements, options);
-                            writer.WriteString("entityType", entity.EntityType.ToString());
-                            writer.WriteString("globalAssetId", entity.GlobalAssetId.Id);
-                            writer.WriteEndObject(); 
+                            //IEntity entity = smElement.Cast<IEntity>();
+                            //writer.WritePropertyName(entity.IdShort);
+                            //writer.WriteStartObject();
+                            //writer.WritePropertyName("statements");
+                            //Write(writer, entity.Statements, options);
+                            //writer.WriteString("entityType", entity.EntityType.ToString());
+                            //writer.WriteString("globalAssetId", entity.GlobalAssetId.Id);
+                            //writer.WriteEndObject(); 
                             break;
                         }
                     default:

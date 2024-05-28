@@ -155,22 +155,28 @@ namespace SubmodelRepoClientServerTests
             SubmodelElementCollection coll = new SubmodelElementCollection("MyCollection")
             {
                 Value =
-               {
-                   new Property<string>("MySubString", "MySubStringValue"),
-                   new Property<int>("MySubInt", 5),
-                   new Property<double>("MySubDouble", 4.5d),
-                   new Property<float>("MySubFloat", 2.3f),
-                   new SubmodelElementCollection("MySubCollection")
+                {
+                   Value =
                    {
-                       Value =
+                       new Property<string>("MySubString", "MySubStringValue"),
+                       new Property<int>("MySubInt", 5),
+                       new Property<double>("MySubDouble", 4.5d),
+                       new Property<float>("MySubFloat", 2.3f),
+                       new SubmodelElementCollection("MySubCollection")
                        {
-                           new Property<string>("MySubSubString", "MySubSubStringValue"),
-                           new Property<int>("MySubSubInt", 6),
-                           new Property<double>("MySubSubDouble", 5.5d),
-                           new Property<float>("MySubSubFloat", 3.3f),
+                           Value =
+                           {
+                               Value =
+                               {
+                                   new Property<string>("MySubSubString", "MySubSubStringValue"),
+                                   new Property<int>("MySubSubInt", 6),
+                                   new Property<double>("MySubSubDouble", 5.5d),
+                                   new Property<float>("MySubSubFloat", 3.3f),
+                               }
+                           }
                        }
                    }
-               }
+                }
             };
             MainSubmodel.SubmodelElements.Add(coll);
             var created = CreateSubmodelElement(".", coll);
@@ -221,7 +227,7 @@ namespace SubmodelRepoClientServerTests
         {
             var result = RetrieveSubmodelElement("MyCollection.MySubCollection");
             result.Success.Should().BeTrue();
-            result.Entity.Cast<ISubmodelElementCollection>().Value["MySubSubInt"].GetValue<int>().Should().Be(6);
+            result.Entity.Cast<ISubmodelElementCollection>().Value.Value["MySubSubInt"].GetValue<int>().Should().Be(6);
         }
 
         [TestMethod]

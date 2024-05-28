@@ -633,7 +633,7 @@ namespace BaSyx.API.Http.Controllers
                         {
                             SerializationOption = SerializationOption.ValueOnly,
                             ValueAsString = false
-                        })
+                        }, jsonOptions: _fullSerializerOptions)
                     }
                 });
 				return Content(value, "application/json");
@@ -742,6 +742,16 @@ namespace BaSyx.API.Http.Controllers
                     Converters = { new ValueScopeConverter<AnnotatedRelationshipElementValue>(
                         sme: sme, 
                         options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly }, 
+                        jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.Entity)
+            {
+                valueScope = requestBody.Deserialize<EntityValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<EntityValue>(
+                        sme: sme,
+                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
                         jsonOptions: _fullSerializerOptions) }
                 });
             }

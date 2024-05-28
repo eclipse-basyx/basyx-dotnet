@@ -131,7 +131,7 @@ ShowSubmodelElement = @<text>@{
                 }
                 else if (submodelElement is IEntity entity){
                     <div class="card-body">
-                        @foreach (var child in entity.Statements.Children)
+                        @foreach (var child in entity.Value?.Statements?.Children)
                         {
                             @ShowSubmodelElement(new List<object>() { item[0], child })
                         }

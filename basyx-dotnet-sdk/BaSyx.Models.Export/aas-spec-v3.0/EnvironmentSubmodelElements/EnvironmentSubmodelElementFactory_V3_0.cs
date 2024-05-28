@@ -162,21 +162,24 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 Entity entity = new Entity(castedEntity.IdShort)
                 {
                     EntityType = (EntityType)Enum.Parse(typeof(EntityType), castedEntity.EntityType.ToString()),
-                    GlobalAssetId = castedEntity.GlobalAssetId,
-                    SpecificAssetIds = castedEntity.SpecificAssetIds?.ConvertAll(s => new SpecificAssetId()
+                    Value = new EntityValue()
                     {
-                        ExternalSubjectId = s.ExternalSubjectId?.ToReference_V3_0(),
-                        Name = s.Name,
-                        SemanticId = s.SemanticId?.ToReference_V3_0(),
-                        SupplementalSemanticIds = s.SupplementalSemanticIds?.ConvertAll(r => r.ToReference_V3_0()),
-                        Value = s.Value
-                    })
+                        GlobalAssetId = castedEntity.GlobalAssetId,
+                        SpecificAssetIds = castedEntity.SpecificAssetIds?.ConvertAll(s => new SpecificAssetId()
+                        {
+                            ExternalSubjectId = s.ExternalSubjectId?.ToReference_V3_0(),
+                            Name = s.Name,
+                            SemanticId = s.SemanticId?.ToReference_V3_0(),
+                            SupplementalSemanticIds = s.SupplementalSemanticIds?.ConvertAll(r => r.ToReference_V3_0()),
+                            Value = s.Value
+                        })
+                    }
                 };
 
                 var statements = castedEntity.Statements?.ConvertAll(c => c.ToSubmodelElement(conceptDescriptions, parent));
                 if (statements?.Count > 0)
                     foreach (var element in statements)
-                        entity.Statements.Create(element);
+                        entity.Value?.Statements.Create(element);
 
                 submodelElement = entity;
             }
@@ -418,8 +421,8 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 environmentSubmodelElement = new Entity_V3_0(submodelElementType)
                 {
                     EntityType = (EnvironmentEntityType_V3_0)Enum.Parse(typeof(EnvironmentEntityType_V3_0), castedEntity.EntityType.ToString()),
-                    GlobalAssetId = castedEntity.GlobalAssetId,
-                    SpecificAssetIds = castedEntity.SpecificAssetIds?.ToList().ConvertAll(c => new EnvironmentSpecificAssetId_V3_0()
+                    GlobalAssetId = castedEntity.Value?.GlobalAssetId,
+                    SpecificAssetIds = castedEntity.Value?.SpecificAssetIds?.ToList().ConvertAll(c => new EnvironmentSpecificAssetId_V3_0()
                     {
                         Name = c.Name,
                         ExternalSubjectId = c.ExternalSubjectId?.ToEnvironmentReference_V3_0(),
@@ -430,8 +433,8 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 };
 
                 List<SubmodelElementType_V3_0> statements = new List<SubmodelElementType_V3_0>();
-                if (castedEntity.Statements?.Count() > 0)
-                    foreach (var smElement in castedEntity.Statements)
+                if (castedEntity.Value?.Statements?.Count() > 0)
+                    foreach (var smElement in castedEntity.Value?.Statements)
                         statements.Add(smElement.ToEnvironmentSubmodelElement_V3_0());
                 (environmentSubmodelElement as Entity_V3_0).Statements = statements;
             }

@@ -130,15 +130,19 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.Entity:
                     var entity = (Entity)value;
-                    if (entity.Statements?.Count > 0)
+                    var entityValue = entity.GetValueScope<EntityValue>();
+                    if (entityValue != null)
                     {
-                        writer.WritePropertyName("statements");
-                        JsonSerializer.Serialize(writer, entity.Statements, options);
-                    }
-                    if (entity.EntityType != EntityType.None)
-                    {
-                        writer.WritePropertyName("entityType");
-                        JsonSerializer.Serialize(writer, entity.EntityType, options);
+                        JsonSerializer.Serialize(writer, entityValue, new JsonSerializerOptions()
+                        {
+                            Converters =
+                            {
+                                new ValueScopeConverter<EntityValue>(options: new ValueScopeConverterOptions()
+                                {
+                                    EnclosingObject = false
+                                }, jsonOptions: options)
+                            }
+                        });
                     }
                     break;
                 case ModelTypes.MultiLanguageProperty:

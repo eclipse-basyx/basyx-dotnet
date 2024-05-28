@@ -16,6 +16,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Nodes;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace BaSyx.Models.Extensions
 {
@@ -205,6 +206,42 @@ namespace BaSyx.Models.Extensions
                                 UpdateSmcElementContainer(ref annotations, ref reader, _jsonOptions, JsonTokenType.StartArray, JsonTokenType.EndArray);
                                 arelValue.Annotations = annotations;
                             }								
+                            break;
+                    }
+                }
+                throw new JsonException("Utf8JsonReader did not finished reading");
+            }
+            else if (typeof(TValueScope) == typeof(EntityValue) || typeToConvert == typeof(EntityValue))
+            {
+                EntityValue entityValue = new EntityValue();
+
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonTokenType.EndObject)
+                        return entityValue;
+
+                    if (reader.TokenType != JsonTokenType.PropertyName)
+                        continue;
+
+                    string propertyName = reader.GetString();
+                    reader.Read();
+                    switch (propertyName)
+                    {
+                        case "globalAssetId":
+                            entityValue.GlobalAssetId = reader.GetString();
+                            break;
+                        case "specificAssetIds":
+                            entityValue.SpecificAssetIds = JsonSerializer.Deserialize<IEnumerable<SpecificAssetId>>(ref reader, _jsonOptions);
+                            break;
+                        case "statements":
+                            if (_converterOptions.SerializationOption == SerializationOption.FullModel)
+                                entityValue.Statements = JsonSerializer.Deserialize<IElementContainer<ISubmodelElement>>(ref reader, _jsonOptions);
+                            else
+                            {
+                                var statements = (_sme as Entity).Value.Statements;
+                                UpdateSmcElementContainer(ref statements, ref reader, _jsonOptions, JsonTokenType.StartArray, JsonTokenType.EndArray);
+                                entityValue.Statements = statements;
+                            }
                             break;
                     }
                 }
@@ -443,6 +480,42 @@ namespace BaSyx.Models.Extensions
                         Write(writer, annotationValueScope, _options);
                         writer.WriteEndObject();
                     }                   
+                }
+                writer.WriteEndArray();
+
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteEndObject();
+            }
+            else if (value is EntityValue entityValue)
+            {
+                if (_converterOptions.EnclosingObject)
+                    writer.WriteStartObject();
+
+                writer.WritePropertyName("globalAssetId");
+                JsonSerializer.Serialize(writer, entityValue.GlobalAssetId, _jsonOptions);
+
+                if (entityValue.SpecificAssetIds?.Count() > 0)
+                {
+                    writer.WritePropertyName("specificAssetIds");
+                    JsonSerializer.Serialize(writer, entityValue.SpecificAssetIds, _jsonOptions);
+                }
+
+                writer.WritePropertyName("statements");
+                writer.WriteStartArray();
+                foreach (var statement in entityValue.Statements)
+                {
+                    if (_converterOptions.SerializationOption == SerializationOption.FullModel)
+                    {
+                        JsonSerializer.Serialize(writer, statement, _jsonOptions);
+                    }
+                    else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
+                    {
+                        var statementValueScope = statement.GetValueScope().Result;
+                        writer.WriteStartObject();
+                        writer.WritePropertyName(statement.IdShort);
+                        Write(writer, statementValueScope, _options);
+                        writer.WriteEndObject();
+                    }
                 }
                 writer.WriteEndArray();
 

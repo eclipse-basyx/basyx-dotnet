@@ -159,13 +159,16 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
                 Entity entity = new Entity(castedEntity.IdShort)
                 {
                     EntityType = (EntityType)Enum.Parse(typeof(EntityType), castedEntity.EntityType.ToString()),
-                    GlobalAssetId = castedEntity.AssetReference?.Keys?.First()?.Value
+                    Value = new EntityValue()
+                    {
+                        GlobalAssetId = castedEntity.AssetReference?.Keys?.First()?.Value
+                    }
                 };
 
                 var statements = castedEntity.Statements?.ConvertAll(c => c.submodelElement.ToSubmodelElement(conceptDescriptions, parent));
                 if (statements?.Count > 0)
                     foreach (var element in statements)
-                        entity.Statements.Create(element);
+                        entity.Value?.Statements.Create(element);
 
                 submodelElement = entity;
             }

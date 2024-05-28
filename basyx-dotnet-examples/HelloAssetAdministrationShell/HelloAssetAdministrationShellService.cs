@@ -109,7 +109,7 @@ namespace HelloAssetAdministrationShell
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary property with internal storage") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn()))
                 },
-                 new Property<string>("HelloPropertyLocal", "TestValue")
+                new Property<string>("HelloPropertyLocal", "TestValue")
                 {
                     Description = new LangStringSet() { new LangString("en", "This is an exemplary property with internal storage") },
                     SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())),
@@ -150,7 +150,7 @@ namespace HelloAssetAdministrationShell
                                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
                            Second = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
                                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
-                    }                 
+                    }
                 },
                 new AnnotatedRelationshipElement("HelloAnnotatedRelationshipElement")
                 {
@@ -162,7 +162,30 @@ namespace HelloAssetAdministrationShell
                                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
                            Second = new Reference(new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
                                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())) { Type = ReferenceType.ExternalReference },
-                           Annotations = new ElementContainer<ISubmodelElement>()
+                           Annotations =
+                           {
+                               new Property<string>("MyConnectionValueString", "TestConnectionValue"),
+                               new Property<int>("MyConnectionValueInt", 5)
+                           }
+                    }
+                },
+                new Entity("HelloEntity")
+                {
+                    Description = new LangStringSet() { new LangString("en", "This is an exemplary Entity") },
+                    SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloEntity", "1.0.0").ToUrn())),
+                    EntityType = EntityType.SelfManagedEntity,
+                    Value =
+                    {
+                           GlobalAssetId = new BaSyxAssetIdentifier("MyEntityAsset", "1.0.0"),
+                           SpecificAssetIds = new List<SpecificAssetId>()
+                           {
+                               new SpecificAssetId()
+                               {
+                                   Name = "MySpecificAssetId",
+                                   Value = "MySpecificAssetIdValue"
+                               }
+                           },                           
+                           Statements =
                            {
                                new Property<string>("MyConnectionValueString", "TestConnectionValue"),
                                new Property<int>("MyConnectionValueInt", 5)

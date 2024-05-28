@@ -84,8 +84,11 @@ namespace ComplexAssetAdministrationShellScenario
                         {
                             Value =
                             {
-                                new Property<string>("SubProperty_" + i, "TestSubValue_" + i)
-                            }
+                                Value =
+                                {
+                                    new Property<string>("SubProperty_" + i, "TestSubValue_" + i)
+                                }
+                            }                           
                         }
                     }
                 };
@@ -164,7 +167,10 @@ namespace ComplexAssetAdministrationShellScenario
                         {
                             Value =
                             {
-                                new Property<string>("SubProperty_" + i, "TestSubValue_" + i)
+                                Value =
+                                {
+                                    new Property<string>("SubProperty_" + i, "TestSubValue_" + i)
+                                }
                             }
                         }
                     }
