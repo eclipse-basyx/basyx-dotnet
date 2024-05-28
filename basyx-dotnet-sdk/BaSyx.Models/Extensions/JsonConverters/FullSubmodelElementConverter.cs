@@ -26,7 +26,7 @@ namespace BaSyx.Models.Extensions
         {
             writer.WriteStartObject();
 
-            WriteBaseObject(writer, value, options);
+            WriteMetadata(writer, value, options);
 
             switch (value.ModelType.Type)
             {

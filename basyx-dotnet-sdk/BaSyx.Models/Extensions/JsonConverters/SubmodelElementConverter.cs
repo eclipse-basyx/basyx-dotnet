@@ -398,7 +398,7 @@ namespace BaSyx.Models.Extensions
         {
             writer.WriteStartObject();
 
-            WriteBaseObject(writer, value, options);
+            WriteMetadata(writer, value, options);
 
             writer.WriteEndObject();
         }
@@ -457,7 +457,7 @@ namespace BaSyx.Models.Extensions
             return null;
         }
 
-        public static void WriteBaseObject(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options)
+        public static void WriteMetadata(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options)
         {
             writer.WriteString("idShort", value.IdShort);
             writer.WriteString("kind", value.Kind.ToString());
@@ -546,16 +546,6 @@ namespace BaSyx.Models.Extensions
                         writer.WritePropertyName("entityType");
                         JsonSerializer.Serialize(writer, entity.EntityType, options);
                     }
-                    //if (entity.GlobalAssetId != null)
-                    //{
-                    //    writer.WritePropertyName("globalAssetId");
-                    //    JsonSerializer.Serialize(writer, entity.GlobalAssetId, options);
-                    //}
-                    //if (entity.SpecificAssetIds?.Count() > 0)
-                    //{
-                    //    writer.WritePropertyName("specificAssetIds");
-                    //    JsonSerializer.Serialize(writer, entity.SpecificAssetIds, options);
-                    //}
                     break;
                 case ModelTypes.MultiLanguageProperty:
                     var mlp = (MultiLanguageProperty)value;
@@ -605,31 +595,7 @@ namespace BaSyx.Models.Extensions
                         writer.WriteString("typeValueListElement", sml.TypeValueListElement.Name);
                     if (sml.ValueTypeListElement != null)
                         writer.WriteString("valueTypeListElement", sml.ValueTypeListElement.ToString());
-
-                    //writer.WritePropertyName("value");
-                    //writer.WriteStartArray();
-                    //if (sml.Value?.Value?.Count > 0)
-                    //{
-                    //    foreach (var element in sml.Value.Value)
-                    //    {
-                    //        JsonSerializer.Serialize(writer, element, options);
-                    //    }
-                    //}
-                    //writer.WriteEndArray();
                     break;
-                //case ModelTypes.SubmodelElementCollection:
-                //    var smc = (SubmodelElementCollection)value;
-                //    writer.WritePropertyName("value");
-                //    writer.WriteStartArray();
-                //    if(smc.Value?.Count > 0)
-                //    {
-                //        foreach (var element in smc.Value)
-                //        {
-                //            JsonSerializer.Serialize(writer, element, options);
-                //        }
-                //    }                    
-                //    writer.WriteEndArray();                  
-                //    break;
                 default:
                     break;
             }
