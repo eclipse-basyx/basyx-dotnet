@@ -486,7 +486,6 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="204">Submodel element updated successfully</response>
         [HttpPut(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "PutSubmodelElementByPath")]
-        [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -653,7 +652,6 @@ namespace BaSyx.API.Http.Controllers
         /// <response code="204">Submodel element updated successfully</response>
         /// <response code="400">Bad Request</response>
         [HttpPatch(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "PatchSubmodelElementValueByPathValueOnly")]
-        [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]

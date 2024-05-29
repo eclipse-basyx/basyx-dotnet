@@ -419,9 +419,8 @@ namespace BaSyx.API.Http.Controllers
 
         /// <inheritdoc cref="SubmodelController.PutSubmodelElementByPath(string, ISubmodelElement, RequestLevel, RequestExtent)"/>
         [HttpPut(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "Shell_PutSubmodelElementByPath")]
-        [Produces("application/json")]
         [Consumes("application/json")]
-        [ProducesResponseType(typeof(SubmodelElement), 201)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 404)]
         public IActionResult Shell_PutSubmodelElementByPath(string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement requestBody, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
