@@ -15,12 +15,20 @@ namespace BaSyx.Models.Extensions
 {
     public static class JsonExtensions
     {
-        public static string ToJsonValueOnly(this ValueScope valueScope)
+        private static JsonSerializerOptions _defaultSerializerOptions;
+        private static JsonSerializerOptions _valueOnlySerializerOptions;
+        private static JsonSerializerOptions _valueScopeSerializerOptions;
+        static JsonExtensions()
         {
-            if (valueScope == null)
-                return null;
+            DefaultJsonSerializerOptions defaultOptions = new DefaultJsonSerializerOptions();
+            _defaultSerializerOptions = defaultOptions.Build();
 
-            string json = JsonSerializer.Serialize<ValueScope>(valueScope, new JsonSerializerOptions()
+            _valueOnlySerializerOptions = new JsonSerializerOptions()
+            {
+                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions) }
+            };
+
+            _valueScopeSerializerOptions = new JsonSerializerOptions()
             {
                 Converters =
                 {
@@ -29,7 +37,24 @@ namespace BaSyx.Models.Extensions
                         SerializationOption = SerializationOption.ValueOnly
                     })
                 }
-            });
+            };
+        }
+
+        public static string ToJsonValueOnly(this IElementContainer<ISubmodelElement> container)
+        {
+            if (container == null)
+                return null;
+
+            string json = JsonSerializer.Serialize(container, _valueOnlySerializerOptions);
+            return json;
+        }
+
+        public static string ToJsonValueOnly(this ValueScope valueScope)
+        {
+            if (valueScope == null)
+                return null;
+
+            string json = JsonSerializer.Serialize<ValueScope>(valueScope, _valueScopeSerializerOptions);
             return json;
         }
 
@@ -38,16 +63,7 @@ namespace BaSyx.Models.Extensions
             if (string.IsNullOrEmpty(valueOnlyJson))
                 return default;
 
-            TValueScope valueScope = JsonSerializer.Deserialize<TValueScope>(valueOnlyJson, new JsonSerializerOptions()
-            {
-                Converters =
-                {
-                    new ValueScopeConverter<ValueScope>(options: new ValueScopeConverterOptions()
-                    {
-                        SerializationOption = SerializationOption.ValueOnly
-                    })
-                }
-            });
+            TValueScope valueScope = JsonSerializer.Deserialize<TValueScope>(valueOnlyJson, _valueScopeSerializerOptions);
             return valueScope;
         }
     }
