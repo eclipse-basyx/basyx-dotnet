@@ -8,7 +8,6 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Registry.ReferenceImpl.FileBased;
 using BaSyx.Registry.ReferenceImpl.InMemory;
 using BaSyx.Registry.Server.Http;
 using BaSyx.Utils.Settings;
@@ -33,7 +32,6 @@ namespace RegistryClientServerTests
             };
             RegistryHttpServer registryServer = new RegistryHttpServer(settings);
             InMemoryRegistry inMemoryRegistry = new InMemoryRegistry();
-            FileBasedRegistry fileBasedRegistry = new FileBasedRegistry();
             registryServer.SetRegistryProvider(inMemoryRegistry);
             _ = registryServer.RunAsync();
         }
