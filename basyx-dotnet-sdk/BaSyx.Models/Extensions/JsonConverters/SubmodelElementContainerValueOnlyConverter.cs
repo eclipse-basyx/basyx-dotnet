@@ -10,17 +10,15 @@
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
 using System;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
-    public class ValueOnlyConverter : JsonConverter<IElementContainer<ISubmodelElement>>
+    public class SubmodelElementContainerValueOnlyConverter : JsonConverter<IElementContainer<ISubmodelElement>>
     {
         private readonly JsonSerializerOptions _options;
-        public ValueOnlyConverter(JsonSerializerOptions jsonOptions) 
+        public SubmodelElementContainerValueOnlyConverter(JsonSerializerOptions jsonOptions) 
         {
             _options = jsonOptions;
         }
