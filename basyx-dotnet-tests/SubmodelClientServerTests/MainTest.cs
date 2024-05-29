@@ -238,6 +238,16 @@ namespace SubmodelClientServerTests
             retrieved.Entity.Result.Should().NotContainEquivalentOf(Submodel.SubmodelElements["MyCollection"]);
         }
 
+        [TestMethod]
+        public void Test113_ToFromValueOnly()
+        {
+            var property = Submodel.SubmodelElements["TestProperty1"].Cast<IProperty>();
+            PropertyValue oldPropertyValue = property.GetValueScope<PropertyValue>();            
+            string json = oldPropertyValue.ToJsonValueOnly();
+            PropertyValue newPropertyValue = json.FromJsonValueOnly<PropertyValue>();
+            oldPropertyValue.Value.Value.Should().Be(newPropertyValue.Value.Value);
+        }
+
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodel(level, extent);
