@@ -488,6 +488,11 @@ namespace BaSyx.Models.AdminShell
                         return new Result<TElement>(true, element);
                     }
                 }
+                var child = GetChild(idShortPath);
+                if (child != null)
+                {
+                    return child.ParentContainer.Update(child.IdShort, element);
+                }
                 return new Result<TElement>(false, new NotFoundMessage($"Element {idShortPath} not found"));
             }
         }
