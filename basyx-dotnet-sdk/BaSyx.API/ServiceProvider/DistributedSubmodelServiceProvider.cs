@@ -110,7 +110,7 @@ namespace BaSyx.API.ServiceProvider
             throw new NotImplementedException();
         }
 
-        public IResult<ISubmodelElement> UpdateSubmodelElement(string rootSubmodelElementPath, ISubmodelElement submodelElement)
+        public IResult UpdateSubmodelElement(string rootSubmodelElementPath, ISubmodelElement submodelElement)
         {
             return submodelClient.UpdateSubmodelElement(rootSubmodelElementPath, submodelElement);
         }

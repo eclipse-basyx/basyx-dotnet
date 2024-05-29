@@ -504,10 +504,10 @@ namespace BaSyx.API.ServiceProvider
             return created;
         }
 
-        public IResult<ISubmodelElement> UpdateSubmodelElement(string idShortPath, ISubmodelElement submodelElement)
+        public IResult UpdateSubmodelElement(string idShortPath, ISubmodelElement submodelElement)
         {
             if (_submodel == null)
-                return new Result<ISubmodelElement>(false, new NotFoundMessage("Submodel"));
+                return new Result(false, new NotFoundMessage("Submodel"));
 
             var updated = _submodel.SubmodelElements.Update(idShortPath, submodelElement);
             return updated;
