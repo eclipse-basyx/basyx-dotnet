@@ -66,7 +66,13 @@ namespace BaSyx.Models.Extensions
 		}
 		public override ValueScope Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if(typeof(TValueScope) == typeof(PropertyValue) || typeToConvert == typeof(PropertyValue))
+            if (
+                typeof(TValueScope) == typeof(PropertyValue) || 
+                typeToConvert == typeof(PropertyValue) ||
+                reader.TokenType == JsonTokenType.Number ||
+                reader.TokenType == JsonTokenType.String ||
+                reader.TokenType == JsonTokenType.True || 
+                reader.TokenType == JsonTokenType.False)
             {
 				ElementValue elementValue = GetElementValue(ref reader, _dataType);
 				return new PropertyValue(elementValue);
