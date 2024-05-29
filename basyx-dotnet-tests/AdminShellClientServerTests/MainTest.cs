@@ -396,7 +396,7 @@ namespace AdminShellClientServerTests
             return Client.RetrieveSubmodelElementValue(TestSubmodel.Id, idShortPath);
         }
 
-        public IResult<ISubmodelElement> UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
+        public IResult UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return Client.UpdateSubmodelElement(TestSubmodel.Id, rootIdShortPath, submodelElement);
         }
@@ -421,7 +421,7 @@ namespace AdminShellClientServerTests
             return Client.CreateSubmodelElementAsync(TestSubmodel.Id, rootIdShortPath, submodelElement);
         }
 
-        public Task<IResult<ISubmodelElement>> UpdateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement)
+        public Task<IResult> UpdateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return Client.UpdateSubmodelElementAsync(TestSubmodel.Id, rootIdShortPath, submodelElement);
         }
