@@ -30,7 +30,7 @@ namespace BaSyx.Models.Extensions
         static SubmodelElementExtensions()
         {
             DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
-            options.AddValueOnlySubmodelElementConverter();
+            //options.AddValueOnlySubmodelElementConverter();
             options.RemoveConverter(typeof(ElementContainerConverter));
             _jsonOptions = options.Build();
         }

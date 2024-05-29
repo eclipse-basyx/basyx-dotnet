@@ -77,12 +77,6 @@ namespace BaSyx.Models.Extensions
             return this;
         }
 
-        public DefaultJsonSerializerOptions AddValueOnlySubmodelElementConverter()
-        {
-            _options.Converters.Add(new ValueOnlyConverter());
-            return this;
-        }
-
         public DefaultJsonSerializerOptions AddMetadataSubmodelElementConverter()
         {
             _options.Converters.Add(new SubmodelElementConverter());

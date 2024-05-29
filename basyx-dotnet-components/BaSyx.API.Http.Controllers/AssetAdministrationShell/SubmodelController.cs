@@ -40,26 +40,24 @@ namespace BaSyx.API.Http.Controllers
         private readonly ISubmodelServiceProvider serviceProvider;
         private readonly IWebHostEnvironment hostingEnvironment;
 
+        private static JsonSerializerOptions _defaultSerializerOptions;
         private static JsonSerializerOptions _metadataSerializerOptions;
-        private static JsonSerializerOptions _valueOnlySerializerOptions;
         private static JsonSerializerOptions _fullSerializerOptions;
         static SubmodelController()
         {
-            DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
             var services = DefaultImplementation.GetStandardServiceCollection();
+
+            DefaultJsonSerializerOptions defaultOptions = new DefaultJsonSerializerOptions();            
+            defaultOptions.AddDependencyInjection(new DependencyInjectionExtension(services));
+            _defaultSerializerOptions = defaultOptions.Build();
+
+            DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
             options.AddDependencyInjection(new DependencyInjectionExtension(services));
             options.AddMetadataSubmodelElementConverter();
-            _metadataSerializerOptions = options.Build();
-
-            DefaultJsonSerializerOptions options2 = new DefaultJsonSerializerOptions();
-            var services2 = DefaultImplementation.GetStandardServiceCollection();
-            options2.AddDependencyInjection(new DependencyInjectionExtension(services2));
-            options2.AddValueOnlySubmodelElementConverter();
-            _valueOnlySerializerOptions = options2.Build();
+            _metadataSerializerOptions = options.Build();           
 
             DefaultJsonSerializerOptions options3 = new DefaultJsonSerializerOptions();
-            var services3 = DefaultImplementation.GetStandardServiceCollection();
-            options3.AddDependencyInjection(new DependencyInjectionExtension(services3));
+            options3.AddDependencyInjection(new DependencyInjectionExtension(services));
             options3.AddFullSubmodelElementConverter();
             _fullSerializerOptions = options3.Build();
         }
@@ -380,7 +378,10 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            string json = JsonSerializer.Serialize(result.Entity, _valueOnlySerializerOptions);
+            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            {
+                Converters = { new ValueOnlyConverter(_defaultSerializerOptions) }
+            });
             return Content(json, "application/json");
         }
 
