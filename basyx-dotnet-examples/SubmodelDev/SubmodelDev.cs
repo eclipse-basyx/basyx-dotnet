@@ -286,44 +286,83 @@ namespace DevelopmentSubmodel
 					//strProperty,
                     //intProperty,
                     //entity,
-                    strProperty,
-                    multiLang, 
-					range,
-					blob,
-					file,
-					relationship,
-					operation,
-					file,
-					refElement,
-					basicEvent,
-					annoRelationship,
-					new SubmodelElementList("ElementList_L1")
+     //               strProperty,
+     //               multiLang, 
+					//range,
+					//blob,
+					//file,
+					//relationship,
+					//operation,
+					//file,
+					//refElement,
+					//basicEvent,
+					//annoRelationship,
+					new SubmodelElementList("ElementList_1_L1")
 					{
 						Description = new LangStringSet() { new LangString("en", "This is an exemplary SubmodelElementList") },
 						SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
-						Value = new SubmodelElementListValue()
+						Value =
                         {
                             Value =
                             {
-                                strProperty
-           //                     new Property<int>("Int_L2")
-							    //{
-								   // Get = (prop) =>
-								   // {
-									  //  var random = new Random();
-									  //  var val = random.Next(1, 500);
-									  //  return Task.FromResult(val);
-								   // },
-								   // Set = (prop, val) =>
-								   // {
-									  //  var myVal = val;
-									  //  return Task.CompletedTask;
-								   // }
-							    //},
-							    //subBlob,
-							}
+								new Property<int>("Int_1_L2")
+								{
+									Get = (prop) =>
+									{
+										var random = new Random();
+										var val = random.Next(1, 500);
+										return Task.FromResult(val);
+									},
+									Set = (prop, val) =>
+									{
+										var myVal = val;
+										return Task.CompletedTask;
+									}
+								},
+                                new SubmodelElementList("ElementList_1_L2")
+                                {
+                                    Value =
+                                    {
+                                        Value =
+                                        {
+                                            new Property<int>("Int_1_L3", 1234),
+                                            
+                                        }
+                                    }
+                                }
+                            }
 						}
 					},
+                    new SubmodelElementList("ElementList_2_L1")
+                    {
+                        Value =
+                        {
+                            Value =
+                            {
+                                new Property<int>("Int_2_L2", 456),
+                                new SubmodelElementList("ElementList_1_L2")
+                                {
+                                    Value =
+                                    {
+                                        Value =
+                                        {
+                                            new Property<int>("Int_2_L3", 789),
+                                            new SubmodelElementList("ElementList_2_L3")
+                                            {
+                                                Value =
+                                                {
+                                                    Value =
+                                                    {
+                                                        new Property<int>("Int_2_L4", 1010),
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
 					//new SubmodelElementCollection("Collection_L1")
 					//{
 					//	Value = new SubmodelElementCollectionValue()
