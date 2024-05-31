@@ -33,8 +33,8 @@ namespace BaSyx.Models.Extensions
     }
 	public class ValueScopeConverter : ValueScopeConverter<ValueScope> 
 	{ 
-		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep) :
-			base(null, null, options, jsonOptions, level)
+		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null):
+			base(null, null, options, jsonOptions)
 		{ }
 	}
     public class ValueScopeConverter<TValueScope> : JsonConverter<ValueScope> where TValueScope : ValueScope
@@ -49,18 +49,14 @@ namespace BaSyx.Models.Extensions
 		private ValueScopeConverterOptions _converterOptions;
 		private JsonSerializerOptions _jsonOptions;
 		private ISubmodelElement _sme;
-        private RequestLevel _level;
-        private bool _writeChildren = true;
 
-        public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep) 
+		public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null) 
 		{
 			_dataType = dataType;
 			_converterOptions = options ?? new ValueScopeConverterOptions();
 			_jsonOptions = jsonOptions;
 			_sme = sme;
-            _level = level;
-        }
-
+		}
 		public override bool CanConvert(Type typeToConvert)
 		{
 			if (typeof(ValueScope).IsAssignableFrom(typeToConvert))
@@ -388,14 +384,6 @@ namespace BaSyx.Models.Extensions
             throw new JsonException("Malformed json");
         }
 
-        public void WriteChildren(Utf8JsonWriter writer, ValueScope value, JsonSerializerOptions options, bool writeChildren = true)
-        {
-            if (_level == RequestLevel.Core)
-                _writeChildren = false;
-
-            Write(writer, value, options);
-        }
-
         public override void Write(Utf8JsonWriter writer, ValueScope value, JsonSerializerOptions options)
         {
             if (value is PropertyValue propValue)
@@ -444,16 +432,11 @@ namespace BaSyx.Models.Extensions
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartArray();
-                    if (_writeChildren)
+                    foreach (var smcElement in smlValue.Value)
                     {
-                        foreach (var smcElement in smlValue.Value)
-                        {
-                            var smcElementValueScope = smcElement.GetValueScope().Result;
-                            WriteChildren(writer, smcElementValueScope, _options);
-                        }
+                        var smcElementValueScope = smcElement.GetValueScope().Result;
+                        Write(writer, smcElementValueScope, _options);
                     }
-                    else
-                        _writeChildren = true;
                     writer.WriteEndArray();
                 }
             }

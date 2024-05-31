@@ -615,7 +615,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelElementByPathValueOnly(string idShortPath, [FromQuery] RequestLevel level = RequestLevel.Deep)
+        public IActionResult GetSubmodelElementByPathValueOnly(string idShortPath, [FromQuery] RequestLevel level = default)
         {
             if (string.IsNullOrEmpty(idShortPath))
                 return ResultHandling.NullResult(nameof(idShortPath));
@@ -633,7 +633,7 @@ namespace BaSyx.API.Http.Controllers
                         {
                             SerializationOption = SerializationOption.ValueOnly,
                             ValueAsString = false
-                        }, jsonOptions: _fullSerializerOptions, level)
+                        }, jsonOptions: _fullSerializerOptions)
                     }
                 });
 				return Content(value, "application/json");
