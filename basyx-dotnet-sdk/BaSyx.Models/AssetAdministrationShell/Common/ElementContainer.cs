@@ -218,7 +218,17 @@ namespace BaSyx.Models.AdminShell
                     if (HasChild(splittedPath[0]))                      
                     {
                         var child = GetChild(splittedPath[0]);
-                        superChild = child.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
+                        if(!child.HasChildren() && child is SubmodelElementCollection smc)
+                        {
+                            var value = smc.Get?.Invoke(smc).Result;
+                            superChild = (IElementContainer<TElement>)value.Value.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
+                        } else if(!child.HasChildren() && child is SubmodelElementList sml)
+                        {
+                            var value = sml.Get?.Invoke(sml).Result;
+                            superChild = (IElementContainer<TElement>)value.Value.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
+                        }
+                        else
+                            superChild = child.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
                     }
                     else
                         superChild = null;
