@@ -24,7 +24,10 @@ namespace BaSyx.Models.AdminShell
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
         public override ModelType ModelType => ModelType.SubmodelElementList;
-       
+
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public new SubmodelElementListValue Value { get => (SubmodelElementListValue)_valueScope; set => _valueScope = value; }
+
         public bool OrderRelevant { get; set; }
         public IReference SemanticIdListElement { get; set; }
         public ModelType TypeValueListElement { get; set; }
@@ -64,11 +67,9 @@ namespace BaSyx.Models.AdminShell
 			set { Value.Value.Path = value; }
 		}
 
-		private readonly IElementContainer<ISubmodelElement> _value;
-
 		public SubmodelElementList(string idShort) : base(idShort) 
         {
-            Value = new SubmodelElementListValue(new ElementContainer<ISubmodelElement>(this.Parent, this, null));
+            _valueScope = new SubmodelElementListValue(new ElementContainer<ISubmodelElement>(this.Parent, this, null));
         }
 
         public event EventHandler<ElementContainerEventArgs<ISubmodelElement>> OnCreated

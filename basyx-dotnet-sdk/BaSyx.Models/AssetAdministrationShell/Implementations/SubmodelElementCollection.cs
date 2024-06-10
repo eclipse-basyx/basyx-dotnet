@@ -23,7 +23,10 @@ namespace BaSyx.Models.AdminShell
     public class SubmodelElementCollection : SubmodelElement<SubmodelElementCollectionValue>, ISubmodelElementCollection, IElementContainer<ISubmodelElement>
     {
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "modelType")]
-        public override ModelType ModelType => ModelType.SubmodelElementCollection;        
+        public override ModelType ModelType => ModelType.SubmodelElementCollection;
+
+        [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
+        public new SubmodelElementCollectionValue Value { get => (SubmodelElementCollectionValue)_valueScope; set => _valueScope = value; }
 
         [IgnoreDataMember, JsonIgnore]
         public IEnumerable<IElementContainer<ISubmodelElement>> Children => Value.Value.Children;
@@ -56,11 +59,11 @@ namespace BaSyx.Models.AdminShell
 					return Value.Value.Path;
 			}
 			set { Value.Value.Path = value; }
-		}
+		}        
 
 		public SubmodelElementCollection(string idShort) : base(idShort) 
         {
-            Value = new SubmodelElementCollectionValue(new ElementContainer<ISubmodelElement>(this.Parent, this, null));
+            _valueScope = new SubmodelElementCollectionValue(new ElementContainer<ISubmodelElement>(this.Parent, this, null));
         }
 
         public event EventHandler<ElementContainerEventArgs<ISubmodelElement>> OnCreated
