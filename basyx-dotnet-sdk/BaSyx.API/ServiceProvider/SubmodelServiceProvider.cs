@@ -549,7 +549,7 @@ namespace BaSyx.API.ServiceProvider
             if (_submodel == null)
                 return new Result<ValueScope>(false, new NotFoundMessage("Submodel"));
 
-            var submodelElement = _submodel.SubmodelElements[submodelElementId];
+            var submodelElement = _submodel.SubmodelElements.Retrieve(submodelElementId)?.Entity;
             if (submodelElement == null)
                 return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
 
