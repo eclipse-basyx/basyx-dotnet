@@ -120,10 +120,21 @@ ShowSubmodelElement = @<text>@{
                         <input id="messageInput_@hashedRequestPath" type="text" class="form-control" name="opResultMsgs" style="margin-top:5px" placeholder="Operation Result Messages" disabled>
                     </div>
                 }
-                else if (submodelElementContainer.HasChildren())
+                else if (submodelElement is ISubmodelElementCollection smc)
                 {
+                    SubmodelElementCollectionValue value = (SubmodelElementCollectionValue)smc.GetValueScope().Result;
                     <div class="card-body">
-                        @foreach (var valueChild in submodelElementContainer.Children)
+                        @foreach (var valueChild in value.Value.Children)
+                        {
+                            @ShowSubmodelElement(new List<object>() { item[0], valueChild })
+                        }
+                    </div>
+                }
+                else if (submodelElement is ISubmodelElementList sml)
+                {
+                    SubmodelElementListValue value = (SubmodelElementListValue)sml.GetValueScope().Result;
+                    <div class="card-body">
+                        @foreach (var valueChild in value.Value.Children)
                         {
                             @ShowSubmodelElement(new List<object>() { item[0], valueChild })
                         }
