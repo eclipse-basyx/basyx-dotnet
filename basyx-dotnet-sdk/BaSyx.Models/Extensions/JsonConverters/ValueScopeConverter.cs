@@ -33,8 +33,8 @@ namespace BaSyx.Models.Extensions
     }
 	public class ValueScopeConverter : ValueScopeConverter<ValueScope> 
 	{ 
-		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null):
-			base(null, null, options, jsonOptions)
+		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep) :
+			base(null, null, options, jsonOptions, level)
 		{ }
 	}
     public class ValueScopeConverter<TValueScope> : JsonConverter<ValueScope> where TValueScope : ValueScope
@@ -49,13 +49,15 @@ namespace BaSyx.Models.Extensions
 		private ValueScopeConverterOptions _converterOptions;
 		private JsonSerializerOptions _jsonOptions;
 		private ISubmodelElement _sme;
+        private RequestLevel _level;
 
-		public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null) 
+		public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep) 
 		{
 			_dataType = dataType;
 			_converterOptions = options ?? new ValueScopeConverterOptions();
 			_jsonOptions = jsonOptions;
 			_sme = sme;
+            _level = level;
 		}
 		public override bool CanConvert(Type typeToConvert)
 		{
