@@ -17,7 +17,7 @@ namespace BaSyx.Models.Extensions
 {
     public class SubmodelElementContainerValueOnlyConverterOptions
     {
-        public EnclosingBracket EnclosingBracket { get; set; } = EnclosingBracket.Array;
+        public EnclosingBracket EnclosingBracket { get; set; } = EnclosingBracket.Object;
     }
 
     public enum EnclosingBracket
@@ -44,11 +44,10 @@ namespace BaSyx.Models.Extensions
 
         public override void Write(Utf8JsonWriter writer, IElementContainer<ISubmodelElement> value, JsonSerializerOptions options)
         {
-            if(_options.EnclosingBracket == EnclosingBracket.Object)
-                writer.WriteStartObject();
-            else
+            if(_options.EnclosingBracket == EnclosingBracket.Array)
                 writer.WriteStartArray();
-
+            else
+                writer.WriteStartObject();
 
             foreach (var smElement in value)
             {
@@ -66,13 +65,13 @@ namespace BaSyx.Models.Extensions
                             SerializationOption = SerializationOption.ValueOnly
                         }, jsonOptions: _jsonOptions)
                     }
-                });   
+                });
             }
 
-            if (_options.EnclosingBracket == EnclosingBracket.Object)
-                writer.WriteEndObject();
-            else
+            if (_options.EnclosingBracket == EnclosingBracket.Array)
                 writer.WriteEndArray();
+            else
+                writer.WriteEndObject();
         }
     }
 }

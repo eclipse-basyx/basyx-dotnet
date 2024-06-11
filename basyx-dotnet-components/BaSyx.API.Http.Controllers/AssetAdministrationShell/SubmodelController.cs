@@ -633,7 +633,9 @@ namespace BaSyx.API.Http.Controllers
                         {
                             SerializationOption = SerializationOption.ValueOnly,
                             ValueAsString = false
-                        }, jsonOptions: _fullSerializerOptions)
+                        }, 
+                        jsonOptions: _fullSerializerOptions,
+                        level)
                     }
                 });
 				return Content(value, "application/json");
