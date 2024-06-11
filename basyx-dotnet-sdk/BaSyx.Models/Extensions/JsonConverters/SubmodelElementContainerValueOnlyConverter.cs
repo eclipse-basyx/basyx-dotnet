@@ -15,12 +15,26 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
+    public class SubmodelElementContainerValueOnlyConverterOptions
+    {
+        public EnclosingBracket EnclosingBracket { get; set; } = EnclosingBracket.Array;
+    }
+
+    public enum EnclosingBracket
+    {
+        Array,
+        Object
+    }
+
     public class SubmodelElementContainerValueOnlyConverter : JsonConverter<IElementContainer<ISubmodelElement>>
     {
-        private readonly JsonSerializerOptions _options;
-        public SubmodelElementContainerValueOnlyConverter(JsonSerializerOptions jsonOptions) 
+        private readonly JsonSerializerOptions _jsonOptions;
+        private readonly SubmodelElementContainerValueOnlyConverterOptions _options;
+
+        public SubmodelElementContainerValueOnlyConverter(JsonSerializerOptions jsonOptions, SubmodelElementContainerValueOnlyConverterOptions options = null) 
         {
-            _options = jsonOptions;
+            _jsonOptions = jsonOptions;
+            _options = options ?? new SubmodelElementContainerValueOnlyConverterOptions();
         }
 
         public override IElementContainer<ISubmodelElement> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -30,7 +44,11 @@ namespace BaSyx.Models.Extensions
 
         public override void Write(Utf8JsonWriter writer, IElementContainer<ISubmodelElement> value, JsonSerializerOptions options)
         {
-            writer.WriteStartArray();
+            if(_options.EnclosingBracket == EnclosingBracket.Object)
+                writer.WriteStartObject();
+            else
+                writer.WriteStartArray();
+
 
             foreach (var smElement in value)
             {
@@ -46,12 +64,15 @@ namespace BaSyx.Models.Extensions
                         new ValueScopeConverter<ValueScope>(sme: smElement, options: new ValueScopeConverterOptions()
                         {
                             SerializationOption = SerializationOption.ValueOnly
-                        }, jsonOptions: _options)
+                        }, jsonOptions: _jsonOptions)
                     }
                 });   
             }
 
-            writer.WriteEndArray();
+            if (_options.EnclosingBracket == EnclosingBracket.Object)
+                writer.WriteEndObject();
+            else
+                writer.WriteEndArray();
         }
     }
 }
