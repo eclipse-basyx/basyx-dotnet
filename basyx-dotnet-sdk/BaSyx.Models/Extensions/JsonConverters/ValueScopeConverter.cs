@@ -388,6 +388,15 @@ namespace BaSyx.Models.Extensions
 
         public override void Write(Utf8JsonWriter writer, ValueScope value, JsonSerializerOptions options)
         {
+            Write(writer, value, options, true);
+        }
+
+        public void Write(Utf8JsonWriter writer, ValueScope value, JsonSerializerOptions options, bool writeChildren)
+        {
+            var writeNextChildren = writeChildren;
+            if (_level == RequestLevel.Core)
+                writeNextChildren = false;
+
             if (value is PropertyValue propValue)
             {
 				if(_converterOptions.ValueAsString)
@@ -410,11 +419,14 @@ namespace BaSyx.Models.Extensions
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartObject();
-                    foreach (var smcElement in smcValue.Value)
+                    if (writeChildren)
                     {
-                        var smcElementValueScope = smcElement.GetValueScope().Result;
-                        writer.WritePropertyName(smcElement.IdShort);
-                        Write(writer, smcElementValueScope, _options);
+                        foreach (var smcElement in smcValue.Value)
+                        {
+                            var smcElementValueScope = smcElement.GetValueScope().Result;
+                            writer.WritePropertyName(smcElement.IdShort);
+                            Write(writer, smcElementValueScope, _options, writeNextChildren);
+                        }
                     }
                     writer.WriteEndObject();
                 }
@@ -434,10 +446,13 @@ namespace BaSyx.Models.Extensions
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartArray();
-                    foreach (var smcElement in smlValue.Value)
+                    if (writeChildren)
                     {
-                        var smcElementValueScope = smcElement.GetValueScope().Result;
-                        Write(writer, smcElementValueScope, _options);
+                        foreach (var smcElement in smlValue.Value)
+                        {
+                            var smcElementValueScope = smcElement.GetValueScope().Result;
+                            Write(writer, smcElementValueScope, _options, writeNextChildren);
+                        }
                     }
                     writer.WriteEndArray();
                 }
