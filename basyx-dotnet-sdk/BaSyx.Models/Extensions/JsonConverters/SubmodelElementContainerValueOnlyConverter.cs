@@ -31,6 +31,7 @@ namespace BaSyx.Models.Extensions
         public override void Write(Utf8JsonWriter writer, IElementContainer<ISubmodelElement> value, JsonSerializerOptions options)
         {
             writer.WriteStartArray();
+            writer.WriteStartObject();
 
             foreach (var smElement in value)
             {
@@ -51,6 +52,7 @@ namespace BaSyx.Models.Extensions
                 });   
             }
 
+            writer.WriteEndObject();
             writer.WriteEndArray();
         }
     }
