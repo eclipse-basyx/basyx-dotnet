@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
+using BaSyx.Utils.IdShortPathResolver;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -55,6 +56,7 @@ namespace BaSyx.Models.AdminShell
             AddRange(list);
         }
 
+        private IdShortPathResolver idShortResolver;
         public ElementContainer(IReferable parent, TElement rootElement, IElementContainer<TElement> parentContainer) : this()
         {
             Parent = parent;
@@ -329,7 +331,8 @@ namespace BaSyx.Models.AdminShell
             if (string.IsNullOrEmpty(idShortPath))
                 return new Result<TElement>(new ArgumentNullException(nameof(idShortPath)));
 
-            var child = GetChild(idShortPath);
+            idShortResolver = new IdShortPathResolver((IElementContainer<ISubmodelElement>)this);
+            var child = (IElementContainer<TElement>)idShortResolver.GetChild(idShortPath);
             if (child != null)
                 return new Result<TElement>(true, child.Value);
             else
@@ -340,7 +343,8 @@ namespace BaSyx.Models.AdminShell
             if (string.IsNullOrEmpty(idShortPath))
                 return new Result<T>(new ArgumentNullException(nameof(idShortPath)));
 
-            T element = GetChild(idShortPath)?.Value?.Cast<T>();
+            idShortResolver = new IdShortPathResolver((IElementContainer<ISubmodelElement>)this);
+            T element = idShortResolver.GetChild(idShortPath)?.Value?.Cast<T>();
             if (element != null)
                 return new Result<T>(true, element);
             else

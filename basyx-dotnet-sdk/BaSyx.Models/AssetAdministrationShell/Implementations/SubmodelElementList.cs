@@ -208,7 +208,7 @@ namespace BaSyx.Models.AdminShell
 
         public IElementContainer<ISubmodelElement> GetChild(string idShortPath)
         {
-            return Value.Value.GetChild(idShortPath);
+            return Value.Value.Children.ToList()[int.Parse(idShortPath)];
         }
 
         public void Remove(string idShort)
