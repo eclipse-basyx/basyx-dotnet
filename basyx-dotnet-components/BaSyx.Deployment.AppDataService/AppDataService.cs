@@ -238,7 +238,8 @@ namespace BaSyx.Deployment.AppDataService
         public void AddSettings(Type settingsType, string key = null)
         {
             Settings settings = ReadSettings(settingsType, key);
-			AppDataContext.Settings.Add(settingsType.Name, settings);
+            if(settings != null)
+			    AppDataContext.Settings.Add(settingsType.Name, settings);
 		}
 
 		public T ReadSettings<T>(string key = null) where T : Settings
