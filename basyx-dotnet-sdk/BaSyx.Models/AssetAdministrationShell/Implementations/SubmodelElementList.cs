@@ -208,7 +208,11 @@ namespace BaSyx.Models.AdminShell
 
         public IElementContainer<ISubmodelElement> GetChild(string idShortPath)
         {
-            return Value.Value.Children.ToList()[int.Parse(idShortPath)];
+            // check if idShort Path has integer format or is a word
+            if (int.TryParse(idShortPath, out int index))
+                return Value.Value.Children.ElementAt(index);
+            else
+                return Value.Value.GetChild(idShortPath);
         }
 
         public void Remove(string idShort)

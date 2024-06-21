@@ -137,7 +137,7 @@ namespace BaSyx.Models.AdminShell
         {
             if (!string.IsNullOrEmpty(rootPath))
                 this.Path = rootPath + PATH_SEPERATOR + this.Path;
-
+            
             foreach (var child in _children)
             {
                 if (child.HasChildren())
@@ -214,27 +214,10 @@ namespace BaSyx.Models.AdminShell
             else
             {
                 IElementContainer<TElement> superChild;
-                if (idShortPath.Contains(PATH_SEPERATOR))
+                if (idShortPath.Contains(PATH_SEPERATOR) || idShortPath.Contains('['))
                 {
-                    string[] splittedPath = idShortPath.Split(new char[] { PATH_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
-                    if (HasChild(splittedPath[0]))                      
-                    {
-                        var child = GetChild(splittedPath[0]);
-                        if(!child.HasChildren() && child is SubmodelElementCollection smc)
-                        {
-                            var value = smc.Get?.Invoke(smc).Result;
-                            superChild = (IElementContainer<TElement>)value.Value.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
-                        } 
-                        else if(!child.HasChildren() && child is SubmodelElementList sml)
-                        {
-                            var value = sml.Get?.Invoke(sml).Result;
-                            superChild = (IElementContainer<TElement>)value.Value.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
-                        }
-                        else
-                            superChild = child.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
-                    }
-                    else
-                        superChild = null;
+                    idShortResolver = new IdShortPathResolver((IElementContainer<ISubmodelElement>)this);
+                    superChild = (IElementContainer<TElement>)idShortResolver.GetChild(idShortPath);
                 }
                 else
                     superChild = _children.FirstOrDefault(c => c.IdShort == idShortPath);
@@ -331,8 +314,7 @@ namespace BaSyx.Models.AdminShell
             if (string.IsNullOrEmpty(idShortPath))
                 return new Result<TElement>(new ArgumentNullException(nameof(idShortPath)));
 
-            idShortResolver = new IdShortPathResolver((IElementContainer<ISubmodelElement>)this);
-            var child = (IElementContainer<TElement>)idShortResolver.GetChild(idShortPath);
+            var child = GetChild(idShortPath);
             if (child != null)
                 return new Result<TElement>(true, child.Value);
             else
@@ -343,8 +325,7 @@ namespace BaSyx.Models.AdminShell
             if (string.IsNullOrEmpty(idShortPath))
                 return new Result<T>(new ArgumentNullException(nameof(idShortPath)));
 
-            idShortResolver = new IdShortPathResolver((IElementContainer<ISubmodelElement>)this);
-            T element = idShortResolver.GetChild(idShortPath)?.Value?.Cast<T>();
+            T element = GetChild(idShortPath)?.Value?.Cast<T>();
             if (element != null)
                 return new Result<T>(true, element);
             else

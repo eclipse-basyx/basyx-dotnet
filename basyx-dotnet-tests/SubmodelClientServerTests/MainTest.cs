@@ -96,7 +96,7 @@ namespace SubmodelClientServerTests
         {
             SubmodelElementCollection coll = new SubmodelElementCollection("MyCollection")
             {
-               Value =
+                Value =
                 {
                     Value =
                     {
@@ -114,6 +114,49 @@ namespace SubmodelClientServerTests
                                     new Property<int>("MySubSubInt", 6),
                                     new Property<double>("MySubSubDouble", 5.5d),
                                     new Property<float>("MySubSubFloat", 3.3f),
+                                    new SubmodelElementList("MySubmodelElementList1")
+                                    {
+                                        Value =
+                                        {
+                                            Value =
+                                            {
+                                                new Property<string>("0", "MySubSubStringValue1"),
+                                                new Property<int>("1", 7),
+                                                new Property<double>("2", 6.5d),
+                                                new Property<float>("3", 4.3f),
+                                                new Entity("4")
+                                                {
+                                                    Value=
+                                                    {
+                                                        Statements =
+                                                        {
+                                                            new Property<int>("p1", 20),
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new SubmodelElementList("MySubmodelElementList2")
+                                    {
+                                        Value =
+                                        {
+                                            Value =
+                                            {
+                                                new Property<string>("0", "MySubSubStringValue1"),
+                                                new SubmodelElementList("1")
+                                                {
+                                                    Value=
+                                                    {
+                                                        Value =
+                                                        {
+                                                            new Property<int>("0", 42),
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -315,6 +358,22 @@ namespace SubmodelClientServerTests
                 });
             retrieved.Entity.Result.Children.Count().Should().Be(3);
             retrieved.Entity.PagingMetadata.Cursor.Should().Be("TestPropertyNoSetter");
+        }
+
+        [TestMethod]
+        public void Test107A_RetrieveNestedSubmodelElementHierarchy()
+        {
+            var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubmodelElementList1[4].p1");
+            result.Success.Should().BeTrue();
+            result.Entity.Cast<IProperty>().GetValue<int>().Should().Be(20);
+        }
+
+        [TestMethod]
+        public void Test107B_RetrieveNestedSubmodelElementListItems()
+        {
+            var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubmodelElementList2[1][0]");
+            result.Success.Should().BeTrue();
+            result.Entity.Cast<IProperty>().GetValue<int>().Should().Be(42);
         }
 
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
