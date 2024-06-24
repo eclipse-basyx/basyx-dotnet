@@ -380,7 +380,7 @@ namespace BaSyx.API.Http.Controllers
 
             string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
             {
-                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions) }
+                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions, null, level) }
             });
             return Content(json, "application/json");
         }
