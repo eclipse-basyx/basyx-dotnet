@@ -308,7 +308,16 @@ namespace BaSyx.Models.Extensions
                     case "value":
                         if (submodelElement is Property prop)
                         {
-                            string value = reader.GetString();
+                            object value = null;
+                            if (reader.TokenType == JsonTokenType.String)
+                                value = reader.GetString();
+                            else if (reader.TokenType == JsonTokenType.Number)
+                                value = reader.GetDouble();
+                            else if (reader.TokenType == JsonTokenType.True ||  reader.TokenType == JsonTokenType.False)
+                                value = reader.GetBoolean();
+                            else
+                                value = reader.GetString();
+
                             if (value != null)
                             {
                                 PropertyValue propertyValue = new PropertyValue(new ElementValue(value, valueType));
