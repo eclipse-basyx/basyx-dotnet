@@ -111,9 +111,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelElementAsync(rootIdShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return RetrieveSubmodelElementsAsync().GetAwaiter().GetResult();
+            return RetrieveSubmodelElementsAsync(limit, cursor, level, extent).GetAwaiter().GetResult();
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)
@@ -196,12 +196,12 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync()
+        public async Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS);
-            var request = CreateRequest(uri, HttpMethod.Get);
-            var response = await SendRequestAsync(request, CancellationToken.None);
-            var result = await EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity);
+            var request = base.CreateRequest(uri, HttpMethod.Get);
+            var response = await base.SendRequestAsync(request, CancellationToken.None);
+            var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }

@@ -283,9 +283,9 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElement(idShortPath);
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit  = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return ((ISubmodelClient)Client).RetrieveSubmodelElements();
+            return ((ISubmodelClient)Client).RetrieveSubmodelElements(limit, cursor, level, extent);
         }
 
         public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
@@ -323,9 +323,9 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).UpdateSubmodelElementAsync(rootIdShortPath, submodelElement);
         }
 
-        public Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync()
+        public Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return ((ISubmodelClient)Client).RetrieveSubmodelElementsAsync();
+            return ((ISubmodelClient)Client).RetrieveSubmodelElementsAsync(limit, cursor, level, extent);
         }
 
         public Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string idShortPath)

@@ -295,6 +295,8 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
         /// <returns></returns>
         /// <response code="200">List of found submodel elements</response>
         /// <response code="404">Submodel not found</response>       
@@ -304,11 +306,10 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelElements([FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult GetAllSubmodelElements([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = RequestLevel.Deep, [FromQuery] RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            var result = serviceProvider.RetrieveSubmodelElements();
-            Result<PagedResult> newPagedResult = new Result<PagedResult>(result.Success, result.Entity, result.Messages);
-            return newPagedResult.CreateActionResult(CrudOperation.Retrieve);
+            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor, level, extent);
+            return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
         /// <summary>
