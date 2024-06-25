@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SimpleAssetAdministrationShell;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
@@ -246,6 +247,74 @@ namespace SubmodelClientServerTests
             string json = oldPropertyValue.ToJsonValueOnly();
             PropertyValue newPropertyValue = json.FromJsonValueOnly<PropertyValue>();
             oldPropertyValue.Value.Value.Should().Be(newPropertyValue.Value.Value);
+        }
+
+        [TestMethod]
+        public void Test104A_RetrieveSubmodelElements()
+        {
+            var retrieved = RetrieveSubmodelElements(2);
+            retrieved.Success.Should().BeTrue();
+            retrieved.Entity.Result.Should().ContainEquivalentOf(Submodel.SubmodelElements["TestProperty1"],
+                options =>
+                {
+                    options
+                        .Excluding(p => p.EmbeddedDataSpecifications)
+                        .Excluding(p => p.Parent)
+                        .Excluding(p => p.Get)
+                        .Excluding(p => p.Set);
+                    return options;
+                });
+            retrieved.Entity.Result.Should().ContainEquivalentOf(Submodel.SubmodelElements["TestProperty2"],
+                options =>
+                {
+                    options
+                        .Excluding(p => p.EmbeddedDataSpecifications)
+                        .Excluding(p => p.Parent)
+                        .Excluding(p => p.Get)
+                        .Excluding(p => p.Set);
+                    return options;
+                });
+            retrieved.Entity.Result.Children.Count().Should().Be(2);
+            retrieved.Entity.PagingMetadata.Cursor.Should().Be("TestProperty3");
+        }
+
+        [TestMethod]
+        public void Test104B_RetrieveSubmodelElements()
+        {
+            var retrieved = RetrieveSubmodelElements(3, "TestProperty2");
+            retrieved.Success.Should().BeTrue();
+            retrieved.Entity.Result.Should().ContainEquivalentOf(Submodel.SubmodelElements["TestProperty2"],
+                options =>
+                {
+                    options
+                        .Excluding(p => p.EmbeddedDataSpecifications)
+                        .Excluding(p => p.Parent)
+                        .Excluding(p => p.Get)
+                        .Excluding(p => p.Set);
+                    return options;
+                });
+            retrieved.Entity.Result.Should().ContainEquivalentOf(Submodel.SubmodelElements["TestProperty3"],
+                options =>
+                {
+                    options
+                        .Excluding(p => p.EmbeddedDataSpecifications)
+                        .Excluding(p => p.Parent)
+                        .Excluding(p => p.Get)
+                        .Excluding(p => p.Set);
+                    return options;
+                });
+            retrieved.Entity.Result.Should().ContainEquivalentOf(Submodel.SubmodelElements["TestProperty4"],
+                options =>
+                {
+                    options
+                        .Excluding(p => p.EmbeddedDataSpecifications)
+                        .Excluding(p => p.Parent)
+                        .Excluding(p => p.Get)
+                        .Excluding(p => p.Set);
+                    return options;
+                });
+            retrieved.Entity.Result.Children.Count().Should().Be(3);
+            retrieved.Entity.PagingMetadata.Cursor.Should().Be("TestPropertyNoSetter");
         }
 
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
