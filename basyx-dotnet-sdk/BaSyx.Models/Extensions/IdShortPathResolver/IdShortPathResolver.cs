@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using BaSyx.Models.AdminShell;
 
 namespace BaSyx.Utils.IdShortPathResolver
@@ -129,7 +130,10 @@ namespace BaSyx.Utils.IdShortPathResolver
         private IElementContainer<ISubmodelElement> GetLastElementOfStack(Stack<string> idShortStack)
         {
             var idShort = idShortStack.Pop();
+            if (!_submodelElements.HasChild(idShort))
+                return null;
             IElementContainer<ISubmodelElement> element = _submodelElements.GetChild(idShort);
+            
             while (idShortStack.Count != 0)
             {
                 idShort = idShortStack.Pop();
@@ -138,12 +142,32 @@ namespace BaSyx.Utils.IdShortPathResolver
                     element = null;
                     break;
                 }
-                
+                element = GetOrSerializeElement(element);
                 element = element.GetChild(idShort);
             }
 
             return element;
         }
 
+        private IElementContainer<ISubmodelElement> GetOrSerializeElement(IElementContainer<ISubmodelElement> element)
+        {
+            if (!element.HasChildren() && element is SubmodelElementCollection smc)
+            {
+                var value = smc.Get?.Invoke(smc).Result;
+                element = (IElementContainer<ISubmodelElement>)value.Value;
+            }
+            else if (!element.HasChildren() && element is SubmodelElementList sml)
+            {
+                var value = sml.Get?.Invoke(sml).Result;
+                element = (IElementContainer<ISubmodelElement>)value.Value;
+            }
+            else if (!element.HasChildren() && element is Entity ent)
+            {
+                var value = ent.Get?.Invoke(ent).Result;
+                element = (IElementContainer<ISubmodelElement>)value.Statements;
+            }
+
+            return element;
+        }
     }
 }
