@@ -22,7 +22,7 @@ namespace BaSyx.API.Clients
         Task<IResult> UpdateSubmodelAsync(ISubmodel submodel);
         Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement);
         Task<IResult> UpdateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement);
-        Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync();
+        Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue);
         Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string idShortPath);
         Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(string idShortPath);
         Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, ValueScope value);

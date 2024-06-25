@@ -85,10 +85,10 @@ namespace BaSyx.API.ServiceProvider
         {
             return _submodelClient.RetrieveSubmodelElement(idShortPath);
         }
-     
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
+
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return _submodelClient.RetrieveSubmodelElements();
+            return _submodelClient.RetrieveSubmodelElements(limit, cursor, level, extent);
         }
 
         public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)

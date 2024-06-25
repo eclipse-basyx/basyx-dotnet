@@ -20,6 +20,8 @@ using Microsoft.Extensions.Logging;
 using BaSyx.Models.Extensions;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.ResultHandling.http;
+using System.Linq;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -522,15 +524,27 @@ namespace BaSyx.API.ServiceProvider
             return created;
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements()
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             if (_submodel == null)
                 return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(false, new NotFoundMessage("Submodel"));
 
             if (_submodel.SubmodelElements == null)
                 return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(false, new NotFoundMessage("SubmodelElements"));
+
             var retrieved = _submodel.SubmodelElements.RetrieveAll();
-            return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(retrieved.Success, new PagedResult<IElementContainer<ISubmodelElement>>(retrieved.Entity), retrieved.Messages); 
+            var smeDict = retrieved.Entity.ToDictionary(sme => sme.IdShort, sme => sme);
+
+            // create the paged data
+            var paginationHelper = new PaginationHelper<ISubmodelElement>(smeDict, elem => elem.IdShort);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var smcPaged = new ElementContainer<ISubmodelElement>();
+            smcPaged.AddRange(pagedResult.Result as IEnumerable<ISubmodelElement>);
+            var paginatedSmc = new PagedResult<IElementContainer<ISubmodelElement>>(smcPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(retrieved.Success, paginatedSmc, retrieved.Messages); 
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string submodelElementId)
