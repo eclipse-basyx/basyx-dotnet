@@ -199,9 +199,9 @@ namespace BaSyx.Clients.AdminShell.Http
         public async Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS);
-            var request = base.CreateRequest(uri, HttpMethod.Get);
-            var response = await base.SendRequestAsync(request, CancellationToken.None);
-            var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity);
+            var request = CreateRequest(uri, HttpMethod.Get);
+            var response = await SendRequestAsync(request, CancellationToken.None);
+            var result = await EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }
