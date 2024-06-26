@@ -380,15 +380,6 @@
             <returns></returns>
             <response code="200">Submodel in Path notation</response>     
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelAsTable(System.String)">
-            <summary>
-            Returns a customizable table version of a Submodel
-            </summary>
-            <param name="columns">A comma-separated list of field names to structure the payload beeing returned</param>
-            <returns></returns>
-            <response code="200">Requested Submodel</response>
-            <response code="404">Submodel not found</response>   
-        </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElements(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
             Returns all submodel elements including their hierarchy
