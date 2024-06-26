@@ -137,12 +137,12 @@ namespace BaSyx.Utils.IdShortPathResolver
             while (idShortStack.Count != 0)
             {
                 idShort = idShortStack.Pop();
-                if (!element.HasChild(idShort))
+                element = GetOrSerializeElement(element);
+                if(!element.HasChild(idShort))
                 {
                     element = null;
                     break;
                 }
-                element = GetOrSerializeElement(element);
                 element = element.GetChild(idShort);
             }
 

@@ -376,6 +376,66 @@ namespace SubmodelClientServerTests
             result.Entity.Cast<IProperty>().GetValue<int>().Should().Be(42);
         }
 
+        [TestMethod]
+        public void Test107C_RetrieveDynamicSubmodelElement()
+        {
+            var result = RetrieveSubmodelElement("MyDynamicSMC.DynamicSubSMC1.DynamicTestProp");
+            result.Entity.Cast<IProperty>().GetValue<string>().Should().BeEquivalentTo("DynamicTestVal1");
+        }
+
+        [TestMethod]
+        public void Test107D_RetrieveNonExistingSubmodelElement()
+        {
+            var result = RetrieveSubmodelElement("MyDynamicSMC.DynamicSubSMC3.DynamicTestProp");
+            result.Success.Should().BeFalse();
+        }
+        
+
+        [TestMethod]
+        public void Test103A_CreateDynamicSubmodelElement()
+        {
+            var dynamicSmc = new SubmodelElementCollection("MyDynamicSMC")
+            {
+                Get = (element) =>
+                {
+                    var smc = element.Cast<ISubmodelElementCollection>();
+                    var dynamicSmc = GetDynamicStructure(smc);
+                    var value = new SubmodelElementCollectionValue(dynamicSmc);
+                    return Task.FromResult(value);
+                }
+            };
+            Submodel.SubmodelElements.Add(dynamicSmc);
+            var created = CreateSubmodelElement(".", dynamicSmc);
+            created.Success.Should().BeTrue();
+        }
+
+        private IElementContainer<ISubmodelElement> GetDynamicStructure(ISubmodelElementCollection baseSmc)
+        {
+            ElementContainer<ISubmodelElement> dynamicContainer = new ElementContainer<ISubmodelElement>(baseSmc.Parent, baseSmc, null);
+            var ItemDictionary = new Dictionary<string, string>
+            {
+                { "DynamicSubSMC1", "DynamicTestVal1" },
+                { "DynamicSubSMC2", "DynamicTestVal2" },
+            };
+            foreach (var item in ItemDictionary)
+            {
+                var smc = new SubmodelElementCollection(item.Key)
+                {
+                    new Property<string>("DynamicTestProp", item.Value),
+                    new Property<string>("CurrentTime")
+                    {
+                        Get = (prop) =>
+                        {
+                            return Task.FromResult(DateTime.Now.ToString());
+                        }
+                    }
+                };
+                dynamicContainer.Create(smc);
+            }
+            return dynamicContainer;
+        }
+
+
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodel(level, extent);
