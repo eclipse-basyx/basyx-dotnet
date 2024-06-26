@@ -260,36 +260,6 @@ namespace BaSyx.API.Http.Controllers
             throw new NotImplementedException();
         }
 
-
-        /// <summary>
-        /// Returns a customizable table version of a Submodel
-        /// </summary>
-        /// <param name="columns">A comma-separated list of field names to structure the payload beeing returned</param>
-        /// <returns></returns>
-        /// <response code="200">Requested Submodel</response>
-        /// <response code="404">Submodel not found</response>   
-        [HttpGet(SubmodelRoutes.SUBMODEL_TABLE, Name = "GetSubmodelAsTable")]
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(Result), 400)]
-        [ProducesResponseType(typeof(Result), 403)]
-        [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelAsTable([FromQuery] string columns)
-        {
-            if (string.IsNullOrEmpty(columns))
-                return ResultHandling.NullResult(nameof(columns));
-
-            //var result = serviceProvider.RetrieveSubmodel(RequestLevel.Deep, RequestContent.Normal, RequestExtent.WithoutBlobValue);
-            //if (result != null && result.Entity != null)
-            //{
-            //    string[] columnNames = columns.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            //    JToken customizedSubmodel = result.Entity.CustomizeSubmodel(columnNames);
-            //    return new JsonResult(customizedSubmodel);
-            //}
-
-            //return result.CreateActionResult(CrudOperation.Retrieve);
-            return BadRequest();
-        }
-
         /// <summary>
         /// Returns all submodel elements including their hierarchy
         /// </summary>
