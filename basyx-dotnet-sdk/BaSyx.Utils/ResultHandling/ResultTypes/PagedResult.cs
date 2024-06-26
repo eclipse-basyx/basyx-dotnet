@@ -34,17 +34,19 @@ namespace BaSyx.Utils.ResultHandling.ResultTypes
 
     public class PagedResult<T> : PagedResult
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.Never), JsonPropertyName("result")]
+        [JsonPropertyName("result")]
         public new T Result { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.Never), JsonPropertyName("paging_metadata")]
-        public new PagingMetadata PagingMetadata;
+        [JsonPropertyName("paging_metadata")]
+        public new PagingMetadata PagingMetadata { get; set; }
 
         [JsonConstructor]
         public PagedResult() { }
 
         public PagedResult(T result) : base(result, null)
-        { Result = result; }
+        {
+            Result = result;
+        }
 
         public PagedResult(T result, PagingMetadata pagingMetadata) : base(result, pagingMetadata)
         {
@@ -60,7 +62,7 @@ namespace BaSyx.Utils.ResultHandling.ResultTypes
 
     public class PagingMetadata
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.Never), JsonPropertyName("cursor")]
+        [JsonPropertyName("cursor")]
         public string Cursor { get; set; }
 
         public PagingMetadata(string cursor)

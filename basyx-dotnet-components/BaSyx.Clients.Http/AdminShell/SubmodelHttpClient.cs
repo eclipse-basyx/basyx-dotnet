@@ -25,6 +25,8 @@ using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Collections.Specialized;
+using System.Web;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -199,6 +201,15 @@ namespace BaSyx.Clients.AdminShell.Http
         public async Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS);
+
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["limit"] = limit.ToString();
+            query["cursor"] = cursor;
+            query["level"] = level.ToString();
+            query["extent"] = extent.ToString();
+            var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
+            uri = uriBuilder.Uri;
+
             var request = CreateRequest(uri, HttpMethod.Get);
             var response = await SendRequestAsync(request, CancellationToken.None);
             var result = await EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity);
