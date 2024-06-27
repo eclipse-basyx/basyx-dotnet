@@ -50,15 +50,17 @@ namespace BaSyx.Models.Extensions
 		private JsonSerializerOptions _jsonOptions;
 		private ISubmodelElement _sme;
         private RequestLevel _level;
+        private readonly RequestExtent _extent;
 
-		public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep) 
+        public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue) 
 		{
 			_dataType = dataType;
 			_converterOptions = options ?? new ValueScopeConverterOptions();
 			_jsonOptions = jsonOptions;
 			_sme = sme;
             _level = level;
-		}
+            _extent = extent;
+        }
 		public override bool CanConvert(Type typeToConvert)
 		{
 			if (typeof(ValueScope).IsAssignableFrom(typeToConvert))
@@ -575,7 +577,9 @@ namespace BaSyx.Models.Extensions
                     writer.WriteStartObject();
 
                 writer.WriteString("contentType", blobValue.ContentType);
-                writer.WriteString("value", blobValue.Value);
+
+                if (_extent == RequestExtent.WithBlobValue)
+                    writer.WriteString("value", blobValue.Value);
 
                 if (_converterOptions.EnclosingObject)
                     writer.WriteEndObject();
