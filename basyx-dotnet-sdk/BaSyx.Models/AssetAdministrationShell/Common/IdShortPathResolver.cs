@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using BaSyx.Models.AdminShell;
 
-namespace BaSyx.Utils.IdShortPathResolver
+namespace BaSyx.Models.AdminShell
 {
     /// <summary>
     /// Class to get a hierarchical SubmodelElement in a Submodel by its IdShort.
