@@ -592,6 +592,19 @@ namespace BaSyx.Models.Extensions
                     if (range.ValueType != null)
                         writer.WriteString("valueType", range.ValueType.ToString());
                     break;
+                case ModelTypes.SubmodelElementCollection:
+                    var smc = (SubmodelElementCollection)value;
+                    if(smc.Value != null)
+                    {
+                        writer.WritePropertyName("value");
+                        writer.WriteStartArray();
+                        foreach (var item in smc.Value.Value)
+                        {
+                            JsonSerializer.Serialize(writer, item, options);
+                        }
+                        writer.WriteEndArray();
+                    }
+                    break;
                 case ModelTypes.SubmodelElementList:
                     var sml = (SubmodelElementList)value;
                     writer.WriteBoolean("orderRelevant", sml.OrderRelevant);
@@ -604,6 +617,16 @@ namespace BaSyx.Models.Extensions
                         writer.WriteString("typeValueListElement", sml.TypeValueListElement.Name);
                     if (sml.ValueTypeListElement != null)
                         writer.WriteString("valueTypeListElement", sml.ValueTypeListElement.ToString());
+                    if (sml.Value?.Value != null)
+                    {
+                        writer.WritePropertyName("value");
+                        writer.WriteStartArray();
+                        foreach (var item in sml.Value.Value)
+                        {
+                            JsonSerializer.Serialize(writer, item, options);
+                        }
+                        writer.WriteEndArray();
+                    }
                     break;
                 default:
                     break;
