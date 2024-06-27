@@ -31,12 +31,14 @@ namespace BaSyx.Models.Extensions
         private readonly JsonSerializerOptions _jsonOptions;
         private readonly SubmodelElementContainerValueOnlyConverterOptions _options;
         private readonly RequestLevel _level;
+        private readonly RequestExtent _extent;
 
-        public SubmodelElementContainerValueOnlyConverter(JsonSerializerOptions jsonOptions, SubmodelElementContainerValueOnlyConverterOptions options = null, RequestLevel level = RequestLevel.Deep)
+        public SubmodelElementContainerValueOnlyConverter(JsonSerializerOptions jsonOptions, SubmodelElementContainerValueOnlyConverterOptions options = null, RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             _jsonOptions = jsonOptions;
             _options = options ?? new SubmodelElementContainerValueOnlyConverterOptions();
             _level = level;
+            _extent = extent;
         }
 
         public override IElementContainer<ISubmodelElement> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -65,7 +67,7 @@ namespace BaSyx.Models.Extensions
                         new ValueScopeConverter<ValueScope>(sme: smElement, options: new ValueScopeConverterOptions()
                         {
                             SerializationOption = SerializationOption.ValueOnly
-                        }, jsonOptions: _jsonOptions, level: _level)
+                        }, jsonOptions: _jsonOptions, level: _level, extent: _extent)
                     }
                 });
             }
