@@ -96,7 +96,7 @@ namespace SubmodelClientServerTests
         {
             SubmodelElementCollection coll = new SubmodelElementCollection("MyCollection")
             {
-               Value =
+                Value =
                 {
                     Value =
                     {
@@ -114,6 +114,49 @@ namespace SubmodelClientServerTests
                                     new Property<int>("MySubSubInt", 6),
                                     new Property<double>("MySubSubDouble", 5.5d),
                                     new Property<float>("MySubSubFloat", 3.3f),
+                                    new SubmodelElementList("MySubmodelElementList1")
+                                    {
+                                        Value =
+                                        {
+                                            Value =
+                                            {
+                                                new Property<string>("0", "MySubSubStringValue1"),
+                                                new Property<int>("1", 7),
+                                                new Property<double>("2", 6.5d),
+                                                new Property<float>("3", 4.3f),
+                                                new Entity("4")
+                                                {
+                                                    Value=
+                                                    {
+                                                        Statements =
+                                                        {
+                                                            new Property<int>("p1", 20),
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new SubmodelElementList("MySubmodelElementList2")
+                                    {
+                                        Value =
+                                        {
+                                            Value =
+                                            {
+                                                new Property<string>("0", "MySubSubStringValue1"),
+                                                new SubmodelElementList("1")
+                                                {
+                                                    Value=
+                                                    {
+                                                        Value =
+                                                        {
+                                                            new Property<int>("0", 42),
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -316,6 +359,82 @@ namespace SubmodelClientServerTests
             retrieved.Entity.Result.Children.Count().Should().Be(3);
             retrieved.Entity.PagingMetadata.Cursor.Should().Be("TestPropertyNoSetter");
         }
+
+        [TestMethod]
+        public void Test107A_RetrieveNestedSubmodelElementHierarchy()
+        {
+            var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubmodelElementList1[4].p1");
+            result.Success.Should().BeTrue();
+            result.Entity.Cast<IProperty>().GetValue<int>().Should().Be(20);
+        }
+
+        [TestMethod]
+        public void Test107B_RetrieveNestedSubmodelElementListItems()
+        {
+            var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubmodelElementList2[1][0]");
+            result.Success.Should().BeTrue();
+            result.Entity.Cast<IProperty>().GetValue<int>().Should().Be(42);
+        }
+
+        [TestMethod]
+        public void Test107C_RetrieveDynamicSubmodelElement()
+        {
+            var result = RetrieveSubmodelElement("MyDynamicSMC.DynamicSubSMC1.DynamicTestProp");
+            result.Entity.Cast<IProperty>().GetValue<string>().Should().BeEquivalentTo("DynamicTestVal1");
+        }
+
+        [TestMethod]
+        public void Test107D_RetrieveNonExistingSubmodelElement()
+        {
+            var result = RetrieveSubmodelElement("MyDynamicSMC.DynamicSubSMC3.DynamicTestProp");
+            result.Success.Should().BeFalse();
+        }
+        
+
+        [TestMethod]
+        public void Test103A_CreateDynamicSubmodelElement()
+        {
+            var dynamicSmc = new SubmodelElementCollection("MyDynamicSMC")
+            {
+                Get = (element) =>
+                {
+                    var smc = element.Cast<ISubmodelElementCollection>();
+                    var dynamicSmc = GetDynamicStructure(smc);
+                    var value = new SubmodelElementCollectionValue(dynamicSmc);
+                    return Task.FromResult(value);
+                }
+            };
+            Submodel.SubmodelElements.Add(dynamicSmc);
+            var created = CreateSubmodelElement(".", dynamicSmc);
+            created.Success.Should().BeTrue();
+        }
+
+        private IElementContainer<ISubmodelElement> GetDynamicStructure(ISubmodelElementCollection baseSmc)
+        {
+            ElementContainer<ISubmodelElement> dynamicContainer = new ElementContainer<ISubmodelElement>(baseSmc.Parent, baseSmc, null);
+            var ItemDictionary = new Dictionary<string, string>
+            {
+                { "DynamicSubSMC1", "DynamicTestVal1" },
+                { "DynamicSubSMC2", "DynamicTestVal2" },
+            };
+            foreach (var item in ItemDictionary)
+            {
+                var smc = new SubmodelElementCollection(item.Key)
+                {
+                    new Property<string>("DynamicTestProp", item.Value),
+                    new Property<string>("CurrentTime")
+                    {
+                        Get = (prop) =>
+                        {
+                            return Task.FromResult(DateTime.Now.ToString());
+                        }
+                    }
+                };
+                dynamicContainer.Create(smc);
+            }
+            return dynamicContainer;
+        }
+
 
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {

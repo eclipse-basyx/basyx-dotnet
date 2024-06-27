@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
+using BaSyx.Utils.IdShortPathResolver;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -55,6 +56,7 @@ namespace BaSyx.Models.AdminShell
             AddRange(list);
         }
 
+        private IdShortPathResolver idShortResolver;
         public ElementContainer(IReferable parent, TElement rootElement, IElementContainer<TElement> parentContainer) : this()
         {
             Parent = parent;
@@ -135,7 +137,7 @@ namespace BaSyx.Models.AdminShell
         {
             if (!string.IsNullOrEmpty(rootPath))
                 this.Path = rootPath + PATH_SEPERATOR + this.Path;
-
+            
             foreach (var child in _children)
             {
                 if (child.HasChildren())
@@ -212,27 +214,10 @@ namespace BaSyx.Models.AdminShell
             else
             {
                 IElementContainer<TElement> superChild;
-                if (idShortPath.Contains(PATH_SEPERATOR))
+                if (idShortPath.Contains(PATH_SEPERATOR) || idShortPath.Contains('['))
                 {
-                    string[] splittedPath = idShortPath.Split(new char[] { PATH_SEPERATOR }, StringSplitOptions.RemoveEmptyEntries);
-                    if (HasChild(splittedPath[0]))                      
-                    {
-                        var child = GetChild(splittedPath[0]);
-                        if(!child.HasChildren() && child is SubmodelElementCollection smc)
-                        {
-                            var value = smc.Get?.Invoke(smc).Result;
-                            superChild = (IElementContainer<TElement>)value.Value.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
-                        } 
-                        else if(!child.HasChildren() && child is SubmodelElementList sml)
-                        {
-                            var value = sml.Get?.Invoke(sml).Result;
-                            superChild = (IElementContainer<TElement>)value.Value.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
-                        }
-                        else
-                            superChild = child.GetChild(string.Join(new string(new char[] { PATH_SEPERATOR }), splittedPath.Skip(1)));
-                    }
-                    else
-                        superChild = null;
+                    idShortResolver = new IdShortPathResolver((IElementContainer<ISubmodelElement>)this);
+                    superChild = (IElementContainer<TElement>)idShortResolver.GetChild(idShortPath);
                 }
                 else
                     superChild = _children.FirstOrDefault(c => c.IdShort == idShortPath);
