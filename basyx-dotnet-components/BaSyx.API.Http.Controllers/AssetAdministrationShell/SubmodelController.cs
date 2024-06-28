@@ -606,7 +606,8 @@ namespace BaSyx.API.Http.Controllers
                             ValueAsString = false
                         }, 
                         jsonOptions: _fullSerializerOptions,
-                        level)
+                        level,
+                        extent: RequestExtent.WithBlobValue)
                     }
                 });
 				return Content(value, "application/json");

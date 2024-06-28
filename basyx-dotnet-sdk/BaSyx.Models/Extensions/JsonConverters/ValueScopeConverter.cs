@@ -33,8 +33,8 @@ namespace BaSyx.Models.Extensions
     }
 	public class ValueScopeConverter : ValueScopeConverter<ValueScope> 
 	{ 
-		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep) :
-			base(null, null, options, jsonOptions, level)
+		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue) :
+			base(null, null, options, jsonOptions, level, extent)
 		{ }
 	}
     public class ValueScopeConverter<TValueScope> : JsonConverter<ValueScope> where TValueScope : ValueScope
