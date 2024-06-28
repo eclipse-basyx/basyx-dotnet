@@ -598,7 +598,8 @@ namespace BaSyx.Models.Extensions
                     {
                         writer.WritePropertyName("value");
                         writer.WriteStartArray();
-                        foreach (var item in smc.Value.Value)
+                        var smcValue = smc.Get?.Invoke(smc).Result;
+                        foreach (var item in smcValue.Value)
                         {
                             JsonSerializer.Serialize(writer, item, options);
                         }
@@ -621,7 +622,8 @@ namespace BaSyx.Models.Extensions
                     {
                         writer.WritePropertyName("value");
                         writer.WriteStartArray();
-                        foreach (var item in sml.Value.Value)
+                        var smlValue = sml.Get?.Invoke(sml).Result;
+                        foreach (var item in smlValue.Value)
                         {
                             JsonSerializer.Serialize(writer, item, options);
                         }
