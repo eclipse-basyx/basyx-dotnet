@@ -118,7 +118,7 @@ namespace BaSyx.Models.AdminShell
             else if (Value is float flt)
                 return flt.ToString(IValue._nfi);
             else
-                return Value.ToString();
+                return Value?.ToString();
         }
     }
 
