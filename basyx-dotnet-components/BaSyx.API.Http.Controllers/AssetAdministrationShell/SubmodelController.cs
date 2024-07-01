@@ -54,7 +54,7 @@ namespace BaSyx.API.Http.Controllers
             DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
             options.AddDependencyInjection(new DependencyInjectionExtension(services));
             options.AddMetadataSubmodelElementConverter();
-            _metadataSerializerOptions = options.Build();           
+            _metadataSerializerOptions = options.Build();
 
             DefaultJsonSerializerOptions options3 = new DefaultJsonSerializerOptions();
             options3.AddDependencyInjection(new DependencyInjectionExtension(services));
@@ -784,9 +784,24 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelElementByPathPath(string idShortPath, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult GetSubmodelElementByPathPath(string idShortPath, [FromQuery] RequestLevel level = default)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+
+            idShortPath = HttpUtility.UrlDecode(idShortPath);
+
+            var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
+            if (result.Success && result.Entity != null)
+            {
+                string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+                {
+                    Converters = {new PathConverter(level)}
+                });
+                return Content(json, "application/json");
+            }
+            else
+                return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
         /// <summary>
