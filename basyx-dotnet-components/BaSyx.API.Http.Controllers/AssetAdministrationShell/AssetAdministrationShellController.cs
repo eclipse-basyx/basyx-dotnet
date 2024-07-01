@@ -297,7 +297,7 @@ namespace BaSyx.API.Http.Controllers
             return service.PutSubmodel(submodel, level, extent);
         }
 
-        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElements(RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElements(int, string, RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "Shell_GetAllSubmodelElements")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement[]), 200)]
@@ -327,20 +327,20 @@ namespace BaSyx.API.Http.Controllers
             return service.GetAllSubmodelElementsMetadata(level, extent);
         }
 
-        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsValueOnly(RequestLevel, RequestExtent)"/>   
+        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsValueOnly(int, string, RequestLevel, RequestExtent)"/>   
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "Shell_GetAllSubmodelElementsValueOnly")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult Shell_GetAllSubmodelElementsValueOnly(string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult Shell_GetAllSubmodelElementsValueOnly(string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.GetAllSubmodelElementsValueOnly(level, extent);
+            return service.GetAllSubmodelElementsValueOnly(limit, cursor, level, extent);
         }
 
         /// <inheritdoc cref="SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
