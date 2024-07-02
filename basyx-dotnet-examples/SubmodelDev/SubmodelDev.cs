@@ -289,7 +289,7 @@ namespace DevelopmentSubmodel
      //               strProperty,
      //               multiLang, 
 					//range,
-					//blob,
+					blob,
 					//file,
 					//relationship,
 					//operation,
