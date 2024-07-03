@@ -524,7 +524,7 @@ namespace BaSyx.API.ServiceProvider
             return created;
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "")
         {
             if (_submodel == null)
                 return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(false, new NotFoundMessage("Submodel"));

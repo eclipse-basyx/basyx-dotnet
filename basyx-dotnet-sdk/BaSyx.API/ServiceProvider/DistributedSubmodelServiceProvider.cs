@@ -115,9 +115,9 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.UpdateSubmodelElement(rootSubmodelElementPath, submodelElement);
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit, string cursor, RequestLevel level, RequestExtent extent)
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit, string cursor)
         {
-            return submodelClient.RetrieveSubmodelElements(limit, cursor, level, extent);
+            return submodelClient.RetrieveSubmodelElements(limit, cursor);
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string submodelElementId)
