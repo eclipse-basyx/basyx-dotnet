@@ -278,7 +278,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetAllSubmodelElements([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = RequestLevel.Deep, [FromQuery] RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor, level, extent);
+            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
