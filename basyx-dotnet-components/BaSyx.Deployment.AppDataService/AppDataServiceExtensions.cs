@@ -22,6 +22,8 @@ using BaSyx.Utils.Settings;
 using BaSyx.Models.AdminShell;
 using Endpoint = BaSyx.Models.Connectivity.Endpoint;
 using Microsoft.Extensions.DependencyInjection;
+using BaSyx.API.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace BaSyx.Deployment.AppDataService
 {
@@ -44,34 +46,49 @@ namespace BaSyx.Deployment.AppDataService
                     enableIPv6 = serverConfiguration.Hosting.EnableIPv6.Value;
 
                 IEnumerable<IPAddress> ips;
-				List<string> urls = new List<string>();
+				List<IEndpoint> endpoints = new List<IEndpoint>();
 
-				if (!AppDataService.IsVirtual)
+				if (AppDataService.IsVirtual)
                 {
+                    Endpoint virtualExternalEndpoint = new Endpoint($"https://127.0.0.1:8443{_pathBase}{AssetAdministrationShellRoutes.AAS}", InterfaceName.AssetAdministrationShellInterface);
+                    endpoints.Add(virtualExternalEndpoint);
+                    foreach (var url in serverConfiguration.Hosting.Urls)
+                    {
+                        string harmonizedUrl = url.Replace("+", "0.0.0.0");
+                        Uri harmonizedUri = new Uri(harmonizedUrl);
+                        Endpoint virtualInternalEndpoint = new Endpoint($"http://localhost:{harmonizedUri.Port}{_pathBase}{AssetAdministrationShellRoutes.AAS}", InterfaceName.AssetAdministrationShellInterface);
+                        virtualExternalEndpoint.ProtocolInformation.Subprotocol = "ipc";
+                        endpoints.Add(virtualInternalEndpoint);
+                    }
+                   
+                }
+                else
+                {                 
                     if (serverConfiguration.Hosting.Urls.FindIndex(u => u.Contains("+")) != -1)
                         ips = NetworkUtils.GetIPAddresses(enableIPv6);
                     else
                         ips = serverConfiguration.Hosting.Urls.ConvertAll(c => IPAddress.Parse(new Uri(c).Host));
-                   
+
                     foreach (var ip in ips)
                     {
                         if (ip == IPAddress.Loopback)
                             continue;
 
-                        string url = $"https://{ip}{_pathBase}";
-                        urls.Add(url);
-                        logger.LogInformation($"Using Url: {url}");
+                        Endpoint externalEndpoint = new Endpoint($"https://{ip}{_pathBase}{AssetAdministrationShellRoutes.AAS}", InterfaceName.AssetAdministrationShellInterface);
+                        endpoints.Add(externalEndpoint);
+                        logger.LogInformation($"Using Url: {externalEndpoint.ProtocolInformation.EndpointAddress}");
+                    }
+
+                    foreach (var url in serverConfiguration.Hosting.Urls)
+                    {
+                        string harmonizedUrl = url.Replace("+", "0.0.0.0");
+                        Uri harmonizedUri = new Uri(harmonizedUrl);
+                        Endpoint internalEndpoint = new Endpoint($"http://localhost:{harmonizedUri.Port}{_pathBase}{AssetAdministrationShellRoutes.AAS}", InterfaceName.AssetAdministrationShellInterface);
+                        internalEndpoint.ProtocolInformation.Subprotocol = "ipc";
+                        endpoints.Add(internalEndpoint);
                     }
                 }
-                else
-                    urls.Add($"https://127.0.0.1:8443{_pathBase}");
-
-                ServerConfiguration serverConfig = new ServerConfiguration()
-                {
-                    Hosting = new HostingConfiguration() { Urls = urls }
-                };
-
-                serviceProvider.UseAutoEndpointRegistration(serverConfig);
+                serviceProvider.UseSnappedEndpointRegistration(endpoints);
             } 
             else if(!string.IsNullOrEmpty(Environment.ExpandEnvironmentVariables("%WEBSITE_HOSTNAME%")) && 
                 Environment.ExpandEnvironmentVariables("%WEBSITE_HOSTNAME%") != "%WEBSITE_HOSTNAME%")
@@ -88,6 +105,22 @@ namespace BaSyx.Deployment.AppDataService
             {
                 List<IEndpoint> endpoints = GetMinimalEndpoints(serverConfiguration);
                 serviceProvider.UseDefaultEndpointRegistration(endpoints);
+            }
+        }
+
+        public static void UseSnappedEndpointRegistration(this IAssetAdministrationShellServiceProvider serviceProvider, IEnumerable<IEndpoint> endpoints)
+        {
+            serviceProvider.ServiceDescriptor.AddEndpoints(endpoints);
+            foreach (var submodel in serviceProvider.ServiceDescriptor.SubmodelDescriptors)
+            {
+                List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
+                foreach (var endpoint in endpoints)
+                {
+                    var ep = new Endpoint(DefaultEndpointRegistration.GetSubmodelEndpoint(endpoint, submodel.Id.Id), InterfaceName.SubmodelInterface);
+                    ep.ProtocolInformation.Subprotocol = endpoint.ProtocolInformation.Subprotocol;
+                    submodelEndpoints.Add(ep);
+                }
+                submodel.AddEndpoints(submodelEndpoints);
             }
         }
 
