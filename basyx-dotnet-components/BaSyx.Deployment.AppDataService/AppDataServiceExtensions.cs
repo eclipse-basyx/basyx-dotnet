@@ -23,11 +23,10 @@ using BaSyx.Models.AdminShell;
 using Endpoint = BaSyx.Models.Connectivity.Endpoint;
 using Microsoft.Extensions.DependencyInjection;
 using BaSyx.API.Http;
-using Microsoft.AspNetCore.Http;
 
 namespace BaSyx.Deployment.AppDataService
 {
-	public static class AppDataServiceExtensions
+    public static class AppDataServiceExtensions
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger("AppDataServiceExtensions");
 
