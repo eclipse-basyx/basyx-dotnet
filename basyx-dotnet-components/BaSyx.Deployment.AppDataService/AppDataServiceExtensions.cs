@@ -56,7 +56,7 @@ namespace BaSyx.Deployment.AppDataService
                         string harmonizedUrl = url.Replace("+", "0.0.0.0");
                         Uri harmonizedUri = new Uri(harmonizedUrl);
                         Endpoint virtualInternalEndpoint = new Endpoint($"http://localhost:{harmonizedUri.Port}{_pathBase}{AssetAdministrationShellRoutes.AAS}", InterfaceName.AssetAdministrationShellInterface);
-                        virtualExternalEndpoint.ProtocolInformation.Subprotocol = "ipc";
+                        virtualInternalEndpoint.ProtocolInformation.Subprotocol = "ipc";
                         endpoints.Add(virtualInternalEndpoint);
                     }
                    
