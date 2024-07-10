@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.Settings;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
 
 namespace BaSyx.Deployment.AppDataService
 {
@@ -31,7 +30,7 @@ namespace BaSyx.Deployment.AppDataService
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<AppDataService>();
 
-		public static bool IsVirtual {get; private set;} = false;
+		public static bool IsVirtual {get; set;} = false;
 		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         public static bool IsX86 => RuntimeInformation.OSArchitecture == Architecture.X86;
@@ -67,7 +66,7 @@ namespace BaSyx.Deployment.AppDataService
         /// Snapped (Linux): $SNAP_COMMON/solutions/activeConfiguration/{{appName}}
         /// Windows: Current directory + default relative path (optional)
         /// </summary>
-        public string BaseStorageLocation => GetBaseStorageLocation(_settings.ServiceConfig.AppName);
+        public string BaseStorageLocation => GetBaseStorageLocation(Settings.ServiceConfig.AppName);
 
         public static string HostingEnvironment
         {
@@ -91,14 +90,13 @@ namespace BaSyx.Deployment.AppDataService
         public Action LoadAction { get; set; }
         public Action SaveAction { get; set; }
         public IConfiguration Configuration { get; private set; }
-
-        private readonly AppDataServiceSettings _settings;
+        public AppDataServiceSettings Settings { get; }
 
         public static AppDataService Singleton { get; set; }
 
         public AppDataService(AppDataServiceSettings settings)
         {
-            _settings = settings ?? AppDataServiceSettings.LoadSettings();
+            Settings = settings ?? AppDataServiceSettings.LoadSettings();
 
             EnsureStorageLocation();
 
@@ -262,7 +260,7 @@ namespace BaSyx.Deployment.AppDataService
             string settingsFileName = settingsType.Name + ".xml";
             string filePathToReadFrom = GetOrCreateTargetFilePath(settingsFileName, BaseStorageLocation);
 
-            Settings settings = Settings.LoadSettingsFromFile(filePathToReadFrom, settingsType);
+            Settings settings = Utils.Settings.Settings.LoadSettingsFromFile(filePathToReadFrom, settingsType);
             AppDataContext.Settings.Add(settingsFileName, settings);
             AppDataContext.Files.Add(settingsFileName, filePathToReadFrom);
             logger.LogInformation($"File {settingsFileName} loaded successfully");
