@@ -24,6 +24,9 @@ namespace BaSyx.Deployment.AppDataService
 
 			[XmlElement]
 			public bool IsVirtual { get; set; }
+
+            [XmlElement]
+            public string SystemInfoUrl { get; set; }
 		}   
     }
 }
