@@ -294,7 +294,7 @@ namespace BaSyx.Utils.Client.Mqtt
                         manualStop = false;
                     }
                     else
-                        logger.LogError("Unable to reconnect", Enum.GetName(typeof(MqttClientConnectResultCode), result.ResultCode));
+                        logger.LogError("Unable to reconnect | ResultCode: {0}", Enum.GetName(typeof(MqttClientConnectResultCode), result.ResultCode));
                 }
                 catch (Exception exc)
                 {
