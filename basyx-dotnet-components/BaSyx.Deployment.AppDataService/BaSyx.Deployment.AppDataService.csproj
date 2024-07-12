@@ -14,7 +14,7 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <PackageIcon>basyxlogo.png</PackageIcon>
     <IsPackable>true</IsPackable>
-    <Version>2.0.10</Version>
+    <Version>2.0.12</Version>
     <Configurations>Debug;Release;Azure</Configurations>
   </PropertyGroup> 
 
