@@ -353,7 +353,7 @@ namespace BaSyx.API.Http.Controllers
 
             string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
             {
-                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions, null, level, extent) }
+                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions) }
             });
             return Content(json, "application/json");
         }
@@ -607,9 +607,7 @@ namespace BaSyx.API.Http.Controllers
                             SerializationOption = SerializationOption.ValueOnly,
                             ValueAsString = false
                         }, 
-                        jsonOptions: _fullSerializerOptions,
-                        level,
-                        extent: RequestExtent.WithBlobValue)
+                        jsonOptions: _fullSerializerOptions)
                     }
                 });
 				return Content(value, "application/json");

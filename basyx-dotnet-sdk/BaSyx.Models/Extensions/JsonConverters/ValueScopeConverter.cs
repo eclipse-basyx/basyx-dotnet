@@ -33,8 +33,8 @@ namespace BaSyx.Models.Extensions
     }
 	public class ValueScopeConverter : ValueScopeConverter<ValueScope> 
 	{ 
-		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue) :
-			base(null, null, options, jsonOptions, level, extent)
+		public ValueScopeConverter(ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null) :
+			base(null, null, options, jsonOptions)
 		{ }
 	}
     public class ValueScopeConverter<TValueScope> : JsonConverter<ValueScope> where TValueScope : ValueScope
@@ -49,17 +49,13 @@ namespace BaSyx.Models.Extensions
 		private ValueScopeConverterOptions _converterOptions;
 		private JsonSerializerOptions _jsonOptions;
 		private ISubmodelElement _sme;
-        private RequestLevel _level;
-        private readonly RequestExtent _extent;
 
-        public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null, RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue) 
+        public ValueScopeConverter(ISubmodelElement sme = null, DataType dataType = null, ValueScopeConverterOptions options = null, JsonSerializerOptions jsonOptions = null) 
 		{
 			_dataType = dataType;
 			_converterOptions = options ?? new ValueScopeConverterOptions();
 			_jsonOptions = jsonOptions;
 			_sme = sme;
-            _level = level;
-            _extent = extent;
         }
 		public override bool CanConvert(Type typeToConvert)
 		{
@@ -390,15 +386,6 @@ namespace BaSyx.Models.Extensions
 
         public override void Write(Utf8JsonWriter writer, ValueScope value, JsonSerializerOptions options)
         {
-            Write(writer, value, options, true);
-        }
-
-        public void Write(Utf8JsonWriter writer, ValueScope value, JsonSerializerOptions options, bool writeChildren)
-        {
-            var writeNextChildren = writeChildren;
-            if (_level == RequestLevel.Core)
-                writeNextChildren = false;
-
             if (value is PropertyValue propValue)
             {
 				if(_converterOptions.ValueAsString)
@@ -421,14 +408,11 @@ namespace BaSyx.Models.Extensions
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartObject();
-                    if (writeChildren)
+                    foreach (var smcElement in smcValue.Value)
                     {
-                        foreach (var smcElement in smcValue.Value)
-                        {
-                            var smcElementValueScope = smcElement.GetValueScope().Result;
-                            writer.WritePropertyName(smcElement.IdShort);
-                            Write(writer, smcElementValueScope, _options, writeNextChildren);
-                        }
+                        var smcElementValueScope = smcElement.GetValueScope().Result;
+                        writer.WritePropertyName(smcElement.IdShort);
+                        Write(writer, smcElementValueScope, _options);
                     }
                     writer.WriteEndObject();
                 }
@@ -448,13 +432,10 @@ namespace BaSyx.Models.Extensions
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartArray();
-                    if (writeChildren)
+                    foreach (var smcElement in smlValue.Value)
                     {
-                        foreach (var smcElement in smlValue.Value)
-                        {
-                            var smcElementValueScope = smcElement.GetValueScope().Result;
-                            Write(writer, smcElementValueScope, _options, writeNextChildren);
-                        }
+                        var smcElementValueScope = smcElement.GetValueScope().Result;
+                        Write(writer, smcElementValueScope, _options);
                     }
                     writer.WriteEndArray();
                 }
@@ -578,8 +559,7 @@ namespace BaSyx.Models.Extensions
 
                 writer.WriteString("contentType", blobValue.ContentType);
 
-                if (_extent == RequestExtent.WithBlobValue)
-                    writer.WriteString("value", blobValue.Value);
+                writer.WriteString("value", blobValue.Value);
 
                 if (_converterOptions.EnclosingObject)
                     writer.WriteEndObject();
