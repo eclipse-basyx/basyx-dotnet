@@ -113,9 +113,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelElementAsync(rootIdShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            return RetrieveSubmodelElementsAsync(limit, cursor).GetAwaiter().GetResult();
+            return RetrieveSubmodelElementsAsync(limit, cursor, level, extent).GetAwaiter().GetResult();
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)
@@ -126,7 +126,12 @@ namespace BaSyx.Clients.AdminShell.Http
         public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
         {
             return RetrieveSubmodelElementValueAsync(idShortPath).GetAwaiter().GetResult();
-        }      
+        }
+
+        public IResult<List<string>> RetrieveSubmodelElementPath(string idShortPath, RequestLevel level = RequestLevel.Deep)
+        {
+            return RetrieveSubmodelElementPathAsync(idShortPath, level).GetAwaiter().GetResult();
+        }
 
         public IResult DeleteSubmodelElement(string idShortPath)
         {
@@ -234,6 +239,21 @@ namespace BaSyx.Clients.AdminShell.Http
             var response = await SendRequestAsync(request, CancellationToken.None);
             var result = await EvaluateResponseAsync<ValueScope>(response, response.Entity);
             response?.Entity?.Dispose();  
+            return result;
+        }
+
+        public async Task<IResult<List<string>>> RetrieveSubmodelElementPathAsync(string idShortPath, RequestLevel level = RequestLevel.Deep)
+        {
+            Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.PATH, idShortPath);
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["level"] = level.ToString();
+            var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
+            uri = uriBuilder.Uri;
+
+            var request = CreateRequest(uri, HttpMethod.Get);
+            var response = await SendRequestAsync(request, CancellationToken.None);
+            var result = await EvaluateResponseAsync<List<string>>(response, response.Entity);
+            response?.Entity?.Dispose();
             return result;
         }
 
