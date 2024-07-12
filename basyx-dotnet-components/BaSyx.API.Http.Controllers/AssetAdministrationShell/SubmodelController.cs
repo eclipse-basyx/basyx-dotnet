@@ -54,7 +54,7 @@ namespace BaSyx.API.Http.Controllers
             DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
             options.AddDependencyInjection(new DependencyInjectionExtension(services));
             options.AddMetadataSubmodelElementConverter();
-            _metadataSerializerOptions = options.Build();           
+            _metadataSerializerOptions = options.Build();
 
             DefaultJsonSerializerOptions options3 = new DefaultJsonSerializerOptions();
             options3.AddDependencyInjection(new DependencyInjectionExtension(services));
@@ -278,7 +278,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetAllSubmodelElements([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = RequestLevel.Deep, [FromQuery] RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
-            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
+            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor, level, extent);
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
@@ -335,8 +335,6 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
-        /// <param name="limit">The maximum number of elements in the response array</param>
-        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
         /// <returns></returns>
         /// <response code="200">List of found submodel elements</response>  
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "GetAllSubmodelElementsValueOnly")]
@@ -345,9 +343,9 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelElementsValueOnly([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult GetAllSubmodelElementsValueOnly([FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
-            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
+            var result = serviceProvider.RetrieveSubmodelElements();
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
@@ -786,9 +784,24 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelElementByPathPath(string idShortPath, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult GetSubmodelElementByPathPath(string idShortPath, [FromQuery] RequestLevel level = default)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+
+            idShortPath = HttpUtility.UrlDecode(idShortPath);
+
+            var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
+            if (result.Success && result.Entity != null)
+            {
+                string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+                {
+                    Converters = {new PathConverter(level)}
+                });
+                return Content(json, "application/json");
+            }
+            else
+                return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
         /// <summary>
