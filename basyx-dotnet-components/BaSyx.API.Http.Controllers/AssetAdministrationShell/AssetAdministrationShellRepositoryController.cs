@@ -277,7 +277,7 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_PutSubmodel(submodelIdentifier, submodel, level, extent);
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElements(string, RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElements(string, int, string, RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "ShellRepo_GetAllSubmodelElements")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement[]), 200)]
@@ -307,7 +307,7 @@ namespace BaSyx.API.Http.Controllers
 			return service.Shell_GetAllSubmodelElementsMetadata(submodelIdentifier);
 		}
 
-		/// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElementsValueOnly(string, RequestLevel, RequestExtent)"/>   
+		/// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElementsValueOnly(string, int, string, RequestLevel, RequestExtent)"/>   
 		[HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "ShellRepo_GetAllSubmodelElementsValueOnly")]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(Submodel), 200)]

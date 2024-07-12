@@ -180,7 +180,7 @@ namespace BaSyx.API.Http.Controllers
             return service.GetSubmodelValueOnly(level, extent);
         }
 
-        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElements(RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElements(int, string, RequestLevel, RequestExtent)"/>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "SubmodelRepo_GetAllSubmodelElements")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement[]), 200)]
