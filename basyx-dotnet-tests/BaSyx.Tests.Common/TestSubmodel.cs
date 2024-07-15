@@ -147,8 +147,112 @@ namespace SimpleAssetAdministrationShell
                            outArgs.Add(new Property<double>("Result", value));
                            return new OperationResult(true);
                        }
-                    }
+                    },
+                    new SubmodelElementCollection("NestedTestCollection")
+                    {
+                        Value =
+                        {
+                            Value =
+                            {
+                                new Property<string>("MySubStringProperty")
+                                {
+                                    Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                    Get = prop => { return Task.FromResult("MySubStringPropertyValue"); }
+                                },
+                                new Property<int>("MySubIntProperty")
+                                {
+                                    Set = (prop, val) => { i = val; return Task.CompletedTask; },
+                                    Get = prop => { return Task.FromResult(12); }
+                                },
+                                new SubmodelElementCollection("MySubTestCollection")
+                                {
+                                    Value =
+                                    {
+                                        Value =
+                                        {
+                                            new Property<string>("MySubSubStringProperty")
+                                            {
+                                                Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                                Get = prop => { return Task.FromResult("MySubSubStringPropertyValue"); }
+                                            },
+                                            new Property<int>("MySubSubIntProperty")
+                                            {
+                                                Set = (prop, val) => { i = val; return Task.CompletedTask; },
+                                                Get = prop => { return Task.FromResult(127); }
+                                            },
+                                            new SubmodelElementCollection("MySubSubTestCollection")
+                                            {
+                                                Value =
+                                                {
+                                                    Value =
+                                                    {
+                                                        new Property<string>("MySubSubSubStringProperty")
+                                                        {
+                                                            Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                                            Get = prop => { return Task.FromResult("MySubSubStringPropertyValue"); }
+                                                        },
+                                                        new Property<int>("MySubSubSubIntProperty")
+                                                        {
+                                                            Set = (prop, val) => { i = val; return Task.CompletedTask; },
+                                                            Get = prop => { return Task.FromResult(127); }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                        }
+                                    }
+                                },
+                                new Entity("MySubEntity")
+                                {
+                                    Value =
+                                    {
+                                        Statements =
+                                        {
+                                            new Property<string>("MySubEntityProperty")
+                                            {
+                                                Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                                Get = prop => { return Task.FromResult("MySubSubEntityPropertyValue"); }
+                                            }
+                                        }
+                                    }
 
+                                },
+                                new SubmodelElementList("MySubmodelElementList")
+                                {
+                                    Value =
+                                    {
+                                        Value =
+                                        {
+                                            new Property<string>("0")
+                                            {
+                                                Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                                Get = prop => { return Task.FromResult("MyListStringPropertyValue"); }
+                                            },
+                                            new Property<int>("1")
+                                            {
+                                                Set = (prop, val) => { i = val; return Task.CompletedTask; },
+                                                Get = prop => { return Task.FromResult(12); }
+                                            },
+                                            new SubmodelElementList("2")
+                                            {
+                                                Value =
+                                                {
+                                                    Value =
+                                                    {
+                                                        new Property<string>("0")
+                                                        {
+                                                            Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                                            Get = prop => { return Task.FromResult("MySubListStringPropertyValue"); }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             };
             return testSubmodel;

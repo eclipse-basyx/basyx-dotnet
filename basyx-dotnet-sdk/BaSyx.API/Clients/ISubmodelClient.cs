@@ -13,6 +13,7 @@ using BaSyx.Utils.ResultHandling;
 using BaSyx.API.Interfaces;
 using System.Threading.Tasks;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Collections.Generic;
 
 namespace BaSyx.API.Clients
 {
@@ -25,6 +26,8 @@ namespace BaSyx.API.Clients
         Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue);
         Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string idShortPath);
         Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(string idShortPath);
+        IResult<List<string>> RetrieveSubmodelElementPath(string idShortPath, RequestLevel level = RequestLevel.Deep);
+        Task<IResult<List<string>>> RetrieveSubmodelElementPathAsync(string idShortPath, RequestLevel level = RequestLevel.Deep);
         Task<IResult> UpdateSubmodelElementValueAsync(string idShortPath, ValueScope value);
         Task<IResult> DeleteSubmodelElementAsync(string idShortPath);
         Task<IResult<InvocationResponse>> InvokeOperationAsync(string idShortPath, InvocationRequest invocationRequest, bool async = false);
