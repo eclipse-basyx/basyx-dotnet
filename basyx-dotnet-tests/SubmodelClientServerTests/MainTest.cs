@@ -545,9 +545,9 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElement(idShortPath);
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit  = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit  = 100, string cursor = "")
         {
-            return ((ISubmodelClient)Client).RetrieveSubmodelElements(limit, cursor, level, extent);
+            return ((ISubmodelClient)Client).RetrieveSubmodelElements(limit, cursor);
         }
 
         public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
