@@ -113,9 +113,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelElementAsync(rootIdShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "")
         {
-            return RetrieveSubmodelElementsAsync(limit, cursor, level, extent).GetAwaiter().GetResult();
+            return RetrieveSubmodelElementsAsync(limit, cursor).GetAwaiter().GetResult();
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)
