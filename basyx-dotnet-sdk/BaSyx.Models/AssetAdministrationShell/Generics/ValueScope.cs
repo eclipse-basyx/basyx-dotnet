@@ -9,10 +9,16 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
 namespace BaSyx.Models.AdminShell
 {
     public abstract class ValueScope
     {    
         public abstract ModelType ModelType { get; }
+
+        [JsonIgnore, IgnoreDataMember]
+        public bool Serialize { get; set; } = true;
     }
 }

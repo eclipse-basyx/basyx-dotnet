@@ -399,20 +399,26 @@ namespace BaSyx.Models.Extensions
                 {
                     writer.WritePropertyName("value");
                     writer.WriteStartArray();
-                    foreach (var smcElement in smcValue.Value)
+                    if (smcValue.Serialize)
                     {
-                        JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
+                        foreach (var smcElement in smcValue.Value)
+                        {
+                            JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
+                        }
                     }
                     writer.WriteEndArray();
                 }
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartObject();
-                    foreach (var smcElement in smcValue.Value)
+                    if (smcValue.Serialize)
                     {
-                        var smcElementValueScope = smcElement.GetValueScope().Result;
-                        writer.WritePropertyName(smcElement.IdShort);
-                        Write(writer, smcElementValueScope, _options);
+                        foreach (var smcElement in smcValue.Value)
+                        {
+                            var smcElementValueScope = smcElement.GetValueScope().Result;
+                            writer.WritePropertyName(smcElement.IdShort);
+                            Write(writer, smcElementValueScope, _options);
+                        }
                     }
                     writer.WriteEndObject();
                 }
@@ -423,19 +429,25 @@ namespace BaSyx.Models.Extensions
                 {
                     writer.WritePropertyName("value");
                     writer.WriteStartArray();
-                    foreach (var smcElement in smlValue.Value)
+                    if (smlValue.Serialize)
                     {
-                        JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
+                        foreach (var smcElement in smlValue.Value)
+                        {
+                            JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
+                        }
                     }
                     writer.WriteEndArray();
                 }
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartArray();
-                    foreach (var smcElement in smlValue.Value)
+                    if (smlValue.Serialize)
                     {
-                        var smcElementValueScope = smcElement.GetValueScope().Result;
-                        Write(writer, smcElementValueScope, _options);
+                        foreach (var smcElement in smlValue.Value)
+                        {
+                            var smcElementValueScope = smcElement.GetValueScope().Result;
+                            Write(writer, smcElementValueScope, _options);
+                        }
                     }
                     writer.WriteEndArray();
                 }
@@ -559,7 +571,8 @@ namespace BaSyx.Models.Extensions
 
                 writer.WriteString("contentType", blobValue.ContentType);
 
-                writer.WriteString("value", blobValue.Value);
+                if (blobValue.Serialize)
+                    writer.WriteString("value", blobValue.Value);
 
                 if (_converterOptions.EnclosingObject)
                     writer.WriteEndObject();
