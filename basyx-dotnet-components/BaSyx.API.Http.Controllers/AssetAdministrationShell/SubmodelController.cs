@@ -204,10 +204,15 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            JsonObject smValue = new JsonObject();
-            var node = JsonSerializer.SerializeToNode(result.Entity.Result, _fullSerializerOptions);
-            smValue.Add("submodelElements", node);
+            result.Entity.Result.MarkValuesForSerialization(level, extent);
 
+            JsonObject smValue = new JsonObject();
+            var node = JsonSerializer.SerializeToNode(result.Entity.Result, new JsonSerializerOptions()
+            {
+                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions) }
+            });
+
+            smValue.Add("submodelElements", node);
             string json = smValue.ToJsonString(); 
             return Content(json, "application/json");
         }
