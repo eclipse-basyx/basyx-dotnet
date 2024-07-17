@@ -29,10 +29,10 @@ namespace BaSyx.Models.Extensions
             Utf8JsonReader jsonReader = reader;
 
             if (jsonReader.TokenType != JsonTokenType.StartObject)
-                throw new JsonException("Json does not start with {");            
+                throw new JsonException("Json does not start with {");
 
             string idShort = null, modelType = null;
-            while(jsonReader.Read())
+            while (jsonReader.Read())
             {
                 if (jsonReader.TokenType == JsonTokenType.EndObject)
                     break;
@@ -50,7 +50,7 @@ namespace BaSyx.Models.Extensions
                         modelType = jsonReader.GetString();
                         break;
                     default:
-                        jsonReader.Skip(); 
+                        jsonReader.Skip();
                         break;
                 }
                 if (!string.IsNullOrEmpty(idShort) && !string.IsNullOrEmpty(modelType))
@@ -108,9 +108,9 @@ namespace BaSyx.Models.Extensions
                         break;
                     case "valueType":
                         valueType = reader.GetString();
-                        if(submodelElement is Property prop3)
+                        if (submodelElement is Property prop3)
                             prop3.ValueType = valueType;
-                        if(submodelElement is Range r3)
+                        if (submodelElement is Range r3)
                             r3.ValueType = valueType;
                         break;
                     #region RelationshipElement
@@ -121,14 +121,14 @@ namespace BaSyx.Models.Extensions
                                 arel1.Value = new AnnotatedRelationshipElementValue();
 
                             arel1.Value.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        }                            
+                        }
                         else if (submodelElement is RelationshipElement rel1)
                         {
                             if (rel1.Value == null)
                                 rel1.Value = new AnnotatedRelationshipElementValue();
 
                             rel1.Value.First = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        }                           
+                        }
                         break;
                     case "second":
                         if (submodelElement is AnnotatedRelationshipElement arel2)
@@ -137,14 +137,14 @@ namespace BaSyx.Models.Extensions
                                 arel2.Value = new AnnotatedRelationshipElementValue();
 
                             arel2.Value.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        }                            
+                        }
                         else if (submodelElement is RelationshipElement rel2)
                         {
                             if (rel2.Value == null)
                                 rel2.Value = new AnnotatedRelationshipElementValue();
 
                             rel2.Value.Second = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                        }                           
+                        }
                         break;
                     case "annotations":
                         if (submodelElement is AnnotatedRelationshipElement arel3)
@@ -165,20 +165,20 @@ namespace BaSyx.Models.Extensions
                                 b1.Value = new BlobValue();
 
                             b1.Value.ContentType = reader.GetString();
-                        }                            
+                        }
                         else if (submodelElement is FileElement f1)
                         {
                             if (f1.Value == null)
                                 f1.Value = new FileElementValue();
 
                             f1.Value.ContentType = reader.GetString();
-                        }                           
+                        }
                         break;
                     #endregion
                     #region Operation
                     case "inputVariables":
                         if (submodelElement is Operation op1)
-                            op1.InputVariables = JsonSerializer.Deserialize<IOperationVariableSet>(ref reader, options);                      
+                            op1.InputVariables = JsonSerializer.Deserialize<IOperationVariableSet>(ref reader, options);
                         break;
                     case "inoutputVariables":
                         if (submodelElement is Operation op2)
@@ -215,7 +215,7 @@ namespace BaSyx.Models.Extensions
                     #endregion
                     #region SubmodelElementList
                     case "orderRelevant":
-                        if(submodelElement is SubmodelElementList sml1)
+                        if (submodelElement is SubmodelElementList sml1)
                             sml1.OrderRelevant = reader.GetBoolean();
                         break;
                     case "semanticIdListElement":
@@ -270,7 +270,7 @@ namespace BaSyx.Models.Extensions
                         {
                             var reference = JsonSerializer.Deserialize<IReference>(ref reader, options);
                             bee1.Value = new BasicEventElementValue(reference);
-                        }                            
+                        }
                         break;
                     case "observableReference":
                         if (submodelElement is BasicEventElement bee2)
@@ -313,7 +313,7 @@ namespace BaSyx.Models.Extensions
                                 value = reader.GetString();
                             else if (reader.TokenType == JsonTokenType.Number)
                                 value = reader.GetDouble();
-                            else if (reader.TokenType == JsonTokenType.True ||  reader.TokenType == JsonTokenType.False)
+                            else if (reader.TokenType == JsonTokenType.True || reader.TokenType == JsonTokenType.False)
                                 value = reader.GetBoolean();
                             else
                                 value = reader.GetString();
@@ -323,7 +323,7 @@ namespace BaSyx.Models.Extensions
                                 PropertyValue propertyValue = new PropertyValue(new ElementValue(value, valueType));
                                 _ = submodelElement.SetValueScope(propertyValue);
                             }
-                        } 
+                        }
                         else if (submodelElement is SubmodelElementCollection smc)
                         {
                             JsonTokenType endToken;
@@ -334,7 +334,7 @@ namespace BaSyx.Models.Extensions
                             else
                                 continue;
 
-                            while(reader.Read() && reader.TokenType != endToken)
+                            while (reader.Read() && reader.TokenType != endToken)
                             {
                                 if (endToken == JsonTokenType.EndArray)
                                 {
@@ -349,7 +349,7 @@ namespace BaSyx.Models.Extensions
                                     smc.Value.Value.Add(sme);
                                 }
                                 else
-                                    continue;                               
+                                    continue;
                             }
                         }
                         else if (submodelElement is SubmodelElementList sml)
@@ -373,15 +373,15 @@ namespace BaSyx.Models.Extensions
                         else if (submodelElement is MultiLanguageProperty mlp)
                         {
                             var langStringSet = JsonSerializer.Deserialize<LangStringSet>(ref reader, options);
-                            if(langStringSet != null)
+                            if (langStringSet != null)
                                 mlp.Value = new MultiLanguagePropertyValue(langStringSet);
                         }
                         else if (submodelElement is ReferenceElement re)
                         {
                             var reference = JsonSerializer.Deserialize<IReference>(ref reader, options);
-                            if(reference != null)
-							    re.Value = new ReferenceElementValue(reference);
-						}
+                            if (reference != null)
+                                re.Value = new ReferenceElementValue(reference);
+                        }
                         else if (submodelElement is Blob blob)
                         {
                             if (blob.Value == null)
@@ -399,7 +399,7 @@ namespace BaSyx.Models.Extensions
                         break;
                 }
             }
-            
+
             return submodelElement;
         }
 
@@ -430,10 +430,10 @@ namespace BaSyx.Models.Extensions
                             return new Property<int>(idShort, int32);
                         else if (reader.TryGetInt64(out long longVal))
                             return new Property<long>(idShort, longVal);
-                        else if (reader.TryGetDouble(out double doubleVal))                        
-                            return new Property<double>(idShort, doubleVal);                        
+                        else if (reader.TryGetDouble(out double doubleVal))
+                            return new Property<double>(idShort, doubleVal);
                         break;
-                    }                    
+                    }
             }
             return null;
         }
@@ -549,8 +549,8 @@ namespace BaSyx.Models.Extensions
                         writer.WriteString("maxInterval", bee.MaxInterval);
                     break;
                 case ModelTypes.Entity:
-                    var entity = (Entity)value;   
-                    if(entity.EntityType != EntityType.None)
+                    var entity = (Entity)value;
+                    if (entity.EntityType != EntityType.None)
                     {
                         writer.WritePropertyName("entityType");
                         JsonSerializer.Serialize(writer, entity.EntityType, options);
@@ -594,14 +594,17 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.SubmodelElementCollection:
                     var smc = (SubmodelElementCollection)value;
-                    if(smc.Value != null)
+                    if (smc.Value != null)
                     {
                         writer.WritePropertyName("value");
                         writer.WriteStartArray();
                         var smcValue = smc.Get?.Invoke(smc).Result;
-                        foreach (var item in smcValue.Value)
+                        if (smc.Value.Serialize)
                         {
-                            JsonSerializer.Serialize(writer, item, options);
+                            foreach (var item in smcValue.Value)
+                            {
+                                JsonSerializer.Serialize(writer, item, options);
+                            }
                         }
                         writer.WriteEndArray();
                     }
@@ -623,9 +626,12 @@ namespace BaSyx.Models.Extensions
                         writer.WritePropertyName("value");
                         writer.WriteStartArray();
                         var smlValue = sml.Get?.Invoke(sml).Result;
-                        foreach (var item in smlValue.Value)
+                        if (sml.Value.Serialize)
                         {
-                            JsonSerializer.Serialize(writer, item, options);
+                            foreach (var item in smlValue.Value)
+                            {
+                                JsonSerializer.Serialize(writer, item, options);
+                            }
                         }
                         writer.WriteEndArray();
                     }
@@ -634,5 +640,5 @@ namespace BaSyx.Models.Extensions
                     break;
             }
         }
-    }  
+    }
 }
