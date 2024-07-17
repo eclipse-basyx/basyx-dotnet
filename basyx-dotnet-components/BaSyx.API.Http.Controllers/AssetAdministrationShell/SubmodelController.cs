@@ -89,6 +89,10 @@ namespace BaSyx.API.Http.Controllers
         public IActionResult GetSubmodel([FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
             var result = serviceProvider.RetrieveSubmodel(level, extent);
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            result.Entity.SubmodelElements.MarkValuesForSerialization(level, extent);
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
