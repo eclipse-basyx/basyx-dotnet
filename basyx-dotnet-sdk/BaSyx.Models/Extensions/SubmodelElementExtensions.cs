@@ -411,6 +411,15 @@ namespace BaSyx.Models.Extensions
             }
         }
 
+        public static void MarkValuesForSerialization(this ISubmodelElement submodelElement, RequestLevel level,
+            RequestExtent extent)
+        {
+            if (submodelElement is IElementContainer<ISubmodelElement> container)
+                container.MarkValuesForSerialization(level, extent);
+            else if (submodelElement is IBlob blob)
+                blob.MarkValuesForSerialization(extent);
+        }
+
         public static void MarkValuesForSerialization(this IElementContainer<ISubmodelElement> rootContainer, RequestLevel level, RequestExtent extent)
         {
             var flatRootContainer = rootContainer.Flatten().ToList();
@@ -435,12 +444,12 @@ namespace BaSyx.Models.Extensions
                 {
                     if (container is SubmodelElementCollection collection)
                     {
-                        if (!collection.ParentContainer.IsRoot)
+                        if (collection != rootContainer)
                             collection.Value.Serialize = false;
                     }
                     if (container is SubmodelElementList list)
                     {
-                        if (!list.ParentContainer.IsRoot)
+                        if (list != rootContainer)
                             list.Value.Serialize = false;
                     }
                 }
@@ -449,5 +458,13 @@ namespace BaSyx.Models.Extensions
             //ToDo : Remove after debugging
             var tmp = flatRootContainer.Where(e => !e.Value.Serialize).ToList();
         }
+
+        public static void MarkValuesForSerialization(this IBlob submodelElement, RequestExtent extent)
+        {
+            if (submodelElement is Blob blob)
+                blob.Value.Serialize = extent == RequestExtent.WithBlobValue;
+        }
+
+
     }
 }

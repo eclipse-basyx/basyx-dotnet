@@ -359,9 +359,11 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetAllSubmodelElementsValueOnly([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
-            var result = serviceProvider.RetrieveSubmodelElements();
+            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
+
+            result.Entity.Result.MarkValuesForSerialization(level, extent);
 
             string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
             {
