@@ -311,20 +311,20 @@ namespace BaSyx.API.Http.Controllers
             return service.GetAllSubmodelElements(limit, cursor, level, extent);
         }
 
-        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsMetadata(RequestLevel, RequestExtent)"/>   
-        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID+ SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.METADATA, Name = "Shell_GetAllSubmodelElementsMetadata")]
+        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsMetadata(int, string, RequestLevel)"/>   
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.METADATA, Name = "Shell_GetAllSubmodelElementsMetadata")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult Shell_GetAllSubmodelElementsMetadata(string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult Shell_GetAllSubmodelElementsMetadata(string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default)
         {
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.GetAllSubmodelElementsMetadata(level, extent);
+            return service.GetAllSubmodelElementsMetadata(limit, cursor, level);
         }
 
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsValueOnly(int, string, RequestLevel, RequestExtent)"/>   

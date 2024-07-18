@@ -288,6 +288,7 @@ namespace BaSyx.API.Http.Controllers
         public IActionResult GetAllSubmodelElements([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = RequestLevel.Deep, [FromQuery] RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
+            result.Entity.Result.MarkValuesForSerialization(level, extent);
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
@@ -315,12 +316,12 @@ namespace BaSyx.API.Http.Controllers
             var result = serviceProvider.CreateSubmodelElement(".", submodelElement);
             return result.CreateActionResult(CrudOperation.Create, SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH.Replace("{idShortPath}", submodelElement.IdShort));
         }
-
         /// <summary>
         /// Returns the metadata attributes of all submodel elements including their hierarchy
         /// </summary>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
         /// <returns></returns>
         /// <response code="200">List of found submodel elements</response>
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.METADATA, Name = "GetAllSubmodelElementsMetadata")]
@@ -329,11 +330,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelElementsMetadata([FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult GetAllSubmodelElementsMetadata([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default)
         {
-            var result = serviceProvider.RetrieveSubmodelElements();
+            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
+
+            result.Entity.Result.MarkValuesForSerialization(level, RequestExtent.WithBlobValue);
 
             string json = JsonSerializer.Serialize(result.Entity, _metadataSerializerOptions);
             return Content(json, "application/json");
