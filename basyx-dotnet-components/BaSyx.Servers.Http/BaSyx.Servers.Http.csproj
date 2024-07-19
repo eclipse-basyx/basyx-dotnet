@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <Configurations>Debug;Release;Azure</Configurations>
     <Authors>Constantin Ziesche</Authors>
@@ -17,7 +17,7 @@
     <IsPackable>true</IsPackable>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-    <Version>2.0.6</Version>
+    <Version>2.0.12</Version>
   </PropertyGroup>
 
   <ItemGroup>

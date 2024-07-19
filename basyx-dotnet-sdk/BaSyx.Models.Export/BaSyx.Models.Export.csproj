@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <Configurations>Debug;Release;Azure</Configurations>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
@@ -14,7 +14,7 @@
     <PackageIcon>basyxlogo.png</PackageIcon>
     <PackageTags>BaSys BaSyx Models Export</PackageTags>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-    <Version>2.0.6</Version>
+    <Version>2.0.12</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.12" />
+    <PackageReference Include="System.IO.Packaging" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
