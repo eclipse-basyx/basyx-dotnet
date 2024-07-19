@@ -15,8 +15,22 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
+    public class ElementContainerConverterOptions
+    {
+        public RequestLevel RequestLevel { get; set; } = RequestLevel.Deep;
+        public RequestExtent RequestExtent { get; set; } = RequestExtent.WithoutBlobValue;
+        public int Level { get; set; } = 0;
+    }
+
     public class ElementContainerConverter : JsonConverter<IElementContainer<ISubmodelElement>>
     {
+        private ElementContainerConverterOptions _converterOptions;
+
+        public ElementContainerConverter(ElementContainerConverterOptions options = null)
+        {
+            _converterOptions = options ?? new ElementContainerConverterOptions();
+        }
+
         public override IElementContainer<ISubmodelElement> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             while(reader.TokenType != JsonTokenType.StartArray)
@@ -40,7 +54,16 @@ namespace BaSyx.Models.Extensions
             writer.WriteStartArray();
             foreach (var sme in value)
             {
-                JsonSerializer.Serialize(writer, sme, options);
+                JsonSerializer.Serialize(writer, sme, new JsonSerializerOptions()
+                {
+                    Converters =
+                    {
+                        new SubmodelElementConverter(new SubmodelElementConverterOptions()
+                        {
+                            RequestLevel = _converterOptions.RequestLevel
+                        })
+                    }
+                });
             }
             writer.WriteEndArray();
         }

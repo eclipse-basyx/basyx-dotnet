@@ -17,6 +17,10 @@ namespace BaSyx.Models.Extensions
 {
     public class FullSubmodelElementConverter : SubmodelElementConverter
     {
+        public FullSubmodelElementConverter(SubmodelElementConverterOptions options = null) : base(options)
+        {
+        }
+
         public override ISubmodelElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             return base.Read(ref reader, typeToConvert, options);
@@ -26,7 +30,7 @@ namespace BaSyx.Models.Extensions
         {
             writer.WriteStartObject();
 
-            WriteMetadata(writer, value, options);
+            WriteMetadata(writer, value, options, new SubmodelElementConverterOptions());
 
             switch (value.ModelType.Type)
             {
@@ -188,9 +192,13 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.SubmodelElementCollection:
                     var smc = (SubmodelElementCollection)value;
-                    var smcValue = smc.GetValueScope<SubmodelElementCollectionValue>();
-                    if (smcValue != null)
+                    if (_converterOptions.RequestLevel == RequestLevel.Deep || (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0))
                     {
+                        var smcValue = smc.Get?.Invoke(smc).Result;
+
+                        if (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0)
+                            _converterOptions.Level++;
+
                         JsonSerializer.Serialize(writer, smcValue, new JsonSerializerOptions()
                         {
                             Converters =
@@ -198,7 +206,10 @@ namespace BaSyx.Models.Extensions
                                 new ValueScopeConverter<SubmodelElementCollectionValue>(options: new ValueScopeConverterOptions()
                                 {
                                     EnclosingObject = false,
-                                    SerializationOption = SerializationOption.FullModel
+                                    SerializationOption = SerializationOption.FullModel,
+                                    RequestLevel = _converterOptions.RequestLevel,
+                                    RequestExtent = _converterOptions.RequestExtent,
+                                    Level = _converterOptions.Level
                                 }, jsonOptions: options)
                             }
                         });
@@ -206,9 +217,13 @@ namespace BaSyx.Models.Extensions
                     break;
                 case ModelTypes.SubmodelElementList:
                     var sml = (SubmodelElementList)value;
-                    var smlValue = sml.GetValueScope<SubmodelElementListValue>();
-                    if (smlValue != null)
+                    if (_converterOptions.RequestLevel == RequestLevel.Deep || (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0))
                     {
+                        var smlValue = sml.Get?.Invoke(sml).Result;
+
+                        if (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0)
+                            _converterOptions.Level++;
+
                         JsonSerializer.Serialize(writer, smlValue, new JsonSerializerOptions()
                         {
                             Converters =

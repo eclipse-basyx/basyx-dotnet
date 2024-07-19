@@ -30,6 +30,9 @@ namespace BaSyx.Models.Extensions
 		public bool EnclosingObject { get; set; } = true;
         public bool ValueAsString { get; set; } = false;
         public SerializationOption SerializationOption { get; set; } = SerializationOption.FullModel;
+        public RequestLevel RequestLevel {  get; set; }  = RequestLevel.Deep;
+        public RequestExtent RequestExtent { get; set; } = RequestExtent.WithoutBlobValue;
+        public int Level { get; set; } = 0;
     }
 	public class ValueScopeConverter : ValueScopeConverter<ValueScope> 
 	{ 
@@ -399,8 +402,11 @@ namespace BaSyx.Models.Extensions
                 {
                     writer.WritePropertyName("value");
                     writer.WriteStartArray();
-                    if (smcValue.Serialize)
+                    if (_converterOptions.RequestLevel == RequestLevel.Deep || (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0))
                     {
+                        if (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0)
+                            _converterOptions.Level++;
+
                         foreach (var smcElement in smcValue.Value)
                         {
                             JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
@@ -411,13 +417,22 @@ namespace BaSyx.Models.Extensions
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartObject();
-                    if (smcValue.Serialize)
+                    if (_converterOptions.RequestLevel == RequestLevel.Deep || (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0))
                     {
+                        if (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0)
+                            _converterOptions.Level++;
+
                         foreach (var smcElement in smcValue.Value)
                         {
+                            if (smcElement.ModelType == ModelType.Operation)
+                                continue;
+
                             var smcElementValueScope = smcElement.GetValueScope().Result;
-                            writer.WritePropertyName(smcElement.IdShort);
-                            Write(writer, smcElementValueScope, _options);
+                            if(smcElementValueScope != null)
+                            {
+                                writer.WritePropertyName(smcElement.IdShort);
+                                Write(writer, smcElementValueScope, _options);
+                            }                            
                         }
                     }
                     writer.WriteEndObject();
@@ -429,8 +444,11 @@ namespace BaSyx.Models.Extensions
                 {
                     writer.WritePropertyName("value");
                     writer.WriteStartArray();
-                    if (smlValue.Serialize)
+                    if (_converterOptions.RequestLevel == RequestLevel.Deep || (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0))
                     {
+                        if (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0)
+                            _converterOptions.Level++;
+
                         foreach (var smcElement in smlValue.Value)
                         {
                             JsonSerializer.Serialize(writer, smcElement, _jsonOptions);
@@ -441,12 +459,19 @@ namespace BaSyx.Models.Extensions
                 else if (_converterOptions.SerializationOption == SerializationOption.ValueOnly)
                 {
                     writer.WriteStartArray();
-                    if (smlValue.Serialize)
+                    if (_converterOptions.RequestLevel == RequestLevel.Deep || (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0))
                     {
+                        if (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0)
+                            _converterOptions.Level++;
+
                         foreach (var smcElement in smlValue.Value)
                         {
+                            if (smcElement.ModelType == ModelType.Operation)
+                                continue;
+
                             var smcElementValueScope = smcElement.GetValueScope().Result;
-                            Write(writer, smcElementValueScope, _options);
+                            if(smcElementValueScope != null)
+                                Write(writer, smcElementValueScope, _options);
                         }
                     }
                     writer.WriteEndArray();
@@ -571,7 +596,7 @@ namespace BaSyx.Models.Extensions
 
                 writer.WriteString("contentType", blobValue.ContentType);
 
-                if (blobValue.Serialize)
+                if (_converterOptions.RequestExtent == RequestExtent.WithBlobValue)
                     writer.WriteString("value", blobValue.Value);
 
                 if (_converterOptions.EnclosingObject)

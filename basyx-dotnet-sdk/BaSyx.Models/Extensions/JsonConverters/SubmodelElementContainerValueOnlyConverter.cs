@@ -18,6 +18,10 @@ namespace BaSyx.Models.Extensions
     public class SubmodelElementContainerValueOnlyConverterOptions
     {
         public EnclosingBracket EnclosingBracket { get; set; } = EnclosingBracket.Object;
+        public RequestLevel RequestLevel { get; set; } = RequestLevel.Deep;
+        public RequestExtent RequestExtent { get; set; } = RequestExtent.WithoutBlobValue;
+
+        public int Level = 0;
     }
 
     public enum EnclosingBracket
@@ -29,12 +33,12 @@ namespace BaSyx.Models.Extensions
     public class SubmodelElementContainerValueOnlyConverter : JsonConverter<IElementContainer<ISubmodelElement>>
     {
         private readonly JsonSerializerOptions _jsonOptions;
-        private readonly SubmodelElementContainerValueOnlyConverterOptions _options;
+        private readonly SubmodelElementContainerValueOnlyConverterOptions _converterOptions;
 
         public SubmodelElementContainerValueOnlyConverter(JsonSerializerOptions jsonOptions, SubmodelElementContainerValueOnlyConverterOptions options = null)
         {
             _jsonOptions = jsonOptions;
-            _options = options ?? new SubmodelElementContainerValueOnlyConverterOptions();
+            _converterOptions = options ?? new SubmodelElementContainerValueOnlyConverterOptions();
         }
 
         public override IElementContainer<ISubmodelElement> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -44,7 +48,7 @@ namespace BaSyx.Models.Extensions
 
         public override void Write(Utf8JsonWriter writer, IElementContainer<ISubmodelElement> value, JsonSerializerOptions options)
         {
-            if (_options.EnclosingBracket == EnclosingBracket.Array)
+            if (_converterOptions.EnclosingBracket == EnclosingBracket.Array)
                 writer.WriteStartArray();
             else
                 writer.WriteStartObject();
@@ -62,13 +66,15 @@ namespace BaSyx.Models.Extensions
                     {
                         new ValueScopeConverter<ValueScope>(sme: smElement, options: new ValueScopeConverterOptions()
                         {
-                            SerializationOption = SerializationOption.ValueOnly
+                            SerializationOption = SerializationOption.ValueOnly,
+                            RequestLevel = _converterOptions.RequestLevel,
+                            RequestExtent = _converterOptions.RequestExtent
                         }, jsonOptions: _jsonOptions)
                     }
                 });
             }
 
-            if (_options.EnclosingBracket == EnclosingBracket.Array)
+            if (_converterOptions.EnclosingBracket == EnclosingBracket.Array)
                 writer.WriteEndArray();
             else
                 writer.WriteEndObject();

@@ -410,58 +410,5 @@ namespace BaSyx.Models.Extensions
                 }
             }
         }
-
-        public static void MarkValuesForSerialization(this ISubmodelElement submodelElement, RequestLevel level,
-            RequestExtent extent)
-        {
-            if (submodelElement is IElementContainer<ISubmodelElement> container)
-                container.MarkValuesForSerialization(level, extent);
-            else if (submodelElement is IBlob blob)
-                blob.MarkValuesForSerialization(extent);
-        }
-
-        public static void MarkValuesForSerialization(this IElementContainer<ISubmodelElement> rootContainer, RequestLevel level, RequestExtent extent)
-        {
-            var flatRootContainer = rootContainer.Flatten().ToList();
-            //Traverse
-            // reset all serialize flags
-            foreach (var submodelElement in flatRootContainer.Where(e => e.Value != null && !e.Value.Serialize))
-                submodelElement.Value.Serialize = true;
-
-            // set serialize flags according to the extent for blobs
-            if (extent == RequestExtent.WithoutBlobValue)
-            {
-                var blobs = flatRootContainer.OfType<Blob>().ToList();
-                foreach (var blob in blobs)
-                    blob.Value.Serialize = false;
-            }
-
-            // set serialize flags according to the level for Container
-            if (level == RequestLevel.Core)
-            {
-                var containers = flatRootContainer.OfType<IElementContainer<ISubmodelElement>>().ToList();
-                foreach (var container in containers)
-                {
-                    if (container is SubmodelElementCollection collection)
-                    {
-                        if (collection != rootContainer)
-                            collection.Value.Serialize = false;
-                    }
-                    if (container is SubmodelElementList list)
-                    {
-                        if (list != rootContainer)
-                            list.Value.Serialize = false;
-                    }
-                }
-            }          
-        }
-
-        public static void MarkValuesForSerialization(this IBlob submodelElement, RequestExtent extent)
-        {
-            if (submodelElement is Blob blob)
-                blob.Value.Serialize = extent == RequestExtent.WithBlobValue;
-        }
-
-
     }
 }

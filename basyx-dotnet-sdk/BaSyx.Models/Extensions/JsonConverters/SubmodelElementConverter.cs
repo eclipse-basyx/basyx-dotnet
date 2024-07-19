@@ -20,9 +20,23 @@ using Range = BaSyx.Models.AdminShell.Range;
 
 namespace BaSyx.Models.Extensions
 {
+    public class SubmodelElementConverterOptions
+    {
+        public RequestLevel RequestLevel { get; set; } = RequestLevel.Deep;
+        public RequestExtent RequestExtent { get; set; } = RequestExtent.WithoutBlobValue;
+        public int Level { get; set; } = 0;
+    }
+
     public class SubmodelElementConverter : JsonConverter<ISubmodelElement>
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<SubmodelElementConverter>();
+
+        protected SubmodelElementConverterOptions _converterOptions;
+       
+        public SubmodelElementConverter(SubmodelElementConverterOptions options = null)
+        {
+            _converterOptions = options ?? new SubmodelElementConverterOptions();
+        }
 
         public override ISubmodelElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
@@ -407,7 +421,7 @@ namespace BaSyx.Models.Extensions
         {
             writer.WriteStartObject();
 
-            WriteMetadata(writer, value, options);
+            WriteMetadata(writer, value, options, _converterOptions);
 
             writer.WriteEndObject();
         }
@@ -466,7 +480,7 @@ namespace BaSyx.Models.Extensions
             return null;
         }
 
-        public static void WriteMetadata(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options)
+        public static void WriteMetadata(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options, SubmodelElementConverterOptions converterOptions)
         {
             writer.WriteString("idShort", value.IdShort);
             writer.WriteString("kind", value.Kind.ToString());
@@ -597,10 +611,14 @@ namespace BaSyx.Models.Extensions
                     if (smc.Value != null)
                     {
                         writer.WritePropertyName("value");
-                        writer.WriteStartArray();
-                        var smcValue = smc.Get?.Invoke(smc).Result;
-                        if (smc.Value.Serialize)
+                        writer.WriteStartArray();                        
+                        if (converterOptions.RequestLevel == RequestLevel.Deep || (converterOptions.RequestLevel == RequestLevel.Core && converterOptions.Level == 0))
                         {
+                            var smcValue = smc.Get?.Invoke(smc).Result;
+
+                            if (converterOptions.RequestLevel == RequestLevel.Core && converterOptions.Level == 0)
+                                converterOptions.Level++;
+
                             foreach (var item in smcValue.Value)
                             {
                                 JsonSerializer.Serialize(writer, item, options);
@@ -625,9 +643,14 @@ namespace BaSyx.Models.Extensions
                     {
                         writer.WritePropertyName("value");
                         writer.WriteStartArray();
-                        var smlValue = sml.Get?.Invoke(sml).Result;
-                        if (sml.Value.Serialize)
+                        
+                        if (converterOptions.RequestLevel == RequestLevel.Deep || (converterOptions.RequestLevel == RequestLevel.Core && converterOptions.Level == 0))
                         {
+                            var smlValue = sml.Get?.Invoke(sml).Result;
+
+                            if (converterOptions.RequestLevel == RequestLevel.Core && converterOptions.Level == 0)
+                                converterOptions.Level++;
+
                             foreach (var item in smlValue.Value)
                             {
                                 JsonSerializer.Serialize(writer, item, options);

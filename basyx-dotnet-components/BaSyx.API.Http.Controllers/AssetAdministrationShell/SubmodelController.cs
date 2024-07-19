@@ -92,8 +92,18 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            result.Entity.SubmodelElements.MarkValuesForSerialization(level, extent);
-            return result.CreateActionResult(CrudOperation.Retrieve);
+            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            {
+                Converters =
+                {
+                    new ElementContainerConverter(new ElementContainerConverterOptions()
+                    {
+                        RequestLevel = level,
+                        RequestExtent = extent
+                    })
+                }
+            });
+            return Content(json, "application/json");            
         }
 
         /// <summary>
@@ -204,12 +214,14 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            result.Entity.Result.MarkValuesForSerialization(level, extent);
-
             JsonObject smValue = new JsonObject();
             var node = JsonSerializer.SerializeToNode(result.Entity.Result, new JsonSerializerOptions()
             {
-                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions) }
+                Converters = { new ElementContainerConverter(new ElementContainerConverterOptions()
+                {
+                    RequestLevel = level,
+                    RequestExtent = extent
+                }) }
             });
 
             smValue.Add("submodelElements", node);
@@ -288,8 +300,18 @@ namespace BaSyx.API.Http.Controllers
         public IActionResult GetAllSubmodelElements([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = RequestLevel.Deep, [FromQuery] RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
-            result.Entity.Result.MarkValuesForSerialization(level, extent);
-            return result.CreateActionResult(CrudOperation.Retrieve);
+            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            {
+                Converters =
+                {
+                    new ElementContainerConverter(new ElementContainerConverterOptions()
+                    {
+                        RequestLevel = level,
+                        RequestExtent = extent
+                    })
+                }
+            });
+            return Content(json, "application/json");
         }
 
         /// <summary>
@@ -336,9 +358,16 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            result.Entity.Result.MarkValuesForSerialization(level, RequestExtent.WithBlobValue);
-
-            string json = JsonSerializer.Serialize(result.Entity, _metadataSerializerOptions);
+            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            {
+                Converters = 
+                { 
+                    new ElementContainerConverter(new ElementContainerConverterOptions()
+                    {
+                        RequestLevel = level
+                    })
+                }
+            });
             return Content(json, "application/json");
         }
 
@@ -363,11 +392,13 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            result.Entity.Result.MarkValuesForSerialization(level, extent);
-
             string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
             {
-                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions) }
+                Converters = { new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions, new SubmodelElementContainerValueOnlyConverterOptions()
+                {
+                    RequestLevel = level,
+                    RequestExtent = extent
+                }) }
             });
             return Content(json, "application/json");
         }
@@ -431,7 +462,18 @@ namespace BaSyx.API.Http.Controllers
             idShortPath = HttpUtility.UrlDecode(idShortPath);
 
             var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
-            return result.CreateActionResult(CrudOperation.Retrieve);
+            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            {
+                Converters =
+                {
+                    new FullSubmodelElementConverter(new SubmodelElementConverterOptions()
+                    {
+                        RequestLevel = level,
+                        RequestExtent = extent
+                    })
+                }
+            });
+            return Content(json, "application/json");
         }
 
         /// <summary>
@@ -562,7 +604,16 @@ namespace BaSyx.API.Http.Controllers
             var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
             if (result.Success && result.Entity != null)
             {
-                string json = JsonSerializer.Serialize(result.Entity, _metadataSerializerOptions);
+                string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+                {
+                    Converters =
+                    {
+                        new SubmodelElementConverter(new SubmodelElementConverterOptions()
+                        {
+                            RequestLevel = level
+                        })
+                    }
+                });
                 return Content(json, "application/json");
             }
             else
@@ -619,7 +670,8 @@ namespace BaSyx.API.Http.Controllers
                         new ValueScopeConverter(options: new ValueScopeConverterOptions()
                         {
                             SerializationOption = SerializationOption.ValueOnly,
-                            ValueAsString = false
+                            ValueAsString = false,
+                            RequestLevel = level
                         }, 
                         jsonOptions: _fullSerializerOptions)
                     }
