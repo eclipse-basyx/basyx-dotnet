@@ -425,7 +425,7 @@ namespace BaSyx.Models.Extensions
             var flatRootContainer = rootContainer.Flatten().ToList();
             //Traverse
             // reset all serialize flags
-            foreach (var submodelElement in flatRootContainer.Where(e => !e.Value.Serialize))
+            foreach (var submodelElement in flatRootContainer.Where(e => e.Value != null && !e.Value.Serialize))
                 submodelElement.Value.Serialize = true;
 
             // set serialize flags according to the extent for blobs
@@ -453,10 +453,7 @@ namespace BaSyx.Models.Extensions
                             list.Value.Serialize = false;
                     }
                 }
-            }
-
-            //ToDo : Remove after debugging
-            var tmp = flatRootContainer.Where(e => !e.Value.Serialize).ToList();
+            }          
         }
 
         public static void MarkValuesForSerialization(this IBlob submodelElement, RequestExtent extent)
