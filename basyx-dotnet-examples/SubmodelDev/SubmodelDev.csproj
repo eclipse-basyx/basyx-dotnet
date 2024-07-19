@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Authors>Daniel Klein</Authors>
     <Copyright>Copyright 2024 - :em engineering methods AG</Copyright>
     <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
