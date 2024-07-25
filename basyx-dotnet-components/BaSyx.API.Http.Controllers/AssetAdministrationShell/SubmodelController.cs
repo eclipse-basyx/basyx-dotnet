@@ -297,17 +297,14 @@ namespace BaSyx.API.Http.Controllers
         public IActionResult GetAllSubmodelElements([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = RequestLevel.Deep, [FromQuery] RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
-            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ElementContainerConverterOptions()
             {
-                Converters =
-                {
-                    new ElementContainerConverter(new ElementContainerConverterOptions()
-                    {
-                        RequestLevel = level,
-                        RequestExtent = extent
-                    })
-                }
-            });
+                RequestLevel = level,
+                RequestExtent = extent
+            }));
+            string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
             return Content(json, "application/json");
         }
 
@@ -355,16 +352,12 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ElementContainerConverterOptions()
             {
-                Converters = 
-                { 
-                    new ElementContainerConverter(new ElementContainerConverterOptions()
-                    {
-                        RequestLevel = level
-                    })
-                }
-            });
+                RequestLevel = level
+            }));
+            string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
             return Content(json, "application/json");
         }
 
@@ -459,17 +452,13 @@ namespace BaSyx.API.Http.Controllers
             idShortPath = HttpUtility.UrlDecode(idShortPath);
 
             var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
-            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new FullSubmodelElementConverter(new SubmodelElementConverterOptions()
             {
-                Converters =
-                {
-                    new FullSubmodelElementConverter(new SubmodelElementConverterOptions()
-                    {
-                        RequestLevel = level,
-                        RequestExtent = extent
-                    })
-                }
-            });
+                RequestLevel = level,
+                RequestExtent = extent
+            }));
+            string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
             return Content(json, "application/json");
         }
 
@@ -601,16 +590,12 @@ namespace BaSyx.API.Http.Controllers
             var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
             if (result.Success && result.Entity != null)
             {
-                string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+                var jsonOptions = new GlobalJsonSerializerOptions().Build();
+                jsonOptions.Converters.Add(new SubmodelElementConverter(new SubmodelElementConverterOptions()
                 {
-                    Converters =
-                    {
-                        new SubmodelElementConverter(new SubmodelElementConverterOptions()
-                        {
-                            RequestLevel = level
-                        })
-                    }
-                });
+                    RequestLevel = level
+                }));
+                string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
                 return Content(json, "application/json");
             }
             else
@@ -660,19 +645,14 @@ namespace BaSyx.API.Http.Controllers
             var result = serviceProvider.RetrieveSubmodelElementValue(idShortPath);
             if (result.Success && result.Entity != null)
             {
-                string value = JsonSerializer.Serialize<ValueScope>(result.Entity, new JsonSerializerOptions()
+                var jsonOptions = new GlobalJsonSerializerOptions().Build();
+                jsonOptions.Converters.Add(new ValueScopeConverter(options: new ValueScopeConverterOptions()
                 {
-                    Converters =
-                    {
-                        new ValueScopeConverter(options: new ValueScopeConverterOptions()
-                        {
-                            SerializationOption = SerializationOption.ValueOnly,
-                            ValueAsString = false,
-                            RequestLevel = level
-                        }, 
-                        jsonOptions: _fullSerializerOptions)
-                    }
-                });
+                    SerializationOption = SerializationOption.ValueOnly,
+                    ValueAsString = false,
+                    RequestLevel = level
+                }, jsonOptions: _fullSerializerOptions));
+                string value = JsonSerializer.Serialize<ValueScope>(result.Entity, jsonOptions);
 				return Content(value, "application/json");
 			}
             else
