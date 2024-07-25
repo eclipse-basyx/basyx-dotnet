@@ -8,14 +8,16 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using BaSyx.Models.Extensions;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
     /// <summary>
     /// Used to uniquely identify an entity by using an identifier.
     /// </summary>
-    [DataContract]
+    [DataContract, JsonConverter(typeof(IdentifierConverter))]
     public class Identifier
     {
         /// <summary>

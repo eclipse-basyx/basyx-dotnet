@@ -8,6 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using BaSyx.Models.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -17,7 +18,7 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
-    [DataContract]
+    [DataContract, JsonConverter(typeof(DataTypeConverter))]
     public class DataType : IEquatable<DataType>
     {
         [IgnoreDataMember]
