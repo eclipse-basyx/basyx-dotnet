@@ -51,20 +51,19 @@ namespace BaSyx.Models.Extensions
 
         public override void Write(Utf8JsonWriter writer, IElementContainer<ISubmodelElement> value, JsonSerializerOptions options)
         {
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new SubmodelElementConverter(new SubmodelElementConverterOptions()
+            {
+                RequestLevel = _converterOptions.RequestLevel
+            }));
+
             writer.WriteStartArray();
+
             foreach (var sme in value)
             {
-                JsonSerializer.Serialize(writer, sme, new JsonSerializerOptions()
-                {
-                    Converters =
-                    {
-                        new SubmodelElementConverter(new SubmodelElementConverterOptions()
-                        {
-                            RequestLevel = _converterOptions.RequestLevel
-                        })
-                    }
-                });
+                JsonSerializer.Serialize(writer, sme, jsonOptions);
             }
+
             writer.WriteEndArray();
         }
     }
