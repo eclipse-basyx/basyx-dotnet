@@ -10,6 +10,7 @@
 *******************************************************************************/
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BaSyx.Models.AdminShell
@@ -25,9 +26,9 @@ namespace BaSyx.Models.AdminShell
 
     public interface IGetSet
     {
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         GetValueScopeHandler Get { get; }
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         SetValueScopeHandler Set { get; }
 
         Task<ValueScope> GetValueScope();
@@ -36,9 +37,9 @@ namespace BaSyx.Models.AdminShell
 
     public interface IGetSet<TValueScope> : IGetSet where TValueScope : ValueScope
     {
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         new GetValueScopeHandler<TValueScope> Get { get; }
-        [IgnoreDataMember]
+        [JsonIgnore, IgnoreDataMember]
         new SetValueScopeHandler<TValueScope> Set { get; }
 
         new Task<TValueScope> GetValueScope();
@@ -47,8 +48,11 @@ namespace BaSyx.Models.AdminShell
 
     public class SubmodelElementHandler
     {
+        [JsonIgnore, IgnoreDataMember]
         public GetValueScopeHandler GetValueHandler { get; private set; }
+        [JsonIgnore, IgnoreDataMember]
         public SetValueScopeHandler SetValueHandler { get; private set; }
+
         public SubmodelElementHandler(GetValueScopeHandler getHandler, SetValueScopeHandler setHandler)
         {
             GetValueHandler = getHandler;
