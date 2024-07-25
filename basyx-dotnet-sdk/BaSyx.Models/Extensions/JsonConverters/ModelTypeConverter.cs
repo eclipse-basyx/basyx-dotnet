@@ -19,7 +19,8 @@ namespace BaSyx.Models.Extensions
     {
         public override ModelType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            ModelType modelType = new ModelType(reader.GetString());
+            return modelType;
         }
 
         public override void Write(Utf8JsonWriter writer, ModelType value, JsonSerializerOptions options)
