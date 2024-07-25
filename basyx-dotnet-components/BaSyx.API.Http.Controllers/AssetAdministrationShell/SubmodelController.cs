@@ -92,17 +92,14 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ElementContainerConverterOptions()
             {
-                Converters =
-                {
-                    new ElementContainerConverter(new ElementContainerConverterOptions()
-                    {
-                        RequestLevel = level,
-                        RequestExtent = extent
-                    })
-                }
-            });
+                RequestLevel = level,
+                RequestExtent = extent
+            }));
+
+            string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
             return Content(json, "application/json");            
         }
 
@@ -215,14 +212,14 @@ namespace BaSyx.API.Http.Controllers
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
             JsonObject smValue = new JsonObject();
-            var node = JsonSerializer.SerializeToNode(result.Entity.Result, new JsonSerializerOptions()
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ElementContainerConverterOptions()
             {
-                Converters = { new ElementContainerConverter(new ElementContainerConverterOptions()
-                {
-                    RequestLevel = level,
-                    RequestExtent = extent
-                }) }
-            });
+                RequestLevel = level,
+                RequestExtent = extent
+            }));
+
+            var node = JsonSerializer.SerializeToNode(result.Entity.Result, jsonOptions);
 
             smValue.Add("submodelElements", node);
             string json = smValue.ToJsonString(); 
