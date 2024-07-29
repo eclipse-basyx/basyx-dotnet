@@ -107,6 +107,83 @@ namespace BaSyx.Deployment.AppDataService
             }
         }
 
+        public static void UseUniversalEndpointRegistration(this IAssetAdministrationShellRepositoryServiceProvider serviceProvider, ServerConfiguration serverConfiguration, string pathBase = "")
+        {
+            string _pathBase = string.Empty;
+            if (!string.IsNullOrEmpty(pathBase))
+                _pathBase = pathBase;
+            else if (!string.IsNullOrEmpty(serverConfiguration.PathBase))
+                _pathBase = serverConfiguration.PathBase;
+
+            if (AppDataService.IsSnapped)
+            {
+                bool enableIPv6 = false;
+                if (serverConfiguration.Hosting.EnableIPv6.HasValue)
+                    enableIPv6 = serverConfiguration.Hosting.EnableIPv6.Value;
+
+                IEnumerable<IPAddress> ips;
+                List<IEndpoint> endpoints = new List<IEndpoint>();
+
+                if (AppDataService.IsVirtual)
+                {
+                    Endpoint virtualExternalEndpoint = new Endpoint($"https://127.0.0.1:8443{_pathBase}{AssetAdministrationShellRepositoryRoutes.SHELLS}", InterfaceName.AssetAdministrationShellRepositoryInterface);
+                    endpoints.Add(virtualExternalEndpoint);
+                    foreach (var url in serverConfiguration.Hosting.Urls)
+                    {
+                        string harmonizedUrl = url.Replace("+", "0.0.0.0");
+                        Uri harmonizedUri = new Uri(harmonizedUrl);
+                        Endpoint virtualInternalEndpoint = new Endpoint($"http://localhost:{harmonizedUri.Port}{_pathBase}{AssetAdministrationShellRepositoryRoutes.SHELLS}", InterfaceName.AssetAdministrationShellRepositoryInterface);
+                        virtualInternalEndpoint.ProtocolInformation.Subprotocol = "ipc";
+                        endpoints.Add(virtualInternalEndpoint);
+                    }
+
+                }
+                else
+                {
+                    if (serverConfiguration.Hosting.Urls.FindIndex(u => u.Contains("+")) != -1)
+                        ips = NetworkUtils.GetIPAddresses(enableIPv6);
+                    else
+                        ips = serverConfiguration.Hosting.Urls.ConvertAll(c => IPAddress.Parse(new Uri(c).Host));
+
+                    foreach (var ip in ips)
+                    {
+                        if (ip == IPAddress.Loopback)
+                            continue;
+
+                        Endpoint externalEndpoint = new Endpoint($"https://{ip}{_pathBase}{AssetAdministrationShellRepositoryRoutes.SHELLS}", InterfaceName.AssetAdministrationShellRepositoryInterface);
+                        endpoints.Add(externalEndpoint);
+                        logger.LogInformation($"Using Url: {externalEndpoint.ProtocolInformation.EndpointAddress}");
+                    }
+
+                    foreach (var url in serverConfiguration.Hosting.Urls)
+                    {
+                        string harmonizedUrl = url.Replace("+", "0.0.0.0");
+                        Uri harmonizedUri = new Uri(harmonizedUrl);
+                        Endpoint internalEndpoint = new Endpoint($"http://localhost:{harmonizedUri.Port}{_pathBase}{AssetAdministrationShellRepositoryRoutes.SHELLS}", InterfaceName.AssetAdministrationShellRepositoryInterface);
+                        internalEndpoint.ProtocolInformation.Subprotocol = "ipc";
+                        endpoints.Add(internalEndpoint);
+                    }
+                }
+                serviceProvider.UseSnappedEndpointRegistration(endpoints);
+            }
+            else if (!string.IsNullOrEmpty(Environment.ExpandEnvironmentVariables("%WEBSITE_HOSTNAME%")) &&
+                Environment.ExpandEnvironmentVariables("%WEBSITE_HOSTNAME%") != "%WEBSITE_HOSTNAME%")
+            {
+                string websiteHostName = Environment.ExpandEnvironmentVariables("%WEBSITE_HOSTNAME%");
+                string websiteUrl = $"https://{websiteHostName}{_pathBase}";
+                ServerConfiguration serverConfig = new ServerConfiguration()
+                {
+                    Hosting = new HostingConfiguration() { Urls = new List<string>() { websiteUrl } }
+                };
+                serviceProvider.UseAutoEndpointRegistration(serverConfig);
+            }
+            else
+            {
+                List<IEndpoint> endpoints = GetMinimalEndpoints(serverConfiguration);
+                serviceProvider.UseDefaultEndpointRegistration(endpoints);
+            }
+        }
+
         public static void UseSnappedEndpointRegistration(this IAssetAdministrationShellServiceProvider serviceProvider, IEnumerable<IEndpoint> endpoints)
         {
             serviceProvider.ServiceDescriptor.SetEndpoints(endpoints);
@@ -120,6 +197,47 @@ namespace BaSyx.Deployment.AppDataService
                     submodelEndpoints.Add(ep);
                 }
                 submodel.SetEndpoints(submodelEndpoints);
+            }
+        }
+
+        public static void UseSnappedEndpointRegistration(this IAssetAdministrationShellRepositoryServiceProvider serviceProvider, IEnumerable<IEndpoint> endpoints)
+        {
+            List<IEndpoint> repositoryEndpoints = new List<IEndpoint>();
+            foreach (var endpoint in endpoints)
+            {
+                string epAddress = endpoint.ProtocolInformation.EndpointAddress;
+                if (!epAddress.EndsWith(AssetAdministrationShellRepositoryRoutes.SHELLS))
+                    epAddress = epAddress.TrimEnd('/') + AssetAdministrationShellRepositoryRoutes.SHELLS;
+
+                var ep = new Endpoint(epAddress, InterfaceName.AssetAdministrationShellRepositoryInterface);
+                ep.ProtocolInformation.Subprotocol = endpoint.ProtocolInformation.Subprotocol;
+                repositoryEndpoints.Add(ep);
+            }
+
+            serviceProvider.ServiceDescriptor.AddEndpoints(repositoryEndpoints);
+            var aasRepositoryDescriptor = serviceProvider.ServiceDescriptor;
+            foreach (var aasDescriptor in aasRepositoryDescriptor.AssetAdministrationShellDescriptors)
+            {
+                List<IEndpoint> aasEndpoints = new List<IEndpoint>();
+                foreach (var endpoint in repositoryEndpoints)
+                {
+                    var ep = new Endpoint(DefaultEndpointRegistration.GetAssetAdministrationShellEndpoint(endpoint, aasDescriptor.Id.Id), InterfaceName.AssetAdministrationShellInterface);
+                    ep.ProtocolInformation.Subprotocol = endpoint.ProtocolInformation.Subprotocol;
+                    aasEndpoints.Add(ep);
+                }
+                aasDescriptor.AddEndpoints(aasEndpoints);
+
+                foreach (var submodelDescriptor in aasDescriptor.SubmodelDescriptors)
+                {
+                    List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
+                    foreach (var endpoint in aasEndpoints)
+                    {
+                        var ep = new Endpoint(DefaultEndpointRegistration.GetSubmodelInRepositoryEndpoint(endpoint, submodelDescriptor.Id.Id), InterfaceName.SubmodelInterface);
+                        ep.ProtocolInformation.Subprotocol = endpoint.ProtocolInformation.Subprotocol;
+                        submodelEndpoints.Add(ep);
+                    }
+                    submodelDescriptor.AddEndpoints(submodelEndpoints);
+                }
             }
         }
 
