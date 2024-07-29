@@ -109,7 +109,7 @@ namespace BaSyx.Deployment.AppDataService
 
         public static void UseSnappedEndpointRegistration(this IAssetAdministrationShellServiceProvider serviceProvider, IEnumerable<IEndpoint> endpoints)
         {
-            serviceProvider.ServiceDescriptor.AddEndpoints(endpoints);
+            serviceProvider.ServiceDescriptor.SetEndpoints(endpoints);
             foreach (var submodel in serviceProvider.ServiceDescriptor.SubmodelDescriptors)
             {
                 List<IEndpoint> submodelEndpoints = new List<IEndpoint>();
@@ -119,7 +119,7 @@ namespace BaSyx.Deployment.AppDataService
                     ep.ProtocolInformation.Subprotocol = endpoint.ProtocolInformation.Subprotocol;
                     submodelEndpoints.Add(ep);
                 }
-                submodel.AddEndpoints(submodelEndpoints);
+                submodel.SetEndpoints(submodelEndpoints);
             }
         }
 
