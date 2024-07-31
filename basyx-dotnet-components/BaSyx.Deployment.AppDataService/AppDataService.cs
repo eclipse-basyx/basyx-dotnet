@@ -163,7 +163,7 @@ namespace BaSyx.Deployment.AppDataService
 			var config = new ConfigurationBuilder();
 			config.AddCommandLine(cmdLineArgs);
 			config.AddEnvironmentVariables();
-			config.AddJsonFile(settingsFilePath, false, true);
+			config.AddJsonFile(settingsFilePath, false, false);
 			return config.Build();
 		}
 
