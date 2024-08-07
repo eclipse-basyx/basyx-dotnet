@@ -627,6 +627,7 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">Requested submodel element in its ValueOnly representation</response>
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "GetSubmodelElementByPathValueOnly")]
@@ -636,7 +637,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelElementByPathValueOnly(string idShortPath, [FromQuery] RequestLevel level = default)
+        public IActionResult GetSubmodelElementByPathValueOnly(string idShortPath, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
             if (string.IsNullOrEmpty(idShortPath))
                 return ResultHandling.NullResult(nameof(idShortPath));
@@ -651,7 +652,8 @@ namespace BaSyx.API.Http.Controllers
                 {
                     SerializationOption = SerializationOption.ValueOnly,
                     ValueAsString = false,
-                    RequestLevel = level
+                    RequestLevel = level,
+                    RequestExtent = extent
                 }, jsonOptions: _fullSerializerOptions));
                 string value = JsonSerializer.Serialize<ValueScope>(result.Entity, jsonOptions);
 				return Content(value, "application/json");
