@@ -74,7 +74,7 @@ namespace BaSyx.Models.Extensions
 
         public static ISubmodel GetMetadata(this ISubmodel submodel)
         {
-            Submodel trimmedSubmodel = new Submodel(submodel.Id, submodel.Id);
+            Submodel trimmedSubmodel = new Submodel(submodel.IdShort, submodel.Id);
             trimmedSubmodel.Administration = submodel.Administration;
             trimmedSubmodel.Category = submodel.Category;
             trimmedSubmodel.Kind = submodel.Kind;
