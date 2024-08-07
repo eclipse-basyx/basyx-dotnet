@@ -93,8 +93,9 @@ namespace BaSyx.API.Http.Controllers
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
-            jsonOptions.Converters.Add(new ElementContainerConverter(new ElementContainerConverterOptions()
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ConverterOptions()
             {
+                ValueSerialization = true,
                 RequestLevel = level,
                 RequestExtent = extent
             }));
@@ -213,7 +214,7 @@ namespace BaSyx.API.Http.Controllers
 
             JsonObject smValue = new JsonObject();
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
-            jsonOptions.Converters.Add(new ElementContainerConverter(new ElementContainerConverterOptions()
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ConverterOptions()
             {
                 RequestLevel = level,
                 RequestExtent = extent
@@ -299,7 +300,7 @@ namespace BaSyx.API.Http.Controllers
             var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
 
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
-            jsonOptions.Converters.Add(new ElementContainerConverter(new ElementContainerConverterOptions()
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ConverterOptions()
             {
                 RequestLevel = level,
                 RequestExtent = extent
@@ -353,7 +354,7 @@ namespace BaSyx.API.Http.Controllers
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
-            jsonOptions.Converters.Add(new ElementContainerConverter(new ElementContainerConverterOptions()
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ConverterOptions()
             {
                 RequestLevel = level
             }));
@@ -453,7 +454,7 @@ namespace BaSyx.API.Http.Controllers
 
             var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
-            jsonOptions.Converters.Add(new FullSubmodelElementConverter(new SubmodelElementConverterOptions()
+            jsonOptions.Converters.Add(new FullSubmodelElementConverter(new ConverterOptions()
             {
                 RequestLevel = level,
                 RequestExtent = extent
@@ -591,7 +592,7 @@ namespace BaSyx.API.Http.Controllers
             if (result.Success && result.Entity != null)
             {
                 var jsonOptions = new GlobalJsonSerializerOptions().Build();
-                jsonOptions.Converters.Add(new SubmodelElementConverter(new SubmodelElementConverterOptions()
+                jsonOptions.Converters.Add(new SubmodelElementConverter(new ConverterOptions()
                 {
                     RequestLevel = level
                 }));
