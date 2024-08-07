@@ -17,9 +17,11 @@ namespace BaSyx.Models.Extensions
 {
     public class FullSubmodelElementConverter : SubmodelElementConverter
     {
+        public FullSubmodelElementConverter() : this(null)
+        { }
+
         public FullSubmodelElementConverter(SubmodelElementConverterOptions options = null) : base(options)
-        {
-        }
+        { }
 
         public override ISubmodelElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
