@@ -355,6 +355,7 @@ namespace BaSyx.API.Http.Controllers
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
             jsonOptions.Converters.Add(new ElementContainerConverter(new ConverterOptions()
             {
+                ValueSerialization = false,
                 RequestLevel = level
             }));
             string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
