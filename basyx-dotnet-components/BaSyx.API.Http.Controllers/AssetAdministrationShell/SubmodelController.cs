@@ -872,6 +872,12 @@ namespace BaSyx.API.Http.Controllers
             if (!fileElementRetrieved.Success || fileElementRetrieved.Entity == null)
                 return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
 
+            if(fileElementRetrieved.Entity.ModelType != ModelType.File)
+            {
+                Result result = new Result(false, new ErrorMessage($"ModelType of {idShortPath} is not File but {fileElementRetrieved.Entity.ModelType}"));
+                return result.CreateActionResult(CrudOperation.Retrieve);
+            }
+
             IFileElement fileElement = fileElementRetrieved.Entity.Cast<IFileElement>();
             string fileName = fileElement.Value.Value.TrimStart('/');
 
