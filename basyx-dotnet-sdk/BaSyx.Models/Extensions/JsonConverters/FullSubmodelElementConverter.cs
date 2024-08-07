@@ -111,7 +111,8 @@ namespace BaSyx.Models.Extensions
                             {
                                 new ValueScopeConverter<BlobValue>(options: new ValueScopeConverterOptions()
                                 {
-                                    EnclosingObject = false
+                                    EnclosingObject = false,
+                                    RequestExtent = _converterOptions.RequestExtent
                                 })
                             }
                         });
