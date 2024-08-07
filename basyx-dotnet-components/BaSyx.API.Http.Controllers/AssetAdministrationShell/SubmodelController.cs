@@ -153,7 +153,6 @@ namespace BaSyx.API.Http.Controllers
         /// Returns the metadata attributes of a specific Submodel
         /// </summary>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>
         /// <response code="404">Submodel not found</response>       
@@ -163,7 +162,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelMetadata([FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult GetSubmodelMetadata([FromQuery] RequestLevel level = default)
         {
             var result = serviceProvider.RetrieveSubmodel();
             if(!result.Success || result.Entity == null)

@@ -152,18 +152,18 @@ namespace BaSyx.API.Http.Controllers
         #region Submodel Interface
 
 
-        /// <inheritdoc cref="SubmodelController.GetSubmodelMetadata(RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="SubmodelController.GetSubmodelMetadata(RequestLevel)"/>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.METADATA, Name = "SubmodelRepo_GetSubmodelMetadata")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult SubmodelRepo_GetSubmodelMetadata(string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult SubmodelRepo_GetSubmodelMetadata(string submodelIdentifier, [FromQuery] RequestLevel level = default)
         {
             if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.GetSubmodelMetadata(level, extent);
+            return service.GetSubmodelMetadata(level);
         }
 
         /// <inheritdoc cref="SubmodelController.GetSubmodelValueOnly(RequestLevel, RequestExtent)"/>
