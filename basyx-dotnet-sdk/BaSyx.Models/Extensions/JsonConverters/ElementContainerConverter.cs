@@ -15,20 +15,13 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
-    public class ElementContainerConverterOptions
-    {
-        public RequestLevel RequestLevel { get; set; } = RequestLevel.Deep;
-        public RequestExtent RequestExtent { get; set; } = RequestExtent.WithoutBlobValue;
-        public int Level { get; set; } = 0;
-    }
-
     public class ElementContainerConverter : JsonConverter<IElementContainer<ISubmodelElement>>
     {
-        private ElementContainerConverterOptions _converterOptions;
+        private ConverterOptions _converterOptions;
 
-        public ElementContainerConverter(ElementContainerConverterOptions options = null)
+        public ElementContainerConverter(ConverterOptions options = null)
         {
-            _converterOptions = options ?? new ElementContainerConverterOptions();
+            _converterOptions = options ?? new ConverterOptions();
         }
 
         public override IElementContainer<ISubmodelElement> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -52,16 +45,30 @@ namespace BaSyx.Models.Extensions
         public override void Write(Utf8JsonWriter writer, IElementContainer<ISubmodelElement> value, JsonSerializerOptions options)
         {
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
-            jsonOptions.Converters.Add(new SubmodelElementConverter(new SubmodelElementConverterOptions()
+            SubmodelElementConverter converter;
+            if (_converterOptions.ValueSerialization)
             {
-                RequestLevel = _converterOptions.RequestLevel
-            }));
+                converter = new FullSubmodelElementConverter(new ConverterOptions()
+                {
+                    RequestLevel = _converterOptions.RequestLevel
+                });
+                jsonOptions.Converters.Add(converter);
+            }
+            else
+            {
+                converter = new SubmodelElementConverter(new ConverterOptions()
+                {
+                    RequestLevel = _converterOptions.RequestLevel
+                });
+                jsonOptions.Converters.Add(converter);
+            }
 
             writer.WriteStartArray();
 
             foreach (var sme in value)
             {
                 JsonSerializer.Serialize(writer, sme, jsonOptions);
+                converter._converterOptions.Level = 0;
             }
 
             writer.WriteEndArray();

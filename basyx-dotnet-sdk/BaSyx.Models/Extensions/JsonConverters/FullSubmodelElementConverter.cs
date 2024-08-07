@@ -20,7 +20,7 @@ namespace BaSyx.Models.Extensions
         public FullSubmodelElementConverter() : this(null)
         { }
 
-        public FullSubmodelElementConverter(SubmodelElementConverterOptions options = null) : base(options)
+        public FullSubmodelElementConverter(ConverterOptions options = null) : base(options)
         { }
 
         public override ISubmodelElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -32,7 +32,7 @@ namespace BaSyx.Models.Extensions
         {
             writer.WriteStartObject();
 
-            WriteMetadata(writer, value, options, new SubmodelElementConverterOptions());
+            WriteMetadata(writer, value, options, _converterOptions);
 
             switch (value.ModelType.Type)
             {

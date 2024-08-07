@@ -15,13 +15,9 @@ using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.Extensions
 {
-    public class SubmodelElementContainerValueOnlyConverterOptions
+    public class SubmodelElementContainerValueOnlyConverterOptions : ConverterOptions
     {
         public EnclosingBracket EnclosingBracket { get; set; } = EnclosingBracket.Object;
-        public RequestLevel RequestLevel { get; set; } = RequestLevel.Deep;
-        public RequestExtent RequestExtent { get; set; } = RequestExtent.WithoutBlobValue;
-
-        public int Level = 0;
     }
 
     public enum EnclosingBracket

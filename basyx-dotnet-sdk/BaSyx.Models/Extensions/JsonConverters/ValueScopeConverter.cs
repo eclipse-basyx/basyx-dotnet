@@ -25,14 +25,11 @@ namespace BaSyx.Models.Extensions
 		FullModel,
 		ValueOnly
 	}
-	public class ValueScopeConverterOptions
+	public class ValueScopeConverterOptions : ConverterOptions
 	{
 		public bool EnclosingObject { get; set; } = true;
         public bool ValueAsString { get; set; } = false;
         public SerializationOption SerializationOption { get; set; } = SerializationOption.FullModel;
-        public RequestLevel RequestLevel {  get; set; }  = RequestLevel.Deep;
-        public RequestExtent RequestExtent { get; set; } = RequestExtent.WithoutBlobValue;
-        public int Level { get; set; } = 0;
     }
 	public class ValueScopeConverter : ValueScopeConverter<ValueScope> 
 	{ 

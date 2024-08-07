@@ -20,22 +20,16 @@ using Range = BaSyx.Models.AdminShell.Range;
 
 namespace BaSyx.Models.Extensions
 {
-    public class SubmodelElementConverterOptions
-    {
-        public RequestLevel RequestLevel { get; set; } = RequestLevel.Deep;
-        public RequestExtent RequestExtent { get; set; } = RequestExtent.WithoutBlobValue;
-        public int Level { get; set; } = 0;
-    }
 
     public class SubmodelElementConverter : JsonConverter<ISubmodelElement>
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<SubmodelElementConverter>();
 
-        protected SubmodelElementConverterOptions _converterOptions;
+        internal ConverterOptions _converterOptions;
        
-        public SubmodelElementConverter(SubmodelElementConverterOptions options = null)
+        public SubmodelElementConverter(ConverterOptions options = null)
         {
-            _converterOptions = options ?? new SubmodelElementConverterOptions();
+            _converterOptions = options ?? new ConverterOptions();
         }
 
         public override ISubmodelElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -480,7 +474,7 @@ namespace BaSyx.Models.Extensions
             return null;
         }
 
-        public static void WriteMetadata(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options, SubmodelElementConverterOptions converterOptions)
+        public static void WriteMetadata(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options, ConverterOptions converterOptions)
         {
             writer.WriteString("idShort", value.IdShort);
             writer.WriteString("kind", value.Kind.ToString());
