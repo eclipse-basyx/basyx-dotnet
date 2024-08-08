@@ -123,8 +123,15 @@ namespace BaSyx.Models.Extensions
         {
             if(sme.ModelType == ModelType.Property)
             {
-                PropertyValue<T> propertyValue = new PropertyValue<T>(value);
-                await sme.SetValueScope(propertyValue).ConfigureAwait(false);
+                if(value is PropertyValue propValue)
+                {
+                    await sme.SetValueScope(propValue).ConfigureAwait(false);
+                }                    
+                else
+                {
+                    PropertyValue<T> propertyValue = new PropertyValue<T>(value);
+                    await sme.SetValueScope(propertyValue).ConfigureAwait(false);
+                }               
             }            
         }
 
