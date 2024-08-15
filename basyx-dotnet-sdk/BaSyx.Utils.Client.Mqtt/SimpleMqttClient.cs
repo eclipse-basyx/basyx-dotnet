@@ -34,7 +34,7 @@ namespace BaSyx.Utils.Client.Mqtt
         private readonly ConcurrentDictionary<string, Action<IMessageReceivedEventArgs>> msgReceivedHandler;
         private bool disposedValue;
         private bool manualStop = false;
-        private byte DEFAULT_QOS_LEVEL = 2;
+        private byte DEFAULT_QOS_LEVEL = 0;
 
         public event EventHandler<ConnectionEstablishedEventArgs> ConnectionEstablished;
         public event EventHandler<ConnectionClosedEventArgs> ConnectionClosed;
