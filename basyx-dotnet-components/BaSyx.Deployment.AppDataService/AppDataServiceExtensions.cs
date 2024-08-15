@@ -314,9 +314,9 @@ namespace BaSyx.Deployment.AppDataService
         }
 
 
-        public static void AddConfigurationSubmodel(this IAssetAdministrationShellServiceProvider serviceProvider, AppDataService appDataService)
+        public static void AddConfigurationSubmodel(this IAssetAdministrationShellServiceProvider serviceProvider, AppDataService appDataService, Identifier identifier)
         {
-            Submodel configSubmodel = new Submodel("ShellConfiguration", new BaSyxSubmodelIdentifier("ShellConfiguration", "1.0.0"));
+            Submodel configSubmodel = new Submodel("ShellConfiguration", identifier);
 
             foreach (var settingsEntry in appDataService.AppDataContext.Settings)
             {
