@@ -14,7 +14,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <PackageIcon>basyxlogo.png</PackageIcon>
-    <Version>2.0.13</Version><PublishReadyToRun>true</PublishReadyToRun>
+    <Version>2.0.14</Version><PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

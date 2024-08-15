@@ -15,7 +15,7 @@
     <PackageIconUrl />
     <LangVersion>8.0</LangVersion>
     <Configurations>Debug;Release;Azure</Configurations>
-    <Version>2.0.13</Version><PublishReadyToRun>true</PublishReadyToRun>
+    <Version>2.0.14</Version><PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <ItemGroup>
