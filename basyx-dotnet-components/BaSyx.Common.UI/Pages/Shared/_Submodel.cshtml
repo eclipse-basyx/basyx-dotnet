@@ -57,7 +57,14 @@ ShowSubmodelElement = @<text>@{
         <div class="card border-dark mb-3">
             <div class="card-header">
                 <h5>
-                    <a data-toggle="collapse" href="#@hashedRequestPath">@submodelElementContainer.IdShort</a>
+                    @if (string.IsNullOrEmpty(submodelElementContainer.IdShort))
+                    {
+                        <a data-toggle="collapse" href="#@hashedRequestPath">[@submodelElementContainer.Index]</a>
+                    }
+                    else
+                    {
+                        <a data-toggle="collapse" href="#@hashedRequestPath">@submodelElementContainer.IdShort</a>
+                    }
                 </h5>
             </div>
             <div id="@hashedRequestPath" class="collapse">
