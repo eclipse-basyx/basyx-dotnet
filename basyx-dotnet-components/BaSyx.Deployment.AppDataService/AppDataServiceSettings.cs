@@ -27,6 +27,9 @@ namespace BaSyx.Deployment.AppDataService
 
             [XmlElement]
             public string SystemInfoUrl { get; set; }
-		}   
+
+            [XmlElement]
+            public bool UseUnixSocket { get; set; }
+        }   
     }
 }
