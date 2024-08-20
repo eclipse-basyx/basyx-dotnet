@@ -25,6 +25,7 @@ namespace BaSyx.Models.AdminShell
         private readonly List<IElementContainer<TElement>> _children;
 
         public string IdShort { get; private set; }
+        public int Index { get; set; }
         public TElement Value { get; set;  }
         public string Path { get; set; }
         public bool IsRoot => ParentContainer == null;
@@ -63,13 +64,31 @@ namespace BaSyx.Models.AdminShell
             IdShort = rootElement?.IdShort;
             Value = rootElement;
 
-            if (ParentContainer != null && !string.IsNullOrEmpty(ParentContainer.Path))
-                Path = ParentContainer.Path + PATH_SEPERATOR + IdShort;
+            if (!string.IsNullOrEmpty(rootElement?.IdShort))
+            {
+                IdShort = rootElement.IdShort;
+                Path = IdShort;
+            }
+
+            SetPath();
+        }
+
+        /// <summary>
+        /// Set the Path of the current ElementContainer.
+        /// If it is a ListChild, the Path will be the index of the child in its ParentContainer in brackets.
+        /// This is used to append the Path for nested elements more easily and to include SubmodelElementList childs accordingly.
+        /// </summary>
+        private void SetPath()
+        {
+            if (IsListChild())
+            {
+                Index = ParentContainer.Children.Count();
+                Path = "[" + Index + "]";
+            }
             else
                 Path = IdShort;
         }
 
-       
         public TElement this[int i]
         {
             get
@@ -133,9 +152,17 @@ namespace BaSyx.Models.AdminShell
 
         public void AppendRootPath(string rootPath)
         {
+            if (string.IsNullOrEmpty(this.Path))
+                SetPath();
+
             if (!string.IsNullOrEmpty(rootPath))
-                this.Path = rootPath + PATH_SEPERATOR + this.Path;
-            
+            {
+                if (IsListChild())
+                    this.Path = rootPath + this.Path;
+                else
+                    this.Path = rootPath + PATH_SEPERATOR + this.Path;
+            }
+
             foreach (var child in _children)
             {
                 if (child.HasChildren())
@@ -145,9 +172,27 @@ namespace BaSyx.Models.AdminShell
                         subChild.AppendRootPath(rootPath);
                     }
                 }
+
                 if (!string.IsNullOrEmpty(rootPath))
-                    child.Path = rootPath + PATH_SEPERATOR + child.Path;
+                {
+                    if (this.Value.ModelType == ModelType.SubmodelElementList)
+                        child.Path = this.Path + child.Path;
+                    else
+                        child.Path = this.Path + PATH_SEPERATOR + child.Path;
+                }
             }
+        }
+
+        /// <summary>
+        /// Check if the current element is a child of a SubmodelElementList by its ParentContainer. 
+        /// </summary>
+        /// <returns>True if the element has a ParentContainer of Type SubmodelElementList</returns>
+        private bool IsListChild()
+        {
+            if (ParentContainer != null && ParentContainer.Value?.ModelType == ModelType.SubmodelElementList)
+                return true;
+            else
+                return false;
         }
 
         public bool HasChildren()
@@ -334,10 +379,9 @@ namespace BaSyx.Models.AdminShell
         {
             if (element == null)
                 return new Result<TElement>(new ArgumentNullException(nameof(element)));
-            if (string.IsNullOrEmpty(element.IdShort))
-                return new Result<TElement>(new ArgumentNullException(nameof(element.IdShort)));
+            string idShortOrIndex = GetIdShortOrIndex(element);
 
-            if (this[element.IdShort] == null)
+            if (this[idShortOrIndex] == null)
             {
                 Add(element);
                 return new Result<TElement>(true, element);
@@ -386,10 +430,10 @@ namespace BaSyx.Models.AdminShell
         {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
-            if (string.IsNullOrEmpty(element.IdShort))
-                throw new ArgumentNullException(nameof(element.IdShort));
 
-            if (this[element.IdShort] == null)
+            string idShortOrIndex = GetIdShortOrIndex(element);
+
+            if (this[idShortOrIndex] == null)
             {
                 element.Parent = this.Parent;
 
@@ -400,13 +444,43 @@ namespace BaSyx.Models.AdminShell
                     subElements.ParentContainer = this;
                     subElements.AppendRootPath(this.Path);
                     node = subElements;
+                    // set index of nested SubmodelElements of type IElementContainer
+                    node.Index = _children.Count;
                 }
                 else
+                {
                     node = new ElementContainer<TElement>(Parent, element, this);
+                    node.AppendRootPath(this.Path);
+                }
 
                 this._children.Add(node);
                 OnCreated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Created));
             }
+        }
+
+        /// <summary>
+        /// Get the IdShort of the element or the future index if the element will be a ListChild.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns>Value that will be used to add/ create a new element as child.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        private string GetIdShortOrIndex(TElement element)
+        {
+            string idShortOrIndex = "";
+            if (string.IsNullOrEmpty(element.IdShort))
+            {
+                if (this.Value.ModelType == ModelType.SubmodelElementList)
+                {
+                    int newIndex = _children.Count; // index starts with 0!
+                    idShortOrIndex = newIndex.ToString();
+                }
+                else
+                    throw new ArgumentNullException(nameof(element.IdShort));
+            }
+            else
+                idShortOrIndex = element.IdShort;
+
+            return idShortOrIndex;
         }
 
         public virtual IResult<TElement> CreateOrUpdate(string idShortPath, TElement element)
