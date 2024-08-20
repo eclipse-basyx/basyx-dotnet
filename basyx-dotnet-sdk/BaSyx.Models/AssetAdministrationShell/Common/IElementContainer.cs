@@ -90,6 +90,7 @@ namespace BaSyx.Models.AdminShell
         TElement Value { get; }
         string Path { get; set; }
         string IdShort { get; }
+        int Index { get; set; }
         bool IsRoot { get; }
 
         bool HasChildren();
