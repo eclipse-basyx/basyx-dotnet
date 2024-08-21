@@ -21,7 +21,6 @@ using MQTTnet.Protocol;
 using Microsoft.Extensions.Logging;
 using System.Security.Authentication;
 using System.Collections.Concurrent;
-using System.Linq;
 
 namespace BaSyx.Utils.Client.Mqtt
 {
@@ -55,7 +54,10 @@ namespace BaSyx.Utils.Client.Mqtt
             if (!string.IsNullOrEmpty(config.BrokerEndpoint))
             {
                 Uri endpoint = new Uri(config.BrokerEndpoint);
-                builder.WithTcpServer(endpoint.Host, endpoint.Port);
+                if(endpoint.Scheme ==  Uri.UriSchemeWs || endpoint.Scheme == Uri.UriSchemeWss)                           
+                    builder.WithWebSocketServer(options => options.WithUri(config.BrokerEndpoint.Replace(endpoint.Scheme + "://", string.Empty)));   
+                else
+                    builder.WithTcpServer(endpoint.Host, endpoint.Port);    
             }
             else
                 throw new ArgumentNullException("BrokerEndpoint");
@@ -69,7 +71,10 @@ namespace BaSyx.Utils.Client.Mqtt
                 if (!string.IsNullOrEmpty(config.Security.SslProtocols))
                     options.SslProtocol = (SslProtocols)Enum.Parse(typeof(SslProtocols), config.Security.SslProtocols);
                 if (config.Security.AllowUntrustedCertificates)
+                {
                     options.AllowUntrustedCertificates = true;
+                    options.CertificateValidationHandler = (handler) => true;
+                }                                 
                 if (config.Security.IgnoreCertificateChainErrors)
                     options.IgnoreCertificateChainErrors = true;
                 if (config.Security.IgnoreCertificateRevocationErrors)
