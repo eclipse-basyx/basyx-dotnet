@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-* Copyright (c) 2023 Bosch Rexroth AG
+* Copyright (c) 2024 Bosch Rexroth AG
 * Author: Constantin Ziesche (constantin.ziesche@bosch.com)
 *
 * This program and the accompanying materials are made available under the
