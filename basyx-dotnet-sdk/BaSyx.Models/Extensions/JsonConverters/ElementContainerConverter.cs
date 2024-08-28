@@ -50,7 +50,8 @@ namespace BaSyx.Models.Extensions
             {
                 converter = new FullSubmodelElementConverter(new ConverterOptions()
                 {
-                    RequestLevel = _converterOptions.RequestLevel
+                    RequestLevel = _converterOptions.RequestLevel,
+                    RequestExtent = _converterOptions.RequestExtent
                 });
                 jsonOptions.Converters.Add(converter);
             }
@@ -58,7 +59,8 @@ namespace BaSyx.Models.Extensions
             {
                 converter = new SubmodelElementConverter(new ConverterOptions()
                 {
-                    RequestLevel = _converterOptions.RequestLevel
+                    RequestLevel = _converterOptions.RequestLevel,
+                    RequestExtent = _converterOptions.RequestExtent
                 });
                 jsonOptions.Converters.Add(converter);
             }
