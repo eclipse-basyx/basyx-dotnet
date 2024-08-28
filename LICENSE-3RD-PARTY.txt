@@ -5,10 +5,10 @@
 1.3 FluentAssertions (v6.12.0, https://github.com/fluentassertions/fluentassertions), Apache-2.0, Copyright [2010-2021] [Dennis Doomen]
 1.4 Makaretu.Dns (v2.0.1, https://github.com/richardschneider/net-dns), MIT License, Copyright © 2018 Richard Schneider (makaretu@gmail.com)
 1.5 Makaretu.Dns.Multicast (v0.27.0, https://github.com/richardschneider/net-mdns), MIT License, Copyright © 2018-2019 Richard Schneider (makaretu@gmail.com)
-1.6 MQTTnet (v4.3.1.8723, https://github.com/dotnet/MQTTnet), MIT License, Copyright (c) .NET Foundation and Contributors
+1.6 MQTTnet (v4.3.6.1152, https://github.com/dotnet/MQTTnet), MIT License, Copyright (c) .NET Foundation and Contributors
 1.7 Newtonsoft.Json (v13.0.3), https://github.com/JamesNK/Newtonsoft.Json), MIT License, Copyright (c) 2007 James Newton-King
-1.8 NLog.Web.AspNetCore (v5.3.5, https://github.com/NLog/NLog.Web), BSD 3-Clause "New" or "Revised" License, Copyright (c) 2015-2020, Jaroslaw Kowalski <jaak@jkowalski.net>, Kim Christensen, Julian Verdurmen
-1.9 Swashbuckle.AspNetCore (v6.5.0, https://github.com/domaindrivendev/Swashbuckle.AspNetCore), MIT License, Copyright (c) 2016 Richard Morris
+1.8 NLog.Web.AspNetCore (v5.3.11, https://github.com/NLog/NLog.Web), BSD 3-Clause "New" or "Revised" License, Copyright (c) 2015-2020, Jaroslaw Kowalski <jaak@jkowalski.net>, Kim Christensen, Julian Verdurmen
+1.9 Swashbuckle.AspNetCore (v6.6.2, https://github.com/domaindrivendev/Swashbuckle.AspNetCore), MIT License, Copyright (c) 2016 Richard Morris
 1.10 Bootstrap (v4.3.1), MIT License, Copyright (c) 2011-2021 Twitter, Inc. Copyright (c) 2011-2021 The Bootstrap Authors
 1.11 jQuery JavaScript Library (v3.3.1, https://jquery.com/,) MIT License, Copyright JS Foundation and other contributors, https://js.foundation/
 1.12 jQuery Validation Plugin (v1.17.0, https://jqueryvalidation.org/), MIT License, Copyright (c) 2017 Jörn Zaefferer
@@ -307,7 +307,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-2.6 MQTTnet (v4.3.1.8723, https://github.com/dotnet/MQTTnet, MIT License, Copyright (c) .NET Foundation and Contributors
+2.6 MQTTnet (v4.3.6.1152, https://github.com/dotnet/MQTTnet, MIT License, Copyright (c) .NET Foundation and Contributors
 
 The MIT License (MIT)
 
@@ -344,7 +344,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-2.8 NLog.Web.AspNetCore (v5.3.5, https://github.com/NLog/NLog.Web), BSD 3-Clause "New" or "Revised" License, Copyright (c) 2015-2020, Jaroslaw Kowalski <jaak@jkowalski.net>, Kim Christensen, Julian Verdurmen
+2.8 NLog.Web.AspNetCore (v5.3.11, https://github.com/NLog/NLog.Web), BSD 3-Clause "New" or "Revised" License, Copyright (c) 2015-2020, Jaroslaw Kowalski <jaak@jkowalski.net>, Kim Christensen, Julian Verdurmen
 
 BSD 3-Clause License
 
@@ -376,7 +376,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-2.9 Swashbuckle.AspNetCore (v6.5.0, https://github.com/domaindrivendev/Swashbuckle.AspNetCore), MIT License, Copyright (c) 2016 Richard Morris
+2.9 Swashbuckle.AspNetCore (v6.6.2, https://github.com/domaindrivendev/Swashbuckle.AspNetCore), MIT License, Copyright (c) 2016 Richard Morris
 
 The MIT License (MIT)
 
