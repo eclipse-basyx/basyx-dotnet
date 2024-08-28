@@ -198,7 +198,7 @@ namespace SimpleAssetAdministrationShell
                                                         }
                                                     }
                                                 }
-                                            },
+                                            }
                                         }
                                     }
                                 },
@@ -223,30 +223,16 @@ namespace SimpleAssetAdministrationShell
                                     {
                                         Value =
                                         {
-                                            new Property<string>("0")
+                                            new Property<string>(null)
                                             {
                                                 Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
-                                                Get = prop => { return Task.FromResult("MyListStringPropertyValue"); }
+                                                Get = prop => { return Task.FromResult("MyListStringPropertyValue1"); }
                                             },
-                                            new Property<int>("1")
+                                            new Property<string>(null)
                                             {
-                                                Set = (prop, val) => { i = val; return Task.CompletedTask; },
-                                                Get = prop => { return Task.FromResult(12); }
+                                                Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
+                                                Get = prop => { return Task.FromResult("MyListStringPropertyValue2"); }
                                             },
-                                            new SubmodelElementList("2")
-                                            {
-                                                Value =
-                                                {
-                                                    Value =
-                                                    {
-                                                        new Property<string>("0")
-                                                        {
-                                                            Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
-                                                            Get = prop => { return Task.FromResult("MySubListStringPropertyValue"); }
-                                                        }
-                                                    }
-                                                }
-                                            }
                                         }
                                     }
                                 }
