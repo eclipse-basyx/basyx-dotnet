@@ -8,21 +8,15 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
-using BaSyx.Models.Connectivity;
-using BaSyx.Utils.Network;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Models.Extensions;
 using BaSyx.API.ServiceProvider;
 using BaSyx.Utils.Settings;
 using BaSyx.Models.AdminShell;
-using Endpoint = BaSyx.Models.Connectivity.Endpoint;
 using Microsoft.Extensions.DependencyInjection;
-using BaSyx.API.Http;
 
 namespace BaSyx.Deployment.AppDataService
 {
