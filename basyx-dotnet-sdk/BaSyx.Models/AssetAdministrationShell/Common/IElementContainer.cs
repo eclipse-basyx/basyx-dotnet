@@ -99,7 +99,7 @@ namespace BaSyx.Models.AdminShell
         void Traverse(Action<TElement> action);
         IEnumerable<TElement> Flatten();
         IElementContainer<TElement> GetChild(string idShortPath);
-        void AppendRootPath(string rootPath);
+        void AppendRootPath(string rootPath, bool rootIsList);
         void Remove(string idShort);
         void AddRange(IEnumerable<TElement> elements);
     }

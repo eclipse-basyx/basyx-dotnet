@@ -61,22 +61,21 @@ namespace BaSyx.Models.AdminShell
             Parent = parent;
             ParentContainer = parentContainer;
 
-            IdShort = rootElement?.IdShort;
-            Value = rootElement;
-
             if (!string.IsNullOrEmpty(rootElement?.IdShort))
             {
-                IdShort = rootElement.IdShort;
-                Path = IdShort;
+                IdShort = rootElement?.IdShort;
+                this.Path = IdShort;
             }
+            
+            Value = rootElement;
 
             SetPath();
         }
 
         /// <summary>
-        /// Set the Path of the current ElementContainer.
+        /// Set the initial Path of the current ElementContainer.
         /// If it is a ListChild, the Path will be the index of the child in its ParentContainer in brackets.
-        /// This is used to append the Path for nested elements more easily and to include SubmodelElementList childs accordingly.
+        /// This is used to append the Path for nested elements more easily and to include SubmodelElementList children accordingly.
         /// </summary>
         private void SetPath()
         {
@@ -85,6 +84,8 @@ namespace BaSyx.Models.AdminShell
                 Index = ParentContainer.Children.Count();
                 Path = "[" + Index + "]";
             }
+            else if (ParentContainer != null && !string.IsNullOrEmpty(ParentContainer.Path))
+                Path = ParentContainer.Path + PATH_SEPERATOR + this.Path;
             else
                 Path = IdShort;
         }
@@ -150,14 +151,18 @@ namespace BaSyx.Models.AdminShell
 
         public bool IsReadOnly => false;
 
-        public void AppendRootPath(string rootPath)
+
+        public void AppendRootPath(string rootPath, bool rootIsList)
         {
             if (string.IsNullOrEmpty(this.Path))
-                SetPath();
+            {
+                Index = ParentContainer.Children.Count();
+                Path = "[" + Index + "]";
+            }
 
             if (!string.IsNullOrEmpty(rootPath))
             {
-                if (IsListChild())
+                if (rootIsList)
                     this.Path = rootPath + this.Path;
                 else
                     this.Path = rootPath + PATH_SEPERATOR + this.Path;
@@ -165,20 +170,14 @@ namespace BaSyx.Models.AdminShell
 
             foreach (var child in _children)
             {
-                if (child.HasChildren())
-                {
-                    foreach (var subChild in child.Children)
-                    {
-                        subChild.AppendRootPath(rootPath);
-                    }
-                }
-
                 if (!string.IsNullOrEmpty(rootPath))
                 {
-                    if (this.Value.ModelType == ModelType.SubmodelElementList)
-                        child.Path = this.Path + child.Path;
+                    if (rootIsList && this.Value?.ModelType == ModelType.SubmodelElementList)
+                        child.AppendRootPath(this.Path, true);
+                    else if (rootIsList && this.Value?.ModelType != ModelType.SubmodelElementList)
+                        child.AppendRootPath(this.Path, false);
                     else
-                        child.Path = this.Path + PATH_SEPERATOR + child.Path;
+                        child.AppendRootPath(rootPath, false);
                 }
             }
         }
@@ -436,13 +435,17 @@ namespace BaSyx.Models.AdminShell
             if (this[idShortOrIndex] == null)
             {
                 element.Parent = this.Parent;
-
+                bool isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
                 IElementContainer<TElement> node;
                 if (element is IElementContainer<TElement> subElements)
                 {
                     subElements.Parent = this.Parent;
                     subElements.ParentContainer = this;
-                    subElements.AppendRootPath(this.Path);
+
+                    if (isListParent) 
+                        Console.WriteLine("");
+                    subElements.AppendRootPath(this.Path, isListParent);
+
                     node = subElements;
                     // set index of nested SubmodelElements of type IElementContainer
                     node.Index = _children.Count;
@@ -450,12 +453,13 @@ namespace BaSyx.Models.AdminShell
                 else
                 {
                     node = new ElementContainer<TElement>(Parent, element, this);
-                    node.AppendRootPath(this.Path);
+                    if (isListParent)
+                        node.AppendRootPath(this.Path, true);
                 }
 
                 this._children.Add(node);
                 OnCreated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Created));
-            }
+            } 
         }
 
         /// <summary>

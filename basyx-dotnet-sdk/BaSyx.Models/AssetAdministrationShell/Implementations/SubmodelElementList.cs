@@ -229,9 +229,9 @@ namespace BaSyx.Models.AdminShell
             Value.Value.Remove(idShort);
         }
 
-        public void AppendRootPath(string rootPath)
+        public void AppendRootPath(string rootPath, bool rootIsList)
         {
-            Value.Value.AppendRootPath(rootPath);
+            Value.Value.AppendRootPath(rootPath, rootIsList);
         }
 
         public IEnumerable<ISubmodelElement> Flatten()
