@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
+using BaSyx.Models.Connectivity;
 using BaSyx.Utils.DependencyInjection.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,10 @@ namespace BaSyx.Models.Extensions
                 typeof(IReferable),
                 typeof(ISubmodelElement),
                 typeof(IEmbeddedDataSpecification),
-                typeof(IDataSpecificationContent)
+                typeof(IDataSpecificationContent),
+                typeof(IDescriptor),
+                typeof(IServiceDescriptor),
+                typeof(IModelElement)
             };
         }
 
