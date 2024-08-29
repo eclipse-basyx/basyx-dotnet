@@ -64,8 +64,8 @@ namespace BaSyx.Models.Extensions
                 if (!string.IsNullOrEmpty(idShort) && !string.IsNullOrEmpty(modelType))
                     break;
             }
-            if (idShort == null || modelType == null)
-                throw new JsonException("IdShort or ModelType is null");
+            if (modelType == null)
+                throw new JsonException("ModelType is null");
 
             SubmodelElement submodelElement = SubmodelElementFactory.CreateSubmodelElement(idShort, modelType, null);
             string valueType = null;

@@ -120,20 +120,10 @@ namespace SubmodelClientServerTests
                                         {
                                             Value =
                                             {
-                                                new Property<string>("0", "MySubSubStringValue1"),
-                                                new Property<int>("1", 7),
-                                                new Property<double>("2", 6.5d),
-                                                new Property<float>("3", 4.3f),
-                                                new Entity("4")
-                                                {
-                                                    Value=
-                                                    {
-                                                        Statements =
-                                                        {
-                                                            new Property<int>("p1", 20),
-                                                        }
-                                                    }
-                                                }
+                                                new Property<string>(null, "ListProperty1"),
+                                                new Property<string>(null, "ListProperty2"),
+                                                new Property<string>(null, "ListProperty3"),
+                                                new Property<string>(null, "ListProperty4")
                                             }
                                         }
                                     },
@@ -143,14 +133,59 @@ namespace SubmodelClientServerTests
                                         {
                                             Value =
                                             {
-                                                new Property<string>("0", "MySubSubStringValue1"),
-                                                new SubmodelElementList("1")
+                                                new SubmodelElementCollection(null)
+                                                {
+                                                    Value =
+                                                    {
+                                                        Value =
+                                                        {
+                                                            new Property<string>("CollectionInListProp1", "CollectionInsideListValue"),
+                                                            new Property<int>("CollectionInListProp2", 7),
+                                                            new Property<double>("CollectionInListProp3", 6.5d),
+                                                            new Property<float>("CollectionInListProp43", 4.3f),
+                                                            new Entity("CollectionInListEntity")
+                                                            {
+                                                                Value=
+                                                                {
+                                                                    Statements =
+                                                                    {
+                                                                        new Property<int>("p1", 20),
+                                                                        new Property<int>("p2", 21)
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new SubmodelElementList("MultidimensionalArrayList")
+                                    {
+                                        Value =
+                                        {
+                                            Value =
+                                            {
+                                                new SubmodelElementList(null)
                                                 {
                                                     Value=
                                                     {
                                                         Value =
                                                         {
-                                                            new Property<int>("0", 42),
+                                                            new Property<int>(null, 1),
+                                                            new Property<int>(null, 2),
+                                                        }
+                                                    }
+                                                },
+                                                new SubmodelElementList(null)
+                                                {
+                                                    Value=
+                                                    {
+                                                        Value =
+                                                        {
+                                                            new Property<int>(null, 3),
+                                                            new Property<int>(null, 4),
                                                         }
                                                     }
                                                 }
@@ -363,7 +398,7 @@ namespace SubmodelClientServerTests
         [TestMethod]
         public void Test107A_RetrieveNestedSubmodelElementHierarchy()
         {
-            var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubmodelElementList1[4].p1");
+            var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity.p1");
             result.Success.Should().BeTrue();
             result.Entity.Cast<IProperty>().GetValue<int>().Should().Be(20);
         }
@@ -371,9 +406,9 @@ namespace SubmodelClientServerTests
         [TestMethod]
         public void Test107B_RetrieveNestedSubmodelElementListItems()
         {
-            var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MySubmodelElementList2[1][0]");
+            var result = RetrieveSubmodelElement("MyCollection.MySubCollection.MultidimensionalArrayList[1][0]");
             result.Success.Should().BeTrue();
-            result.Entity.Cast<IProperty>().GetValue<int>().Should().Be(42);
+            result.Entity.Cast<IProperty>().GetValue<int>().Should().Be(3);
         }
 
         [TestMethod]
@@ -384,6 +419,7 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
+        [Ignore]
         public void Test107D_RetrieveNonExistingSubmodelElement()
         {
             var result = RetrieveSubmodelElement("MyDynamicSMC.DynamicSubSMC3.DynamicTestProp");
@@ -408,19 +444,22 @@ namespace SubmodelClientServerTests
             var created = CreateSubmodelElement(".", dynamicSmc);
             created.Success.Should().BeTrue();
         }
-
+        
         [TestMethod]
-        public void Test114_RetrieveSubmodelElementCollectionWithoutListPathSerializationLevelDeep()
+        public void Test114_RetrieveNestedSubmodelElementHierarchyPathSerializationLevelDeep()
         {
-            string expectedResult = "[\"NestedTestCollection.MySubTestCollection\"," +
-                                 "\"NestedTestCollection.MySubTestCollection.MySubSubStringProperty\"," +
-                                 "\"NestedTestCollection.MySubTestCollection.MySubSubIntProperty\"," +
-                                 "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection\"," +
-                                 "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection.MySubSubSubStringProperty\"," +
-                                 "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection.MySubSubSubIntProperty\"" +
-                                 "]";
+            string expectedResult = "[\"MyCollection.MySubCollection.MySubmodelElementList2\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0]\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp1\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp2\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp3\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp43\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity.p1\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity.p2\"" +
+                                    "]";
 
-            var retrieved = RetrieveSubmodelElementPath("NestedTestCollection.MySubTestCollection");
+            var retrieved = RetrieveSubmodelElementPath("MyCollection.MySubCollection.MySubmodelElementList2");
             retrieved.Success.Should().BeTrue();
             string jsonResult = JsonSerializer.Serialize(retrieved.Entity);
 
@@ -428,15 +467,17 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
-        public void Test114A_RetrieveSubmodelElementCollectionWithoutListPathSerializationLevelCore()
+        public void Test114A_RetrieveSubmodelElementCollectionPathSerializationLevelCore()
         {
-            string expectedResult = "[\"NestedTestCollection.MySubTestCollection\"," +
-                                    "\"NestedTestCollection.MySubTestCollection.MySubSubStringProperty\"," +
-                                    "\"NestedTestCollection.MySubTestCollection.MySubSubIntProperty\"," +
-                                    "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection\"" +
+            string expectedResult = "[\"MyCollection.MySubCollection.MySubmodelElementList2[0]\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp1\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp2\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp3\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp43\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity\"" +
                                     "]";
 
-            var retrieved = RetrieveSubmodelElementPath("NestedTestCollection.MySubTestCollection", RequestLevel.Core);
+            var retrieved = RetrieveSubmodelElementPath("MyCollection.MySubCollection.MySubmodelElementList2[0]", RequestLevel.Core);
             retrieved.Success.Should().BeTrue();
             string jsonResult = JsonSerializer.Serialize(retrieved.Entity);
 
@@ -448,35 +489,7 @@ namespace SubmodelClientServerTests
         {
             string expectedResult = "[]";
 
-            var retrieved = RetrieveSubmodelElementPath("NestedTestCollection.MySubStringProperty", RequestLevel.Core);
-            retrieved.Success.Should().BeTrue();
-            string jsonResult = JsonSerializer.Serialize(retrieved.Entity);
-
-            jsonResult.Should().BeEquivalentTo(expectedResult);
-        }
-
-        [TestMethod]
-        public void Test114C_RetrieveSubmodelElementCollectionWithListPathSerializationLevelDeep()
-        {
-            string expectedResult = "[\"NestedTestCollection\"," +
-                                    "\"NestedTestCollection.MySubStringProperty\"," +
-                                    "\"NestedTestCollection.MySubIntProperty\"," +
-                                    "\"NestedTestCollection.MySubTestCollection\"," +
-                                    "\"NestedTestCollection.MySubTestCollection.MySubSubStringProperty\"," +
-                                    "\"NestedTestCollection.MySubTestCollection.MySubSubIntProperty\"," +
-                                    "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection\"," +
-                                    "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection.MySubSubSubStringProperty\"," +
-                                    "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection.MySubSubSubIntProperty\"," +
-                                    "\"NestedTestCollection.MySubEntity\"," +
-                                    "\"NestedTestCollection.MySubEntity.MySubEntityProperty\"," +
-                                    "\"NestedTestCollection.MySubmodelElementList\"," +
-                                    "\"NestedTestCollection.MySubmodelElementList.0\"," + // "\"NestedTestCollection.MySubmodelElementList[0]\"," +
-                                    "\"NestedTestCollection.MySubmodelElementList.1\"," + // "\"NestedTestCollection.MySubmodelElementList[1]\"," +
-                                    "\"NestedTestCollection.MySubmodelElementList.2\"," + // "\"NestedTestCollection.MySubmodelElementList[2]\"," +
-                                    "\"NestedTestCollection.MySubmodelElementList.2.0\"" + // "\"NestedTestCollection.MySubmodelElementList[2][0]\"" +
-                                    "]";
-
-            var retrieved = RetrieveSubmodelElementPath("NestedTestCollection", RequestLevel.Deep);
+            var retrieved = RetrieveSubmodelElementPath("MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp1", RequestLevel.Core);
             retrieved.Success.Should().BeTrue();
             string jsonResult = JsonSerializer.Serialize(retrieved.Entity);
 

@@ -34,6 +34,7 @@ namespace BaSyx.Models.AdminShell
         public IEnumerable<ISubmodelElement> Values => Value.Value.Values;
         [IgnoreDataMember, JsonIgnore]
         ISubmodelElement IElementContainer<ISubmodelElement>.Value { get => this; }
+        public int Index { get; set; }
         [IgnoreDataMember, JsonIgnore]
         public bool IsRoot => Value.Value.IsRoot;
         [IgnoreDataMember, JsonIgnore]
@@ -210,9 +211,9 @@ namespace BaSyx.Models.AdminShell
             Value.Value.Remove(idShort);
         }
 
-        public void AppendRootPath(string rootPath)
+        public void AppendRootPath(string rootPath, bool rootIsList)
         {
-            Value.Value.AppendRootPath(rootPath);
+            Value.Value.AppendRootPath(rootPath, rootIsList);
         }
 
         public IEnumerable<ISubmodelElement> Flatten()
