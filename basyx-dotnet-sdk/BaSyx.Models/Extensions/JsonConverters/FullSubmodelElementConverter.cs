@@ -32,7 +32,7 @@ namespace BaSyx.Models.Extensions
         {
             writer.WriteStartObject();
 
-            WriteMetadata(writer, value, options, _converterOptions);
+            bool valueSerialized = WriteMetadata(writer, value, options, _converterOptions);
 
             switch (value.ModelType.Type)
             {
@@ -194,6 +194,8 @@ namespace BaSyx.Models.Extensions
                     }
                     break;
                 case ModelTypes.SubmodelElementCollection:
+                    if (valueSerialized)
+                        break;
                     var smc = (SubmodelElementCollection)value;
                     if (_converterOptions.RequestLevel == RequestLevel.Deep || (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0))
                     {
@@ -219,6 +221,8 @@ namespace BaSyx.Models.Extensions
                     }
                     break;
                 case ModelTypes.SubmodelElementList:
+                    if (valueSerialized)
+                        break;
                     var sml = (SubmodelElementList)value;
                     if (_converterOptions.RequestLevel == RequestLevel.Deep || (_converterOptions.RequestLevel == RequestLevel.Core && _converterOptions.Level == 0))
                     {

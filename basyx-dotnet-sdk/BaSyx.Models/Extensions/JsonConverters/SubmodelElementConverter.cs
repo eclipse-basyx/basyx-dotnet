@@ -474,8 +474,10 @@ namespace BaSyx.Models.Extensions
             return null;
         }
 
-        public static void WriteMetadata(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options, ConverterOptions converterOptions)
+        public static bool WriteMetadata(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options, ConverterOptions converterOptions)
         {
+            bool valueSerialized = false;
+
             writer.WriteString("idShort", value.IdShort);
             writer.WriteString("kind", value.Kind.ToString());
             writer.WriteString("modelType", value.ModelType.ToString());
@@ -604,6 +606,7 @@ namespace BaSyx.Models.Extensions
                     var smc = (SubmodelElementCollection)value;
                     if (smc.Value != null)
                     {
+                        valueSerialized = true;
                         writer.WritePropertyName("value");
                         writer.WriteStartArray();                        
                         if (converterOptions.RequestLevel == RequestLevel.Deep || (converterOptions.RequestLevel == RequestLevel.Core && converterOptions.Level == 0))
@@ -635,6 +638,7 @@ namespace BaSyx.Models.Extensions
                         writer.WriteString("valueTypeListElement", sml.ValueTypeListElement.ToString());
                     if (sml.Value?.Value != null)
                     {
+                        valueSerialized = true;
                         writer.WritePropertyName("value");
                         writer.WriteStartArray();
                         
@@ -656,6 +660,7 @@ namespace BaSyx.Models.Extensions
                 default:
                     break;
             }
+            return valueSerialized;
         }
     }
 }
