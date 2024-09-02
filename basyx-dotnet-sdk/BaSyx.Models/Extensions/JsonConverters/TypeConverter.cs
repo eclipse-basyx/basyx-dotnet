@@ -9,7 +9,6 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
-using BaSyx.Models.Connectivity;
 using BaSyx.Utils.DependencyInjection.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,6 @@ namespace BaSyx.Models.Extensions
     public class TypeConverter : JsonConverterFactory
     {
         static readonly Dictionary<Type, Type> CustomConverterDictionary;
-        static readonly List<Type> IgnoreConvert;
 
         public IDependencyInjectionExtension DependencyInjectionExtension { get; }
         static TypeConverter()
@@ -33,17 +31,6 @@ namespace BaSyx.Models.Extensions
                 { typeof(PropertyValue), typeof(ValueScopeConverter) },
                 { typeof(IElementContainer<ISubmodelElement>), typeof(ElementContainerConverter) }
             };
-
-            IgnoreConvert = new List<Type>()
-            {
-                typeof(IReferable),
-                typeof(ISubmodelElement),
-                typeof(IEmbeddedDataSpecification),
-                typeof(IDataSpecificationContent),
-                typeof(IDescriptor),
-                typeof(IServiceDescriptor),
-                typeof(IModelElement)
-            };
         }
 
         public TypeConverter(IDependencyInjectionExtension diExtension)
@@ -53,13 +40,10 @@ namespace BaSyx.Models.Extensions
 
         public override bool CanConvert(Type typeToConvert)
         {
-            if(IgnoreConvert.Contains(typeToConvert)) 
-                return false;
-
             if(CustomConverterDictionary.ContainsKey(typeToConvert))
                 return true;
 
-            if (typeToConvert.IsInterface)
+            if (DependencyInjectionExtension.IsTypeRegistered(typeToConvert))
                 return true;
 
             if (typeof(ISubmodelElement).IsAssignableFrom(typeToConvert) && typeToConvert != typeof(ISubmodelElement))
