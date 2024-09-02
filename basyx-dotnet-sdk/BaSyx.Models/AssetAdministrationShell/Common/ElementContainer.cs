@@ -25,6 +25,7 @@ namespace BaSyx.Models.AdminShell
         private readonly List<IElementContainer<TElement>> _children;
 
         public string IdShort { get; private set; }
+        public int Index { get; set; }
         public TElement Value { get; set;  }
         public string Path { get; set; }
         public bool IsRoot => ParentContainer == null;
@@ -60,16 +61,35 @@ namespace BaSyx.Models.AdminShell
             Parent = parent;
             ParentContainer = parentContainer;
 
-            IdShort = rootElement?.IdShort;
+            if (!string.IsNullOrEmpty(rootElement?.IdShort))
+            {
+                IdShort = rootElement?.IdShort;
+                this.Path = IdShort;
+            }
+            
             Value = rootElement;
 
-            if (ParentContainer != null && !string.IsNullOrEmpty(ParentContainer.Path))
-                Path = ParentContainer.Path + PATH_SEPERATOR + IdShort;
+            SetPath();
+        }
+
+        /// <summary>
+        /// Set the initial Path of the current ElementContainer.
+        /// If it is a ListChild, the Path will be the index of the child in its ParentContainer in brackets.
+        /// This is used to append the Path for nested elements more easily and to include SubmodelElementList children accordingly.
+        /// </summary>
+        private void SetPath()
+        {
+            if (IsListChild())
+            {
+                Index = ParentContainer.Children.Count();
+                Path = "[" + Index + "]";
+            }
+            else if (ParentContainer != null && !string.IsNullOrEmpty(ParentContainer.Path))
+                Path = ParentContainer.Path + PATH_SEPERATOR + this.Path;
             else
                 Path = IdShort;
         }
 
-       
         public TElement this[int i]
         {
             get
@@ -131,23 +151,47 @@ namespace BaSyx.Models.AdminShell
 
         public bool IsReadOnly => false;
 
-        public void AppendRootPath(string rootPath)
+
+        public void AppendRootPath(string rootPath, bool rootIsList)
         {
+            if (string.IsNullOrEmpty(this.Path))
+            {
+                Index = ParentContainer.Children.Count();
+                Path = "[" + Index + "]";
+            }
+
             if (!string.IsNullOrEmpty(rootPath))
-                this.Path = rootPath + PATH_SEPERATOR + this.Path;
-            
+            {
+                if (rootIsList)
+                    this.Path = rootPath + this.Path;
+                else
+                    this.Path = rootPath + PATH_SEPERATOR + this.Path;
+            }
+
             foreach (var child in _children)
             {
-                if (child.HasChildren())
-                {
-                    foreach (var subChild in child.Children)
-                    {
-                        subChild.AppendRootPath(rootPath);
-                    }
-                }
                 if (!string.IsNullOrEmpty(rootPath))
-                    child.Path = rootPath + PATH_SEPERATOR + child.Path;
+                {
+                    if (rootIsList && this.Value?.ModelType == ModelType.SubmodelElementList)
+                        child.AppendRootPath(this.Path, true);
+                    else if (rootIsList && this.Value?.ModelType != ModelType.SubmodelElementList)
+                        child.AppendRootPath(this.Path, false);
+                    else
+                        child.AppendRootPath(rootPath, false);
+                }
             }
+        }
+
+        /// <summary>
+        /// Check if the current element is a child of a SubmodelElementList by its ParentContainer. 
+        /// </summary>
+        /// <returns>True if the element has a ParentContainer of Type SubmodelElementList</returns>
+        private bool IsListChild()
+        {
+            if (ParentContainer != null && ParentContainer.Value?.ModelType == ModelType.SubmodelElementList)
+                return true;
+            else
+                return false;
         }
 
         public bool HasChildren()
@@ -334,10 +378,9 @@ namespace BaSyx.Models.AdminShell
         {
             if (element == null)
                 return new Result<TElement>(new ArgumentNullException(nameof(element)));
-            if (string.IsNullOrEmpty(element.IdShort))
-                return new Result<TElement>(new ArgumentNullException(nameof(element.IdShort)));
+            string idShortOrIndex = GetIdShortOrIndex(element);
 
-            if (this[element.IdShort] == null)
+            if (this[idShortOrIndex] == null)
             {
                 Add(element);
                 return new Result<TElement>(true, element);
@@ -386,27 +429,62 @@ namespace BaSyx.Models.AdminShell
         {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
-            if (string.IsNullOrEmpty(element.IdShort))
-                throw new ArgumentNullException(nameof(element.IdShort));
 
-            if (this[element.IdShort] == null)
+            string idShortOrIndex = GetIdShortOrIndex(element);
+
+            if (this[idShortOrIndex] == null)
             {
                 element.Parent = this.Parent;
-
+                bool isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
                 IElementContainer<TElement> node;
                 if (element is IElementContainer<TElement> subElements)
                 {
                     subElements.Parent = this.Parent;
                     subElements.ParentContainer = this;
-                    subElements.AppendRootPath(this.Path);
+
+                    if (isListParent) 
+                        Console.WriteLine("");
+                    subElements.AppendRootPath(this.Path, isListParent);
+
                     node = subElements;
+                    // set index of nested SubmodelElements of type IElementContainer
+                    node.Index = _children.Count;
                 }
                 else
+                {
                     node = new ElementContainer<TElement>(Parent, element, this);
+                    if (isListParent)
+                        node.AppendRootPath(this.Path, true);
+                }
 
                 this._children.Add(node);
                 OnCreated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Created));
+            } 
+        }
+
+        /// <summary>
+        /// Get the IdShort of the element or the future index if the element will be a ListChild.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns>Value that will be used to add/ create a new element as child.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        private string GetIdShortOrIndex(TElement element)
+        {
+            string idShortOrIndex = "";
+            if (string.IsNullOrEmpty(element.IdShort))
+            {
+                if (this.Value.ModelType == ModelType.SubmodelElementList)
+                {
+                    int newIndex = _children.Count; // index starts with 0!
+                    idShortOrIndex = newIndex.ToString();
+                }
+                else
+                    throw new ArgumentNullException(nameof(element.IdShort));
             }
+            else
+                idShortOrIndex = element.IdShort;
+
+            return idShortOrIndex;
         }
 
         public virtual IResult<TElement> CreateOrUpdate(string idShortPath, TElement element)

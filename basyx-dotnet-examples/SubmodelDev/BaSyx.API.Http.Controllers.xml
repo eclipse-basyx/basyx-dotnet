@@ -96,8 +96,8 @@
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodel(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodel(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelMetadata(System.String)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelValue(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelValueOnly(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
@@ -120,8 +120,8 @@
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathValueOnly(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathValueOnly(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathMetadata(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
@@ -238,13 +238,13 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelElements(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
-            <inheritdoc cref="!:AssetAdministrationShellController.Shell_GetAllSubmodelElements(string, RequestLevel, RequestExtent)"/>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelElementsMetadata(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="!:AssetAdministrationShellController.Shell_GetAllSubmodelElementsMetadata(string, RequestLevel, RequestExtent)"/>   
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelElementsValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
-            <inheritdoc cref="!:AssetAdministrationShellController.Shell_GetAllSubmodelElementsValueOnly(string, RequestLevel, RequestExtent)"/>   
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetAllSubmodelElementsValueOnly(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>   
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PostSubmodelElement(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PostSubmodelElement(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/>
@@ -259,7 +259,7 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutFileByPath(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelElementByPathValueOnly(System.String,System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+            <inheritdoc cref="!:AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(string, string, RequestLevel)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PatchSubmodelElementValueByPathValueOnly(System.String,System.String,System.String,System.Text.Json.JsonDocument,BaSyx.Models.AdminShell.RequestLevel)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PatchSubmodelElementValueByPathValueOnly(System.String,System.String,System.Text.Json.JsonDocument,BaSyx.Models.AdminShell.RequestLevel)"/>
@@ -326,12 +326,10 @@
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <response code="204">Submodel updated successfully</response>     
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata">
             <summary>
             Returns the metadata attributes of a specific Submodel
             </summary>
-            <param name="level">Determines the structural depth of the respective resource content</param>
-            <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
             <response code="404">Submodel not found</response>       
@@ -511,12 +509,13 @@
             <returns></returns>
             <response code="200">Requested submodel element in its ValueOnly representation</response>  
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathValueOnly(System.String,BaSyx.Models.AdminShell.RequestLevel)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathValueOnly(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
             Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
             </summary>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
             <response code="200">Requested submodel element in its ValueOnly representation</response>
         </member>
@@ -701,14 +700,14 @@
             <returns></returns>
             <response code="200">Submodel deleted successfully</response>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelMetadata(System.String)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelValue(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelValueOnly(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
-            <inheritdoc cref="!:SubmodelController.GetAllSubmodelElements(RequestLevel, RequestExtent)"/>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElements(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PostSubmodelElement(System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElement(BaSyx.Models.AdminShell.ISubmodelElement,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
@@ -716,8 +715,8 @@
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathValueOnly(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathValueOnly(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PostSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
