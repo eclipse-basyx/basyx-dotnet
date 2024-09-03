@@ -289,7 +289,7 @@ namespace DevelopmentSubmodel
      //               strProperty,
      //               multiLang, 
 					//range,
-					blob,
+					//blob,
 					//file,
 					//relationship,
 					//operation,
@@ -303,24 +303,24 @@ namespace DevelopmentSubmodel
                         {
                             Value =
                             {
-                                new Property<string>("String_L2", "Level 2 String"),
-                                new Property<int>("Int_L2", 123),
-                                new SubmodelElementList("ElementList_L2")
+                                new Property<string>(null, "Level 2 String"),
+                                new Property<int>(null, 123),
+                                new SubmodelElementList(null)
                                 {
                                     Value =
                                     {
                                         Value =
                                         {
-                                            new Property<string>("String_L3", "Level 3 String"),
-                                            new Property<int>("Int_L3", 456),
-                                            new SubmodelElementList("ElementList_L3")
+                                            new Property<string>(null, "Level 3 String"),
+                                            new Property<int>(null, 456),
+                                            new SubmodelElementList(null)
                                             {
                                                 Value =
                                                 {
                                                     Value =
                                                     {
-                                                        new Property<string>("String_L4", "Level 3 String"),
-                                                        new Property<int>("Int_L4", 789),
+                                                        new Property<string>(null, "Level 4 String"),
+                                                        new Property<int>(null, 789),
                                                     }
                                                 }
                                             }

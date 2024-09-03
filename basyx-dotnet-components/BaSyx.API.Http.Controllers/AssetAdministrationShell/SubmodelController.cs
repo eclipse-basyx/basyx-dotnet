@@ -212,7 +212,7 @@ namespace BaSyx.API.Http.Controllers
 
             JsonObject smValue = new JsonObject();
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
-            jsonOptions.Converters.Add(new ElementContainerConverter(new ConverterOptions()
+            jsonOptions.Converters.Add(new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions, new SubmodelElementContainerValueOnlyConverterOptions()
             {
                 RequestLevel = level,
                 RequestExtent = extent
