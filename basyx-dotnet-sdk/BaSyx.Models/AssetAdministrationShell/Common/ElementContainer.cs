@@ -378,31 +378,44 @@ namespace BaSyx.Models.AdminShell
         {
             if (element == null)
                 return new Result<TElement>(new ArgumentNullException(nameof(element)));
-            string idShortOrIndex = GetIdShortOrIndex(element);
-
-            if (this[idShortOrIndex] == null)
+            try
             {
-                Add(element);
-                return new Result<TElement>(true, element);
+                string idShortOrIndex = GetIdShortOrIndex(element);
+
+                if (this[idShortOrIndex] == null)
+                {
+                    Add(element);
+                    return new Result<TElement>(true, element);
+                }
+                else
+                    return new Result<TElement>(false, new ConflictMessage(element.IdShort));
             }
-            else
-                return new Result<TElement>(false, new ConflictMessage(element.IdShort));
+            catch (ArgumentNullException ex)
+            {
+                return new Result<TElement>(ex);
+            }
         }
 
         public IResult<T> Create<T>(T element) where T : class, TElement
         {
             if (element == null)
                 return new Result<T>(new ArgumentNullException(nameof(element)));
-            if (string.IsNullOrEmpty(element.IdShort))
-                return new Result<T>(new ArgumentNullException(nameof(element.IdShort)));
-
-            if (this[element.IdShort] == null)
+            try
             {
-                Add(element);
-                return new Result<T>(true, element);
+                string idShortOrIndex = GetIdShortOrIndex(element);
+
+                if (this[idShortOrIndex] == null)
+                {
+                    Add(element);
+                    return new Result<T>(true, element);
+                }
+                else
+                    return new Result<T>(false, new ConflictMessage(element.IdShort));
             }
-            else
-                return new Result<T>(false, new ConflictMessage(element.IdShort));
+            catch (ArgumentNullException ex)
+            {
+                return new Result<T>(ex);
+            }
         }
 
 
