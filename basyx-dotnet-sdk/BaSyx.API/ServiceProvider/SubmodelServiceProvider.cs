@@ -641,5 +641,11 @@ namespace BaSyx.API.ServiceProvider
             _submodel = tempSubmodel;
             return new Result(true);
         }
+
+        public IResult ReplaceSubmodel(ISubmodel submodel)
+        {
+            _submodel = submodel;
+            return new Result(true);
+        }
     }
 }

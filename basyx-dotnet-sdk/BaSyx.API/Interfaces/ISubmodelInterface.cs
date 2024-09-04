@@ -20,6 +20,8 @@ namespace BaSyx.API.Interfaces
 
         IResult UpdateSubmodel(ISubmodel submodel);
 
+        IResult ReplaceSubmodel(ISubmodel submodel);
+
         IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement);
 
         IResult UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement);

@@ -378,31 +378,44 @@ namespace BaSyx.Models.AdminShell
         {
             if (element == null)
                 return new Result<TElement>(new ArgumentNullException(nameof(element)));
-            string idShortOrIndex = GetIdShortOrIndex(element);
-
-            if (this[idShortOrIndex] == null)
+            try
             {
-                Add(element);
-                return new Result<TElement>(true, element);
+                string idShortOrIndex = GetIdShortOrIndex(element);
+
+                if (this[idShortOrIndex] == null)
+                {
+                    Add(element);
+                    return new Result<TElement>(true, element);
+                }
+                else
+                    return new Result<TElement>(false, new ConflictMessage(element.IdShort));
             }
-            else
-                return new Result<TElement>(false, new ConflictMessage(element.IdShort));
+            catch (ArgumentNullException ex)
+            {
+                return new Result<TElement>(ex);
+            }
         }
 
         public IResult<T> Create<T>(T element) where T : class, TElement
         {
             if (element == null)
                 return new Result<T>(new ArgumentNullException(nameof(element)));
-            if (string.IsNullOrEmpty(element.IdShort))
-                return new Result<T>(new ArgumentNullException(nameof(element.IdShort)));
-
-            if (this[element.IdShort] == null)
+            try
             {
-                Add(element);
-                return new Result<T>(true, element);
+                string idShortOrIndex = GetIdShortOrIndex(element);
+
+                if (this[idShortOrIndex] == null)
+                {
+                    Add(element);
+                    return new Result<T>(true, element);
+                }
+                else
+                    return new Result<T>(false, new ConflictMessage(element.IdShort));
             }
-            else
-                return new Result<T>(false, new ConflictMessage(element.IdShort));
+            catch (ArgumentNullException ex)
+            {
+                return new Result<T>(ex);
+            }
         }
 
 
@@ -576,8 +589,9 @@ namespace BaSyx.Models.AdminShell
 
             var child = GetChild(idShortPath);
             if (child != null)
-            {               
-                child.ParentContainer.Remove(child.IdShort);                
+            {
+                var idShort = child.IdShort ?? child.Index.ToString();
+                child.ParentContainer.Remove(idShort);
                 return new Result(true);
             }
             return new Result(false, new NotFoundMessage());
@@ -585,7 +599,17 @@ namespace BaSyx.Models.AdminShell
 
         public void Remove(string idShort)
         {
-            _children.RemoveAll(c => c.IdShort == idShort);
+            if (Value?.ModelType == ModelType.SubmodelElementList)
+            {
+                _children.RemoveAll(c => c.Index.ToString() == idShort);
+
+                //reindex list children
+                for (var i = 0; i < _children.Count; i++)
+                    _children[i].Index = i;
+            }
+            else
+                _children.RemoveAll(c => c.IdShort == idShort);
+
             OnDeleted?.Invoke(this, new ElementContainerEventArgs<TElement>(this, default, ChangedEventType.Deleted) { ElementIdShort = idShort });
         }
 
