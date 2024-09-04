@@ -101,6 +101,11 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.UpdateSubmodel(submodel);
         }
 
+        public IResult ReplaceSubmodel(ISubmodel submodel)
+        {
+            return _submodelClient.ReplaceSubmodel(submodel);
+        }
+
         public IResult UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return _submodelClient.UpdateSubmodelElement(rootIdShortPath, submodelElement);

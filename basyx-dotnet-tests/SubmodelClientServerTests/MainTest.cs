@@ -496,6 +496,34 @@ namespace SubmodelClientServerTests
             jsonResult.Should().BeEquivalentTo(expectedResult);
         }
 
+        [TestMethod]
+        public void Test115_ReplaceSubmodel()
+        {
+            var idShort = "ReplacedSubmodel";
+
+            var replaceSubmodel = new Submodel(idShort, new BaSyxSubmodelIdentifier("ReplacedSubmodel", "1.0.0"))
+            {
+                Description = new LangStringSet()
+                {
+                    new("de-DE", "Ersetztes Submodel"),
+                    new("en-US", "Replaced submodel")
+                },
+                SubmodelElements = new ElementContainer<ISubmodelElement>
+                {
+                    new Property<string>("New_String_Property", "Replaced"),
+                    new Property<int>("New_Int_Property", 262)
+                }
+            };
+
+            var replaced = ReplaceSubmodel(replaceSubmodel);
+            replaced.Success.Should().BeTrue();
+
+            var submodel = RetrieveSubmodel().Entity;
+            submodel.SubmodelElements.Count.Should().Be(2);
+            submodel.Description.Should().BeEquivalentTo(replaceSubmodel.Description);
+            submodel.IdShort.Should().BeEquivalentTo(idShort);
+        }
+
         private IElementContainer<ISubmodelElement> GetDynamicStructure(ISubmodelElementCollection baseSmc)
         {
             ElementContainer<ISubmodelElement> dynamicContainer = new ElementContainer<ISubmodelElement>(baseSmc.Parent, baseSmc, null);
@@ -531,6 +559,11 @@ namespace SubmodelClientServerTests
         public IResult UpdateSubmodel(ISubmodel submodel)
         {
             return ((ISubmodelClient)Client).UpdateSubmodel(submodel);
+        }
+
+        public IResult ReplaceSubmodel(ISubmodel submodel)
+        {
+            return ((ISubmodelClient)Client).ReplaceSubmodel(submodel);
         }
 
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)

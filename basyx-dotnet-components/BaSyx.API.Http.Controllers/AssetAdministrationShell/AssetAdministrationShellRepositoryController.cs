@@ -263,18 +263,18 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_GetSubmodel(submodelIdentifier, level, extent);
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodel(string, ISubmodel, RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodel(string, ISubmodel)"/>
         [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "ShellRepo_PutSubmodel")]
         [Produces("application/json")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_PutSubmodel(string aasIdentifier, string submodelIdentifier, [FromBody] ISubmodel submodel, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult ShellRepo_PutSubmodel(string aasIdentifier, string submodelIdentifier, [FromBody] ISubmodel submodel)
         {
             if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_PutSubmodel(submodelIdentifier, submodel, level, extent);
+            return service.Shell_PutSubmodel(submodelIdentifier, submodel);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElements(string, int, string, RequestLevel, RequestExtent)"/>
