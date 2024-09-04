@@ -103,6 +103,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelAsync(submodel).GetAwaiter().GetResult();
         }
 
+        public IResult ReplaceSubmodel(ISubmodel submodel)
+        {
+            return ReplaceSubmodelAsync(submodel).GetAwaiter().GetResult();
+        }
+
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return CreateSubmodelElementAsync(rootIdShortPath, submodelElement).GetAwaiter().GetResult();
@@ -166,6 +171,16 @@ namespace BaSyx.Clients.AdminShell.Http
         }
 
         public async Task<IResult> UpdateSubmodelAsync(ISubmodel submodel)
+        {
+            Uri uri = GetPath();
+            var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult> ReplaceSubmodelAsync(ISubmodel submodel)
         {
             Uri uri = GetPath();
             var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodel);

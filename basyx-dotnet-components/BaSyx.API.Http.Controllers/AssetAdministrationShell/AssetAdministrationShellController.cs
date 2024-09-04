@@ -283,18 +283,18 @@ namespace BaSyx.API.Http.Controllers
             return service.GetSubmodelValueOnly(level, extent);
         }
 
-        /// <inheritdoc cref="SubmodelController.PutSubmodel(ISubmodel, RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="SubmodelController.PutSubmodel(ISubmodel)"/>
         [HttpPut(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "Shell_PutSubmodel")]
         [Produces("application/json")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult Shell_PutSubmodel(string submodelIdentifier, [FromBody] ISubmodel submodel, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult Shell_PutSubmodel(string submodelIdentifier, [FromBody] ISubmodel submodel)
         {
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.PutSubmodel(submodel, level, extent);
+            return service.PutSubmodel(submodel);
         }
 
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElements(int, string, RequestLevel, RequestExtent)"/>

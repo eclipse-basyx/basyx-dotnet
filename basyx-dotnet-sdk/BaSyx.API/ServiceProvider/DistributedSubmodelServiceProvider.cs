@@ -155,6 +155,11 @@ namespace BaSyx.API.ServiceProvider
             throw new NotImplementedException();
         }
 
+        public IResult ReplaceSubmodel(ISubmodel submodel)
+        {
+            throw new NotImplementedException();
+        }
+
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             throw new NotImplementedException();

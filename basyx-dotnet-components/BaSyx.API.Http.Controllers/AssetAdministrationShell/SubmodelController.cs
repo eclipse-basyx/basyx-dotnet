@@ -105,12 +105,10 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Updates the Submodel
+        /// Replaces the Submodel
         /// </summary>
         /// <returns></returns>
         /// <param name="submodel">Submodel object</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <response code="204">Submodel updated successfully</response>     
         [HttpPut(SubmodelRoutes.SUBMODEL, Name = "PutSubmodel")]
         [Produces("application/json")]
@@ -118,12 +116,12 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PutSubmodel([FromBody] ISubmodel submodel, [FromQuery] RequestLevel level = RequestLevel.Deep, [FromQuery] RequestExtent extent = default)
+        public IActionResult PutSubmodel([FromBody] ISubmodel submodel)
         {
             if (submodel == null)
                 return ResultHandling.NullResult(nameof(submodel));
 
-            var result = serviceProvider.UpdateSubmodel(submodel);
+            var result = serviceProvider.ReplaceSubmodel(submodel);
             return result.CreateActionResult(CrudOperation.Update);
         }
 
