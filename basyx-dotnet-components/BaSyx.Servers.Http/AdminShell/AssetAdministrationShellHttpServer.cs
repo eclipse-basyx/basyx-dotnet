@@ -34,7 +34,7 @@ namespace BaSyx.Servers.AdminShell.Http
             WebHostBuilder.UseSetting(WebHostDefaults.ApplicationKey, entryAssembly.FullName);
         }
 
-        public void SetServiceProvider(IAssetAdministrationShellServiceProvider aasServiceProvider)
+        public virtual void SetServiceProvider(IAssetAdministrationShellServiceProvider aasServiceProvider)
         {
             WebHostBuilder.ConfigureServices(services =>
             {
