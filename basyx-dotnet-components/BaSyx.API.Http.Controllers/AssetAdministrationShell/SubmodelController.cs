@@ -130,8 +130,6 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <returns></returns>
         /// <param name="submodel">Submodel object</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <response code="204">Submodel updated successfully</response>     
         [HttpPatch(SubmodelRoutes.SUBMODEL, Name = "PatchSubmodel")]
         [Produces("application/json")]
@@ -139,12 +137,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodel([FromBody] ISubmodel submodel, [FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
+        public IActionResult PatchSubmodel([FromBody] ISubmodel submodel)
         {
             if (submodel == null)
                 return ResultHandling.NullResult(nameof(submodel));
 
-            throw new NotImplementedException();
+            var result = serviceProvider.UpdateSubmodel(submodel);
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>
