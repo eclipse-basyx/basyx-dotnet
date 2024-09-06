@@ -314,14 +314,12 @@
             <param name="submodel">Submodel object</param>
             <response code="204">Submodel updated successfully</response>     
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
             Updates the Submodel
             </summary>
             <returns></returns>
             <param name="submodel">Submodel object</param>
-            <param name="level">Determines the structural depth of the respective resource content</param>
-            <param name="extent">Determines to which extent the resource is being serialized</param>
             <response code="204">Submodel updated successfully</response>     
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata">

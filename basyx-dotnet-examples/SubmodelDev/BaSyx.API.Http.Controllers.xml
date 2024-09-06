@@ -102,8 +102,8 @@
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelValue(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelValueOnly(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodel(BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodel(BaSyx.Models.AdminShell.ISubmodel)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElements(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
@@ -234,8 +234,8 @@
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodel(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodel(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PutSubmodel(System.String,System.String,BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PutSubmodel(System.String,System.String,BaSyx.Models.AdminShell.ISubmodel)">
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelElements(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
@@ -306,24 +306,20 @@
             <returns></returns>
             <response code="200">Requested Submodel</response>   
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodel(BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodel(BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
-            Updates the Submodel
+            Replaces the Submodel
             </summary>
             <returns></returns>
             <param name="submodel">Submodel object</param>
-            <param name="level">Determines the structural depth of the respective resource content</param>
-            <param name="extent">Determines to which extent the resource is being serialized</param>
             <response code="204">Submodel updated successfully</response>     
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
             Updates the Submodel
             </summary>
             <returns></returns>
             <param name="submodel">Submodel object</param>
-            <param name="level">Determines the structural depth of the respective resource content</param>
-            <param name="extent">Determines to which extent the resource is being serialized</param>
             <response code="204">Submodel updated successfully</response>     
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata">

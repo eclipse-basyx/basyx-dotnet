@@ -625,20 +625,17 @@ namespace BaSyx.API.ServiceProvider
             if (_submodel == null)
                 return new Result(false, new ErrorMessage("The service provider's inner Submodel object is null"));
 
-            string idShort = submodel.IdShort ?? _submodel.IdShort;
-            Identifier identifier = submodel.Id ?? _submodel.Id;
-
-            Submodel tempSubmodel = new Submodel(idShort, identifier)
+            var updatedSubmodel = new Submodel(_submodel.IdShort, _submodel.Id)
             {
                 Administration = submodel.Administration ?? _submodel.Administration,
                 Category = submodel.Category ?? _submodel.Category,
                 Description = submodel.Description ?? _submodel.Description,
                 DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
                 SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
-                SubmodelElements = _submodel.SubmodelElements
+                SubmodelElements = submodel.SubmodelElements ?? _submodel.SubmodelElements
             };
 
-            _submodel = tempSubmodel;
+            _submodel = updatedSubmodel;
             return new Result(true);
         }
 
