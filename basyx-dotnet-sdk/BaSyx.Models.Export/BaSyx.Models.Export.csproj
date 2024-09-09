@@ -14,7 +14,7 @@
     <PackageIcon>basyxlogo.png</PackageIcon>
     <PackageTags>BaSys BaSyx Models Export</PackageTags>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-    <Version>2.0.14</Version><PublishReadyToRun>true</PublishReadyToRun>
+    <Version>2.0.21</Version><PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <ItemGroup>
