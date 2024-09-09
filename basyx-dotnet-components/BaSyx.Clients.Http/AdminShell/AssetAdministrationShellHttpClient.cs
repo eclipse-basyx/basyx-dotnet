@@ -249,6 +249,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelAsync(id, submodel).GetAwaiter().GetResult();
         }
 
+        public IResult ReplaceSubmodel(Identifier id, ISubmodel submodel)
+        {
+            return ReplaceSubmodelAsync(id, submodel).GetAwaiter().GetResult();
+        }
+
         public IResult<ISubmodelElement> CreateSubmodelElement(Identifier id, string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return CreateSubmodelElementAsync(id, rootIdShortPath, submodelElement).GetAwaiter().GetResult();
@@ -307,9 +312,19 @@ namespace BaSyx.Clients.AdminShell.Http
         public async Task<IResult> UpdateSubmodelAsync(Identifier id, ISubmodel submodel)
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
-            var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
+            var request = CreateJsonContentRequest(uri, HttpMethod.Patch, submodel);
             var response = await SendRequestAsync(request, CancellationToken.None);
             var result = await EvaluateResponseAsync(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult> ReplaceSubmodelAsync(Identifier id, ISubmodel submodel)
+        {
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
+            var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }

@@ -361,6 +361,11 @@ namespace AdminShellClientServerTests
             return Client.UpdateSubmodel(TestSubmodel.Id, submodel);
         }
 
+        public IResult ReplaceSubmodel(ISubmodel submodel)
+        {
+            return Client.ReplaceSubmodel(TestSubmodel.Id, submodel);
+        }
+
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return Client.CreateSubmodelElement(TestSubmodel.Id, rootIdShortPath, submodelElement);
@@ -414,6 +419,11 @@ namespace AdminShellClientServerTests
         public Task<IResult> UpdateSubmodelAsync(ISubmodel submodel)
         {
             return Client.UpdateSubmodelAsync(TestSubmodel.Id, submodel);
+        }
+
+        public Task<IResult> ReplaceSubmodelAsync(ISubmodel submodel)
+        {
+            return Client.ReplaceSubmodelAsync(TestSubmodel.Id, submodel);
         }
 
         public Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement)
