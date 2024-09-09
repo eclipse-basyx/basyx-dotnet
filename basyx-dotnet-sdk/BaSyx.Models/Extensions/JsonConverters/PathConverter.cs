@@ -11,6 +11,7 @@
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,15 +23,21 @@ using Range = BaSyx.Models.AdminShell.Range;
 
 namespace BaSyx.Models.Extensions
 {
+    public class PathConverterOptions : ConverterOptions
+    {
+        public bool EncloseInBrackets { get; set; } = true;
+    }
+
     public class PathConverter : JsonConverter<ISubmodelElement>
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<PathConverter>();
-        private readonly RequestLevel _level;
+        private PathConverterOptions _converterOptions;
 
-        public PathConverter(RequestLevel level = default)
+        public PathConverter(PathConverterOptions options = null)
         {
-            _level = level;
+            _converterOptions = options ?? new PathConverterOptions();
         }
+
         public override ISubmodelElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
@@ -38,14 +45,17 @@ namespace BaSyx.Models.Extensions
 
         public override void Write(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options)
         {
-            writer.WriteStartArray();
+            // TODO: do not write StartArray if it is calles from COntainerConverter ( = get paths from submodel)
+            if (_converterOptions.EncloseInBrackets)
+                writer.WriteStartArray();
+            
             if (value is IElementContainer<ISubmodelElement>)
             {
                 var rootContainer = value as IElementContainer<ISubmodelElement>;
                 writer.WriteStringValue(rootContainer.Path);
 
                 var childPaths = new List<string>();
-                if (_level == RequestLevel.Core)
+                if (_converterOptions.RequestLevel == RequestLevel.Core)
                 {
                     foreach (var directChild in rootContainer.Children)
                         childPaths.Add(directChild.Path);
@@ -59,11 +69,11 @@ namespace BaSyx.Models.Extensions
             else
             {
                 // TODO: Return full IdShortPath
-                if (_level == RequestLevel.Deep)
+                if (_converterOptions.RequestLevel == RequestLevel.Deep)
                     writer.WriteStringValue(value.IdShort);
             }
-
-            writer.WriteEndArray();
+            if (_converterOptions.EncloseInBrackets)
+                writer.WriteEndArray();
         }
 
         /// <summary>
