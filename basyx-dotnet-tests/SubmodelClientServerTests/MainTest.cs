@@ -524,6 +524,46 @@ namespace SubmodelClientServerTests
             submodel.IdShort.Should().BeEquivalentTo(idShort);
         }
 
+
+        [TestMethod]
+        public void Test116_UpdateSubmodelMetadata()
+        {
+            var idShort = "UpdatedSubmodel";
+
+            var replaceSubmodel = new Submodel(idShort, new BaSyxSubmodelIdentifier("ReplacedSubmodel", "1.0.0"))
+            {
+                Description = new LangStringSet()
+                {
+                    new("de-DE", "Submodel wurde ersetzt"),
+                    new("en-US", "submodel was replaced")
+                },
+                Administration = new AdministrativeInformation()
+                {
+                    Version = "2.0",
+                    Revision = "2"
+                },
+                DisplayName = new LangStringSet()
+                {
+                    new("de-DE", "Submodel ersetzt"),
+                    new("en-US", "submodel replaced")
+                },
+                Category = "replaced_category",
+                SubmodelElements = new ElementContainer<ISubmodelElement>
+                {
+                    new Property<string>("New_String_Property", "Replaced"),
+                    new Property<int>("New_Int_Property", 262)
+                }
+            };
+
+            var replaced = UpdateSubmodelMetadata(replaceSubmodel);
+            replaced.Success.Should().BeTrue();
+
+            var submodel = RetrieveSubmodel().Entity;
+            submodel.SubmodelElements.Count.Should().BeGreaterThan(2);
+            submodel.Category.Should().BeEquivalentTo(replaceSubmodel.Category);
+            submodel.IdShort.Should().NotBeEquivalentTo(replaceSubmodel.IdShort);
+        }
+
         private IElementContainer<ISubmodelElement> GetDynamicStructure(ISubmodelElementCollection baseSmc)
         {
             ElementContainer<ISubmodelElement> dynamicContainer = new ElementContainer<ISubmodelElement>(baseSmc.Parent, baseSmc, null);
@@ -559,6 +599,11 @@ namespace SubmodelClientServerTests
         public IResult UpdateSubmodel(ISubmodel submodel)
         {
             return ((ISubmodelClient)Client).UpdateSubmodel(submodel);
+        }
+
+        public IResult UpdateSubmodelMetadata(ISubmodel submodel)
+        {
+            return ((ISubmodelClient)Client).UpdateSubmodelMetadata(submodel);
         }
 
         public IResult ReplaceSubmodel(ISubmodel submodel)
