@@ -173,8 +173,6 @@ namespace BaSyx.API.Http.Controllers
         /// Updates the metadata attributes of the Submodel
         /// </summary>
         /// <param name="submodel">The metadata attributes of the Submodel object</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>     
         [HttpPatch(SubmodelRoutes.SUBMODEL + OutputModifier.METADATA, Name = "PatchSubmodelMetadata")]
@@ -183,9 +181,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodelMetadata([FromBody] ISubmodel submodel, [FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
+        public IActionResult PatchSubmodelMetadata([FromBody] ISubmodel submodel)
         {
-            throw new NotImplementedException();
+            if (submodel == null)
+                return ResultHandling.NullResult(nameof(submodel));
+
+            var result = serviceProvider.UpdateSubmodelMetadata(submodel);
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>

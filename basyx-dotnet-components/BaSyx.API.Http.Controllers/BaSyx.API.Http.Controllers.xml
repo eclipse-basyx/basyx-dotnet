@@ -330,13 +330,11 @@
             <response code="200">Requested Submodel</response>
             <response code="404">Submodel not found</response>       
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelMetadata(BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelMetadata(BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
             Updates the metadata attributes of the Submodel
             </summary>
             <param name="submodel">The metadata attributes of the Submodel object</param>
-            <param name="level">Determines the structural depth of the respective resource content</param>
-            <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>     
         </member>
