@@ -203,7 +203,7 @@ namespace BaSyx.Clients.AdminShell.Http
 
         public async Task<IResult> UpdateSubmodelMetadataAsync(ISubmodel submodel)
         {
-            Uri uri = GetPath(SubmodelRoutes.SUBMODEL_METADATA);
+            Uri uri = GetPath(SubmodelRoutes.METADATA);
             var request = CreateJsonContentRequest(uri, HttpMethod.Patch, submodel);
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
             var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
