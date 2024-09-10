@@ -424,7 +424,7 @@
             <returns></returns>
             <response code="200">List of found submodel elements</response>  
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElementsPath(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElementsPath(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel)">
             <summary>
             Returns all submodel elements including their hierarchy in the Path notation
             </summary>
