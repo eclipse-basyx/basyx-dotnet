@@ -93,9 +93,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return new Uri(path + requestPath);
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = default, RequestExtent extent = default)
+        public IResult<ISubmodel> RetrieveSubmodel()
         {
-            return RetrieveSubmodelAsync(level, extent).GetAwaiter().GetResult();
+            return RetrieveSubmodelAsync().GetAwaiter().GetResult();
         }
 
         public IResult UpdateSubmodel(ISubmodel submodel)

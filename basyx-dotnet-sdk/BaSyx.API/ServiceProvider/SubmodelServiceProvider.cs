@@ -612,7 +612,7 @@ namespace BaSyx.API.ServiceProvider
             return deleted;
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level, RequestExtent extent)
+        public IResult<ISubmodel> RetrieveSubmodel()
         {
             if (_submodel == null)
                 return new Result<ISubmodel>(false, new ErrorMessage("The service provider's inner Submodel object is null"));

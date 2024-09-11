@@ -706,9 +706,9 @@ namespace SubmodelClientServerTests
         }
 
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<ISubmodel> RetrieveSubmodel()
         {
-            return ((ISubmodelClient)Client).RetrieveSubmodel(level, extent);
+            return ((ISubmodelClient)Client).RetrieveSubmodel();
         }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
