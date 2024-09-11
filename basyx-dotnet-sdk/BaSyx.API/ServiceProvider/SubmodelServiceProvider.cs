@@ -629,9 +629,13 @@ namespace BaSyx.API.ServiceProvider
             {
                 Administration = submodel.Administration ?? _submodel.Administration,
                 Category = submodel.Category ?? _submodel.Category,
+                SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
+                SupplementalSemanticIds = submodel.SupplementalSemanticIds ?? _submodel.SupplementalSemanticIds,
+                Qualifiers = submodel.Qualifiers ?? _submodel.Qualifiers,
                 Description = submodel.Description ?? _submodel.Description,
                 DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
-                SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
+                EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications ?? _submodel.EmbeddedDataSpecifications,
+                ConceptDescription = submodel.ConceptDescription ?? _submodel.ConceptDescription,
                 SubmodelElements = submodel.SubmodelElements ?? _submodel.SubmodelElements
             };
 
