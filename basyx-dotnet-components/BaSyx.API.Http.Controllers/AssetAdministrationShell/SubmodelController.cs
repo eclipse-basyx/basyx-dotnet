@@ -329,8 +329,6 @@ namespace BaSyx.API.Http.Controllers
         /// Creates a new submodel element
         /// </summary>
         /// <param name="submodelElement">Requested submodel element</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="201">Submodel element created successfully</response>
         [HttpPost(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "PostSubmodelElement")]
@@ -341,7 +339,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 409)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PostSubmodelElement([FromBody] ISubmodelElement submodelElement, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult PostSubmodelElement([FromBody] ISubmodelElement submodelElement)
         {
             if (submodelElement == null)
                 return ResultHandling.NullResult(nameof(submodelElement));

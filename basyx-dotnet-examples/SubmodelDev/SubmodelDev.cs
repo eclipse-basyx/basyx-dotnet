@@ -330,37 +330,37 @@ namespace DevelopmentSubmodel
 							}
                         }
 					},
-					new SubmodelElementCollection("Collection_L1")
-					{
-						Value = 
-						{
-							Value =
-							{
-								new Property<string>("Property_String_Level_2", "Level 2 String"),
-								subBlob,
-								new SubmodelElementCollection("Collection_L2")
-								{
-									Value = 
-									{
-										Value =
-										{
-											new Property<string>("String_L3", "Level 3 String"),
-                                            new SubmodelElementCollection("Collection_L3")
-                                            {
-                                                Value =
-                                                {
-                                                    Value =
-                                                    {
-                                                        new Property<string>("String_L4", "Level 4 String"),
-                                                    }
-                                                }
-                                            }
-                                        }
-									}
-								}
-							}
-						}
-					}
+					//new SubmodelElementCollection("Collection_L1")
+					//{
+					//	Value = 
+					//	{
+					//		Value =
+					//		{
+					//			new Property<string>("Property_String_Level_2", "Level 2 String"),
+					//			subBlob,
+					//			new SubmodelElementCollection("Collection_L2")
+					//			{
+					//				Value = 
+					//				{
+					//					Value =
+					//					{
+					//						new Property<string>("String_L3", "Level 3 String"),
+     //                                       new SubmodelElementCollection("Collection_L3")
+     //                                       {
+     //                                           Value =
+     //                                           {
+     //                                               Value =
+     //                                               {
+     //                                                   new Property<string>("String_L4", "Level 4 String"),
+     //                                               }
+     //                                           }
+     //                                       }
+     //                                   }
+					//				}
+					//			}
+					//		}
+					//	}
+					//}
 				}
 			};
 
