@@ -29,6 +29,7 @@ using Microsoft.Extensions.FileProviders;
 using Range = BaSyx.Models.AdminShell.Range;
 using System.Text.Json.Serialization;
 using BaSyx.Models.Extensions.JsonConverters;
+using System.Collections.Generic;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -279,7 +280,19 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetSubmodelPath([FromQuery] RequestLevel level = default)
         {
-            throw new NotImplementedException();
+            var result = serviceProvider.RetrieveSubmodelElements();
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            string json = JsonSerializer.Serialize(result.Entity.Result, new JsonSerializerOptions()
+            {
+                Converters = {new FullPathConverter(new PathConverterOptions()
+                {
+                    RequestLevel = level
+                })}
+            });
+
+            return Content(json, "application/json");
         }
 
         /// <summary>

@@ -27,16 +27,20 @@ namespace BaSyx.Models.Extensions.JsonConverters
         public override void Write(Utf8JsonWriter writer, IElementContainer<ISubmodelElement> value, JsonSerializerOptions options)
         {
             writer.WriteStartArray();
-            foreach (IElementContainer<ISubmodelElement> element in value.Children) // Children is List of IElementContainers!
+
+            foreach (var element in value.Children) // Children is List of IElementContainers!
             {
                 JsonSerializer.Serialize(writer, element.Value, new JsonSerializerOptions()
                 {
                     Converters =
                     {
-                        new PathConverter(options: new PathConverterOptions() {EncloseInBrackets = false})
+                        new PathConverter(options: new PathConverterOptions()
+                        {
+                            RequestLevel = _converterOptions.RequestLevel,
+                            EncloseInBrackets = false
+                        })
                     }
                 });
-                
             }
 
             writer.WriteEndArray();

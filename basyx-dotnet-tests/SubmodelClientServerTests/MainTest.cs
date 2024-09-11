@@ -43,6 +43,8 @@ namespace SubmodelClientServerTests
             Client = new SubmodelHttpClient(new Uri(Server.ServerUrl));
         }
 
+        #region test cases
+
         [TestMethod]
         public void Test100_UpdateSubmodel()
         {
@@ -652,7 +654,6 @@ namespace SubmodelClientServerTests
 
             keys[0].Value.Should().BeEquivalentTo(submodel.Id.Id);
             keys[0].Type.Should().Be(KeyType.Submodel);
-
         }
 
         [TestMethod]
@@ -673,6 +674,10 @@ namespace SubmodelClientServerTests
             metadata.SemanticId.Should().BeEquivalentTo(submodel.SemanticId);
             metadata.SupplementalSemanticIds.Should().BeEquivalentTo(submodel.SupplementalSemanticIds);
         }
+        
+        #endregion
+
+        #region implementations
 
         private IElementContainer<ISubmodelElement> GetDynamicStructure(ISubmodelElementCollection baseSmc)
         {
@@ -841,5 +846,7 @@ namespace SubmodelClientServerTests
         {
             return ((ISubmodelClient)Client).GetInvocationResultAsync(idShortPath, requestId);
         }
+
+#endregion
     }
 }
