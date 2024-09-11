@@ -643,6 +643,37 @@ namespace SubmodelClientServerTests
             submodel.IdShort.Should().NotBeEquivalentTo(replaceSubmodel.IdShort);
         }
 
+        [TestMethod]
+        public void Test117_GetSubmodelReference()
+        {
+            var submodel = RetrieveSubmodel().Entity;
+            var reference = submodel.GetReference();
+            var keys = reference.Keys.ToList();
+
+            keys[0].Value.Should().BeEquivalentTo(submodel.Id.Id);
+            keys[0].Type.Should().Be(KeyType.Submodel);
+
+        }
+
+        [TestMethod]
+        public void Test118_GetSubmodelMetadata()
+        {
+            var submodel = RetrieveSubmodel().Entity;
+            var metadata = submodel.GetMetadata();
+
+            metadata.SubmodelElements.Should().BeNull();
+            metadata.Id.Should().BeEquivalentTo(submodel.Id);
+            metadata.Administration.Should().BeEquivalentTo(submodel.Administration);
+            metadata.Category.Should().BeEquivalentTo(submodel.Category);
+            metadata.Description.Should().BeEquivalentTo(submodel.Description);
+            metadata.DisplayName.Should().BeEquivalentTo(submodel.DisplayName);
+            metadata.EmbeddedDataSpecifications.Should().BeEquivalentTo(submodel.EmbeddedDataSpecifications);
+            metadata.Kind.Should().Be(submodel.Kind);
+            metadata.Qualifiers.Should().BeEquivalentTo(submodel.Qualifiers);
+            metadata.SemanticId.Should().BeEquivalentTo(submodel.SemanticId);
+            metadata.SupplementalSemanticIds.Should().BeEquivalentTo(submodel.SupplementalSemanticIds);
+        }
+
         private IElementContainer<ISubmodelElement> GetDynamicStructure(ISubmodelElementCollection baseSmc)
         {
             ElementContainer<ISubmodelElement> dynamicContainer = new ElementContainer<ISubmodelElement>(baseSmc.Parent, baseSmc, null);
@@ -673,7 +704,7 @@ namespace SubmodelClientServerTests
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodel(level, extent);
-        } 
+        }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
         {

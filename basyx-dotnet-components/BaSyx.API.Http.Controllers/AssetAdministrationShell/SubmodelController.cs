@@ -246,7 +246,6 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the Reference of the Submodel
         /// </summary>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">ValueOnly representation of the Submodel</response>     
         [HttpGet(SubmodelRoutes.SUBMODEL + OutputModifier.REFERENCE, Name = "GetSubmodelReference")]
@@ -255,9 +254,15 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelReference([FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult GetSubmodelReference()
         {
-            throw new NotImplementedException();
+            var result = serviceProvider.RetrieveSubmodel();
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            var reference = result.Entity.GetReference();
+            var json = JsonSerializer.Serialize(reference, _fullSerializerOptions);
+            return Content(json, "application/json");
         }
 
         /// <summary>

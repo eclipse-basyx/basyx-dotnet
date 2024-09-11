@@ -147,27 +147,27 @@ namespace BaSyx.API.ServiceProvider
 
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level, RequestExtent extent)
         {
-            throw new NotImplementedException();
+            return submodelClient.RetrieveSubmodel(level, extent);
         }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
         {
-            throw new NotImplementedException();
+            return submodelClient.UpdateSubmodel(submodel);
         }
 
         public IResult UpdateSubmodelMetadata(ISubmodel submodel)
         {
-            throw new NotImplementedException();
+            return submodelClient.UpdateSubmodelMetadata(submodel);
         }
 
         public IResult ReplaceSubmodel(ISubmodel submodel)
         {
-            throw new NotImplementedException();
+            return submodelClient.ReplaceSubmodel(submodel);
         }
 
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
-            throw new NotImplementedException();
+            return submodelClient.CreateSubmodelElement(rootIdShortPath, submodelElement);
         }
     }
 }

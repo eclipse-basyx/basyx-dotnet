@@ -90,6 +90,14 @@ namespace BaSyx.Models.Extensions
             return trimmedSubmodel;
         }
 
+        public static IReference GetReference(this ISubmodel submodel)
+        {
+            return new Reference(new Key(KeyType.Submodel, submodel.Id.ToString()))
+            {
+                Type = ReferenceType.ModelReference
+            };
+        }
+
         #endregion
     }
 }
