@@ -76,9 +76,9 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.InvokeOperation(idShortPath, invocationRequest, async);
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<ISubmodel> RetrieveSubmodel()
         {
-            return _submodelClient.RetrieveSubmodel(level, extent);
+            return _submodelClient.RetrieveSubmodel();
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)

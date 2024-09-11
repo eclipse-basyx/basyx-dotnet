@@ -40,7 +40,7 @@ namespace BaSyx.API.Clients
     {
         public static IResult<ISubmodel> RetrieveSubmodel(this ISubmodelClient submodelClient)
         {
-            return submodelClient.RetrieveSubmodel(RequestLevel.Deep, RequestExtent.WithoutBlobValue);
+            return submodelClient.RetrieveSubmodel();
         }
     }
 }
