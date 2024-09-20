@@ -414,20 +414,20 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_PatchSubmodelElementValueByPathValueOnly(submodelIdentifier, idShortPath, requestBody, level);
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PostSubmodelElementByPath(string, string, ISubmodelElement, RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PostSubmodelElementByPath(string, string, ISubmodelElement)"/>
         [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "ShellRepo_PostSubmodelElementByPath")]
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 201)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_PostSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult ShellRepo_PostSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
             if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_PostSubmodelElementByPath(submodelIdentifier, idShortPath, submodelElement, level, extent);
+            return service.Shell_PostSubmodelElementByPath(submodelIdentifier, idShortPath, submodelElement);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodelElementByPath(string, string, ISubmodelElement, RequestLevel, RequestExtent)"/>

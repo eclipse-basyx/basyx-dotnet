@@ -496,8 +496,6 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="submodelElement">Requested submodel element</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="201">Submodel element created successfully</response>
         [HttpPost(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "PostSubmodelElementByPath")]
@@ -509,7 +507,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 409)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PostSubmodelElementByPath(string idShortPath, [FromBody] ISubmodelElement submodelElement, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult PostSubmodelElementByPath(string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
             if (string.IsNullOrEmpty(idShortPath))
                 return ResultHandling.NullResult(nameof(idShortPath));
