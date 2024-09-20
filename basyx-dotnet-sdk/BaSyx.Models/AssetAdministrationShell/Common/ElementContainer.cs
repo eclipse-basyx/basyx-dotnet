@@ -483,21 +483,15 @@ namespace BaSyx.Models.AdminShell
         /// <exception cref="ArgumentNullException"></exception>
         private string GetIdShortOrIndex(TElement element)
         {
-            string idShortOrIndex = "";
-            if (string.IsNullOrEmpty(element.IdShort))
-            {
-                if (this.Value.ModelType == ModelType.SubmodelElementList)
-                {
-                    int newIndex = _children.Count; // index starts with 0!
-                    idShortOrIndex = newIndex.ToString();
-                }
-                else
-                    throw new ArgumentNullException(nameof(element.IdShort));
-            }
-            else
-                idShortOrIndex = element.IdShort;
+            //if container is a list, the index is always returned (children of the list must not have short IDs)
+            if (Value?.ModelType == ModelType.SubmodelElementList)
+                return _children.Count.ToString(); // index starts with 0!
 
-            return idShortOrIndex;
+            //if the container is a collection and the element does not have a short ID, this is an error (the children of the collection must have short IDs)
+            if (string.IsNullOrEmpty(element.IdShort))
+                throw new ArgumentNullException(nameof(element.IdShort));
+
+            return element.IdShort;
         }
 
         public virtual IResult<TElement> CreateOrUpdate(string idShortPath, TElement element)
