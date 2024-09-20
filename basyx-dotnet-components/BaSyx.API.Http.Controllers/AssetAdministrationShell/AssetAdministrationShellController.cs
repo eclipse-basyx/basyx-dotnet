@@ -401,20 +401,20 @@ namespace BaSyx.API.Http.Controllers
             return service.GetSubmodelElementByPathMetadata(idShortPath, level);
         }
 
-        /// <inheritdoc cref="SubmodelController.PostSubmodelElementByPath(string, ISubmodelElement, RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="SubmodelController.PostSubmodelElementByPath(string, ISubmodelElement)"/>
         [HttpPost(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "Shell_PostSubmodelElementByPath")]
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 201)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult Shell_PostSubmodelElementByPath(string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult Shell_PostSubmodelElementByPath(string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.PostSubmodelElementByPath(idShortPath, submodelElement, level, extent);
+            return service.PostSubmodelElementByPath(idShortPath, submodelElement);
         }
 
         /// <inheritdoc cref="SubmodelController.PutSubmodelElementByPath(string, ISubmodelElement, RequestLevel, RequestExtent)"/>
