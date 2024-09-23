@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using static NLog.LayoutRenderers.Wrappers.ReplaceLayoutRendererWrapper;
 
 namespace SubmodelClientServerTests
 {
@@ -657,6 +658,48 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
+        [DataRow("Property_String_1", true)]
+        [DataRow(null, false)]
+        public void Test119_PostSubmodelElementByPathCollection(string? elementId, bool expectedResult)
+        {
+            var containerId = "TestSubmodelElementCollection";
+
+            var sme = RetrieveSubmodelElement("TestSubmodelElementCollection").Entity;
+            var originalCount = ((SubmodelElementCollection)sme).Count();
+
+            ISubmodelElement element = new Property<string>(elementId, "new added string");
+            var result = CreateSubmodelElement(containerId, element);
+            result.Success.Should().Be(expectedResult);
+            
+            sme = RetrieveSubmodelElement(containerId).Entity;
+            var newCount = ((SubmodelElementCollection)sme).Count();
+
+            var count = newCount == originalCount + 1;
+            count.Should().Be(expectedResult);
+        }
+
+        [TestMethod]
+        [DataRow("Property_String_1", false)]
+        [DataRow(null, true)]
+        public void Test119_PostSubmodelElementByPathList(string? elementId, bool expectedResult)
+        {
+            var containerId = "NestedTestCollection.MySubmodelElementList";
+            
+            var sme = RetrieveSubmodelElement(containerId).Entity;
+            var originalCount = ((SubmodelElementList)sme).Count();
+
+            ISubmodelElement element = new Property<string>(elementId, "new added string");
+            var result = CreateSubmodelElement(containerId, element);
+            result.Success.Should().Be(expectedResult);
+
+            sme = RetrieveSubmodelElement(containerId).Entity;
+            var newCount = ((SubmodelElementList)sme).Count();
+
+            var count = newCount == originalCount + 1;
+            count.Should().Be(expectedResult);
+        }
+
+        [TestMethod]
         public void Test118_GetSubmodelMetadata()
         {
             var submodel = RetrieveSubmodel().Entity;
@@ -726,6 +769,11 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).ReplaceSubmodel(submodel);
         }
 
+        public IResult PostSubmodelElementByPath(string rootIdShortPath, ISubmodelElement submodelElement)
+        {
+            return ((ISubmodelClient)Client).CreateSubmodelElement(rootIdShortPath, submodelElement);
+        }
+
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return ((ISubmodelClient)Client).CreateSubmodelElement(rootIdShortPath, submodelElement);
@@ -755,6 +803,7 @@ namespace SubmodelClientServerTests
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElements(limit, cursor);
         }
+
 
         public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
         {

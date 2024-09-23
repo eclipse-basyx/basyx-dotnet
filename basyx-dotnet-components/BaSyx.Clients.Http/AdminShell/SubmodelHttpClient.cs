@@ -220,7 +220,7 @@ namespace BaSyx.Clients.AdminShell.Http
             if (rootIdShortPath == ".")
                 uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS);
             else
-                uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS, rootIdShortPath);
+                uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, rootIdShortPath);
 
             var request = CreateJsonContentRequest(uri, HttpMethod.Post, submodelElement);
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
