@@ -303,23 +303,23 @@ namespace DevelopmentSubmodel
                         {
                             Value =
                             {
-                                new Property<string>(null, "Level 2 String"),
-                                new Property<int>(null, 123),
+                                //new Property<string>(null, "Level 2 String"),
+                                //new Property<int>(null, 123),
                                 new SubmodelElementList(null)
                                 {
                                     Value =
                                     {
                                         Value =
                                         {
-                                            new Property<string>(null, "Level 3 String"),
-                                            new Property<int>(null, 456),
+                                            //new Property<string>(null, "Level 3 String"),
+                                            //new Property<int>(null, 456),
                                             new SubmodelElementList(null)
                                             {
                                                 Value =
                                                 {
                                                     Value =
                                                     {
-                                                        new Property<string>(null, "Level 4 String"),
+                                                        //new Property<string>(null, "Level 4 String"),
                                                         new Property<int>(null, 789),
                                                     }
                                                 }
@@ -336,22 +336,22 @@ namespace DevelopmentSubmodel
 						{
 							Value =
 							{
-								new Property<string>("Property_String_Level_2", "Level 2 String"),
-								subBlob,
+								//new Property<string>("Property_String_Level_2", "Level 2 String"),
+								//subBlob,
 								new SubmodelElementCollection("Collection_L2")
 								{
 									Value =
 									{
 										Value =
 										{
-											new Property<string>("String_L3", "Level 3 String"),
+											//new Property<string>("String_L3", "Level 3 String"),
 											new SubmodelElementCollection("Collection_L3")
 											{
 												Value =
 												{
 													Value =
 													{
-														new Property<string>("String_L4", "Level 4 String"),
+														//new Property<string>("String_L4", "Level 4 String"),
 													}
 												}
 											}

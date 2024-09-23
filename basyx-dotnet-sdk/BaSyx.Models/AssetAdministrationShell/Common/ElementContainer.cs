@@ -443,36 +443,44 @@ namespace BaSyx.Models.AdminShell
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
 
-            string idShortOrIndex = GetIdShortOrIndex(element);
+            var isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
 
-            if (this[idShortOrIndex] == null)
+            //prevent to create list children with short ID
+            if (isListParent && !string.IsNullOrEmpty(element.IdShort))
+                throw new InvalidOperationException($"List element children must not have short IDs '{element.IdShort}'");
+
+            //prevent to create collection children without short ID
+            if (!isListParent && string.IsNullOrEmpty(element.IdShort))
+                throw new ArgumentNullException(nameof(element.IdShort));
+
+            var idShortOrIndex = GetIdShortOrIndex(element);
+
+            //element with same short ID exists in container
+            if (this[idShortOrIndex] != null)
+                return;
+            
+            element.Parent = this.Parent;
+            
+            IElementContainer<TElement> node;
+            if (element is IElementContainer<TElement> subElements)
             {
-                element.Parent = this.Parent;
-                bool isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
-                IElementContainer<TElement> node;
-                if (element is IElementContainer<TElement> subElements)
-                {
-                    subElements.Parent = this.Parent;
-                    subElements.ParentContainer = this;
+                subElements.Parent = this.Parent;
+                subElements.ParentContainer = this;
+                subElements.AppendRootPath(this.Path, isListParent);
+                node = subElements;
+            }
+            else
+            {
+                node = new ElementContainer<TElement>(Parent, element, this);
+                if (isListParent)
+                    node.AppendRootPath(this.Path, true);
+            }
 
-                    if (isListParent) 
-                        Console.WriteLine("");
-                    subElements.AppendRootPath(this.Path, isListParent);
+            // set index of nested SubmodelElements of type IElementContainer
+            node.Index = _children.Count;
 
-                    node = subElements;
-                    // set index of nested SubmodelElements of type IElementContainer
-                    node.Index = _children.Count;
-                }
-                else
-                {
-                    node = new ElementContainer<TElement>(Parent, element, this);
-                    if (isListParent)
-                        node.AppendRootPath(this.Path, true);
-                }
-
-                this._children.Add(node);
-                OnCreated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Created));
-            } 
+            _children.Add(node);
+            OnCreated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Created));
         }
 
         /// <summary>
