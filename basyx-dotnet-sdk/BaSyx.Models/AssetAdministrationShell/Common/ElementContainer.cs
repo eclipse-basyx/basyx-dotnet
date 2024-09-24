@@ -246,6 +246,26 @@ namespace BaSyx.Models.AdminShell
             }
         }
 
+        /// <summary>
+        /// Get a direct child of the current container
+        /// </summary>
+        /// <param name="idShortOrPath">IdShort or Path for SubmodelElementList children</param>
+        /// <returns>Child element</returns>
+        public IElementContainer<TElement> GetDirectChild(string idShortOrPath)
+        {
+            if (_children == null || _children.Count == 0)
+                return null;
+
+            IElementContainer<TElement> child = null;
+
+            if (Value?.ModelType == ModelType.SubmodelElementList)
+                child = _children.FirstOrDefault(c => c.Path == idShortOrPath);
+            else
+                child = _children.FirstOrDefault(c => c.IdShort == idShortOrPath);
+
+            return child;
+        }
+
         public IElementContainer<TElement> GetChild(string idShortPath)
         {
             if (string.IsNullOrEmpty(idShortPath))
@@ -561,9 +581,20 @@ namespace BaSyx.Models.AdminShell
                 return this.Create(element);
             else
             {
-                if (HasChild(idShortPath))
+                var directChild = GetDirectChild(idShortPath);
+                if (directChild != null)
                 {
-                    int index = _children.FindIndex(c => c.IdShort == idShortPath);
+                    var isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
+
+                    //prevent to create list children with short ID
+                    if (isListParent && !string.IsNullOrEmpty(element.IdShort))
+                        return new Result<TElement>(false, new ErrorMessage($"List element child must not have short ID '{element.IdShort}'"));
+
+                    //prevent to create collection children without short ID
+                    if (!isListParent && string.IsNullOrEmpty(element.IdShort))
+                        return new Result<TElement>(false, new ErrorMessage($"{nameof(element.IdShort)} is null or empty"));
+
+                    var index = directChild.Index;
                     if (index != -1)
                     {
                         if(element is IElementContainer<TElement> containerElement)
@@ -575,10 +606,16 @@ namespace BaSyx.Models.AdminShell
                         return new Result<TElement>(true, element);
                     }
                 }
+
                 var child = GetChild(idShortPath);
                 if (child != null)
                 {
-                    return child.ParentContainer.Update(child.IdShort, element);
+                    var idShort = child.IdShort;
+
+                    if (string.IsNullOrEmpty(child.IdShort))
+                        idShort = child.Path;
+
+                    return child.ParentContainer.Update(idShort, element);
                 }
                 return new Result<TElement>(false, new NotFoundMessage($"Element {idShortPath} not found"));
             }
