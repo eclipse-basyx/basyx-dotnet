@@ -519,7 +519,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Updates an existing submodel element at a specified path within submodel elements hierarchy
+        /// Replaces an existing submodel element at a specified path within the submodel element hierarchy
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="submodelElement">Requested submodel element</param>
