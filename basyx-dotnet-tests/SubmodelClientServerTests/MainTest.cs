@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 
 namespace SubmodelClientServerTests
 {
@@ -725,6 +726,55 @@ namespace SubmodelClientServerTests
             ReplaceSubmodel(Submodel);
         }
 
+        [TestMethod]
+        [DataRow("", "TestProperty2", "ReplacedProperty", true)]
+        [DataRow("NestedTestCollection", "MySubStringProperty", "ReplacedProperty", true)]
+        [DataRow("NestedTestCollection.MySubmodelElementList", "[1]", null, true)]
+        [DataRow("NestedTestCollection", "MySubStringProperty", null, false)]
+        [DataRow("NestedTestCollection.MySubmodelElementList", "[1]", "ReplacedProperty", false)]
+        public void Test120_PutSubmodelElementByPath(string path, string elementToReplace, string? elementReplacing, bool expectedResult)
+        {
+            var elementToReplacePath = elementToReplace;
+            if (!string.IsNullOrEmpty(path))
+            {
+                if (elementToReplace.StartsWith("["))
+                    elementToReplacePath = $"{path}{elementToReplace}";
+                else
+                    elementToReplacePath = $"{path}.{elementToReplace}";
+            }
+
+            var sme = RetrieveSubmodelElement(elementToReplacePath).Entity;
+
+            ISubmodelElement element = new Property<string>(elementReplacing, "new added string");
+            var result = UpdateSubmodelElement(elementToReplacePath, element);
+
+            result.Success.Should().Be(expectedResult);
+
+            //exit if not updated
+            if (!expectedResult)
+                return;
+
+            var replacedElementPath = elementReplacing;
+            if (!string.IsNullOrEmpty(path))
+            {
+                if (elementToReplace.StartsWith("["))
+                    replacedElementPath = $"{path}{elementToReplace}";
+                else
+                    replacedElementPath = $"{path}.{elementReplacing}";
+            }
+
+            var rsme = RetrieveSubmodelElement(replacedElementPath).Entity;
+
+            if (sme.IdShort == null)
+                rsme.IdShort.Should().BeNull();
+            else
+                sme.IdShort.Should().NotBeEquivalentTo(rsme.IdShort);
+
+            sme.GetValue<string>().Should().NotBeEquivalentTo(rsme.GetValue<string>());
+            //switch back to original model for following tests
+            ReplaceSubmodel(Submodel);
+        }
+        
         #endregion
 
         #region implementations

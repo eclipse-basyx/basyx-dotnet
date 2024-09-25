@@ -597,12 +597,17 @@ namespace BaSyx.Models.AdminShell
                     var index = directChild.Index;
                     if (index != -1)
                     {
-                        if(element is IElementContainer<TElement> containerElement)
-                            _children[index] = containerElement;
+                        if (element is IElementContainer<TElement> containerElement)
+                        {
+                        }
                         else
-							_children[index] = new ElementContainer<TElement>(Parent, element, this);
+                            containerElement = new ElementContainer<TElement>(Parent, element, this);
 
-						OnUpdated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Updated));
+                        //set index for new child
+                        containerElement.Index = index;
+                        _children[index] = containerElement;
+
+                        OnUpdated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Updated));
                         return new Result<TElement>(true, element);
                     }
                 }
