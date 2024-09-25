@@ -138,7 +138,7 @@ namespace SimpleAssetAdministrationShell
 
                            if(computingTime.HasValue)
                             await Task.Delay(computingTime.Value, cancellationToken);
-                     
+
                            if(cancellationToken.IsCancellationRequested)
                                return new OperationResult(false, new Message(MessageType.Information, "Cancellation was requested"));
 
@@ -233,6 +233,9 @@ namespace SimpleAssetAdministrationShell
                                                 Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
                                                 Get = prop => { return Task.FromResult("MyListStringPropertyValue2"); }
                                             },
+                                            new SubmodelElementList(null)
+                                            {
+                                            }
                                         }
                                     }
                                 }

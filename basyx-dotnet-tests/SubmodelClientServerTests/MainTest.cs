@@ -592,7 +592,8 @@ namespace SubmodelClientServerTests
                 SubmodelElements = new ElementContainer<ISubmodelElement>
                 {
                     new Property<string>("New_String_Property", "Replaced"),
-                    new Property<int>("New_Int_Property", 262)
+                    new Property<int>("New_Int_Property", 262),
+                    new Property<int>("Another_Int_Property", 262)
                 }
             };
 
@@ -600,9 +601,12 @@ namespace SubmodelClientServerTests
             replaced.Success.Should().BeTrue();
 
             var submodel = RetrieveSubmodel().Entity;
-            submodel.SubmodelElements.Count.Should().Be(2);
+            submodel.SubmodelElements.Count.Should().Be(3);
             submodel.Description.Should().BeEquivalentTo(replaceSubmodel.Description);
             submodel.IdShort.Should().BeEquivalentTo(idShort);
+
+            // switch back to original model for following tests
+            ReplaceSubmodel(Submodel);
         }
 
 
@@ -657,48 +661,6 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
-        [DataRow("Property_String_1", true)]
-        [DataRow(null, false)]
-        public void Test119_PostSubmodelElementByPathCollection(string? elementId, bool expectedResult)
-        {
-            var containerId = "TestSubmodelElementCollection";
-
-            var sme = RetrieveSubmodelElement("TestSubmodelElementCollection").Entity;
-            var originalCount = ((SubmodelElementCollection)sme).Count();
-
-            ISubmodelElement element = new Property<string>(elementId, "new added string");
-            var result = CreateSubmodelElement(containerId, element);
-            result.Success.Should().Be(expectedResult);
-            
-            sme = RetrieveSubmodelElement(containerId).Entity;
-            var newCount = ((SubmodelElementCollection)sme).Count();
-
-            var count = newCount == originalCount + 1;
-            count.Should().Be(expectedResult);
-        }
-
-        [TestMethod]
-        [DataRow("Property_String_1", false)]
-        [DataRow(null, true)]
-        public void Test119_PostSubmodelElementByPathList(string? elementId, bool expectedResult)
-        {
-            var containerId = "NestedTestCollection.MySubmodelElementList";
-            
-            var sme = RetrieveSubmodelElement(containerId).Entity;
-            var originalCount = ((SubmodelElementList)sme).Count();
-
-            ISubmodelElement element = new Property<string>(elementId, "new added string");
-            var result = CreateSubmodelElement(containerId, element);
-            result.Success.Should().Be(expectedResult);
-
-            sme = RetrieveSubmodelElement(containerId).Entity;
-            var newCount = ((SubmodelElementList)sme).Count();
-
-            var count = newCount == originalCount + 1;
-            count.Should().Be(expectedResult);
-        }
-
-        [TestMethod]
         public void Test118_GetSubmodelMetadata()
         {
             var submodel = RetrieveSubmodel().Entity;
@@ -716,7 +678,53 @@ namespace SubmodelClientServerTests
             metadata.SemanticId.Should().BeEquivalentTo(submodel.SemanticId);
             metadata.SupplementalSemanticIds.Should().BeEquivalentTo(submodel.SupplementalSemanticIds);
         }
-        
+
+        [TestMethod]
+        [DataRow("TestSubmodelElementCollection", "Property_String_1", true)]
+        [DataRow("NestedTestCollection.MySubTestCollection", "Property_String_1", true)]
+        [DataRow("TestSubmodelElementCollection", null, false)]
+        public void Test119_PostSubmodelElementByPathCollection(string containerId, string? elementId, bool expectedResult)
+        {
+            var sme = RetrieveSubmodelElement(containerId).Entity;
+            var originalCount = ((SubmodelElementCollection)sme).Count();
+
+            ISubmodelElement element = new Property<string>(elementId, "new added string");
+            var result = CreateSubmodelElement(containerId, element);
+            result.Success.Should().Be(expectedResult);
+            
+            sme = RetrieveSubmodelElement(containerId).Entity;
+            var newCount = ((SubmodelElementCollection)sme).Count();
+
+            var count = newCount == originalCount + 1;
+            count.Should().Be(expectedResult);            
+            
+            // switch back to original model for following tests
+            ReplaceSubmodel(Submodel);
+        }
+
+        [TestMethod]
+        [DataRow("NestedTestCollection.MySubmodelElementList", "Property_String_1", false)]
+        [DataRow("NestedTestCollection.MySubmodelElementList[2]", "Property_String_1", false)]
+        [DataRow("NestedTestCollection.MySubmodelElementList", null, true)]
+        public void Test119_PostSubmodelElementByPathList(string containerId, string? elementId, bool expectedResult)
+        {
+            var sme = RetrieveSubmodelElement(containerId).Entity;
+            var originalCount = ((SubmodelElementList)sme).Count();
+
+            ISubmodelElement element = new Property<string>(elementId, "new added string");
+            var result = CreateSubmodelElement(containerId, element);
+            result.Success.Should().Be(expectedResult);
+
+            sme = RetrieveSubmodelElement(containerId).Entity;
+            var newCount = ((SubmodelElementList)sme).Count();
+
+            var count = newCount == originalCount + 1;
+            count.Should().Be(expectedResult);
+
+            // switch back to original model for following tests
+            ReplaceSubmodel(Submodel);
+        }
+
         #endregion
 
         #region implementations
@@ -766,11 +774,6 @@ namespace SubmodelClientServerTests
         public IResult ReplaceSubmodel(ISubmodel submodel)
         {
             return ((ISubmodelClient)Client).ReplaceSubmodel(submodel);
-        }
-
-        public IResult PostSubmodelElementByPath(string rootIdShortPath, ISubmodelElement submodelElement)
-        {
-            return ((ISubmodelClient)Client).CreateSubmodelElement(rootIdShortPath, submodelElement);
         }
 
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
