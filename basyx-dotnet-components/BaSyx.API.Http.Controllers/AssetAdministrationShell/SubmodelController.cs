@@ -915,7 +915,8 @@ namespace BaSyx.API.Http.Controllers
                     return File(file.CreateReadStream(), contentType, fileNameOnly);
                 }                   
             }
-            return NotFound();
+
+            return NotFound(new { message = "Physical file not found", itemId = file.PhysicalPath});
         }
 
 
@@ -977,7 +978,29 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 404)]
         public IActionResult DeleteFileByPath(string idShortPath)
         {
-           throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+
+            var fileElementRetrieved = serviceProvider.RetrieveSubmodelElement(idShortPath);
+            if (!fileElementRetrieved.Success || fileElementRetrieved.Entity == null)
+                return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
+
+            if (fileElementRetrieved.Entity.ModelType != ModelType.File)
+            {
+                Result result = new Result(false, new ErrorMessage($"ModelType of {idShortPath} is not File but {fileElementRetrieved.Entity.ModelType}"));
+                return result.CreateActionResult(CrudOperation.Retrieve);
+            }
+
+            IFileElement fileElement = fileElementRetrieved.Entity.Cast<IFileElement>();
+            string fileName = fileElement.Value.Value.TrimStart('/');
+
+            IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
+            var file = fileProvider.GetFileInfo(fileName);
+            
+            if (file.Exists && !string.IsNullOrEmpty(file.PhysicalPath))
+                System.IO.File.Delete(file.PhysicalPath);
+
+            return NotFound(new { message = "Physical file not found", itemId = file.PhysicalPath });
         }
 
         /// <summary>
