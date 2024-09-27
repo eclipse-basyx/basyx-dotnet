@@ -24,7 +24,6 @@ using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 
 namespace SubmodelClientServerTests
 {

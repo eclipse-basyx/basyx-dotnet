@@ -18,7 +18,6 @@ using System.Web;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using System.Linq;
 using System.IO;
 using System.Text.Json.Nodes;
 using System.Text.Json;
@@ -27,9 +26,7 @@ using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
 using Range = BaSyx.Models.AdminShell.Range;
-using System.Text.Json.Serialization;
 using BaSyx.Models.Extensions.JsonConverters;
-using System.Collections.Generic;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -947,6 +944,12 @@ namespace BaSyx.API.Http.Controllers
             var fileElementRetrieved = serviceProvider.RetrieveSubmodelElement(idShortPath);
             if(!fileElementRetrieved.Success || fileElementRetrieved.Entity == null)
                 return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
+            
+            if (fileElementRetrieved.Entity.ModelType != ModelType.File)
+            {
+                Result result = new Result(false, new ErrorMessage($"ModelType of {idShortPath} is not File but {fileElementRetrieved.Entity.ModelType}"));
+                return result.CreateActionResult(CrudOperation.Retrieve);
+            }
 
             IFileElement fileElement = fileElementRetrieved.Entity.Cast<IFileElement>();
             string fileName = fileElement.Value.Value.TrimStart('/');

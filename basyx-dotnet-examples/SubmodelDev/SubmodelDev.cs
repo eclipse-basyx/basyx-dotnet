@@ -193,7 +193,7 @@ namespace DevelopmentSubmodel
 
 			var file = new FileElement("File")
 			{
-			    Value = new FileElementValue("/HelloAssetAdministrationShell.pdf", "application/pdf"),
+			    Value = new FileElementValue("application/pdf", "/AttachmentTestPDF.pdf"),
 			};
 
 			var refElement = new ReferenceElement("ReferenceElement")
@@ -290,7 +290,7 @@ namespace DevelopmentSubmodel
      //               multiLang, 
 					//range,
 					//blob,
-					//file,
+					file,
 					//relationship,
 					//operation,
 					//file,
