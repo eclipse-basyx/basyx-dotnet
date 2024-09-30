@@ -653,7 +653,7 @@ namespace SubmodelClientServerTests
         public void Test117_GetSubmodelReference()
         {
             var submodel = RetrieveSubmodel().Entity;
-            var reference = submodel.GetReference();
+            var reference = submodel.CreateReference();
             var keys = reference.Keys.ToList();
 
             keys[0].Value.Should().BeEquivalentTo(submodel.Id.Id);

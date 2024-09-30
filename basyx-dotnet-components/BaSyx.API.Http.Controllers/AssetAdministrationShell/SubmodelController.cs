@@ -258,7 +258,7 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            var reference = result.Entity.GetReference();
+            var reference = result.Entity.CreateReference();
             var json = JsonSerializer.Serialize(reference, _fullSerializerOptions);
             return Content(json, "application/json");
         }
