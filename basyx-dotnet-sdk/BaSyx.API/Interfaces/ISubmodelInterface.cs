@@ -35,6 +35,8 @@ namespace BaSyx.API.Interfaces
 
         IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath);
 
+        IResult<IReference> RetrieveSubmodelElementReference(string idShortPath);
+
         IResult UpdateSubmodelElementValue(string idShortPath, ValueScope value);
 
         IResult DeleteSubmodelElement(string idShortPath);

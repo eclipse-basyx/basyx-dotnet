@@ -130,6 +130,11 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.RetrieveSubmodelElementValue(submodelElementId);
         }
 
+        public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
+        {
+            return submodelClient.RetrieveSubmodelElementReference(idShortPath);
+        }
+
         public IResult DeleteSubmodelElement(string submodelElementId)
         {
             return submodelClient.DeleteSubmodelElement(submodelElementId);

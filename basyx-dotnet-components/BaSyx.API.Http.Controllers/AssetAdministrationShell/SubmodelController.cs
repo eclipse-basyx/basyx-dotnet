@@ -822,7 +822,6 @@ namespace BaSyx.API.Http.Controllers
         /// Returns the Reference of a specific submodel element from the Submodel at a specified path
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">Requested submodel element in its ValueOnly representation</response>
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.REFERENCE, Name = "GetSubmodelElementByPathReference")]
@@ -832,9 +831,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelElementByPathReference(string idShortPath, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult GetSubmodelElementByPathReference(string idShortPath)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+
+            var result = serviceProvider.RetrieveSubmodelElementReference(idShortPath);
+            return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
         /// <summary>

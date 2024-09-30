@@ -517,12 +517,11 @@
             <response code="204">Submodel element updated successfully</response>
             <response code="400">Bad Request</response>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathReference(System.String,BaSyx.Models.AdminShell.RequestLevel)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathReference(System.String)">
             <summary>
             Returns the Reference of a specific submodel element from the Submodel at a specified path
             </summary>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
-            <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
             <response code="200">Requested submodel element in its ValueOnly representation</response>
         </member>

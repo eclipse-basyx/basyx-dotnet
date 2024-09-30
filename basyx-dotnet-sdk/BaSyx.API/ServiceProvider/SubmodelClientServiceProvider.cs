@@ -94,7 +94,12 @@ namespace BaSyx.API.ServiceProvider
         public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
         {
             return _submodelClient.RetrieveSubmodelElementValue(idShortPath);
-        }   
+        }
+
+        public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
+        {
+            return _submodelClient.RetrieveSubmodelElementReference(idShortPath);
+        }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
         {

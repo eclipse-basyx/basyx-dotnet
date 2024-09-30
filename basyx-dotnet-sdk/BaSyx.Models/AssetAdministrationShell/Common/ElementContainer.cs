@@ -151,6 +151,18 @@ namespace BaSyx.Models.AdminShell
 
         public bool IsReadOnly => false;
 
+        public List<IKey> RetrieveReferenceKeys()
+        {
+            var keys = new List<IKey>();
+
+            if (ParentContainer != null)
+                keys.AddRange(ParentContainer.RetrieveReferenceKeys());
+
+            if (Value != null)
+                keys.Add(new Key(Key.GetKeyElementFromType(Value.GetType()), Value.IdShort));
+
+            return keys;
+        }
 
         public void AppendRootPath(string rootPath, bool rootIsList)
         {

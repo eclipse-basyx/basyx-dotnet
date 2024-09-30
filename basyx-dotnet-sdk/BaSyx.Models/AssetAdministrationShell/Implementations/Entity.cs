@@ -206,6 +206,11 @@ namespace BaSyx.Models.AdminShell
             return Value.Statements.GetChild(idShortPath);
         }
 
+        public List<IKey> RetrieveReferenceKeys()
+        {
+            return Value.Statements.RetrieveReferenceKeys();
+        }
+
         public void Remove(string idShort)
         {
             Value.Statements.Remove(idShort);

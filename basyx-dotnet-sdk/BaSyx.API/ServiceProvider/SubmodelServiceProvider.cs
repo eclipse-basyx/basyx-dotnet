@@ -582,6 +582,25 @@ namespace BaSyx.API.ServiceProvider
             //    return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
         }
 
+        public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
+        {
+            if (_submodel == null)
+                return new Result<IReference>(false, new NotFoundMessage("Submodel"));
+
+            var submodelElement = _submodel.SubmodelElements.GetChild(idShortPath);
+            if (submodelElement == null)
+                return new Result<IReference>(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
+
+
+            var keys = new List<IKey>();
+            keys.AddRange(_submodel.CreateReference().Keys);
+            keys.AddRange(submodelElement.RetrieveReferenceKeys());
+
+            var reference = new Reference(keys);
+            reference.Type = ReferenceType.ModelReference;
+            return new Result<IReference>(true, reference);
+        }
+
         public IResult UpdateSubmodelElementValue(string submodelElementId, ValueScope value)
         {
             if (_submodel == null)

@@ -144,6 +144,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return RetrieveSubmodelElementValueAsync(idShortPath).GetAwaiter().GetResult();
         }
 
+        public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
+        {
+            return RetrieveSubmodelElementReferenceAsync(idShortPath).GetAwaiter().GetResult();
+        }
+
         public IResult<List<string>> RetrieveSubmodelElementPath(string idShortPath, RequestLevel level = RequestLevel.Deep)
         {
             return RetrieveSubmodelElementPathAsync(idShortPath, level).GetAwaiter().GetResult();
@@ -292,6 +297,16 @@ namespace BaSyx.Clients.AdminShell.Http
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
             var result = await EvaluateResponseAsync<ValueScope>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();  
+            return result;
+        }
+
+        public async Task<IResult<IReference>> RetrieveSubmodelElementReferenceAsync(string idShortPath)
+        {
+            Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.REFERENCE, idShortPath);
+            var request = CreateRequest(uri, HttpMethod.Get);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<IReference>(response, response.Entity).ConfigureAwait(false);
+            response?.Entity?.Dispose();
             return result;
         }
 
