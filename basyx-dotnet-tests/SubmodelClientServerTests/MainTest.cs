@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Security.Cryptography.Xml;
 
 namespace SubmodelClientServerTests
 {
@@ -656,7 +657,7 @@ namespace SubmodelClientServerTests
             var reference = submodel.CreateReference();
             var keys = reference.Keys.ToList();
 
-            keys[0].Value.Should().BeEquivalentTo(submodel.Id.Id);
+            keys[0].Value.Should().Be(submodel.Id.Id);
             keys[0].Type.Should().Be(KeyType.Submodel);
         }
 
@@ -667,15 +668,15 @@ namespace SubmodelClientServerTests
             var metadata = submodel.GetMetadata();
 
             metadata.SubmodelElements.Should().BeNull();
-            metadata.Id.Should().BeEquivalentTo(submodel.Id);
-            metadata.Administration.Should().BeEquivalentTo(submodel.Administration);
-            metadata.Category.Should().BeEquivalentTo(submodel.Category);
+            metadata.Id.Should().Be(submodel.Id);
+            metadata.Administration.Should().Be(submodel.Administration);
+            metadata.Category.Should().Be(submodel.Category);
             metadata.Description.Should().BeEquivalentTo(submodel.Description);
             metadata.DisplayName.Should().BeEquivalentTo(submodel.DisplayName);
             metadata.EmbeddedDataSpecifications.Should().BeEquivalentTo(submodel.EmbeddedDataSpecifications);
             metadata.Kind.Should().Be(submodel.Kind);
             metadata.Qualifiers.Should().BeEquivalentTo(submodel.Qualifiers);
-            metadata.SemanticId.Should().BeEquivalentTo(submodel.SemanticId);
+            metadata.SemanticId.Should().Be(submodel.SemanticId);
             metadata.SupplementalSemanticIds.Should().BeEquivalentTo(submodel.SupplementalSemanticIds);
         }
 
@@ -767,13 +768,50 @@ namespace SubmodelClientServerTests
             if (sme.IdShort == null)
                 rsme.IdShort.Should().BeNull();
             else
-                sme.IdShort.Should().NotBeEquivalentTo(rsme.IdShort);
+                sme.IdShort.Should().Be(rsme.IdShort);
 
-            sme.GetValue<string>().Should().NotBeEquivalentTo(rsme.GetValue<string>());
+            sme.GetValue<string>().Should().Be(rsme.GetValue<string>());
             //switch back to original model for following tests
             ReplaceSubmodel(Submodel);
         }
-        
+
+        [TestMethod]
+        [DataRow("", false, KeyType.Entity)]
+        [DataRow("TestProperty1", true, KeyType.Property)]
+        [DataRow("NestedTestCollection.MySubStringProperty", true, KeyType.Property)]
+        [DataRow("NestedTestCollection.MySubmodelElementList", true, KeyType.SubmodelElementList)]
+        [DataRow("NestedTestCollection.MySubmodelElementList[0]", true, KeyType.Property)]
+        public void Test121_GetSubmodelElementReference(string elementPath, bool expectedResult, KeyType expectedKeyType)
+        {
+            var result = RetrieveSubmodelElementReference(elementPath);
+            result.Success.Should().Be(expectedResult);
+
+            if (!result.Success)
+                return;
+
+            var paths = new List<string>();
+
+            paths.AddRange(elementPath.Split("."));
+
+            // handle list item index
+            var listElement = "[0]";
+            if (paths[^1].Contains(listElement))
+            {
+                paths[^1] = paths[^1].Replace(listElement, "");
+                paths.Add(null);
+            }
+
+            var keys = result.Entity.Keys.ToList();
+
+            keys.Count().Should().Be(paths.Count + 1);
+
+            keys[0].Value.Should().Be(Submodel.Id.Id);
+            keys[0].Type.Should().Be(KeyType.Submodel);
+
+            keys[^1].Value.Should().Be(paths[^1]);
+            keys[^1].Type.Should().Be(expectedKeyType);
+        }
+
         #endregion
 
         #region implementations

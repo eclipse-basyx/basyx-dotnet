@@ -591,7 +591,6 @@ namespace BaSyx.API.ServiceProvider
             if (submodelElement == null)
                 return new Result<IReference>(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
 
-
             var keys = new List<IKey>();
             keys.AddRange(_submodel.CreateReference().Keys);
             keys.AddRange(submodelElement.RetrieveReferenceKeys());
