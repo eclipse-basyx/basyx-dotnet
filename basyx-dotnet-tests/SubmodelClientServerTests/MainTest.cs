@@ -808,7 +808,9 @@ namespace SubmodelClientServerTests
             keys[0].Value.Should().Be(Submodel.Id.Id);
             keys[0].Type.Should().Be(KeyType.Submodel);
 
-            keys[^1].Value.Should().Be(paths[^1]);
+            for (var i = 1; i < keys.Count; i++)
+                keys[i].Value.Should().Be(paths[i - 1]);
+            
             keys[^1].Type.Should().Be(expectedKeyType);
         }
 
