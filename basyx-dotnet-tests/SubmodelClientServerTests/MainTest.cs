@@ -47,7 +47,7 @@ namespace SubmodelClientServerTests
         #region test cases
 
         [TestMethod]
-        public void Test100_UpdateSubmodel()
+        public void Test100a_UpdateSubmodel()
         {
             LangStringSet newDescription = new LangStringSet()
             {
@@ -57,6 +57,68 @@ namespace SubmodelClientServerTests
             Submodel.Description = newDescription;
             var updated = UpdateSubmodel(Submodel);
             updated.Success.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Test100b_UpdateSubmodelChildren()
+        {
+            var idShort = "UpdatedSubmodel";
+            var updatedSubmodel = new Submodel(idShort, new BaSyxSubmodelIdentifier("ReplacedSubmodel", "1.0.0"))
+            {
+                Description = new LangStringSet()
+                {
+                    new("de-DE", "Submodel wurde aktualsiert"),
+                    new("en-US", "submodel was updated")
+                },
+                Administration = new AdministrativeInformation()
+                {
+                    Version = "2.0",
+                    Revision = "2"
+                },
+                DisplayName = new LangStringSet()
+                {
+                    new("de-DE", "Submodel aktualisiert"),
+                    new("en-US", "submodel updated")
+                },
+                Category = "updated_category",
+                SubmodelElements = new ElementContainer<ISubmodelElement>
+                {
+                    new Property<string>("New_String_Property", "updated"),
+                    new Property<int>("New_Int_Property", 262)
+                }
+            };
+            var updated = UpdateSubmodel(updatedSubmodel);
+            updated.Success.Should().BeTrue();
+
+            var submodel = RetrieveSubmodel().Entity;
+            submodel.SubmodelElements.Count.Should().NotBe(Submodel.SubmodelElements.Count);
+            submodel.Category.Should().Be(updatedSubmodel.Category);
+            submodel.IdShort.Should().NotBe(updatedSubmodel.IdShort);
+            submodel.IdShort.Should().Be(Submodel.IdShort);
+        }
+
+        [TestMethod]
+        public void Test100c_UpdateSubmodelNoChildren()
+        {
+            var idShort = "UpdatedSubmodel";
+            var updatedSubmodel = new Submodel(idShort, new BaSyxSubmodelIdentifier("ReplacedSubmodel", "1.0.0"))
+            {
+                Description = new LangStringSet()
+                {
+                    new("de-DE", "Submodel wurde aktualsiert"),
+                    new("en-US", "submodel was updated")
+                },
+                SubmodelElements = null
+            };
+
+            var updated = UpdateSubmodel(updatedSubmodel);
+            updated.Success.Should().BeTrue();
+
+            var submodel = RetrieveSubmodel().Entity;
+            submodel.SubmodelElements.Count.Should().Be(Submodel.SubmodelElements.Count);
+            submodel.Category.Should().Be(updatedSubmodel.Category);
+            submodel.IdShort.Should().NotBe(updatedSubmodel.IdShort);
+            submodel.IdShort.Should().Be(Submodel.IdShort);
         }
 
         [TestMethod]
@@ -614,9 +676,11 @@ namespace SubmodelClientServerTests
         [TestMethod]
         public void Test116_UpdateSubmodelMetadata()
         {
+            ReplaceSubmodel(Submodel);
+
             var idShort = "UpdatedSubmodel";
 
-            var replaceSubmodel = new Submodel(idShort, new BaSyxSubmodelIdentifier("ReplacedSubmodel", "1.0.0"))
+            var updatedSubmodel = new Submodel(idShort, new BaSyxSubmodelIdentifier("ReplacedSubmodel", "1.0.0"))
             {
                 Description = new LangStringSet()
                 {
@@ -641,13 +705,15 @@ namespace SubmodelClientServerTests
                 }
             };
 
-            var replaced = UpdateSubmodelMetadata(replaceSubmodel);
-            replaced.Success.Should().BeTrue();
+            var updated = UpdateSubmodelMetadata(updatedSubmodel);
+            updated.Success.Should().BeTrue();
 
             var submodel = RetrieveSubmodel().Entity;
             submodel.SubmodelElements.Count.Should().BeGreaterThan(2);
-            submodel.Category.Should().BeEquivalentTo(replaceSubmodel.Category);
-            submodel.IdShort.Should().NotBeEquivalentTo(replaceSubmodel.IdShort);
+            submodel.Category.Should().Be(updatedSubmodel.Category);
+            submodel.IdShort.Should().NotBe(updatedSubmodel.IdShort);
+
+            ReplaceSubmodel(Submodel);
         }
 
         [TestMethod]
@@ -686,6 +752,8 @@ namespace SubmodelClientServerTests
         [DataRow("TestSubmodelElementCollection", null, false)]
         public void Test119_PostSubmodelElementByPathCollection(string containerId, string? elementId, bool expectedResult)
         {
+            ReplaceSubmodel(Submodel);
+
             var sme = RetrieveSubmodelElement(containerId).Entity;
             var originalCount = ((SubmodelElementCollection)sme).Count();
 
@@ -709,6 +777,8 @@ namespace SubmodelClientServerTests
         [DataRow("NestedTestCollection.MySubmodelElementList", null, true)]
         public void Test119_PostSubmodelElementByPathList(string containerId, string? elementId, bool expectedResult)
         {
+            ReplaceSubmodel(Submodel);
+
             var sme = RetrieveSubmodelElement(containerId).Entity;
             var originalCount = ((SubmodelElementList)sme).Count();
 
@@ -768,9 +838,9 @@ namespace SubmodelClientServerTests
             if (sme.IdShort == null)
                 rsme.IdShort.Should().BeNull();
             else
-                sme.IdShort.Should().Be(rsme.IdShort);
+                sme.IdShort.Should().NotBe(rsme.IdShort);
 
-            sme.GetValue<string>().Should().Be(rsme.GetValue<string>());
+            sme.GetValue<string>().Should().NotBe(rsme.GetValue<string>());
             //switch back to original model for following tests
             ReplaceSubmodel(Submodel);
         }

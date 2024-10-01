@@ -643,21 +643,19 @@ namespace BaSyx.API.ServiceProvider
             if (_submodel == null)
                 return new Result(false, new ErrorMessage("The service provider's inner Submodel object is null"));
 
-            var updatedSubmodel = new Submodel(_submodel.IdShort, _submodel.Id)
-            {
-                Administration = submodel.Administration ?? _submodel.Administration,
-                Category = submodel.Category ?? _submodel.Category,
-                SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
-                SupplementalSemanticIds = submodel.SupplementalSemanticIds ?? _submodel.SupplementalSemanticIds,
-                Qualifiers = submodel.Qualifiers ?? _submodel.Qualifiers,
-                Description = submodel.Description ?? _submodel.Description,
-                DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
-                EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications ?? _submodel.EmbeddedDataSpecifications,
-                ConceptDescription = submodel.ConceptDescription ?? _submodel.ConceptDescription,
-                SubmodelElements = submodel.SubmodelElements ?? _submodel.SubmodelElements
-            };
+            // update the metadata
+            var result = UpdateSubmodelMetadata(submodel);
+            if (!result.Success)
+                return result;
 
-            _submodel = updatedSubmodel;
+            // update submodel elements
+            // is never null
+            if (submodel.SubmodelElements != null)
+            {
+                _submodel.SubmodelElements.Clear();
+                _submodel.SubmodelElements.AddRange(submodel.SubmodelElements);
+            }
+
             return new Result(true);
         }
 
@@ -670,10 +668,19 @@ namespace BaSyx.API.ServiceProvider
             {
                 Administration = submodel.Administration ?? _submodel.Administration,
                 Category = submodel.Category ?? _submodel.Category,
-                Description = submodel.Description ?? _submodel.Description,
-                DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
                 SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
-                SubmodelElements = _submodel.SubmodelElements
+                // is never null
+                SupplementalSemanticIds = submodel.SupplementalSemanticIds ?? _submodel.SupplementalSemanticIds,
+                // is never null
+                Qualifiers = submodel.Qualifiers ?? _submodel.Qualifiers,
+                // is never null
+                Description = submodel.Description ?? _submodel.Description,
+                // is never null
+                DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
+                // is never null
+                EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications ?? _submodel.EmbeddedDataSpecifications,
+                ConceptDescription = submodel.ConceptDescription ?? _submodel.ConceptDescription,
+                SubmodelElements = _submodel.SubmodelElements,
             };
 
             _submodel = updatedSubmodel;
