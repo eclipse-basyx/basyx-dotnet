@@ -76,7 +76,15 @@ namespace BaSyx.Models.AdminShell
         }
         public static IKey CreateReferenceKey(IReferable referable)
         {
+            if (referable is IIdentifiable identifiable)
+                return CreateReferenceKey(identifiable);
+
             return new Key(Key.GetKeyElementFromType(referable.GetType()), referable.IdShort);
+        }
+
+        public static IKey CreateReferenceKey(IIdentifiable identifiable)
+        {
+            return new Key(Key.GetKeyElementFromType(identifiable.GetType()), identifiable.Id);
         }
     }
 
