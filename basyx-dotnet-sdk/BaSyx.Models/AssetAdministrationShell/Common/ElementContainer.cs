@@ -159,7 +159,7 @@ namespace BaSyx.Models.AdminShell
                 keys.AddRange(ParentContainer.RetrieveReferenceKeys());
 
             if (Value != null)
-                keys.Add(new Key(Key.GetKeyElementFromType(Value.GetType()), Value.IdShort));
+                Reference.CreateReferenceKey(Value);
 
             return keys;
         }

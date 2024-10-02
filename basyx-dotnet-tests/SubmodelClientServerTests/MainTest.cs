@@ -108,6 +108,17 @@ namespace SubmodelClientServerTests
                     new("de-DE", "Submodel wurde aktualsiert"),
                     new("en-US", "submodel was updated")
                 },
+                Administration = new AdministrativeInformation()
+                {
+                    Version = "2.0",
+                    Revision = "2"
+                },
+                DisplayName = new LangStringSet()
+                {
+                    new("de-DE", "Submodel aktualisiert"),
+                    new("en-US", "submodel updated")
+                },
+                Category = "updated_category",
                 SubmodelElements = null
             };
 
@@ -124,6 +135,7 @@ namespace SubmodelClientServerTests
         [TestMethod]
         public void Test101_RetrieveSubmodel()
         {
+            ReplaceSubmodel(Submodel);
             var result = RetrieveSubmodel();
 
             result.Success.Should().BeTrue();
