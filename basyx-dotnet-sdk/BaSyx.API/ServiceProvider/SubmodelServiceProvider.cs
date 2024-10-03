@@ -596,11 +596,48 @@ namespace BaSyx.API.ServiceProvider
                 //add submodel reference key
                 Reference.CreateReferenceKey(_submodel)
             };
+            //add submodel element keys (recursive with parent containers)
             keys.AddRange(submodelElement.RetrieveReferenceKeys());
 
             var reference = new Reference(keys);
             reference.Type = ReferenceType.ModelReference;
             return new Result<IReference>(true, reference);
+        }
+
+        public IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100,
+            string cursor = "")
+        {
+            if (_submodel == null)
+                return new Result<PagedResult<IReference>>(false, new NotFoundMessage("Submodel"));
+
+            var result = RetrieveSubmodelElements(limit, cursor);
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
+                return new Result<PagedResult<IReference>>(false, new NotFoundMessage("SubmodelElements"));
+            
+            var keys = new List<IKey>()
+            {
+                //add submodel reference key
+                Reference.CreateReferenceKey(_submodel)
+            };
+            // A
+            foreach (var sme in result.Entity.Result)
+            {
+                //add submodel element key
+                keys.Add(Reference.CreateReferenceKey(sme));
+
+                //if container
+                if (sme is IElementContainer<ISubmodelElement> container)
+                {
+                    //add keys of direct children
+                    foreach (var child in container.Children)
+                        keys.Add(Reference.CreateReferenceKey(child.Value));
+                }
+            }
+
+            var reference = new Reference(keys);
+            reference.Type = ReferenceType.ModelReference;
+            var tmp = new PagedResult<IReference>(reference, result.Entity.PagingMetadata);
+            return new Result<PagedResult<IReference>>(true, tmp);
         }
 
         public IResult UpdateSubmodelElementValue(string submodelElementId, ValueScope value)
