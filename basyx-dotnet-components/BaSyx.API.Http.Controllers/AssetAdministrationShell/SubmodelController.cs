@@ -714,7 +714,7 @@ namespace BaSyx.API.Http.Controllers
 
             try
             {
-                valueScope = ValueScopeConverter.ParseValueScope(sme, requestBody, _fullSerializerOptions);
+                valueScope = ParseValueScope(sme, requestBody);
             }
             catch (Exception e)
             {
@@ -1095,6 +1095,112 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(handleId));
 
             throw new NotImplementedException();
+        }
+
+        private ValueScope ParseValueScope(SubmodelElement sme, JsonDocument value)
+        {
+            ValueScope valueScope = null;
+
+            if (sme.ModelType == ModelType.Property)
+            {
+                Property property = sme as Property;
+                valueScope = value.Deserialize<PropertyValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<PropertyValue>(dataType: property.ValueType) }
+                });
+            }
+            else if (sme.ModelType == ModelType.SubmodelElementCollection)
+            {
+                valueScope = value.Deserialize<SubmodelElementCollectionValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<SubmodelElementCollectionValue>(
+                 sme: sme,
+                 options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
+                 jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.SubmodelElementList)
+            {
+                valueScope = value.Deserialize<SubmodelElementListValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<SubmodelElementListValue>(
+                 sme: sme,
+                 options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
+                 jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.Range)
+            {
+                var range = sme as Range;
+                valueScope = value.Deserialize<RangeValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<RangeValue>(dataType: range.ValueType) }
+                });
+            }
+            else if (sme.ModelType == ModelType.MultiLanguageProperty)
+            {
+                valueScope = value.Deserialize<MultiLanguagePropertyValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<MultiLanguagePropertyValue>() }
+                });
+            }
+            else if (sme.ModelType == ModelType.ReferenceElement)
+            {
+                valueScope = value.Deserialize<ReferenceElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<ReferenceElementValue>(jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.BasicEventElement)
+            {
+                valueScope = value.Deserialize<BasicEventElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<BasicEventElementValue>(jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.RelationshipElement)
+            {
+                valueScope = value.Deserialize<RelationshipElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<RelationshipElementValue>(jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.AnnotatedRelationshipElement)
+            {
+                valueScope = value.Deserialize<AnnotatedRelationshipElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<AnnotatedRelationshipElementValue>(
+                 sme: sme,
+                 options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
+                 jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.Entity)
+            {
+                valueScope = value.Deserialize<EntityValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<EntityValue>(
+                 sme: sme,
+                 options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
+                 jsonOptions: _fullSerializerOptions) }
+                });
+            }
+            else if (sme.ModelType == ModelType.File)
+            {
+                valueScope = value.Deserialize<FileElementValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<FileElementValue>() }
+                });
+            }
+            else if (sme.ModelType == ModelType.Blob)
+            {
+                valueScope = value.Deserialize<BlobValue>(new JsonSerializerOptions()
+                {
+                    Converters = { new ValueScopeConverter<BlobValue>() }
+                });
+            }
+
+            return valueScope;
         }
     }
 }
