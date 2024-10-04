@@ -401,17 +401,17 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_GetSubmodelElementByPathValueOnly(submodelIdentifier, idShortPath, level);
         }
 
-		/// <inheritdoc cref="AssetAdministrationShellController.Shell_PatchSubmodelElementValueByPathValueOnly(string, string, JsonDocument)"/>
+		/// <inheritdoc cref="AssetAdministrationShellController.Shell_PatchSubmodelElementValueByPathValueOnly(string, string, JsonDocument, RequestLevel)"/>
 		[HttpPatch(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "ShellRepo_PatchSubmodelElementValueByPathValueOnly")]
         [Produces("application/json")]
         [ProducesResponseType(204)]
-        public IActionResult ShellRepo_PatchSubmodelElementValueByPathValueOnly(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] JsonDocument requestBody)
+        public IActionResult ShellRepo_PatchSubmodelElementValueByPathValueOnly(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] JsonDocument requestBody, [FromQuery] RequestLevel level = default)
         {
             if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_PatchSubmodelElementValueByPathValueOnly(submodelIdentifier, idShortPath, requestBody);
+            return service.Shell_PatchSubmodelElementValueByPathValueOnly(submodelIdentifier, idShortPath, requestBody, level);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_PostSubmodelElementByPath(string, string, ISubmodelElement)"/>

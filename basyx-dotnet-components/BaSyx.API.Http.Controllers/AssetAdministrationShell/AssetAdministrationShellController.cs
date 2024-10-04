@@ -432,20 +432,20 @@ namespace BaSyx.API.Http.Controllers
             return service.PutSubmodelElementByPath(idShortPath, requestBody);
         }
 
-		/// <inheritdoc cref="SubmodelController.PatchSubmodelElementValueByPathValueOnly(string, JsonDocument)"/>
+		/// <inheritdoc cref="SubmodelController.PatchSubmodelElementValueByPathValueOnly(string, JsonDocument, RequestLevel)"/>
 		[HttpPatch(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "Shell_PatchSubmodelElementValueByPathValueOnly")]
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 201)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult Shell_PatchSubmodelElementValueByPathValueOnly(string submodelIdentifier, string idShortPath, [FromBody] JsonDocument requestBody)
+        public IActionResult Shell_PatchSubmodelElementValueByPathValueOnly(string submodelIdentifier, string idShortPath, [FromBody] JsonDocument requestBody, [FromQuery] RequestLevel level = default)
         {          
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.PatchSubmodelElementValueByPathValueOnly(idShortPath, requestBody);
+            return service.PatchSubmodelElementValueByPathValueOnly(idShortPath, requestBody, level);
         }
 
         /// <inheritdoc cref="SubmodelController.DeleteSubmodelElementByPath(string)"/>

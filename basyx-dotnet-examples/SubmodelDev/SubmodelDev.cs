@@ -19,49 +19,49 @@ using BaSyx.Models.Semantics;
 
 namespace DevelopmentSubmodel
 {
-    public static class DevelopmentSubmodel
-    {
-        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+	public static class DevelopmentSubmodel
+	{
+		private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public static AssetAdministrationShell GetAssetAdministrationShell()
-        {
-            AssetAdministrationShell aas = new AssetAdministrationShell("SimpleAAS", new BaSyxShellIdentifier("SimpleAAS", "1.0.0"))
-            {
-                Description = new LangStringSet()
-                {
-                   new LangString("de-DE", "Einfache VWS"),
-                   new LangString("en-US", "Simple AAS")
-                },
-                Administration = new AdministrativeInformation()
-                {
-                    Version = "1.0",
-                    Revision = "120"
-                },
-                AssetInformation = new AssetInformation()
-                {
-                    AssetKind = AssetKind.Instance,
-                    GlobalAssetId = new BaSyxAssetIdentifier("SimpleAsset", "1.0.0")
-                }
-            };
+		public static AssetAdministrationShell GetAssetAdministrationShell()
+		{
+			AssetAdministrationShell aas = new AssetAdministrationShell("SimpleAAS", new BaSyxShellIdentifier("SimpleAAS", "1.0.0"))
+			{
+				Description = new LangStringSet()
+				{
+				   new LangString("de-DE", "Einfache VWS"),
+				   new LangString("en-US", "Simple AAS")
+				},
+				Administration = new AdministrativeInformation()
+				{
+					Version = "1.0",
+					Revision = "120"
+				},
+				AssetInformation = new AssetInformation()
+				{
+					AssetKind = AssetKind.Instance,
+					GlobalAssetId = new BaSyxAssetIdentifier("SimpleAsset", "1.0.0")
+				}
+			};
 
-            Submodel testSubmodel = GetDevSubmodel();
+			Submodel testSubmodel = GetDevSubmodel();
 
-            aas.Submodels.Add(testSubmodel);
+			aas.Submodels.Add(testSubmodel);
 
-            return aas;
-        }
+			return aas;
+		}
 
-        public static Submodel GetDevSubmodel()
-        {
-            var blob = new Blob("Blob_L1")
+		public static Submodel GetDevSubmodel()
+		{
+			var blob = new Blob("Blob_L1")
             {
                 Value = new BlobValue("application/octet-stream", "decaf")
             };
 
             var subBlob = new Blob("Blob_L2")
-            {
-                Value = new BlobValue("application/octet-stream", "decaf")
-            };
+			{
+				Value = new BlobValue("application/octet-stream", "decaf")
+			};
 
             var strProperty = new Property<string>("Property_String", "Level 1 String")
             {
@@ -81,49 +81,49 @@ namespace DevelopmentSubmodel
 
             var entity = new Entity("Entity")
             {
-                Value = new EntityValue()
+				Value = new EntityValue()
                 {
-                    GlobalAssetId = new Identifier("entity_global_asset_id"),
+                    GlobalAssetId = new	Identifier("entity_global_asset_id"),
                     SpecificAssetIds = new List<SpecificAssetId>()
                     {
                         new() { Name = "Spec_01", Value = "123" },
                         new() { Name = "Spec_02", Value = "456" }
 
                     },
-                    Statements = statements
+					Statements = statements
                 }
             };
 
             var multiLang = new MultiLanguageProperty("MultiLanguageProperty")
-            {
-                Description =
-                    new LangStringSet() { new LangString("en", "This is an exemplary MultiLanguageProperty") },
-                SemanticId = new Reference(new Key(KeyType.GlobalReference,
-                    new BaSyxPropertyIdentifier("MultiLanguageProperty", "1.0.0").ToUrn())),
-                Value = new MultiLanguagePropertyValue()
-                {
+			{
+				Description =
+					new LangStringSet() { new LangString("en", "This is an exemplary MultiLanguageProperty") },
+				SemanticId = new Reference(new Key(KeyType.GlobalReference,
+					new BaSyxPropertyIdentifier("MultiLanguageProperty", "1.0.0").ToUrn())),
+				Value = new MultiLanguagePropertyValue()
+                { 
                     Value = new LangStringSet()
-                    {
-                        new LangString("en", "This is a label in English"),
-                        new LangString("de", "Das ist ein Bezeichner in deutsch")
-                    }
-                }
-            };
+				    {
+					    new LangString("en", "This is a label in English"),
+					    new LangString("de", "Das ist ein Bezeichner in deutsch")
+					}
+				}
+			};
 
-            var range = new BaSyx.Models.AdminShell.Range("Range")
-            {
+			var range = new BaSyx.Models.AdminShell.Range("Range")
+			{
                 Description =
                     new LangStringSet() { new LangString("en", "This is an exemplary MultiLanguageProperty") },
                 DisplayName =
                     new LangStringSet() { new LangString("en", "This is an exemplary MultiLanguageProperty") },
                 SemanticId = new Reference(new Key(KeyType.GlobalReference,
                     new BaSyxPropertyIdentifier("MultiLanguageProperty", "1.0.0").ToUrn())),
-                SupplementalSemanticIds = new List<IReference>()
+				SupplementalSemanticIds = new List<IReference>()
                 {
                     new Reference(new Key(KeyType.GlobalReference,
                         new BaSyxPropertyIdentifier("MultiLanguageProperty", "1.0.0").ToUrn())),
                 },
-                Qualifiers = new List<IQualifier>()
+				Qualifiers = new List<IQualifier>()
                 {
                     new Qualifier()
                     {
@@ -134,36 +134,36 @@ namespace DevelopmentSubmodel
                     }
                 },
                 ValueType = new DataType(DataObjectType.Int32),
-                Value = new RangeValue()
-                {
-                    Min = new ElementValue<int>(3),
-                    Max = new ElementValue<int>(5)
-                }
+				Value = new RangeValue()
+				{
+					Min = new ElementValue<int>(3),
+					Max = new ElementValue<int>(5)
+				}
 
-            };
+			};
 
-            var relationship = new RelationshipElement("RelationshipElement")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary RelationshipElement") },
-                SemanticId = new Reference(new Key(KeyType.GlobalReference,
-                    new BaSyxPropertyIdentifier("RelationshipElement", "1.0.0").ToUrn())),
-                Value = new RelationshipElementValue()
+			var relationship = new RelationshipElement("RelationshipElement")
+			{
+				Description = new LangStringSet() { new LangString("en", "This is an exemplary RelationshipElement") },
+				SemanticId = new Reference(new Key(KeyType.GlobalReference,
+					new BaSyxPropertyIdentifier("RelationshipElement", "1.0.0").ToUrn())),
+				Value = new RelationshipElementValue()
                 {
                     First = new Reference(
-                        new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
-                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
-                    Second = new Reference(
-                        new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
-                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())),
-                }
-            };
+					    new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+					    new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
+				    Second = new Reference(
+					    new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+					    new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloPropertyInternal", "1.0.0").ToUrn())),
+				}
+			};
 
-            var annoRelationship = new AnnotatedRelationshipElement("AnnotatedRelationshipElement")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary RelationshipElement") },
-                SemanticId = new Reference(new Key(KeyType.GlobalReference,
-                    new BaSyxPropertyIdentifier("RelationshipElement", "1.0.0").ToUrn())),
-                Value = new AnnotatedRelationshipElementValue()
+			var annoRelationship = new AnnotatedRelationshipElement("AnnotatedRelationshipElement")
+			{
+				Description = new LangStringSet() { new LangString("en", "This is an exemplary RelationshipElement") },
+				SemanticId = new Reference(new Key(KeyType.GlobalReference,
+					new BaSyxPropertyIdentifier("RelationshipElement", "1.0.0").ToUrn())),
+				Value = new AnnotatedRelationshipElementValue()
                 {
                     First = new Reference(
                         new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
@@ -177,109 +177,109 @@ namespace DevelopmentSubmodel
                         new Property<string>("Anno_Property_String", "String in AnnotatedRelationshipElement")
                     }
                 }
+			};
+
+			var operation = new Operation("Operation")
+			{
+				Description = new LangStringSet()
+				{
+					new LangString("en",
+						"This is an exemplary operation returning the input argument with 'Hello' as prefix")
+				},
+				InputVariables = new OperationVariableSet() { new Property<string>("Text") },
+				OutputVariables = new OperationVariableSet() { new Property<string>("ReturnValue") },
+				InOutputVariables = new OperationVariableSet() { new Property<string>("InOut") }
             };
 
-            var operation = new Operation("Operation")
-            {
-                Description = new LangStringSet()
+			var file = new FileElement("File")
+			{
+			    Value = new FileElementValue("application/pdf", "/AttachmentTestPDF.pdf"),
+			};
+
+			var refElement = new ReferenceElement("ReferenceElement")
+			{
+				Description = new LangStringSet() { new LangString("en", "This is an exemplary ReferenceElement") },
+				SemanticId = new Reference(new Key(KeyType.GlobalReference,
+					new BaSyxPropertyIdentifier("HelloReferenceElement", "1.0.0").ToUrn())),
+				Value = new ReferenceElementValue()
                 {
-                    new LangString("en",
-                        "This is an exemplary operation returning the input argument with 'Hello' as prefix")
-                },
-                InputVariables = new OperationVariableSet() { new Property<string>("Text") },
-                OutputVariables = new OperationVariableSet() { new Property<string>("ReturnValue") },
-                InOutputVariables = new OperationVariableSet() { new Property<string>("InOut") }
-            };
-
-            var file = new FileElement("File")
-            {
-                Value = new FileElementValue("application/pdf", "/AttachmentTestPDF.pdf"),
-            };
-
-            var refElement = new ReferenceElement("ReferenceElement")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary ReferenceElement") },
-                SemanticId = new Reference(new Key(KeyType.GlobalReference,
-                    new BaSyxPropertyIdentifier("HelloReferenceElement", "1.0.0").ToUrn())),
-                Value = new ReferenceElementValue()
-                {
-                    Value = new Reference(
+					Value = new Reference(
                         new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn()))
                 }
-            };
+			};
 
-            var basicEvent = new BasicEventElement("BasicEventElement")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary BasicEventElement") },
-                SemanticId = new Reference(new Key(KeyType.GlobalReference,
-                    new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),
-
+			var basicEvent = new BasicEventElement("BasicEventElement")
+			{
+				Description = new LangStringSet() { new LangString("en", "This is an exemplary BasicEventElement") },
+				SemanticId = new Reference(new Key(KeyType.GlobalReference,
+					new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),
+				
                 Value = new BasicEventElementValue()
                 {
                     Observed = new Reference(
                         new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
                         new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
                 },
-                Direction = EventDirection.Output,
-                State = EventState.On,
-                MessageTopic = "boschrexroth/helloBasicEventElement",
-                LastUpdate = DateTime.UtcNow.ToString(),
-                MinInterval = "PT3S",
-                ObservableReference = new Reference(new Key(KeyType.GlobalReference,
+				Direction = EventDirection.Output,
+				State = EventState.On,
+				MessageTopic = "boschrexroth/helloBasicEventElement",
+				LastUpdate = DateTime.UtcNow.ToString(),
+				MinInterval = "PT3S",
+				ObservableReference = new Reference(new Key(KeyType.GlobalReference,
                     new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),
             };
 
-            Submodel testSubmodel = new Submodel("DevSubmodel", new BaSyxSubmodelIdentifier("DevSubmodel", "1.0.0"))
-            {
-                Description = new LangStringSet()
-                {
-                    new("de-DE", "Submodel für die Entwicklung"),
-                    new("en-US", "submodel for development")
-                },
-                Administration = new AdministrativeInformation()
-                {
-                    Version = "1.0",
-                    Revision = "1"
-                },
-                DisplayName = new LangStringSet()
-                {
-                    new("de-DE", "Submodel"),
-                    new("en-US", "submodel")
-                },
-                Category = "test_category",
-                SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
-                //ConceptDescription = new ConceptDescription()
-                //{
-                //	Id = new Identifier("0173-1#02-AAO689#001"),
-                //	EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
-                //	{
-                //		new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
-                //		{
-                //			PreferredName = new LangStringSet { new LangString("en", "identifying order number") },
-                //			Definition =  new LangStringSet { new LangString("en", "unique classifying number that enables to name an object and to order it from a supplier or manufacturer") },
-                //			DataType = DataTypeIEC61360.STRING
-                //		})
-                //	},
-                //},
-                //EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
-                //{
-                //	new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
-                //	{
-                //		PreferredName = new LangStringSet { new LangString("en", "identifying order number") },
-                //		Definition =  new LangStringSet { new LangString("en", "unique classifying number that enables to name an object and to order it from a supplier or manufacturer") },
-                //		DataType = DataTypeIEC61360.STRING
-                //	})
-                //},
-                //SupplementalSemanticIds = new List<IReference>()
-                //            {
-                //                new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
-                //            },
+			Submodel testSubmodel = new Submodel("DevSubmodel", new BaSyxSubmodelIdentifier("DevSubmodel", "1.0.0"))
+			{
+				Description = new LangStringSet()
+				{
+					new("de-DE", "Submodel für die Entwicklung"),
+					new("en-US", "submodel for development")
+				},
+				Administration = new AdministrativeInformation()
+				{
+					Version = "1.0",
+					Revision = "1"
+				},
+				DisplayName = new LangStringSet()
+				{
+					new("de-DE", "Submodel"),
+					new("en-US", "submodel")
+				},
+				Category = "test_category",
+				SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
+				//ConceptDescription = new ConceptDescription()
+				//{
+				//	Id = new Identifier("0173-1#02-AAO689#001"),
+				//	EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
+				//	{
+				//		new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
+				//		{
+				//			PreferredName = new LangStringSet { new LangString("en", "identifying order number") },
+				//			Definition =  new LangStringSet { new LangString("en", "unique classifying number that enables to name an object and to order it from a supplier or manufacturer") },
+				//			DataType = DataTypeIEC61360.STRING
+				//		})
+				//	},
+				//},
+				//EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
+				//{
+				//	new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
+				//	{
+				//		PreferredName = new LangStringSet { new LangString("en", "identifying order number") },
+				//		Definition =  new LangStringSet { new LangString("en", "unique classifying number that enables to name an object and to order it from a supplier or manufacturer") },
+				//		DataType = DataTypeIEC61360.STRING
+				//	})
+				//},
+				//SupplementalSemanticIds = new List<IReference>()
+				//            {
+				//                new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
+				//            },
 
-                SubmodelElements = new ElementContainer<ISubmodelElement>
-                {
-                    new Property<string>("Property_String_1", "Level 1 String"),
-                    new Property<int>("Property_Int_1", 1234),
+				SubmodelElements = new ElementContainer<ISubmodelElement>
+				{
+					new Property<string>("Property_String_1", "Level 1 String"),
+					new Property<int>("Property_Int_1", 1234),
 					//new Property<string>("Property_String_3", "Level 3 String"),
 					//new Property<string>("Property_String_4", "Level 4 String"),
 					//new Property<string>("Property_String_5", "Level 5 String"),
@@ -297,19 +297,9 @@ namespace DevelopmentSubmodel
 					//refElement,
 					//basicEvent,
 					//annoRelationship,
-                    new SubmodelElementCollection("TestCollection")
-                    {
-                        Value =
-                        {
-                            Value =
-                            {
-                                new Property<string>("OnlyProperty", "HasToBeChanged")
-                            }
-                        }
-                    },
-                    new SubmodelElementList("ElementList_L1")
-                    {
-                        Value =
+					new SubmodelElementList("ElementList_L1")
+					{
+						Value =
                         {
                             Value =
                             {
@@ -335,46 +325,46 @@ namespace DevelopmentSubmodel
                                                 }
                                             }
                                         }
-                                    }
+									}
                                 }
-                            }
+							}
                         }
-                    },
-                    new SubmodelElementCollection("Collection_L1")
-                    {
-                        Value =
-                        {
-                            Value =
-                            {
-                                new Property<string>("Property_String_Level_2", "Level 2 String"),
+					},
+					new SubmodelElementCollection("Collection_L1")
+					{
+						Value =
+						{
+							Value =
+							{
+								new Property<string>("Property_String_Level_2", "Level 2 String"),
 								//subBlob,
 								new SubmodelElementCollection("Collection_L2")
-                                {
-                                    Value =
-                                    {
-                                        Value =
-                                        {
-                                            new Property<string>("String_L3", "Level 3 String"),
-                                            new SubmodelElementCollection("Collection_L3")
-                                            {
-                                                Value =
-                                                {
-                                                    Value =
-                                                    {
-                                                        new Property<string>("String_L4", "Level 4 String"),
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            };
+								{
+									Value =
+									{
+										Value =
+										{
+											new Property<string>("String_L3", "Level 3 String"),
+											new SubmodelElementCollection("Collection_L3")
+											{
+												Value =
+												{
+													Value =
+													{
+														new Property<string>("String_L4", "Level 4 String"),
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			};
 
-            return testSubmodel;
-        }
-    }
+			return testSubmodel;
+		}
+	}
 }
