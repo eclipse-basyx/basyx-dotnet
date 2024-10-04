@@ -688,7 +688,6 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="requestBody">Requested submodel element</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="204">Submodel element updated successfully</response>
         /// <response code="400">Bad Request</response>
@@ -697,122 +696,32 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult PatchSubmodelElementValueByPathValueOnly(string idShortPath, [FromBody] JsonDocument requestBody, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult PatchSubmodelElementValueByPathValueOnly(string idShortPath, [FromBody] JsonDocument requestBody)
         {
             if (string.IsNullOrEmpty(idShortPath))
                 return ResultHandling.NullResult(nameof(idShortPath));
-            if (requestBody.Equals(default(JsonElement)))
+
+            if (requestBody.Equals(default(JsonDocument)))
                 return ResultHandling.NullResult(nameof(requestBody));
 
             var sme_retrieved = serviceProvider.RetrieveSubmodelElement(idShortPath);
             if (!sme_retrieved.Success || sme_retrieved.Entity == null)
                 return sme_retrieved.CreateActionResult(CrudOperation.Retrieve);
 
-            SubmodelElement sme = sme_retrieved.Entity as SubmodelElement;
+            var sme = sme_retrieved.Entity as SubmodelElement;
             ValueScope valueScope;
 
-            if(sme.ModelType == ModelType.Property)
+            try
             {
-				Property property = sme as Property;
-				valueScope = requestBody.Deserialize<PropertyValue>(new JsonSerializerOptions()
-				{
-					Converters = { new ValueScopeConverter<PropertyValue>(dataType: property.ValueType) }
-				});
-			}
-            else if (sme.ModelType == ModelType.SubmodelElementCollection)
-            {
-                valueScope = requestBody.Deserialize<SubmodelElementCollectionValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<SubmodelElementCollectionValue>(
-                        sme: sme,
-                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
-                        jsonOptions: _fullSerializerOptions) }
-                });
+                valueScope = ValueScopeConverter.ParseValueScope(sme, requestBody, _fullSerializerOptions);
             }
-            else if (sme.ModelType == ModelType.SubmodelElementList)
+            catch (Exception e)
             {
-                valueScope = requestBody.Deserialize<SubmodelElementListValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<SubmodelElementListValue>(
-                        sme: sme,
-                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
-                        jsonOptions: _fullSerializerOptions) }
-                });
+                return new Result(false, new ErrorMessage($"{e.Message} | path '{idShortPath}'")).CreateActionResult(CrudOperation.Update);
             }
-            else if (sme.ModelType == ModelType.Range)
-            {
-                Range range = sme as Range;
-                valueScope = requestBody.Deserialize<RangeValue>(new JsonSerializerOptions() 
-                { 
-                    Converters = { new ValueScopeConverter<RangeValue>(dataType: range.ValueType) }
-                });
-            }
-            else if (sme.ModelType == ModelType.MultiLanguageProperty)
-            {
-				valueScope = requestBody.Deserialize<MultiLanguagePropertyValue>(new JsonSerializerOptions()
-				{
-					Converters = { new ValueScopeConverter<MultiLanguagePropertyValue>() }
-				});
-			}
-			else if (sme.ModelType == ModelType.ReferenceElement)
-			{
-				valueScope = requestBody.Deserialize<ReferenceElementValue>(new JsonSerializerOptions()
-				{
-					Converters = { new ValueScopeConverter<ReferenceElementValue>(jsonOptions: _fullSerializerOptions) }
-				});
-			}
-            else if (sme.ModelType == ModelType.BasicEventElement)
-            {
-                valueScope = requestBody.Deserialize<BasicEventElementValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<BasicEventElementValue>(jsonOptions: _fullSerializerOptions) }
-                });
-            }
-            else if (sme.ModelType == ModelType.RelationshipElement)
-            {
-                valueScope = requestBody.Deserialize<RelationshipElementValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<RelationshipElementValue>(jsonOptions: _fullSerializerOptions) }
-                });
-            }
-            else if (sme.ModelType == ModelType.AnnotatedRelationshipElement)
-            {
-                valueScope = requestBody.Deserialize<AnnotatedRelationshipElementValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<AnnotatedRelationshipElementValue>(
-                        sme: sme, 
-                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly }, 
-                        jsonOptions: _fullSerializerOptions) }
-                });
-            }
-            else if (sme.ModelType == ModelType.Entity)
-            {
-                valueScope = requestBody.Deserialize<EntityValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<EntityValue>(
-                        sme: sme,
-                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
-                        jsonOptions: _fullSerializerOptions) }
-                });
-            }
-            else if (sme.ModelType == ModelType.File)
-            {
-                valueScope = requestBody.Deserialize<FileElementValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<FileElementValue>() }
-                });
-            }
-            else if (sme.ModelType == ModelType.Blob)
-            {
-                valueScope = requestBody.Deserialize<BlobValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<BlobValue>() }
-                });
-            }
-            else
-            {
-				return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
-			}
+
+            if (valueScope == null)
+                return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
 
             var result = serviceProvider.UpdateSubmodelElementValue(idShortPath, valueScope);
             return result.CreateActionResult(CrudOperation.Update);
