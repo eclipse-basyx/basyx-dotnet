@@ -988,6 +988,11 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElementReference(idShortPath);
         }
 
+        public IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100, string cursor = "")
+        {
+            return ((ISubmodelClient)Client).RetrieveSubmodelElementsReference(limit, cursor);
+        }
+
         public IResult<List<string>> RetrieveSubmodelElementPath(string idShortPath, RequestLevel level = RequestLevel.Deep)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementPath(idShortPath, level);

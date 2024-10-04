@@ -27,6 +27,7 @@ using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using System.Collections.Specialized;
 using System.Web;
+using System.Reflection.Emit;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -147,6 +148,11 @@ namespace BaSyx.Clients.AdminShell.Http
         public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
         {
             return RetrieveSubmodelElementReferenceAsync(idShortPath).GetAwaiter().GetResult();
+        }
+
+        public IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100, string cursor = "")
+        {
+            return RetrieveSubmodelElementsReferenceAsync(limit, cursor).GetAwaiter().GetResult();
         }
 
         public IResult<List<string>> RetrieveSubmodelElementPath(string idShortPath, RequestLevel level = RequestLevel.Deep)
@@ -306,6 +312,22 @@ namespace BaSyx.Clients.AdminShell.Http
             var request = CreateRequest(uri, HttpMethod.Get);
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
             var result = await EvaluateResponseAsync<IReference>(response, response.Entity).ConfigureAwait(false);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult<PagedResult<IReference>>> RetrieveSubmodelElementsReferenceAsync(int limit, string cursor)
+        {
+            Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE);
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["limit"] = limit.ToString();
+            query["cursor"] = cursor;
+            var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
+            uri = uriBuilder.Uri;
+
+            var request = CreateRequest(uri, HttpMethod.Get);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<PagedResult<IReference>>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
