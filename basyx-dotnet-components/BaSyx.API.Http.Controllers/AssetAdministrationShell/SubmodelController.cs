@@ -409,8 +409,8 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the References of all submodel elements
         /// </summary>
-        /// <param name="limit">The maximum number of elements in the response array</param>
-        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">List of found submodel elements</response>  
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE, Name = "GetAllSubmodelElementsReference")]
@@ -419,10 +419,9 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelElementsReference([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        public IActionResult GetAllSubmodelElementsReference([FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
         {
-            var result = serviceProvider.RetrieveSubmodelElementsReference(limit, cursor);
-            return result.CreateActionResult(CrudOperation.Retrieve);
+            throw new NotImplementedException();
         }
 
         /// <summary>
