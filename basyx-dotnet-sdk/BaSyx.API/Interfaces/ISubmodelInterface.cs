@@ -37,9 +37,6 @@ namespace BaSyx.API.Interfaces
 
         IResult<IReference> RetrieveSubmodelElementReference(string idShortPath);
 
-        IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100,
-            string cursor = "");
-
         IResult UpdateSubmodelElementValue(string idShortPath, ValueScope value);
 
         IResult DeleteSubmodelElement(string idShortPath);

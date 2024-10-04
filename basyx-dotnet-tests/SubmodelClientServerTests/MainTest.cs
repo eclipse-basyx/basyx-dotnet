@@ -896,12 +896,6 @@ namespace SubmodelClientServerTests
             keys[^1].Type.Should().Be(expectedKeyType);
         }
 
-
-        public void Test122_GetSubmodelElementsReference(int limit)
-        {
-            var result = RetrieveSubmodelElementsReference();
-        }
-
         #endregion
 
         #region implementations
@@ -992,11 +986,6 @@ namespace SubmodelClientServerTests
         public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementReference(idShortPath);
-        }
-
-        public IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100, string cursor = "")
-        {
-            return ((ISubmodelClient)Client).RetrieveSubmodelElementsReference(limit, cursor);
         }
 
         public IResult<List<string>> RetrieveSubmodelElementPath(string idShortPath, RequestLevel level = RequestLevel.Deep)
