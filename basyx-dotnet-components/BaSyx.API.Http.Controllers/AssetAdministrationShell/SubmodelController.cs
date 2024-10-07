@@ -629,7 +629,7 @@ namespace BaSyx.API.Http.Controllers
         /// Updates the metadata attributes an existing SubmodelElement
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
         /// <returns></returns>
         /// <response code="200">Requested submodel element in its ValueOnly representation</response>  
         [HttpPatch(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "PatchSubmodelElementByPathMetadata")]
@@ -639,9 +639,15 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodelElementByPathMetadata(string idShortPath, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult PatchSubmodelElementByPathMetadata(string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+            if (submodelElement == null)
+                return ResultHandling.NullResult(nameof(submodelElement));
+
+            var result = serviceProvider.UpdateSubmodelElementMetadata(idShortPath, submodelElement);
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>

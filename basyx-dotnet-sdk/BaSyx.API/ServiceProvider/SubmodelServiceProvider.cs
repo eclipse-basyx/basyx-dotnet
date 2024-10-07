@@ -515,6 +515,24 @@ namespace BaSyx.API.ServiceProvider
             return updated;
         }
 
+        public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
+        {
+            if (_submodel == null)
+                return new Result<ISubmodelElement>(false, new NotFoundMessage("Submodel"));
+
+            var retrievedSme = RetrieveSubmodelElement(idShortPath);
+            if (!retrievedSme.Success || retrievedSme.Entity == null)
+                return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
+
+            var sme = retrievedSme.Entity as SubmodelElement;
+
+            sme.Category = submodelElement.Category ?? sme.Category;
+            sme.SemanticId = submodelElement.SemanticId ?? sme.SemanticId;
+            
+
+            return new Result(true);
+        }
+
         public IResult<ISubmodelElement> CreateOrUpdateSubmodelElement(string idShortPath, ISubmodelElement submodelElement, SubmodelElementHandler submodelElementHandler)
         {
             if (_submodel == null)
@@ -726,6 +744,8 @@ namespace BaSyx.API.ServiceProvider
             _submodel = updatedSubmodel;
             return new Result(true);
         }
+
+
 
         public IResult ReplaceSubmodel(ISubmodel submodel)
         {

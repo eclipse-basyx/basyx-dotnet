@@ -972,6 +972,11 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElement(idShortPath);
         }
 
+        public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
+        {
+            return ((ISubmodelClient)Client).UpdateSubmodelElementMetadata(idShortPath, submodelElement);
+        }
+
         public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit  = 100, string cursor = "")
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElements(limit, cursor);

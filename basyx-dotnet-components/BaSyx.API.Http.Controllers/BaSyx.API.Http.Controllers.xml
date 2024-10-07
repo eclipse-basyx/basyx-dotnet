@@ -487,12 +487,12 @@
             <response code="200">Requested submodel element in its ValueOnly representation</response>
             <response code="404">Submodel Element not found</response>     
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
             <summary>
             Updates the metadata attributes an existing SubmodelElement
             </summary>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
-            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
             <returns></returns>
             <response code="200">Requested submodel element in its ValueOnly representation</response>  
         </member>
