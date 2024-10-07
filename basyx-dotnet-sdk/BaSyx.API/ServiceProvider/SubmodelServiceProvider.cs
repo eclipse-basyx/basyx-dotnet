@@ -22,6 +22,7 @@ using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.ResultHandling.http;
 using System.Linq;
+using Range = BaSyx.Models.AdminShell.Range;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -518,17 +519,104 @@ namespace BaSyx.API.ServiceProvider
         public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
         {
             if (_submodel == null)
-                return new Result<ISubmodelElement>(false, new NotFoundMessage("Submodel"));
+                return new Result(false, new NotFoundMessage("Submodel"));
 
             var retrievedSme = RetrieveSubmodelElement(idShortPath);
             if (!retrievedSme.Success || retrievedSme.Entity == null)
-                return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
+                return new Result(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
 
             var sme = retrievedSme.Entity as SubmodelElement;
 
+            if (sme.ModelType != submodelElement.ModelType)
+                return new Result(false, new ErrorMessage("Model type not matching for found submodel element and request body"));
+
             sme.Category = submodelElement.Category ?? sme.Category;
+            // is never null
+            sme.Description = submodelElement.Description ?? sme.Description;
+            // is never null
+            sme.DisplayName = submodelElement.DisplayName ?? sme.DisplayName;
             sme.SemanticId = submodelElement.SemanticId ?? sme.SemanticId;
-            
+            // is never null
+            sme.SupplementalSemanticIds = submodelElement.SupplementalSemanticIds ?? sme.SupplementalSemanticIds;
+            // is never null
+            sme.Qualifiers = submodelElement.Qualifiers ?? sme.Qualifiers;
+
+            switch (sme.ModelType.Type)
+            {
+                case ModelTypes.Property:
+                    var smeProperty = (Property)sme;
+                    var submodelElementProperty = (Property)submodelElement;
+
+                    smeProperty.ValueId = submodelElementProperty.ValueId ?? smeProperty.ValueId;
+                    smeProperty.ValueType = submodelElementProperty.ValueType ?? smeProperty.ValueType;
+                    break;
+
+                case ModelTypes.BasicEventElement:
+                    var smeBasicEvent = (BasicEventElement)sme;
+                    var submodelElementBasicEvent = (BasicEventElement)submodelElement;
+                    smeBasicEvent.ObservableReference = submodelElementBasicEvent.ObservableReference ?? smeBasicEvent.ObservableReference;
+
+                    if (submodelElementBasicEvent.Direction != EventDirection.None)
+                        smeBasicEvent.Direction = submodelElementBasicEvent.Direction;
+
+                    if (submodelElementBasicEvent.State != EventState.None)
+                        smeBasicEvent.State = submodelElementBasicEvent.State;
+
+                    smeBasicEvent.MessageTopic = submodelElementBasicEvent.MessageTopic ?? smeBasicEvent.MessageTopic;
+                    smeBasicEvent.MessageBroker = submodelElementBasicEvent.MessageBroker ?? smeBasicEvent.MessageBroker;
+                    smeBasicEvent.LastUpdate = submodelElementBasicEvent.LastUpdate ?? smeBasicEvent.LastUpdate;
+                    smeBasicEvent.MinInterval = submodelElementBasicEvent.MinInterval ?? smeBasicEvent.MinInterval;
+                    smeBasicEvent.MaxInterval = submodelElementBasicEvent.MaxInterval ?? smeBasicEvent.MaxInterval;
+                    
+                    break;
+
+                case ModelTypes.Entity:
+                    var smeEntity = (Entity)sme;
+                    var submodelElementEntity = (Entity)submodelElement;
+
+                    if (submodelElementEntity.EntityType != EntityType.None)
+                        smeEntity.EntityType = submodelElementEntity.EntityType;
+
+                    break;
+
+                case ModelTypes.MultiLanguageProperty:
+                    var smeMultiLang = (MultiLanguageProperty)sme;
+                    var submodelElementMultiLang = (MultiLanguageProperty)submodelElement;
+
+                    smeMultiLang.ValueId = submodelElementMultiLang.ValueId ?? smeMultiLang.ValueId;
+
+                    break;
+
+                case ModelTypes.Operation:
+                    var smeOperation = (Operation)sme;
+                    var submodelElementOperation = (Operation)submodelElement;
+
+                    smeOperation.InputVariables = submodelElementOperation.InputVariables ?? smeOperation.InputVariables;
+                    smeOperation.InOutputVariables = submodelElementOperation.InOutputVariables ?? smeOperation.InOutputVariables;
+                    smeOperation.OutputVariables = submodelElementOperation.OutputVariables ?? smeOperation.OutputVariables;
+
+                    break;
+
+                case ModelTypes.Range:
+                    var smeRange = (Range)sme;
+                    var submodelElementRange = (Range)submodelElement;
+
+                    smeRange.ValueId = submodelElementRange.ValueId ?? smeRange.ValueId;
+                    smeRange.ValueType = submodelElementRange.ValueType ?? smeRange.ValueType;
+
+                    break;
+
+                case ModelTypes.SubmodelElementList:
+                    var smeList = (SubmodelElementList)sme;
+                    var submodelElementList = (SubmodelElementList)submodelElement;
+
+                    smeList.SemanticIdListElement =
+                        submodelElementList.SemanticIdListElement ?? smeList.SemanticIdListElement;
+                    smeList.TypeValueListElement = submodelElementList.TypeValueListElement ?? smeList.TypeValueListElement;
+
+                    break;
+            }
+
 
             return new Result(true);
         }

@@ -25,9 +25,7 @@ using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using System.Collections.Specialized;
 using System.Web;
-using System.Reflection.Emit;
 
 namespace BaSyx.Clients.AdminShell.Http
 {

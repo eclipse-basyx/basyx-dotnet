@@ -63,11 +63,31 @@ namespace DevelopmentSubmodel
                 Value = new BlobValue("application/octet-stream", "decaf")
             };
 
-            var strProperty = new Property<string>("Property_String", "Level 1 String")
+            var strProperty = new Property<string>("Property_String_Full", "Level 1 String")
             {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary String property") },
+                Category = "Test",
+                Description =
+                    new LangStringSet() { new LangString("en", "This is an exemplary string") },
+                DisplayName =
+                    new LangStringSet() { new LangString("en", "This is an exemplary string") },
                 SemanticId = new Reference(new Key(KeyType.GlobalReference,
-                    new BaSyxPropertyIdentifier("Property_String", "1.0.0").ToUrn())),
+                    new BaSyxPropertyIdentifier("MultiLanguageProperty", "1.0.0").ToUrn())),
+                SupplementalSemanticIds = new List<IReference>()
+                {
+                    new Reference(new Key(KeyType.GlobalReference,
+                        new BaSyxPropertyIdentifier("MultiLanguageProperty", "1.0.0").ToUrn())),
+                },
+                Qualifiers = new List<IQualifier>()
+                {
+                    new Qualifier()
+                    {
+                        Type = "q.Type",
+                        Value = "q.Value",
+                        ValueId = new Reference(new Key(KeyType.GlobalReference,
+                            new BaSyxPropertyIdentifier("MultiLanguageProperty", "1.0.0").ToUrn())),
+                    }
+                },
+
             };
 
             var intProperty = new Property<int>("Property_Int", 1010);
@@ -283,7 +303,7 @@ namespace DevelopmentSubmodel
 					//new Property<string>("Property_String_3", "Level 3 String"),
 					//new Property<string>("Property_String_4", "Level 4 String"),
 					//new Property<string>("Property_String_5", "Level 5 String"),
-					//strProperty,
+					strProperty,
                     //intProperty,
                     //entity,
      //               strProperty,
@@ -295,7 +315,7 @@ namespace DevelopmentSubmodel
 					//operation,
 					//file,
 					//refElement,
-					//basicEvent,
+					basicEvent,
 					//annoRelationship,
                     new SubmodelElementCollection("TestCollection")
                     {
