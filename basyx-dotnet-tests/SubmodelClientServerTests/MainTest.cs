@@ -24,8 +24,6 @@ using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using System.Security.Cryptography.Xml;
-using Microsoft.AspNetCore.SignalR.Protocol;
 using Reference = BaSyx.Models.AdminShell.Reference;
 
 namespace SubmodelClientServerTests

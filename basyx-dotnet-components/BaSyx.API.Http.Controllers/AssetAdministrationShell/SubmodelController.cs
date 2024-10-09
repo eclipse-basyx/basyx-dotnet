@@ -918,8 +918,10 @@ namespace BaSyx.API.Http.Controllers
             
             if (file.Exists && !string.IsNullOrEmpty(file.PhysicalPath))
                 System.IO.File.Delete(file.PhysicalPath);
+            else
+                return NotFound(new { message = "Physical file not found", itemId = file.PhysicalPath });
 
-            return NotFound(new { message = "Physical file not found", itemId = file.PhysicalPath });
+            return Ok();
         }
 
         /// <summary>
