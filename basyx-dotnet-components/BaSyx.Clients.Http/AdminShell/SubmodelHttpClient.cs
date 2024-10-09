@@ -25,9 +25,7 @@ using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using System.Collections.Specialized;
 using System.Web;
-using System.Reflection.Emit;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -122,6 +120,11 @@ namespace BaSyx.Clients.AdminShell.Http
         public IResult UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return UpdateSubmodelElementAsync(rootIdShortPath, submodelElement).GetAwaiter().GetResult();
+        }
+
+        public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
+        {
+            return UpdateSubmodelElementMetadataAsync(idShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
         public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "")
@@ -244,6 +247,16 @@ namespace BaSyx.Clients.AdminShell.Http
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, rootIdShortPath);
             var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodelElement);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult> UpdateSubmodelElementMetadataAsync(string rootIdShortPath, ISubmodelElement submodelElement)
+        {
+            Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, rootIdShortPath);
+            var request = CreateJsonContentRequest(uri, HttpMethod.Patch, submodelElement);
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
             var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
