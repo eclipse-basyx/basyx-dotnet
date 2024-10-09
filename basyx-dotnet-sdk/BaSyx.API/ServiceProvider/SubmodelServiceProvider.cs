@@ -736,23 +736,12 @@ namespace BaSyx.API.ServiceProvider
             };
 
             foreach (var sme in result.Entity.Result)
-            {
                 //add submodel element key
                 keys.Add(Reference.CreateReferenceKey(sme));
 
-                //if container
-                if (sme is IElementContainer<ISubmodelElement> container)
-                {
-                    //add keys of direct children
-                    foreach (var child in container.Children)
-                        keys.Add(Reference.CreateReferenceKey(child.Value));
-                }
-            }
-
             var reference = new Reference(keys);
             reference.Type = ReferenceType.ModelReference;
-            var tmp = new PagedResult<IReference>(reference, result.Entity.PagingMetadata);
-            return new Result<PagedResult<IReference>>(true, tmp);
+            return new Result<PagedResult<IReference>>(true, new PagedResult<IReference>(reference, result.Entity.PagingMetadata));
         }
 
         public IResult UpdateSubmodelElementValue(string submodelElementId, ValueScope value)
