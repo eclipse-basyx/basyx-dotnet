@@ -531,15 +531,24 @@ namespace BaSyx.API.ServiceProvider
                 return new Result(false, new ErrorMessage("Model type not matching for found submodel element and request body"));
 
             sme.Category = submodelElement.Category ?? sme.Category;
-            // is never null
-            sme.Description = submodelElement.Description ?? sme.Description;
-            // is never null
-            sme.DisplayName = submodelElement.DisplayName ?? sme.DisplayName;
+
+            // default init as empty list
+            if (submodelElement.Description.Count > 0)
+                sme.Description = submodelElement.Description;
+
+            // default init as empty list
+            if (submodelElement.DisplayName.Count > 0)
+                sme.DisplayName = submodelElement.DisplayName;
+            
             sme.SemanticId = submodelElement.SemanticId ?? sme.SemanticId;
-            // is never null
-            sme.SupplementalSemanticIds = submodelElement.SupplementalSemanticIds ?? sme.SupplementalSemanticIds;
-            // is never null
-            sme.Qualifiers = submodelElement.Qualifiers ?? sme.Qualifiers;
+            
+            // default init as empty list
+            if (submodelElement.SupplementalSemanticIds.Any())
+                sme.SupplementalSemanticIds = submodelElement.SupplementalSemanticIds;
+
+            // default init as empty list
+            if (submodelElement.Qualifiers.Any())
+                sme.Qualifiers = submodelElement.Qualifiers;
 
             switch (sme.ModelType.Type)
             {
