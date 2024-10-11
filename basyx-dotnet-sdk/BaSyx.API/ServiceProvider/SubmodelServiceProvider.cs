@@ -793,8 +793,8 @@ namespace BaSyx.API.ServiceProvider
                 return result;
 
             // update submodel elements
-            // is never null
-            if (submodel.SubmodelElements != null)
+            // default init as empty list
+            if (submodel.SubmodelElements.Count > 0)
             {
                 _submodel.SubmodelElements.Clear();
                 _submodel.SubmodelElements.AddRange(submodel.SubmodelElements);
@@ -813,19 +813,20 @@ namespace BaSyx.API.ServiceProvider
                 Administration = submodel.Administration ?? _submodel.Administration,
                 Category = submodel.Category ?? _submodel.Category,
                 SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
-                // is never null
-                SupplementalSemanticIds = submodel.SupplementalSemanticIds ?? _submodel.SupplementalSemanticIds,
-                // is never null
-                Qualifiers = submodel.Qualifiers ?? _submodel.Qualifiers,
-                // is never null
-                Description = submodel.Description ?? _submodel.Description,
-                // is never null
-                DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
-                // is never null
-                EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications ?? _submodel.EmbeddedDataSpecifications,
                 ConceptDescription = submodel.ConceptDescription ?? _submodel.ConceptDescription,
                 SubmodelElements = _submodel.SubmodelElements,
             };
+
+            // default init as empty list
+            updatedSubmodel.SupplementalSemanticIds = submodel.SupplementalSemanticIds.Any() ? submodel.SupplementalSemanticIds : _submodel.SupplementalSemanticIds;
+            // default init as empty list
+            updatedSubmodel.Qualifiers = submodel.Qualifiers.Any() ? submodel.Qualifiers : _submodel.Qualifiers;
+            // default init as empty list
+            updatedSubmodel.Description = submodel.Description.Any() ? submodel.Description : _submodel.Description;
+            // default init as empty list
+            updatedSubmodel.DisplayName = submodel.DisplayName.Any() ? submodel.DisplayName : _submodel.DisplayName;
+            // default init as empty list
+            updatedSubmodel.EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications.Any() ? submodel.EmbeddedDataSpecifications : _submodel.EmbeddedDataSpecifications;
 
             _submodel = updatedSubmodel;
             return new Result(true);

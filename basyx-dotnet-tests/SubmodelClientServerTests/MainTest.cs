@@ -75,11 +75,6 @@ namespace SubmodelClientServerTests
                     Version = "2.0",
                     Revision = "2"
                 },
-                DisplayName = new LangStringSet()
-                {
-                    new("de-DE", "Submodel aktualisiert"),
-                    new("en-US", "submodel updated")
-                },
                 Category = "updated_category",
                 SubmodelElements = new ElementContainer<ISubmodelElement>
                 {
@@ -87,6 +82,7 @@ namespace SubmodelClientServerTests
                     new Property<int>("New_Int_Property", 262)
                 }
             };
+
             var updated = UpdateSubmodel(updatedSubmodel);
             updated.Success.Should().BeTrue();
 
@@ -95,6 +91,8 @@ namespace SubmodelClientServerTests
             submodel.Category.Should().Be(updatedSubmodel.Category);
             submodel.IdShort.Should().NotBe(updatedSubmodel.IdShort);
             submodel.IdShort.Should().Be(Submodel.IdShort);
+            submodel.DisplayName.Should().NotBeNull();
+            submodel.Description[0].Text.Should().Be(updatedSubmodel.Description[0].Text);
         }
 
         [TestMethod]
@@ -130,6 +128,8 @@ namespace SubmodelClientServerTests
             submodel.Category.Should().Be(updatedSubmodel.Category);
             submodel.IdShort.Should().NotBe(updatedSubmodel.IdShort);
             submodel.IdShort.Should().Be(Submodel.IdShort);
+            submodel.Description[0].Text.Should().Be(updatedSubmodel.Description[0].Text);
+            submodel.DisplayName[0].Text.Should().Be(updatedSubmodel.DisplayName[0].Text);
         }
 
         [TestMethod]

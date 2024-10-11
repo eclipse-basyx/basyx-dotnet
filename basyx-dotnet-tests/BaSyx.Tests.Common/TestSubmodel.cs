@@ -12,7 +12,9 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using BaSyx.Models.Semantics;
 
 namespace SimpleAssetAdministrationShell
 {
@@ -26,6 +28,11 @@ namespace SimpleAssetAdministrationShell
 
             Submodel testSubmodel = new Submodel(id, new BaSyxSubmodelIdentifier(id, "1.0.0"))
             {
+                DisplayName = new LangStringSet()
+                {
+                    new("de-DE", "Submodel"),
+                    new("en-US", "submodel")
+                },
                 SubmodelElements =
                 {
                     new Property<string>("TestProperty1")
