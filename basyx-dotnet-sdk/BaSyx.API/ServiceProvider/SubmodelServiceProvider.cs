@@ -706,6 +706,17 @@ namespace BaSyx.API.ServiceProvider
             if (submodelElement == null)
                 return new Result<IReference>(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
 
+            // exception for properties in collections (see API spec page 171)
+            if (submodelElement.Value.ModelType == ModelType.Property &&
+                submodelElement.ParentContainer?.Value?.ModelType == ModelType.SubmodelElementCollection)
+            {
+                var emptyReference = new Reference()
+                {
+                    Type = ReferenceType.Undefined
+                };
+                return new Result<IReference>(true, new Reference());
+            } ;
+
             var keys = new List<IKey>()
             {
                 //add submodel reference key
@@ -714,8 +725,10 @@ namespace BaSyx.API.ServiceProvider
             //add submodel element keys (recursive with parent containers)
             keys.AddRange(submodelElement.RetrieveReferenceKeys());
 
-            var reference = new Reference(keys);
-            reference.Type = ReferenceType.ModelReference;
+            var reference = new Reference(keys)
+            {
+                Type = ReferenceType.ModelReference
+            };
             return new Result<IReference>(true, reference);
         }
 

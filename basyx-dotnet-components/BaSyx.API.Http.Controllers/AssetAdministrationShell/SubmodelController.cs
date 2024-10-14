@@ -753,6 +753,10 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(idShortPath));
 
             var result = serviceProvider.RetrieveSubmodelElementReference(idShortPath);
+            // exception for properties in collections (see API spec page 171)
+            if (result.Success && result.Entity?.Type == ReferenceType.Undefined)
+                return Content("[]", "application/json");
+
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
