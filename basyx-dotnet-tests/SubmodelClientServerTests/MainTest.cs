@@ -93,6 +93,8 @@ namespace SubmodelClientServerTests
             submodel.IdShort.Should().Be(Submodel.IdShort);
             submodel.DisplayName.Should().NotBeNull();
             submodel.Description[0].Text.Should().Be(updatedSubmodel.Description[0].Text);
+
+            ReplaceSubmodel(Submodel);
         }
 
         [TestMethod]
@@ -130,6 +132,8 @@ namespace SubmodelClientServerTests
             submodel.IdShort.Should().Be(Submodel.IdShort);
             submodel.Description[0].Text.Should().Be(updatedSubmodel.Description[0].Text);
             submodel.DisplayName[0].Text.Should().Be(updatedSubmodel.DisplayName[0].Text);
+
+            ReplaceSubmodel(Submodel);
         }
 
         [TestMethod]

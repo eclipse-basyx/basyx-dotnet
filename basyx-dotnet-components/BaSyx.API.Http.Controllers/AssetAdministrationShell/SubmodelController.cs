@@ -753,10 +753,6 @@ namespace BaSyx.API.Http.Controllers
                 return ResultHandling.NullResult(nameof(idShortPath));
 
             var result = serviceProvider.RetrieveSubmodelElementReference(idShortPath);
-            // exception for properties in collections (see API spec page 171)
-            if (result.Success && result.Entity?.Type == ReferenceType.Undefined)
-                return Content("[]", "application/json");
-
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
@@ -781,20 +777,28 @@ namespace BaSyx.API.Http.Controllers
 
             idShortPath = HttpUtility.UrlDecode(idShortPath);
 
-            var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
-            if (result.Success && result.Entity != null)
-            {
-                string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
-                {
-                    Converters = {new PathConverter(new PathConverterOptions()
-                    {
-                        RequestLevel = level
-                    })}
-                });
-                return Content(json, "application/json");
-            }
-            else
+            var result = serviceProvider.RetrieveSubmodel();
+            if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
+            
+            var sme= result.Entity.SubmodelElements.GetChild(idShortPath);
+
+            if (sme == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            // exception for properties in collections (see API spec page 171)
+            if (sme.Value.ModelType == ModelType.Property &&
+                sme.ParentContainer?.Value?.ModelType == ModelType.SubmodelElementCollection)
+                return Content("[]", "application/json");
+
+            var json = JsonSerializer.Serialize(sme.Value, new JsonSerializerOptions()
+            {
+                Converters = {new PathConverter(new PathConverterOptions()
+                {
+                    RequestLevel = level
+                })}
+            });
+            return Content(json, "application/json");
         }
 
         /// <summary>
