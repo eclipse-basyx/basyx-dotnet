@@ -30,6 +30,8 @@ namespace BaSyx.API.Interfaces
 
         IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement);
 
+        IResult UpdateSubmodelElementByPath(string idShortPath, ISubmodelElement submodelElement);
+
         IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100,
             string cursor = "");
 

@@ -127,6 +127,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelElementMetadataAsync(idShortPath, submodelElement).GetAwaiter().GetResult();
         }
 
+        public IResult UpdateSubmodelElementByPath(string idShortPath, ISubmodelElement submodelElement)
+        {
+            return UpdateSubmodelElementByPathAsync(idShortPath, submodelElement).GetAwaiter().GetResult();
+        }
+
         public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "")
         {
             return RetrieveSubmodelElementsAsync(limit, cursor).GetAwaiter().GetResult();
@@ -247,6 +252,16 @@ namespace BaSyx.Clients.AdminShell.Http
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, rootIdShortPath);
             var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodelElement);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult> UpdateSubmodelElementByPathAsync(string rootIdShortPath, ISubmodelElement submodelElement)
+        {
+            Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, rootIdShortPath);
+            var request = CreateJsonContentRequest(uri, HttpMethod.Patch, submodelElement);
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
             var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();

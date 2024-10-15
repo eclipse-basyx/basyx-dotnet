@@ -309,7 +309,7 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
-        public void Test106_UpdateSubmodelElement()
+        public void Test106_ReplaceSubmodelElement()
         {
             var mySubFloat = Submodel.SubmodelElements["MyCollection.MySubCollection.MySubSubFloat"].Cast<Property<float>>();
             mySubFloat.Description = new LangStringSet()
@@ -994,6 +994,130 @@ namespace SubmodelClientServerTests
                     return;
             }
 
+            //switch back to original model for following tests
+            ReplaceSubmodel(Submodel);
+        }
+
+        [TestMethod]
+        [DataRow("UpdateTestStringProperty", false)]
+        [DataRow("UpdateTestStringProperty", true)]
+        [DataRow("NestedTestCollection.MySubStringProperty", false)]
+        [DataRow("NestedTestCollection.MySubStringProperty", true)]
+        [DataRow("NestedTestCollection.MySubmodelElementList[0]", false)]
+        [DataRow("NestedTestCollection.MySubmodelElementList[0]", true)]
+        [DataRow("NestedTestCollection.MySubmodelElementList", false)]
+        [DataRow("TestBasicEventElement", false)]
+        [DataRow("TestBasicEventElement", true)]
+        public void Test124_UpdateSubmodelElement(string elementPath, bool updateValue)
+        {
+            CreateSubmodelElement(".", new Property<string>("UpdateTestStringProperty", "An very old value"));
+            CreateSubmodelElement(".", new BasicEventElement("TestBasicEventElement")
+            {
+                Description = new LangStringSet() { new LangString("en", "This is an exemplary BasicEventElement") },
+                SemanticId = new Reference(new Key(KeyType.GlobalReference,
+                    new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),
+                Value = new BasicEventElementValue()
+                {
+                    Observed = new Reference(
+                        new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0").ToUrn()),
+                        new Key(KeyType.Property, new BaSyxPropertyIdentifier("HelloProperty", "1.0.0").ToUrn())),
+                },
+                Direction = EventDirection.Output,
+                State = EventState.On,
+                MessageTopic = "boschrexroth/helloBasicEventElement",
+                LastUpdate = DateTime.UtcNow.ToString(),
+                MinInterval = "PT3S",
+                ObservableReference = new Reference(new Key(KeyType.GlobalReference,
+                    new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),
+            });
+
+            var originalSme = RetrieveSubmodelElement(elementPath).Entity;
+
+            SubmodelElement updateSme = null;
+            var newId = "updateProp";
+            var newDesc = "updatedDescription";
+
+            switch (originalSme.ModelType.Type)
+            {
+                case ModelTypes.Property:
+                    if (updateValue)
+                        updateSme = new Property<string>(newId, "new value");
+                    else
+                        updateSme = new Property<string>(newId);
+                    break;
+
+                case ModelTypes.SubmodelElementList:
+                    updateSme = new SubmodelElementList(newId);
+                    break;
+
+                case ModelTypes.BasicEventElement:
+                    updateSme = new BasicEventElement(newId);
+                    ((BasicEventElement)updateSme).MinInterval = "FM262";
+
+                    if (updateValue)
+                        updateSme.Value = new BasicEventElementValue()
+                        {
+                            Observed = new Reference(
+                                new Key(KeyType.Submodel, new BaSyxSubmodelIdentifier("UpdateValue", "1.0.0").ToUrn()),
+                                new Key(KeyType.Property, new BaSyxPropertyIdentifier("UpdateValueProperty", "1.0.0").ToUrn())),
+                        };
+                    break;
+
+                default:
+                    updateSme.Should().NotBeNull();
+                    break;
+            }
+
+            updateSme.Category = "This is the new category";
+            updateSme.Description = new LangStringSet() { new LangString("en", newDesc) };
+
+            var result = UpdateSubmodelElementByPath(elementPath, updateSme);
+
+            result.Success.Should().BeTrue();
+
+            var updatedSme = RetrieveSubmodelElement(elementPath).Entity;
+
+            updatedSme.IdShort.Should().Be(originalSme.IdShort);
+            updatedSme.IdShort.Should().NotBe(newId);
+
+            updatedSme.Category.Should().Be(updateSme.Category);
+            updatedSme.Description[0].Text.Should().Be(newDesc);
+
+            switch (updatedSme.ModelType.Type)
+            {
+                case ModelTypes.Property:
+                    if (updateValue)
+                    {
+                        updatedSme.GetValue<string>().Should().Be(updateSme.GetValue<string>());
+                        updatedSme.GetValue<string>().Should().NotBe(originalSme.GetValue<string>());
+                    }
+                    else
+                    {
+                        updatedSme.GetValue<string>().Should().Be(originalSme.GetValue<string>());
+                    }
+                    break;
+
+                case ModelTypes.BasicEventElement:
+                    ((BasicEventElement)updatedSme).MinInterval.Should().Be(((BasicEventElement)updateSme).MinInterval);
+
+                    if (updateValue)
+                    {
+                        ((BasicEventElement)updatedSme).Value.Observed.First.Value.Should()
+                            .Be(((BasicEventElement)updateSme).Value.Observed.First.Value);
+
+                        ((BasicEventElement)updatedSme).Value.Observed.First.Value.Should()
+                            .NotBe(((BasicEventElement)originalSme).Value.Observed.First.Value);
+                    }
+                    else
+                    {
+                        ((BasicEventElement)updatedSme).Value.Observed.First.Value.Should()
+                            .Be(((BasicEventElement)originalSme).Value.Observed.First.Value);
+                    }
+                    break;
+            }
+
+
+            ReplaceSubmodel(Submodel);
         }
 
         #endregion
@@ -1075,6 +1199,11 @@ namespace SubmodelClientServerTests
         public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
         {
             return ((ISubmodelClient)Client).UpdateSubmodelElementMetadata(idShortPath, submodelElement);
+        }
+
+        public IResult UpdateSubmodelElementByPath(string idShortPath, ISubmodelElement submodelElement)
+        {
+            return ((ISubmodelClient)Client).UpdateSubmodelElementByPath(idShortPath, submodelElement);
         }
 
         public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit  = 100, string cursor = "")

@@ -512,14 +512,20 @@ namespace BaSyx.API.ServiceProvider
             if (_submodel == null)
                 return new Result(false, new NotFoundMessage("Submodel"));
 
+            if (submodelElement == null)
+                return new Result(false, new NotFoundMessage("submodelElement"));
+
             var updated = _submodel.SubmodelElements.Update(idShortPath, submodelElement);
             return updated;
         }
 
-        public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
+        public IResult UpdateSubmodelElementByPath(string idShortPath, ISubmodelElement submodelElement)
         {
             if (_submodel == null)
                 return new Result(false, new NotFoundMessage("Submodel"));
+
+            if (submodelElement == null)
+                return new Result(false, new NotFoundMessage("submodelElement"));
 
             var retrievedSme = RetrieveSubmodelElement(idShortPath);
             if (!retrievedSme.Success || retrievedSme.Entity == null)
@@ -527,6 +533,38 @@ namespace BaSyx.API.ServiceProvider
 
             var sme = retrievedSme.Entity as SubmodelElement;
 
+            // update value if set
+            if (submodelElement.Value != null)
+            {
+                var valueResult = UpdateSubmodelElementValue(sme, submodelElement.Value);
+                if (!valueResult.Success)
+                    return valueResult;
+            }
+
+            // update metadata
+            var metadataResult = UpdateSubmodelElementMetadata(sme, submodelElement);
+            return metadataResult;
+        }
+
+        public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
+        {
+            if (_submodel == null)
+                return new Result(false, new NotFoundMessage("Submodel"));
+
+            if (submodelElement == null)
+                return new Result(false, new NotFoundMessage("submodelElement"));
+
+            var retrievedSme = RetrieveSubmodelElement(idShortPath);
+            if (!retrievedSme.Success || retrievedSme.Entity == null)
+                return new Result(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
+
+            var sme = retrievedSme.Entity as SubmodelElement;
+
+            return UpdateSubmodelElementMetadata(sme, submodelElement);
+        }
+
+        public IResult UpdateSubmodelElementMetadata(SubmodelElement sme, ISubmodelElement submodelElement)
+        {
             if (sme.ModelType != submodelElement.ModelType)
                 return new Result(false, new ErrorMessage("Model type not matching for found submodel element and request body"));
 
@@ -751,17 +789,25 @@ namespace BaSyx.API.ServiceProvider
             if (_submodel == null)
                 return new Result(false, new NotFoundMessage("Submodel"));
 
+            if (value == null)
+                return new Result(false, new NotFoundMessage("value"));
+
             var submodelElement = _submodel.SubmodelElements.Retrieve<ISubmodelElement>(submodelElementId);
             if (!submodelElement.Success || submodelElement.Entity == null)
                 return new Result(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
 
-            if (submodelElement.Entity.Set != null)
+            return UpdateSubmodelElementValue(submodelElement.Entity, value);
+        }
+
+        public IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value)
+        {
+            if (submodelElement.Set != null)
             {
-                submodelElement.Entity.Set.Invoke(submodelElement.Entity, value);
+                submodelElement.Set.Invoke(submodelElement, value);
                 return new Result(true);
             }
             else
-                return new Result(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
+                return new Result(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElement.IdShort}"));
         }
 
         public IResult DeleteSubmodelElement(string submodelElementId)
