@@ -27,6 +27,7 @@ using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
 using Range = BaSyx.Models.AdminShell.Range;
 using BaSyx.Models.Extensions.JsonConverters;
+using System.Runtime.Intrinsics.X86;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -226,8 +227,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Updates the values of the Submodel
         /// </summary>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="requestBody">Requested submodel element</param>
         /// <returns></returns>
         /// <response code="204">Submodel object in its ValueOnly representation</response>     
         [HttpPatch(SubmodelRoutes.SUBMODEL + OutputModifier.VALUE, Name = "PatchSubmodelValueOnly")]
@@ -236,9 +236,22 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodelValueOnly([FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
+        public IActionResult PatchSubmodelValueOnly([FromBody] JsonDocument requestBody)
         {
-            throw new NotImplementedException();
+            if (requestBody.Equals(default(JsonDocument)))
+                return ResultHandling.NullResult(nameof(requestBody));
+
+            ValueScope valueScope;
+            //try
+            //{
+            //    valueScope = ParseValueScope(sme, requestBody);
+            //}
+            //catch (Exception e)
+            //{
+            //    return new Result(false, new ErrorMessage($"{e.Message} | path '{idShortPath}'")).CreateActionResult(CrudOperation.Update);
+            //}
+
+            return null;
         }
 
         /// <summary>
@@ -724,7 +737,6 @@ namespace BaSyx.API.Http.Controllers
 
             var sme = sme_retrieved.Entity as SubmodelElement;
             ValueScope valueScope;
-
             try
             {
                 valueScope = ParseValueScope(sme, requestBody);
