@@ -374,6 +374,9 @@ namespace BaSyx.Models.Extensions
                 string propertyName = reader.GetString();
                 reader.Read();
 
+                if (sourceContainer.IdShort == propertyName)
+                    continue;
+
 				var sme = sourceContainer.GetChild(propertyName).Value;
 				if(sme.ModelType == ModelType.Property)
 				{
