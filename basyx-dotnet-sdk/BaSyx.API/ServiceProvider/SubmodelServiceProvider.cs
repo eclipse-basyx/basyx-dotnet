@@ -629,10 +629,33 @@ namespace BaSyx.API.ServiceProvider
             {
                 Administration = submodel.Administration ?? _submodel.Administration,
                 Category = submodel.Category ?? _submodel.Category,
+                SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
+                SupplementalSemanticIds = submodel.SupplementalSemanticIds ?? _submodel.SupplementalSemanticIds,
+                Qualifiers = submodel.Qualifiers ?? _submodel.Qualifiers,
+                Description = submodel.Description ?? _submodel.Description,
+                DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
+                EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications ?? _submodel.EmbeddedDataSpecifications,
+                ConceptDescription = submodel.ConceptDescription ?? _submodel.ConceptDescription,
+                SubmodelElements = submodel.SubmodelElements ?? _submodel.SubmodelElements
+            };
+
+            _submodel = updatedSubmodel;
+            return new Result(true);
+        }
+
+        public IResult UpdateSubmodelMetadata(ISubmodel submodel)
+        {
+            if (_submodel == null)
+                return new Result(false, new ErrorMessage("The service provider's inner Submodel object is null"));
+
+            var updatedSubmodel = new Submodel(_submodel.IdShort, _submodel.Id)
+            {
+                Administration = submodel.Administration ?? _submodel.Administration,
+                Category = submodel.Category ?? _submodel.Category,
                 Description = submodel.Description ?? _submodel.Description,
                 DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
                 SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
-                SubmodelElements = submodel.SubmodelElements ?? _submodel.SubmodelElements
+                SubmodelElements = _submodel.SubmodelElements
             };
 
             _submodel = updatedSubmodel;

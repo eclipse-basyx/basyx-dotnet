@@ -361,11 +361,6 @@ namespace AdminShellClientServerTests
             return Client.UpdateSubmodel(TestSubmodel.Id, submodel);
         }
 
-        public IResult ReplaceSubmodel(ISubmodel submodel)
-        {
-            return Client.ReplaceSubmodel(TestSubmodel.Id, submodel);
-        }
-
         public IResult<ISubmodelElement> CreateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return Client.CreateSubmodelElement(TestSubmodel.Id, rootIdShortPath, submodelElement);

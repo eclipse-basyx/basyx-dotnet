@@ -14,7 +14,6 @@ using BaSyx.Models.Extensions;
 using BaSyx.Clients.AdminShell.Http;
 using BaSyx.Utils.ResultHandling;
 using FluentAssertions;
-using FluentAssertions.Equivalency;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SimpleAssetAdministrationShell;
 using System;
@@ -23,7 +22,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BaSyx.Models.Connectivity;
-using BaSyx.Utils.DependencyInjection;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 
@@ -142,7 +140,7 @@ namespace SubmodelClientServerTests
                                                             new Property<string>("CollectionInListProp1", "CollectionInsideListValue"),
                                                             new Property<int>("CollectionInListProp2", 7),
                                                             new Property<double>("CollectionInListProp3", 6.5d),
-                                                            new Property<float>("CollectionInListProp43", 4.3f),
+                                                            new Property<float>("CollectionInListProp4", 4.3f),
                                                             new Entity("CollectionInListEntity")
                                                             {
                                                                 Value=
@@ -201,6 +199,9 @@ namespace SubmodelClientServerTests
             Submodel.SubmodelElements.Add(coll);
             var created = CreateSubmodelElement(".", coll);
             created.Success.Should().BeTrue();
+            var retrieved = RetrieveSubmodelElement("MyCollection.MySubString");
+            retrieved.Success.Should().BeTrue();
+            retrieved.Entity.GetValue<string>().Should().Be("MySubStringValue");
         }
 
         [TestMethod]
@@ -328,7 +329,7 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
-        public void Test104A_RetrieveSubmodelElements()
+        public void Test104A_RetrieveSubmodelElementsWithLimit()
         {
             var retrieved = RetrieveSubmodelElements(2);
             retrieved.Success.Should().BeTrue();
@@ -357,7 +358,7 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
-        public void Test104B_RetrieveSubmodelElements()
+        public void Test104B_RetrieveSubmodelElementsWithLimitAndCursor()
         {
             var retrieved = RetrieveSubmodelElements(3, "TestProperty2");
             retrieved.Success.Should().BeTrue();
@@ -393,6 +394,84 @@ namespace SubmodelClientServerTests
                 });
             retrieved.Entity.Result.Children.Count().Should().Be(3);
             retrieved.Entity.PagingMetadata.Cursor.Should().Be("TestPropertyNoSetter");
+        }
+
+        [TestMethod]
+        public void Test104C_RetrieveSubmodelElementsPath()
+        {
+            string resultPart = "\"TestProperty1\"," +
+                                "\"TestProperty2\"," +
+                                "\"TestProperty3\"," +
+                                "\"TestProperty4\"," +
+                                "\"TestPropertyNoSetter\"," +
+                                "\"TestValueChanged1\"," +
+                                "\"TestSubmodelElementCollection\"," +
+                                "\"TestSubmodelElementCollection.TestSubProperty1\"," +
+                                "\"TestSubmodelElementCollection.TestSubProperty2\"," +
+                                "\"TestSubmodelElementCollection.TestSubProperty3\"," +
+                                "\"TestSubmodelElementCollection.TestSubProperty4\"," +
+                                "\"GetTime\"," +
+                                "\"Calculate\"," +
+                                "\"NestedTestCollection\"," +
+                                "\"NestedTestCollection.MySubStringProperty\"," +
+                                "\"NestedTestCollection.MySubIntProperty\"," +
+                                "\"NestedTestCollection.MySubTestCollection\"," +
+                                "\"NestedTestCollection.MySubTestCollection.MySubSubStringProperty\"," +
+                                "\"NestedTestCollection.MySubTestCollection.MySubSubIntProperty\"," +
+                                "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection\"," +
+                                "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection.MySubSubSubStringProperty\"," +
+                                "\"NestedTestCollection.MySubTestCollection.MySubSubTestCollection.MySubSubSubIntProperty\"," +
+                                "\"NestedTestCollection.MySubEntity\"," +
+                                "\"NestedTestCollection.MySubEntity.MySubEntityProperty\"," +
+                                "\"NestedTestCollection.MySubmodelElementList\"," +
+                                "\"NestedTestCollection.MySubmodelElementList[0]\"," +
+                                "\"NestedTestCollection.MySubmodelElementList[1]\"";
+
+            string updatedPart = "\"MyCollection.MySubCollection.MySubmodelElementList1\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList1[0]\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList1[1]\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList1[2]\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList1[3]\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2[0]\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp1\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp2\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp3\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp4\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity.p1\"," +
+                                 "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity.p2\"," +
+                                 "\"MyCollection.MySubCollection.MultidimensionalArrayList\"," +
+                                 "\"MyCollection.MySubCollection.MultidimensionalArrayList[0]\"," +
+                                 "\"MyCollection.MySubCollection.MultidimensionalArrayList[0][0]\"," +
+                                 "\"MyCollection.MySubCollection.MultidimensionalArrayList[0][1]\"," +
+                                 "\"MyCollection.MySubCollection.MultidimensionalArrayList[1]\"," +
+                                 "\"MyCollection.MySubCollection.MultidimensionalArrayList[1][0]\"," +
+                                 "\"MyCollection.MySubCollection.MultidimensionalArrayList[1][1]\"";
+
+            var retrieved = RetrieveSubmodelElementsPath();
+            retrieved.Success.Should().BeTrue();
+            string jsonResult = JsonSerializer.Serialize(retrieved.Entity);
+            jsonResult.Should().Contain(resultPart);
+            jsonResult.Should().Contain(updatedPart);
+        }
+
+        [TestMethod]
+        public void Test104D_RetrieveSubmodelElementsPathWithPagination()
+        {
+            var retrieved = RetrieveSubmodelElementsPath(2, "TestValueChanged1");
+            retrieved.Success.Should().BeTrue();
+            string jsonResult = JsonSerializer.Serialize(retrieved.Entity);
+            string expectedResult =
+                "[" +
+                "\"TestValueChanged1\"," +
+                "\"TestSubmodelElementCollection\"," +
+                "\"TestSubmodelElementCollection.TestSubProperty1\"," +
+                "\"TestSubmodelElementCollection.TestSubProperty2\"," +
+                "\"TestSubmodelElementCollection.TestSubProperty3\"," +
+                "\"TestSubmodelElementCollection.TestSubProperty4\"" +
+                "]";
+            jsonResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [TestMethod]
@@ -446,14 +525,14 @@ namespace SubmodelClientServerTests
         }
         
         [TestMethod]
-        public void Test114_RetrieveNestedSubmodelElementHierarchyPathSerializationLevelDeep()
+        public void Test114_RetrieveSMEPathSerializationLevelDeepNestedSubmodelElementHierarchy()
         {
             string expectedResult = "[\"MyCollection.MySubCollection.MySubmodelElementList2\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0]\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp1\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp2\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp3\"," +
-                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp43\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp4\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity.p1\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity.p2\"" +
@@ -467,13 +546,13 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
-        public void Test114A_RetrieveSubmodelElementCollectionPathSerializationLevelCore()
+        public void Test114A_RetrieveSMEPathSerializationLevelCoreSubmodelElementCollection()
         {
             string expectedResult = "[\"MyCollection.MySubCollection.MySubmodelElementList2[0]\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp1\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp2\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp3\"," +
-                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp43\"," +
+                                    "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListProp4\"," +
                                     "\"MyCollection.MySubCollection.MySubmodelElementList2[0].CollectionInListEntity\"" +
                                     "]";
 
@@ -485,7 +564,7 @@ namespace SubmodelClientServerTests
         }
 
         [TestMethod]
-        public void Test114B_RetrievePropertyPathSerializationLevelCore()
+        public void Test114B_RetrieveSMEPathSerializationLevelCoreProperty()
         {
             string expectedResult = "[]";
 
@@ -524,6 +603,77 @@ namespace SubmodelClientServerTests
             submodel.IdShort.Should().BeEquivalentTo(idShort);
         }
 
+
+        [TestMethod]
+        public void Test116_UpdateSubmodelMetadata()
+        {
+            var idShort = "UpdatedSubmodel";
+
+            var replaceSubmodel = new Submodel(idShort, new BaSyxSubmodelIdentifier("ReplacedSubmodel", "1.0.0"))
+            {
+                Description = new LangStringSet()
+                {
+                    new("de-DE", "Submodel wurde ersetzt"),
+                    new("en-US", "submodel was replaced")
+                },
+                Administration = new AdministrativeInformation()
+                {
+                    Version = "2.0",
+                    Revision = "2"
+                },
+                DisplayName = new LangStringSet()
+                {
+                    new("de-DE", "Submodel ersetzt"),
+                    new("en-US", "submodel replaced")
+                },
+                Category = "replaced_category",
+                SubmodelElements = new ElementContainer<ISubmodelElement>
+                {
+                    new Property<string>("New_String_Property", "Replaced"),
+                    new Property<int>("New_Int_Property", 262)
+                }
+            };
+
+            var replaced = UpdateSubmodelMetadata(replaceSubmodel);
+            replaced.Success.Should().BeTrue();
+
+            var submodel = RetrieveSubmodel().Entity;
+            submodel.SubmodelElements.Count.Should().BeGreaterThan(2);
+            submodel.Category.Should().BeEquivalentTo(replaceSubmodel.Category);
+            submodel.IdShort.Should().NotBeEquivalentTo(replaceSubmodel.IdShort);
+        }
+
+        [TestMethod]
+        public void Test117_GetSubmodelReference()
+        {
+            var submodel = RetrieveSubmodel().Entity;
+            var reference = submodel.GetReference();
+            var keys = reference.Keys.ToList();
+
+            keys[0].Value.Should().BeEquivalentTo(submodel.Id.Id);
+            keys[0].Type.Should().Be(KeyType.Submodel);
+
+        }
+
+        [TestMethod]
+        public void Test118_GetSubmodelMetadata()
+        {
+            var submodel = RetrieveSubmodel().Entity;
+            var metadata = submodel.GetMetadata();
+
+            metadata.SubmodelElements.Should().BeNull();
+            metadata.Id.Should().BeEquivalentTo(submodel.Id);
+            metadata.Administration.Should().BeEquivalentTo(submodel.Administration);
+            metadata.Category.Should().BeEquivalentTo(submodel.Category);
+            metadata.Description.Should().BeEquivalentTo(submodel.Description);
+            metadata.DisplayName.Should().BeEquivalentTo(submodel.DisplayName);
+            metadata.EmbeddedDataSpecifications.Should().BeEquivalentTo(submodel.EmbeddedDataSpecifications);
+            metadata.Kind.Should().Be(submodel.Kind);
+            metadata.Qualifiers.Should().BeEquivalentTo(submodel.Qualifiers);
+            metadata.SemanticId.Should().BeEquivalentTo(submodel.SemanticId);
+            metadata.SupplementalSemanticIds.Should().BeEquivalentTo(submodel.SupplementalSemanticIds);
+        }
+
         private IElementContainer<ISubmodelElement> GetDynamicStructure(ISubmodelElementCollection baseSmc)
         {
             ElementContainer<ISubmodelElement> dynamicContainer = new ElementContainer<ISubmodelElement>(baseSmc.Parent, baseSmc, null);
@@ -554,11 +704,16 @@ namespace SubmodelClientServerTests
         public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodel(level, extent);
-        } 
+        }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
         {
             return ((ISubmodelClient)Client).UpdateSubmodel(submodel);
+        }
+
+        public IResult UpdateSubmodelMetadata(ISubmodel submodel)
+        {
+            return ((ISubmodelClient)Client).UpdateSubmodelMetadata(submodel);
         }
 
         public IResult ReplaceSubmodel(ISubmodel submodel)
@@ -606,6 +761,12 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElementPath(idShortPath, level);
         }
 
+        public IResult<List<string>> RetrieveSubmodelElementsPath(int limit = 100,
+            string cursor = "", RequestLevel level = RequestLevel.Deep)
+        {
+            return ((ISubmodelClient)Client).RetrieveSubmodelElementsPath(limit, cursor, level);
+        }
+
         public IResult UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement)
         {
             return ((ISubmodelClient)Client).UpdateSubmodelElement(rootIdShortPath, submodelElement);
@@ -639,6 +800,11 @@ namespace SubmodelClientServerTests
         public Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementsAsync(limit, cursor, level, extent);
+        }
+
+        public Task<IResult<List<string>>> RetrieveSubmodelElementsPathAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep)
+        {
+            return ((ISubmodelClient)Client).RetrieveSubmodelElementsPathAsync(limit, cursor, level);
         }
 
         public Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string idShortPath)

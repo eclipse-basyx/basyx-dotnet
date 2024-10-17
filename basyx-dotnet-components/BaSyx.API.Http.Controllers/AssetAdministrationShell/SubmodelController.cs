@@ -28,6 +28,7 @@ using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
 using Range = BaSyx.Models.AdminShell.Range;
 using System.Text.Json.Serialization;
+using BaSyx.Models.Extensions.JsonConverters;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -173,8 +174,6 @@ namespace BaSyx.API.Http.Controllers
         /// Updates the metadata attributes of the Submodel
         /// </summary>
         /// <param name="submodel">The metadata attributes of the Submodel object</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>     
         [HttpPatch(SubmodelRoutes.SUBMODEL + OutputModifier.METADATA, Name = "PatchSubmodelMetadata")]
@@ -183,9 +182,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodelMetadata([FromBody] ISubmodel submodel, [FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
+        public IActionResult PatchSubmodelMetadata([FromBody] ISubmodel submodel)
         {
-            throw new NotImplementedException();
+            if (submodel == null)
+                return ResultHandling.NullResult(nameof(submodel));
+
+            var result = serviceProvider.UpdateSubmodelMetadata(submodel);
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>
@@ -243,7 +246,6 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the Reference of the Submodel
         /// </summary>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">ValueOnly representation of the Submodel</response>     
         [HttpGet(SubmodelRoutes.SUBMODEL + OutputModifier.REFERENCE, Name = "GetSubmodelReference")]
@@ -252,9 +254,15 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelReference([FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult GetSubmodelReference()
         {
-            throw new NotImplementedException();
+            var result = serviceProvider.RetrieveSubmodel();
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            var reference = result.Entity.GetReference();
+            var json = JsonSerializer.Serialize(reference, _fullSerializerOptions);
+            return Content(json, "application/json");
         }
 
         /// <summary>
@@ -421,9 +429,22 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelElementsPath([FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
+        public IActionResult GetAllSubmodelElementsPath([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default)
         {
-            throw new NotImplementedException();
+            var result = serviceProvider.RetrieveSubmodelElements(limit, cursor);
+
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            string json = JsonSerializer.Serialize(result.Entity.Result, new JsonSerializerOptions()
+            {
+                Converters = {new FullPathConverter(new PathConverterOptions()
+                {
+                    RequestLevel = level
+                })}
+            });
+            
+            return Content(json, "application/json");
         }
 
         /// <summary>
@@ -838,7 +859,10 @@ namespace BaSyx.API.Http.Controllers
             {
                 string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
                 {
-                    Converters = {new PathConverter(level)}
+                    Converters = {new PathConverter(new PathConverterOptions()
+                    {
+                        RequestLevel = level
+                    })}
                 });
                 return Content(json, "application/json");
             }

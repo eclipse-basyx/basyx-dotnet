@@ -103,6 +103,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelAsync(submodel).GetAwaiter().GetResult();
         }
 
+        public IResult UpdateSubmodelMetadata(ISubmodel submodel)
+        {
+            return UpdateSubmodelMetadataAsync(submodel).GetAwaiter().GetResult();
+        }
+
         public IResult ReplaceSubmodel(ISubmodel submodel)
         {
             return ReplaceSubmodelAsync(submodel).GetAwaiter().GetResult();
@@ -121,6 +126,12 @@ namespace BaSyx.Clients.AdminShell.Http
         public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "")
         {
             return RetrieveSubmodelElementsAsync(limit, cursor).GetAwaiter().GetResult();
+        }
+
+        public IResult<List<string>> RetrieveSubmodelElementsPath(
+            int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep)
+        {
+            return RetrieveSubmodelElementsPathAsync(limit, cursor, level).GetAwaiter().GetResult();
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)
@@ -190,6 +201,16 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
+        public async Task<IResult> UpdateSubmodelMetadataAsync(ISubmodel submodel)
+        {
+            Uri uri = GetPath(SubmodelRoutes.METADATA);
+            var request = CreateJsonContentRequest(uri, HttpMethod.Patch, submodel);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
         public async Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(ISubmodelElement submodelElement)
             => await CreateSubmodelElementAsync(".", submodelElement).ConfigureAwait(false);
 
@@ -233,6 +254,23 @@ namespace BaSyx.Clients.AdminShell.Http
             var request = CreateRequest(uri, HttpMethod.Get);
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
             var result = await EvaluateResponseAsync<PagedResult<IElementContainer<ISubmodelElement>>>(response, response.Entity).ConfigureAwait(false);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult<List<string>>> RetrieveSubmodelElementsPathAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep)
+        {
+            Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.PATH);
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["limit"] = limit.ToString();
+            query["cursor"] = cursor;
+            query["level"] = level.ToString();
+            var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
+            uri = uriBuilder.Uri;
+
+            var request = CreateRequest(uri, HttpMethod.Get);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<List<string>>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }

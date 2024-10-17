@@ -237,18 +237,18 @@ namespace DevelopmentSubmodel
 					new("de-DE", "Submodel für die Entwicklung"),
 					new("en-US", "submodel for development")
 				},
-				//Administration = new AdministrativeInformation()
-				//{
-				//	Version = "1.0",
-				//	Revision = "1"
-				//},
-				//DisplayName = new LangStringSet()
-				//{
-				//	new("de-DE", "Submodel"),
-				//	new("en-US", "submodel")
-				//},
-				//Category = "test_category",
-				//            SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
+				Administration = new AdministrativeInformation()
+				{
+					Version = "1.0",
+					Revision = "1"
+				},
+				DisplayName = new LangStringSet()
+				{
+					new("de-DE", "Submodel"),
+					new("en-US", "submodel")
+				},
+				Category = "test_category",
+				SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
 				//ConceptDescription = new ConceptDescription()
 				//{
 				//	Id = new Identifier("0173-1#02-AAO689#001"),

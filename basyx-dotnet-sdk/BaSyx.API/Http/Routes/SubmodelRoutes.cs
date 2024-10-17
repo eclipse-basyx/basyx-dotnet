@@ -21,9 +21,13 @@ namespace BaSyx.API.Http
         /// </summary>
         public const string SUBMODEL = "/submodel";
         /// <summary>
-        /// Submodel table format route
+        /// Metadata route
         /// </summary>
-        public const string SUBMODEL_TABLE = "/table";
+        public const string METADATA = "/$metadata";
+        /// <summary>
+        /// Reference route
+        /// </summary>
+        public const string REFERENCE = "/$reference";
         /// <summary>
         /// Submodel elements route
         /// </summary>
