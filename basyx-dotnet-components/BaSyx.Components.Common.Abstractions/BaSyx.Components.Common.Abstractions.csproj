@@ -15,7 +15,7 @@
     <PackageIcon>basyxlogo.png</PackageIcon>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <LangVersion>8.0</LangVersion>
-    <Version>2.0.21</Version><PublishReadyToRun>true</PublishReadyToRun>
+    <Version>2.0.22</Version><PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <ItemGroup>
