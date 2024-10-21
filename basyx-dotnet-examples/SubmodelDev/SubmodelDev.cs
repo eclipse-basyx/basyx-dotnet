@@ -323,7 +323,8 @@ namespace DevelopmentSubmodel
                         {
                             Value =
                             {
-                                new Property<string>("OnlyProperty", "HasToBeChanged")
+                                new Property<string>("OnlyProperty", "HasToBeChanged"),
+                                //new Property<int>("ExcondProperty", 231)
                             }
                         }
                     },

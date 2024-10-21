@@ -374,10 +374,10 @@ namespace BaSyx.Models.Extensions
                 string propertyName = reader.GetString();
                 reader.Read();
 
-                if (sourceContainer.IdShort == propertyName)
-                    continue;
+                if (string.IsNullOrEmpty(propertyName) || !sourceContainer.HasChild(propertyName))
+                    throw new JsonException($"Source container does not contains child '{propertyName}'");
 
-				var sme = sourceContainer.GetChild(propertyName).Value;
+                var sme = sourceContainer.GetChild(propertyName).Value;
 				if(sme.ModelType == ModelType.Property)
 				{
 					var valueScope = Read(ref reader, typeof(PropertyValue), jsonOptions);

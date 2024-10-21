@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using System.Linq;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using BaSyx.Utils.DependencyInjection;
@@ -735,11 +736,15 @@ namespace BaSyx.API.Http.Controllers
             if (!sme_retrieved.Success || sme_retrieved.Entity == null)
                 return sme_retrieved.CreateActionResult(CrudOperation.Retrieve);
 
+            // remove sme node to be conform to value converter
+            var children = JsonSerializer.Serialize(requestBody.RootElement.EnumerateObject().First().Value);
+            var childrenDocument = JsonDocument.Parse(children);
+
             var sme = sme_retrieved.Entity as SubmodelElement;
             ValueScope valueScope;
             try
             {
-                valueScope = ParseValueScope(sme, requestBody);
+                valueScope = ParseValueScope(sme, childrenDocument);
             }
             catch (Exception e)
             {
