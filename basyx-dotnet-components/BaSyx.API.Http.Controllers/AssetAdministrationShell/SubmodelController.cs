@@ -29,6 +29,7 @@ using Microsoft.Extensions.FileProviders;
 using Range = BaSyx.Models.AdminShell.Range;
 using BaSyx.Models.Extensions.JsonConverters;
 using System.Runtime.Intrinsics.X86;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -736,15 +737,14 @@ namespace BaSyx.API.Http.Controllers
             if (!sme_retrieved.Success || sme_retrieved.Entity == null)
                 return sme_retrieved.CreateActionResult(CrudOperation.Retrieve);
 
-            // remove sme node to be conform to value converter
-            var children = JsonSerializer.Serialize(requestBody.RootElement.EnumerateObject().First().Value);
-            var childrenDocument = JsonDocument.Parse(children);
+            // removed the sme property node to get only the value json document that conforms to the converter
+            requestBody = JsonDocument.Parse(requestBody.RootElement.EnumerateObject().First().Value.GetRawText());
 
             var sme = sme_retrieved.Entity as SubmodelElement;
             ValueScope valueScope;
             try
             {
-                valueScope = ParseValueScope(sme, childrenDocument);
+                valueScope = ParseValueScope(sme, requestBody);
             }
             catch (Exception e)
             {
