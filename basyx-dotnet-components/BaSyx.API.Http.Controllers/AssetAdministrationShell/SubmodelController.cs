@@ -245,8 +245,12 @@ namespace BaSyx.API.Http.Controllers
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
             var submodel = result.Entity;
-            
-            foreach (var smeNode in requestBody.RootElement.EnumerateObject().First().Value.EnumerateObject())
+
+            // contrary to the specification, the function currently works directly on the value of the submodel 
+            // to enable the functionality according to the specification, the foreach statement must switche with commented onw
+
+            //foreach (var smeNode in requestBody.RootElement.EnumerateObject().First().Value.EnumerateObject())
+            foreach (var smeNode in requestBody.RootElement.EnumerateObject())
             {
                 var idShortPath = smeNode.Name;
                 var elementContainer = submodel.SubmodelElements.GetChild(idShortPath);
@@ -760,8 +764,8 @@ namespace BaSyx.API.Http.Controllers
             ValueScope valueScope;
             try
             {
-                // Contrary to the specification, the function currently works directly on the value of the submodel element 
-                // To enable the functionality according to the specification, the next line must be commented in
+                // contrary to the specification, the function currently works directly on the value of the submodel element 
+                // to enable the functionality according to the specification, the next line must be commented in
 
                 // requestBody = JsonDocument.Parse(requestBody.RootElement.EnumerateObject().First().Value.GetRawText());
                 valueScope = ValueScopeConverter.ParseValueScope(sme, requestBody, _fullSerializerOptions);
