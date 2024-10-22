@@ -55,6 +55,11 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.CreateSubmodelElement(rootIdShortPath, submodelElement);
         }
 
+        public IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value)
+        {
+            return _submodelClient.UpdateSubmodelElementValue(submodelElement, value);
+        }
+
         public IResult DeleteSubmodelElement(string idShortPath)
         {
             return _submodelClient.DeleteSubmodelElement(idShortPath);

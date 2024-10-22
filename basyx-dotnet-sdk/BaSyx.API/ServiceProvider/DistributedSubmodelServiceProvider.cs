@@ -150,6 +150,11 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.RetrieveSubmodelElementsReference(limit, cursor);
         }
 
+        public IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value)
+        {
+            return submodelClient.UpdateSubmodelElementValue(submodelElement, value);
+        }
+
         public IResult DeleteSubmodelElement(string submodelElementId)
         {
             return submodelClient.DeleteSubmodelElement(submodelElementId);

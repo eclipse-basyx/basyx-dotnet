@@ -168,6 +168,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return RetrieveSubmodelElementPathAsync(idShortPath, level).GetAwaiter().GetResult();
         }
 
+        public IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value)
+        {
+            return UpdateSubmodelElementValueAsync(submodelElement.IdShort, value).GetAwaiter().GetResult();
+        }
+
         public IResult DeleteSubmodelElement(string idShortPath)
         {
             return DeleteSubmodelElementAsync(idShortPath).GetAwaiter().GetResult();
@@ -384,7 +389,7 @@ namespace BaSyx.Clients.AdminShell.Http
             response?.Entity?.Dispose();
             return result;
         }
-
+        
         public async Task<IResult> DeleteSubmodelElementAsync(string idShortPath)
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, idShortPath);
