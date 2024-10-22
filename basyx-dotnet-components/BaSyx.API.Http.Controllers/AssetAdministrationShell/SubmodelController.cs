@@ -28,6 +28,7 @@ using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
 using Range = BaSyx.Models.AdminShell.Range;
 using BaSyx.Models.Extensions.JsonConverters;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -241,23 +242,39 @@ namespace BaSyx.API.Http.Controllers
             if (requestBody.Equals(default(JsonDocument)))
                 return ResultHandling.NullResult(nameof(requestBody));
 
-            var retrieveSubmodel = serviceProvider.RetrieveSubmodel();
-            if (!retrieveSubmodel.Success || retrieveSubmodel.Entity == null)
-                return retrieveSubmodel.CreateActionResult(CrudOperation.Retrieve);
+            var result = serviceProvider.RetrieveSubmodel();
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
 
-            var sm = retrieveSubmodel.Entity as Submodel;
-            var sme = sm.SubmodelElements;
-            try
+            var submodel = result.Entity;
+            
+            foreach (var smeNode in requestBody.RootElement.EnumerateObject().First().Value.EnumerateObject())
             {
-                // removed the sme property node to get only the value json document that conforms to the converter
-                requestBody = JsonDocument.Parse(requestBody.RootElement.EnumerateObject().First().Value.GetRawText());
-            }
-            catch (Exception e)
-            {
-                //return new Result(false, new ErrorMessage($"{e.Message} | path '{idShortPath}'")).CreateActionResult(CrudOperation.Update);
+                var idShortPath = smeNode.Name;
+                var elementContainer = submodel.SubmodelElements.GetChild(idShortPath);
+
+                if (elementContainer == null)
+                    return ResultHandling.NullResult(nameof(idShortPath));
+
+                var sme = elementContainer.Value as SubmodelElement;
+                try
+                {
+                    // removed the sme property node to get only the value json document that conforms to the converter
+                    var valueDocument = JsonDocument.Parse(smeNode.Value.GetRawText());
+                    var valueScope = ValueScopeConverter.ParseValueScope(sme, valueDocument, _fullSerializerOptions);
+                    
+                    if (valueScope == null)
+                        return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
+
+                    serviceProvider.UpdateSubmodelElementValue(sme, valueScope);
+                }
+                catch (Exception e)
+                {
+                    return new Result(false, new ErrorMessage($"{e.Message} | path '{idShortPath}'")).CreateActionResult(CrudOperation.Update);
+                }
             }
 
-            return null;
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>

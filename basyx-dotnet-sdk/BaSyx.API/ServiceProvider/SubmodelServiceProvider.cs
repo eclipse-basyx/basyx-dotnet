@@ -22,7 +22,9 @@ using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.ResultHandling.http;
 using System.Linq;
+using BaSyx.Utils.DependencyInjection;
 using Range = BaSyx.Models.AdminShell.Range;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -41,7 +43,8 @@ namespace BaSyx.API.ServiceProvider
         private readonly Dictionary<string, Action<ValueScope>> updateFunctions;
         private readonly Dictionary<string, EventDelegate> eventDelegates;
         private readonly Dictionary<string, InvocationResponse> invocationResults;
-        
+        private static JsonSerializerOptions _fullSerializerOptions;
+
         private IMessageClient messageClient;
         private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
@@ -53,6 +56,12 @@ namespace BaSyx.API.ServiceProvider
             updateFunctions = new Dictionary<string, Action<ValueScope>>();
             eventDelegates = new Dictionary<string, EventDelegate>();
             invocationResults = new Dictionary<string, InvocationResponse>();
+
+            var services = DefaultImplementation.GetStandardServiceCollection();
+            var options = new DefaultJsonSerializerOptions();
+            options.AddDependencyInjection(new DependencyInjectionExtension(services));
+            options.AddFullSubmodelElementConverter();
+            _fullSerializerOptions = options.Build();
         }
         /// <summary>
         /// Contructor for SubmodelServiceProvider with a Submodel object to bind to
@@ -833,7 +842,7 @@ namespace BaSyx.API.ServiceProvider
         public IResult UpdateSubmodel(ISubmodel submodel)
         {
             if (_submodel == null)
-                return new Result(false, new ErrorMessage("The service provider's inner Submodel object is null"));
+                return new Result(false, new NotFoundMessage("Submodel"));
 
             // update the metadata
             var result = UpdateSubmodelMetadata(submodel);
@@ -879,8 +888,6 @@ namespace BaSyx.API.ServiceProvider
             _submodel = updatedSubmodel;
             return new Result(true);
         }
-
-
 
         public IResult ReplaceSubmodel(ISubmodel submodel)
         {

@@ -1176,6 +1176,11 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).CreateSubmodelElement(rootIdShortPath, submodelElement);
         }
 
+        public IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value)
+        {
+            return ((ISubmodelClient)Client).UpdateSubmodelElementValue(submodelElement, value);
+        }
+
         public IResult DeleteSubmodelElement(string idShortPath)
         {
             return ((ISubmodelClient)Client).DeleteSubmodelElement(idShortPath);
