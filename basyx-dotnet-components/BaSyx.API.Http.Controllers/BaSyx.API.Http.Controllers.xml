@@ -476,7 +476,7 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel)">
             <summary>
-            Returns the matadata attributes of a specific submodel element from the Submodel at a specified path
+            Returns the metadata attributes of a specific submodel element from the Submodel at a specified path
             </summary>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
