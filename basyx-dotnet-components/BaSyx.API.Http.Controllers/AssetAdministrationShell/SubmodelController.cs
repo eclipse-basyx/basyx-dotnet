@@ -26,9 +26,7 @@ using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
-using Range = BaSyx.Models.AdminShell.Range;
 using BaSyx.Models.Extensions.JsonConverters;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -762,8 +760,10 @@ namespace BaSyx.API.Http.Controllers
             ValueScope valueScope;
             try
             {
-                // removed the sme property node to get only the value json document that conforms to the converter
-                requestBody = JsonDocument.Parse(requestBody.RootElement.EnumerateObject().First().Value.GetRawText());
+                // Contrary to the specification, the function currently works directly on the value of the submodel element 
+                // To enable the functionality according to the specification, the next line must be commented in
+
+                // requestBody = JsonDocument.Parse(requestBody.RootElement.EnumerateObject().First().Value.GetRawText());
                 valueScope = ValueScopeConverter.ParseValueScope(sme, requestBody, _fullSerializerOptions);
             }
             catch (Exception e)

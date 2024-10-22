@@ -43,7 +43,6 @@ namespace BaSyx.API.ServiceProvider
         private readonly Dictionary<string, Action<ValueScope>> updateFunctions;
         private readonly Dictionary<string, EventDelegate> eventDelegates;
         private readonly Dictionary<string, InvocationResponse> invocationResults;
-        private static JsonSerializerOptions _fullSerializerOptions;
 
         private IMessageClient messageClient;
         private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
@@ -56,12 +55,6 @@ namespace BaSyx.API.ServiceProvider
             updateFunctions = new Dictionary<string, Action<ValueScope>>();
             eventDelegates = new Dictionary<string, EventDelegate>();
             invocationResults = new Dictionary<string, InvocationResponse>();
-
-            var services = DefaultImplementation.GetStandardServiceCollection();
-            var options = new DefaultJsonSerializerOptions();
-            options.AddDependencyInjection(new DependencyInjectionExtension(services));
-            options.AddFullSubmodelElementConverter();
-            _fullSerializerOptions = options.Build();
         }
         /// <summary>
         /// Contructor for SubmodelServiceProvider with a Submodel object to bind to
