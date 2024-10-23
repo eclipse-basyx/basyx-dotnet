@@ -337,6 +337,8 @@ namespace SubmodelClientServerTests
         {
             var result = UpdateSubmodelElementValue("MyCollection.MySubCollection.MySubSubDouble", new PropertyValue(new ElementValue<double>(1.8d)));
             result.Success.Should().BeTrue();
+
+
         }
 
         [TestMethod]
@@ -1118,6 +1120,28 @@ namespace SubmodelClientServerTests
 
 
             ReplaceSubmodel(Submodel);
+        }
+
+        [TestMethod]
+        [DataRow("TestProperty1")]
+        [DataRow("TestSubmodelElementCollection.TestSubProperty1")]
+        [DataRow("NestedTestCollection.MySubmodelElementList[3]")]
+        public void Test125_UpdateSubmodelElementValue(string elementPath)
+        {
+            if (elementPath.StartsWith("NestedTestCollection.MySubmodelElementList"))
+            {
+                var newSme = new Property<string>(null, "old value");
+                CreateSubmodelElement("NestedTestCollection.MySubmodelElementList", newSme);
+            }
+
+            var value = "updated value";
+            var result = UpdateSubmodelElementValue(elementPath, new PropertyValue(new ElementValue<string>(value)));
+            result.Success.Should().BeTrue();
+
+            var sme = RetrieveSubmodelElement(elementPath).Entity;
+
+            var smeValue = sme.GetValue<string>();
+            smeValue.Should().StartWith(value);
         }
 
         #endregion
