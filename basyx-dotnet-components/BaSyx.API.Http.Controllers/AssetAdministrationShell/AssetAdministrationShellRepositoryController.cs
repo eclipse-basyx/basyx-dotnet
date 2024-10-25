@@ -387,7 +387,21 @@ namespace BaSyx.API.Http.Controllers
             return await service.Shell_PutFileByPath(submodelIdentifier, idShortPath, file);
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(string, string, RequestLevel)"/>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodelElementByPathMetadata(string, string, RequestLevel)"/>
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "ShellRepo_GetSubmodelElementByPathMetadata")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(SubmodelElement), 200)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_GetSubmodelElementByPathMetaData(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetSubmodelElementByPathMetadata(submodelIdentifier, idShortPath, level);
+        }
+
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(string, string, RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "ShellRepo_GetSubmodelElementByPathValueOnly")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 200)]
