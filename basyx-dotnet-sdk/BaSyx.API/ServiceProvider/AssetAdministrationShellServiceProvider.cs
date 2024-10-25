@@ -216,11 +216,14 @@ namespace BaSyx.API.ServiceProvider
             {
                 Administration = _assetAdministrationShell.Administration,
                 AssetInformation = assetInformation,
-                DerivedFrom = _assetAdministrationShell.DerivedFrom,
                 Category = _assetAdministrationShell.Category,
+                ConceptDescription = _assetAdministrationShell.ConceptDescription,
+                DerivedFrom = _assetAdministrationShell.DerivedFrom,
                 Description = _assetAdministrationShell.Description,
                 DisplayName = _assetAdministrationShell.DisplayName,
+                EmbeddedDataSpecifications = _assetAdministrationShell.EmbeddedDataSpecifications,
                 Submodels = _assetAdministrationShell.Submodels,
+                SubmodelReferences = _assetAdministrationShell.SubmodelReferences
             };
 
             _assetAdministrationShell = tempShell;
