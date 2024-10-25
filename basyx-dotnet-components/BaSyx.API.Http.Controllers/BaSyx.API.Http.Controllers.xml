@@ -18,14 +18,14 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAssetAdministrationShell">
             <summary>
-            Returns the Asset Administration Shell
+            Returns a specific Asset Administration Shell
             </summary>
             <returns></returns>
             <response code="200">Requested Asset Administration Shell</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PutAssetAdministrationShell(BaSyx.Models.AdminShell.IAssetAdministrationShell)">
             <summary>
-            Updates the Asset Administration Shell
+            Updates an existing Asset Administration Shell
             </summary>
             <param name="aas">Asset Administration Shell object</param>
             <returns></returns>

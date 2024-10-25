@@ -31,7 +31,8 @@ namespace DevelopmentSubmodel
             ServerSettings submodelServerSettings = ServerSettings.CreateSettings();
             submodelServerSettings.ServerConfig.Hosting.ContentPath = "Content";
             submodelServerSettings.ServerConfig.Hosting.Environment = "Development";
-            submodelServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5080");
+            submodelServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5040");
+            submodelServerSettings.ServerConfig.Hosting.Urls.Add("https://+:5440");
 
             SubmodelHttpServer submodelServer = new SubmodelHttpServer(submodelServerSettings);
             submodelServer.WebHostBuilder.UseNLog();
@@ -40,7 +41,26 @@ namespace DevelopmentSubmodel
             submodelServiceProvider.UseAutoEndpointRegistration(submodelServerSettings.ServerConfig);
             submodelServer.AddBaSyxUI(PageNames.SubmodelServer);
             submodelServer.AddSwagger(Interface.Submodel);
-            submodelServer.Run();
+            //submodelServer.Run();
+
+            _ = submodelServer.RunAsync();
+            ServerSettings aasServerSettings = ServerSettings.CreateSettings();
+            aasServerSettings.ServerConfig.Hosting.ContentPath = "Content";
+            aasServerSettings.ServerConfig.Hosting.Environment = "Development";
+            aasServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5080");
+            aasServerSettings.ServerConfig.Hosting.Urls.Add("https://+:5443");
+            aasServerSettings.Miscellaneous.Add("CompanyLogo", "/images/MyCompanyLogo.png");
+
+            IAssetAdministrationShellServiceProvider serviceProvider = aas.CreateServiceProvider(true);
+            serviceProvider.SubmodelProviderRegistry.RegisterSubmodelServiceProvider(testSubmodel.Id, submodelServiceProvider);
+            serviceProvider.UseAutoEndpointRegistration(aasServerSettings.ServerConfig);
+
+            AssetAdministrationShellHttpServer aasServer = new AssetAdministrationShellHttpServer(aasServerSettings);
+            aasServer.WebHostBuilder.UseNLog();
+            aasServer.SetServiceProvider(serviceProvider);
+            aasServer.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
+            aasServer.AddSwagger(Interface.AssetAdministrationShell);
+            aasServer.Run();
         }     
     }
 }

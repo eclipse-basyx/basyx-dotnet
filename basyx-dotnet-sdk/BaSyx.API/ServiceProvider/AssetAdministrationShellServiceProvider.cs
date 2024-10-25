@@ -172,17 +172,25 @@ namespace BaSyx.API.ServiceProvider
 
             AssetAdministrationShell tempShell = new AssetAdministrationShell(idShort, identifier)
             {
-                AssetInformation = aas.AssetInformation ?? _assetAdministrationShell.AssetInformation,
                 Administration = aas.Administration ?? _assetAdministrationShell.Administration,
-                DerivedFrom = aas.DerivedFrom ?? _assetAdministrationShell.DerivedFrom,
+                AssetInformation = aas.AssetInformation ?? _assetAdministrationShell.AssetInformation,
                 Category = aas.Category ?? _assetAdministrationShell.Category,
-                Description = aas.Description ?? _assetAdministrationShell.Description,
-                DisplayName = aas.DisplayName ?? _assetAdministrationShell.DisplayName,
+                // is not updated
+                ConceptDescription = _assetAdministrationShell.ConceptDescription,
+                DerivedFrom = aas.DerivedFrom ?? _assetAdministrationShell.DerivedFrom,
+                // is not updated
                 Submodels = _assetAdministrationShell.Submodels,
+                // is not updated
                 SubmodelReferences = _assetAdministrationShell.SubmodelReferences,
-                EmbeddedDataSpecifications = _assetAdministrationShell.EmbeddedDataSpecifications,
-                ConceptDescription = _assetAdministrationShell.ConceptDescription                
+                
             };
+
+            // default init as empty list
+            tempShell.Description = aas.Description.Any() ? aas.Description : _assetAdministrationShell.Description;
+            // default init as empty list
+            tempShell.DisplayName = aas.DisplayName.Any() ? aas.DisplayName : _assetAdministrationShell.DisplayName;
+            // default init as empty list
+            tempShell.EmbeddedDataSpecifications = aas.EmbeddedDataSpecifications.Any() ? aas.EmbeddedDataSpecifications : _assetAdministrationShell.EmbeddedDataSpecifications;
 
             _assetAdministrationShell = tempShell;
             return new Result(true);

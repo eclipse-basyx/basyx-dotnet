@@ -44,7 +44,7 @@ namespace BaSyx.API.Http.Controllers
 
         #region Asset Adminstration Shell Interface
         /// <summary>
-        /// Returns the Asset Administration Shell
+        /// Returns a specific Asset Administration Shell
         /// </summary>
         /// <returns></returns>
         /// <response code="200">Requested Asset Administration Shell</response>
@@ -61,7 +61,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Updates the Asset Administration Shell
+        /// Updates an existing Asset Administration Shell
         /// </summary>
         /// <param name="aas">Asset Administration Shell object</param>
         /// <returns></returns>
