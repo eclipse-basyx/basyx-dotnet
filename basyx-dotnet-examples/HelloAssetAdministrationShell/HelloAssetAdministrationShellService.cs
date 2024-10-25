@@ -269,7 +269,7 @@ namespace HelloAssetAdministrationShell
                     {
                         Value =
                         {
-                            new Property<int>("0")
+                            new Property<int>(null)
                             {
                                 Get = (prop) =>
                                 {
@@ -283,8 +283,8 @@ namespace HelloAssetAdministrationShell
                                     return Task.CompletedTask;
                                 }
                             },
-                            new Property<int>("1", 42),
-                            new Property<int>("2", 4711)
+                            new Property<int>(null, 42),
+                            new Property<int>(null, 4711)
                         }                  
                     }
                 },

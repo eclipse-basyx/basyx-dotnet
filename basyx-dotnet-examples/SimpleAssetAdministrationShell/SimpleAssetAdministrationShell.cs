@@ -91,9 +91,9 @@ namespace SimpleAssetAdministrationShell
                     new Property<string>("TestValueChanged1", "InitialValue"),
                     new SubmodelElementCollection("TestSubmodelElementCollection")
                     {
-                        Value = new SubmodelElementCollectionValue()
+                        Value = 
                         {
-                            Value = new ElementContainer<ISubmodelElement>()
+                            Value = 
                             {
                                  new Property<string>("TestSubProperty1")
                                 {
