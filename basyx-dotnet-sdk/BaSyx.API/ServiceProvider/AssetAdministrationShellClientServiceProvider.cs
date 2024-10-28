@@ -96,9 +96,9 @@ namespace BaSyx.API.ServiceProvider
             return _shellClient.UpdateAssetInformation(assetInformation);
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences(int limit = 100, string cursor = "")
         {
-            return _shellClient.RetrieveAllSubmodelReferences();
+            return _shellClient.RetrieveAllSubmodelReferences(limit, cursor);
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)

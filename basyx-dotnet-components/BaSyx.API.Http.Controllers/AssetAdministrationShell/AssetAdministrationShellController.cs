@@ -238,6 +238,8 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns all submodel references
         /// </summary>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
         /// <returns></returns>
         /// <response code="200">Requested submodel references</response> 
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "GetAllSubmodelReferences")]
@@ -246,9 +248,9 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelReferences()
+        public IActionResult GetAllSubmodelReferences([FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            var result = serviceProvider.RetrieveAllSubmodelReferences();
+            var result = serviceProvider.RetrieveAllSubmodelReferences(limit, cursor);
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 

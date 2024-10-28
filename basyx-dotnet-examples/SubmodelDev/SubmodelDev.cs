@@ -44,11 +44,24 @@ namespace DevelopmentSubmodel
                 }
             };
 
-            Submodel testSubmodel = GetDevSubmodel();
-
-            aas.Submodels.Add(testSubmodel);
+            aas.Submodels.Add(GetDevSubmodel());
+            aas.Submodels.Add(GetDevSubmodel2());
 
             return aas;
+        }
+
+        public static Submodel GetDevSubmodel2()
+        {
+            Submodel testSubmodel = new Submodel("DevSubmodel2", new BaSyxSubmodelIdentifier("DevSubmodel2", "1.0.0"))
+            {
+                SubmodelElements = new ElementContainer<ISubmodelElement>
+                {
+                    new Property<string>("Property_String_1", "Level 1 String"),
+                    new Property<int>("Property_Int_1", 1234),
+                }
+            };
+
+            return testSubmodel;
         }
 
         public static Submodel GetDevSubmodel()

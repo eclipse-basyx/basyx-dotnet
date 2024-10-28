@@ -27,7 +27,7 @@ namespace BaSyx.API.Clients
 
         Task<IResult> UpdateAssetInformationAsync(IAssetInformation assetInformation);
 
-        Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync();
+        Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync(int limit = 100, string cursor = "");
 
         Task<IResult<IReference>> CreateSubmodelReferenceAsync(IReference submodelRef);
 

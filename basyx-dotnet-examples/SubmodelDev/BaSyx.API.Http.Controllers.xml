@@ -68,10 +68,12 @@
             <returns></returns>
             <response code="204">Asset Information updated successfully</response>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAllSubmodelReferences">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAllSubmodelReferences(System.Int32,System.String)">
             <summary>
             Returns all submodel references
             </summary>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <returns></returns>
             <response code="200">Requested submodel references</response> 
         </member>
@@ -223,7 +225,7 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PutAssetInformation(BaSyx.Models.AdminShell.IAssetInformation)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelReferences(System.String)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAllSubmodelReferences"/>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAllSubmodelReferences(System.Int32,System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PostSubmodelReference(System.String,BaSyx.Models.AdminShell.IReference)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PostSubmodelReference(BaSyx.Models.AdminShell.IReference)"/>          
@@ -424,8 +426,9 @@
             <summary>
             Returns all submodel elements including their hierarchy in the Path notation
             </summary>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>      
             <param name="level">Determines the structural depth of the respective resource content</param>
-            <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
             <response code="200">List of found submodel elements in the Path notation</response>  
         </member>

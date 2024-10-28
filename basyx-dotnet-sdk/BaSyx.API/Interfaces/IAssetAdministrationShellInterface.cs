@@ -25,7 +25,7 @@ namespace BaSyx.API.Interfaces
 
         IResult UpdateAssetInformation(IAssetInformation assetInformation);
 
-        IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences();
+        IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences(int limit = 100, string cursor = "");
 
         IResult<IReference> CreateSubmodelReference(IReference submodelRef);
 

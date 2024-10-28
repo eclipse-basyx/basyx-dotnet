@@ -16,6 +16,7 @@ using BaSyx.Models.Connectivity;
 using System;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.ResultHandling.http;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -230,13 +231,31 @@ namespace BaSyx.API.ServiceProvider
             return new Result(true);
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences(int limit = 100, string cursor = "")
         {
             if (_assetAdministrationShell == null)
                 return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
 
-            return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(true, 
-                new PagedResult<IEnumerable<IReference<ISubmodel>>>(_assetAdministrationShell.SubmodelReferences));
+            var references = _assetAdministrationShell.SubmodelReferences;
+
+            if (references == null)
+                return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(false, new NotFoundMessage(nameof(_assetAdministrationShell.SubmodelReferences)));
+
+            var refDict = references.ToDictionary(reference => reference.First.Value, reference => reference);
+
+            // create the paged data
+            var paginationHelper = new PaginationHelper<IReference<ISubmodel>>(refDict, elem => elem.First.Value);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var refPaged = new List<IReference<ISubmodel>>();
+            refPaged.AddRange(pagedResult.Result as IEnumerable<IReference<ISubmodel>>);
+            var paginatedRef = new PagedResult<IEnumerable<IReference<ISubmodel>>>(refPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(true, paginatedRef);
+
+            //return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(true, 
+             //   new PagedResult<IEnumerable<IReference<ISubmodel>>>(_assetAdministrationShell.SubmodelReferences));
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)

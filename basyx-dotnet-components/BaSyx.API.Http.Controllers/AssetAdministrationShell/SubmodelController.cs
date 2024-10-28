@@ -466,8 +466,9 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns all submodel elements including their hierarchy in the Path notation
         /// </summary>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>      
         /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">List of found submodel elements in the Path notation</response>  
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.PATH, Name = "GetAllSubmodelElementsPath")]

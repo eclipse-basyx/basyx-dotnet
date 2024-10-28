@@ -25,6 +25,7 @@ using BaSyx.API.Http;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Web;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -139,9 +140,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateAssetInformationAsync(assetInformation).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences(int limit = 100, string cursor = "")
         {
-            return RetrieveAllSubmodelReferencesAsync().GetAwaiter().GetResult();
+            return RetrieveAllSubmodelReferencesAsync(limit, cursor).GetAwaiter().GetResult();
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)
@@ -198,9 +199,15 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync()
+        public async Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync(int limit = 100, string cursor = "")
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS);
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["limit"] = limit.ToString();
+            query["cursor"] = cursor;
+            var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
+            uri = uriBuilder.Uri;
+
             var request = CreateRequest(uri, HttpMethod.Get);
             var response = await SendRequestAsync(request, CancellationToken.None);
             var result = await EvaluateResponseAsync<PagedResult<IEnumerable<IReference<ISubmodel>>>>(response, response.Entity);

@@ -688,6 +688,9 @@ namespace BaSyx.API.ServiceProvider
                 return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(false, new NotFoundMessage("SubmodelElements"));
 
             var retrieved = _submodel.SubmodelElements.RetrieveAll();
+            if (!retrieved.Success || retrieved.Entity == null)
+                return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(retrieved.Success, null, retrieved.Messages);
+
             var smeDict = retrieved.Entity.ToDictionary(sme => sme.IdShort, sme => sme);
 
             // create the paged data
