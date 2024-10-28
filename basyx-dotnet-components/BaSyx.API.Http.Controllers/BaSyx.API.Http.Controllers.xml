@@ -55,12 +55,12 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetThumbnail">
             <summary>
-            Returns the Asset Information Thumbnail
+            The thumbnail of the Asset Information.
             </summary>
             <returns></returns>
             <response code="200">Requested Asset Information</response>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PutThumbnail(BaSyx.Models.AdminShell.IAssetInformation)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PutThumbnail(Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
             Updates the Asset Information
             </summary>

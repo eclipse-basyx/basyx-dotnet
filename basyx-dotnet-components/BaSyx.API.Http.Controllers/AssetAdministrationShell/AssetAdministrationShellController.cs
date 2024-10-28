@@ -19,6 +19,10 @@ using System.Text.Json;
 using BaSyx.Models.Extensions;
 using System;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.FileSystem;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -142,7 +146,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Returns the Asset Information Thumbnail
+        /// The thumbnail of the Asset Information.
         /// </summary>
         /// <returns></returns>
         /// <response code="200">Requested Asset Information</response>
@@ -152,10 +156,29 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        [Produces("application/json")]
         public IActionResult GetThumbnail()
         {
-            throw new NotImplementedException();
+            var retrieveAssetInformation = serviceProvider.RetrieveAssetInformation();
+            if (!retrieveAssetInformation.Success || retrieveAssetInformation.Entity == null)
+                return retrieveAssetInformation.CreateActionResult(CrudOperation.Retrieve);
+
+            if (retrieveAssetInformation.Entity.DefaultThumbnail == null)
+                return NotFound(new { message = "Asset information has no thumbnail" });
+
+            var fileName = retrieveAssetInformation.Entity.DefaultThumbnail.Path.TrimStart('/');
+
+            IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
+            var file = fileProvider.GetFileInfo(fileName);
+            if (file.Exists)
+            {
+                if (MimeTypes.TryGetContentType(file.PhysicalPath, out string contentType))
+                {
+                    string fileNameOnly = Path.GetFileName(file.PhysicalPath);
+                    return File(file.CreateReadStream(), contentType, fileNameOnly);
+                }
+            }
+
+            return NotFound(new { message = "Physical file not found", itemId = file.PhysicalPath });
         }
 
         /// <summary>
@@ -165,15 +188,51 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="204">Asset Information updated successfully</response>
         [HttpPut(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "PutThumbnail")]
+        [Produces("application/json")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public IActionResult PutThumbnail([FromBody] IAssetInformation assetInformation)
+        public async Task<IActionResult> PutThumbnail(IFormFile file)
         {
-            throw new NotImplementedException();
+            if (file == null)
+                return ResultHandling.NullResult(nameof(file));
+
+            var retrieveAssetInformation = serviceProvider.RetrieveAssetInformation();
+            if (!retrieveAssetInformation.Success || retrieveAssetInformation.Entity == null)
+                return retrieveAssetInformation.CreateActionResult(CrudOperation.Retrieve);
+
+            string fileName;
+            if (retrieveAssetInformation.Entity.DefaultThumbnail == null)
+            {
+                var assetInformation = new AssetInformation
+                {
+                    DefaultThumbnail = new Resource { ContentType = file.ContentType, Path  = file.FileName},
+                    AssetKind = retrieveAssetInformation.Entity.AssetKind,
+                    AssetType = retrieveAssetInformation.Entity.AssetType,
+                    GlobalAssetId = retrieveAssetInformation.Entity.GlobalAssetId,
+                    SpecificAssetIds = retrieveAssetInformation.Entity.SpecificAssetIds
+                };
+
+                var updateAssetInformation = serviceProvider.UpdateAssetInformation(assetInformation);
+                if (!updateAssetInformation.Success)
+                    return updateAssetInformation.CreateActionResult(CrudOperation.Update);
+
+                fileName = file.FileName;
+            }
+            else
+                fileName = retrieveAssetInformation.Entity.DefaultThumbnail.Path.TrimStart('/');
+            
+            string filePath = Path.Combine(hostingEnvironment.ContentRootPath, fileName);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok();
         }
 
         /// <summary>
