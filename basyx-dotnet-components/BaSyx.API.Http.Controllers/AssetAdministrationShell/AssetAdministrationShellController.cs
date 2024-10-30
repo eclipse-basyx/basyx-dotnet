@@ -462,7 +462,13 @@ namespace BaSyx.API.Http.Controllers
             return service.GetAllSubmodelElementsValueOnly(limit, cursor, level, extent);
         }
 
-
+        /// <summary>
+        /// Creates a new submodel element
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelElement">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="201">Submodel element created successfully</response>
         /// <inheritdoc cref="SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
         [HttpPost(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "Shell_PostSubmodelElement")]
         [Produces("application/json")]
@@ -479,6 +485,15 @@ namespace BaSyx.API.Http.Controllers
             return service.PostSubmodelElement(submodelElement);
         }
 
+        /// <summary>
+        /// Returns a specific submodel element from the Submodel at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel element</response>  
         /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPath(string, RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "Shell_GetSubmodelElementByPath")]
         [Produces("application/json")]
@@ -492,6 +507,7 @@ namespace BaSyx.API.Http.Controllers
             var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetSubmodelElementByPath(idShortPath, level, extent);
         }
+
 
         /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathValueOnly(string, RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "Shell_GetSubmodelElementByPathValueOnly")]
@@ -521,6 +537,14 @@ namespace BaSyx.API.Http.Controllers
             return service.GetSubmodelElementByPathMetadata(idShortPath, level);
         }
 
+        /// <summary>
+        /// Creates a new submodel element at a specified path within submodel elements hierarchy
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="submodelElement">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="201">Submodel element created successfully</response>
         /// <inheritdoc cref="SubmodelController.PostSubmodelElementByPath(string, ISubmodelElement)"/>
         [HttpPost(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "Shell_PostSubmodelElementByPath")]
         [Produces("application/json")]

@@ -31,14 +31,11 @@ namespace BaSyx.Models.AdminShell
         { 
             get 
             {
-                if (_submodelRefs == null || _submodelRefs.Count < Submodels.Count)
+                _submodelRefs = new List<IReference<ISubmodel>>();
+                foreach (var submodel in Submodels)
                 {
-                    _submodelRefs = new List<IReference<ISubmodel>>();
-                    foreach (var submodel in Submodels)
-                    {
-                        var reference = submodel.CreateReference();
-                        _submodelRefs.Add(reference);
-                    }
+                    var reference = submodel.CreateReference();
+                    _submodelRefs.Add(reference);
                 }
                 return _submodelRefs;
             }

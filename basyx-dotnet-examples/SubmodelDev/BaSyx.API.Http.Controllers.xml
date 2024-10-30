@@ -176,9 +176,25 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElementsValueOnly(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>   
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PostSubmodelElement(System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
+            <summary>
+            Creates a new submodel element
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelElement">Requested submodel element</param>
+            <returns></returns>
+            <response code="201">Submodel element created successfully</response>
             <inheritdoc cref="!:SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns a specific submodel element from the Submodel at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">Requested submodel element</response>  
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
@@ -188,6 +204,14 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PostSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
+            <summary>
+            Creates a new submodel element at a specified path within submodel elements hierarchy
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="submodelElement">Requested submodel element</param>
+            <returns></returns>
+            <response code="201">Submodel element created successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
