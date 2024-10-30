@@ -176,14 +176,10 @@ namespace BaSyx.API.ServiceProvider
                 Administration = aas.Administration ?? _assetAdministrationShell.Administration,
                 AssetInformation = aas.AssetInformation ?? _assetAdministrationShell.AssetInformation,
                 Category = aas.Category ?? _assetAdministrationShell.Category,
-                // is not updated
-                ConceptDescription = _assetAdministrationShell.ConceptDescription,
+                ConceptDescription = aas.ConceptDescription ?? _assetAdministrationShell.ConceptDescription,
                 DerivedFrom = aas.DerivedFrom ?? _assetAdministrationShell.DerivedFrom,
-                // is not updated
-                Submodels = _assetAdministrationShell.Submodels,
-                // is not updated
-                SubmodelReferences = _assetAdministrationShell.SubmodelReferences,
-                
+                Submodels = aas.Submodels ?? _assetAdministrationShell.Submodels,
+                SubmodelReferences = aas.SubmodelReferences ?? _assetAdministrationShell.SubmodelReferences,
             };
 
             // default init as empty list
