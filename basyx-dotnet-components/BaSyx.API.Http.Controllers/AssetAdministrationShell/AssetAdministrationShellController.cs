@@ -24,6 +24,7 @@ using Microsoft.Extensions.FileProviders;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Reflection.Emit;
+using System.Xml.Linq;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -348,6 +349,29 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Updates the metadata attributes of the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodel">The metadata attributes of the Submodel object</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodel</response>
+        /// <inheritdoc cref="SubmodelController.GetSubmodelMetadata()"/> 
+        [HttpPatch(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.METADATA, Name = "Shell_PatchSubmodelMetadata")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_PatchSubmodelMetadata(string submodelIdentifier, [FromBody] ISubmodel submodel)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodelMetadata(submodel);
+        }
+
+        /// <summary>
         /// Returns the Submodel in the ValueOnly representation
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -367,6 +391,29 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetSubmodelValueOnly(level, extent);
+        }
+
+        /// <summary>
+        /// Updates the values of the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="requestBody">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel object in its ValueOnly representation</response>     
+        /// <inheritdoc cref="SubmodelController.PatchSubmodelValueOnly(JsonDocument)"/>
+        [HttpPatch(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.VALUE, Name = "Shell_PatchSubmodelValueOnly")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_PatchSubmodelValueOnly(string submodelIdentifier, [FromBody] JsonDocument requestBody)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodelValueOnly(requestBody);
         }
 
         /// <summary>
@@ -534,6 +581,56 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Returns the References of all submodel elements
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements</response>  
+        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsReference(int, string)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE, Name = "GetAllSubmodelElementsReference")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedResult), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetAllSubmodelElementsReference(string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetAllSubmodelElementsReference(limit, cursor);
+        }
+
+        /// <summary>
+        /// Returns all submodel elements including their hierarchy in the Path notation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>      
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements in the Path notation</response>  
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.PATH,
+            Name = "Shell_GetAllSubmodelElementsPath")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedResult), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetAllSubmodelElementsPath(string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "",
+            [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetAllSubmodelElementsPath(limit, cursor);
+        }
+
+        /// <summary>
         /// Creates a new submodel element
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -580,6 +677,55 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Returns the metadata attributes of a specific submodel element from the Submodel at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel element in its ValueOnly representation</response>
+        /// <response code="404">Submodel Element not found</response>     
+        /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathMetadata(string, RequestLevel)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "Shell_GetSubmodelElementByPathMetadata")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(SubmodelElement), 200)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult Shell_GetSubmodelElementByPathMetadata(string submodelIdentifier, string idShortPath, [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetSubmodelElementByPathMetadata(idShortPath, level);
+        }
+
+        /// <summary>
+        /// Updates the metadata attributes an existing SubmodelElement
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel element in its ValueOnly representation</response> 
+        /// <inheritdoc cref="SubmodelController.PatchSubmodelElementByPathMetadata(string, ISubmodelElement)"/> 
+        [HttpPatch(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA,
+            Name = "Shell_PatchSubmodelElementByPathMetadata")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_PatchSubmodelElementByPathMetadata(string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodelElementByPathMetadata(idShortPath, submodelElement);
+        }
+
+        /// <summary>
         /// Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -603,26 +749,54 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Returns the metadata attributes of a specific submodel element from the Submodel at a specified path
+        /// Returns the Reference of a specific submodel element from the Submodel at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel element in its ValueOnly representation</response>
+        /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathReference(string)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.REFERENCE,
+            Name = "Shell_GetSubmodelElementByPathReference")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetSubmodelElementByPathReference(string submodelIdentifier, string idShortPath)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetSubmodelElementByPathReference(idShortPath);
+        }
+
+        /// <summary>
+        /// Returns a specific submodel element from the Submodel at a specified path in the Path notation
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">Requested submodel element in its ValueOnly representation</response>
-        /// <response code="404">Submodel Element not found</response>     
-        /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathMetadata(string, RequestLevel)"/>
-        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "Shell_GetSubmodelElementByPathMetadata")]
+        /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathPath(string, RequestLevel)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.PATH,
+            Name = "Shell_GetSubmodelElementByPathPath")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(SubmodelElement), 200)]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult Shell_GetSubmodelElementByPathMetadata(string submodelIdentifier, string idShortPath, [FromQuery] RequestLevel level = default)
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetSubmodelElementByPathPath(string submodelIdentifier, string idShortPath, [FromQuery] RequestLevel level = default)
         {
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
 
             var service = new SubmodelController(provider, hostingEnvironment);
-            return service.GetSubmodelElementByPathMetadata(idShortPath, level);
+            return service.GetSubmodelElementByPathPath(idShortPath, level);
         }
 
         /// <summary>
@@ -670,6 +844,33 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new SubmodelController(provider, hostingEnvironment);
             return service.PutSubmodelElementByPath(idShortPath, requestBody);
+        }
+
+        /// <summary>
+        /// Updates an existing SubmodelElement
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="submodelElement">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel element updated successfully</response>
+        /// <inheritdoc cref="SubmodelController.PatchSubmodelElementByPath(string, ISubmodelElement)"/>
+        [HttpPatch(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH,
+            Name = "Shell_PatchSubmodelElementByPath")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_PatchSubmodelElementByPath(string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodelElementByPath(idShortPath, submodelElement);
         }
 
         /// <summary>
@@ -769,6 +970,29 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Deletes file content of an existing submodel element at a specified path within submodel elements hierarchy
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+        /// <returns></returns>
+        /// <response code="200">File deleted successfully</response>
+        /// <inheritdoc cref="SubmodelController.DeleteFileByPath(string)"/>
+        [HttpDelete(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT,
+            Name = "Shell_DeleteFileByPath")]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult Shell_DeleteFileByPath(string submodelIdentifier, string idShortPath)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.DeleteFileByPath(idShortPath);
+        }
+
+        /// <summary>
         /// Synchronously invokes an Operation at a specified path
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -815,6 +1039,85 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Synchronously invokes an Operation at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="operationRequest">Operation request object</param>
+        /// <returns></returns>
+        /// <response code="200">Operation invoked successfully</response>
+        /// <inheritdoc cref="SubmodelController.InvokeOperationSyncValueOnly(string, InvocationRequest)"/>
+        [HttpPost(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE + OutputModifier.VALUE, Name = "Shell_InvokeOperationSyncValueOnly")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(InvocationResponse), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 405)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_InvokeOperationSyncValueOnly(string submodelIdentifier, string idShortPath, [FromBody] InvocationRequest operationRequest)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.InvokeOperationSyncValueOnly(idShortPath, operationRequest);
+        }
+
+        /// <summary>
+        /// Asynchronously invokes an Operation at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="operationRequest">Operation request object</param>
+        /// <returns></returns>
+        /// <response code="200">Operation invoked successfully</response>
+        /// <inheritdoc cref="SubmodelController.InvokeOperationAsyncValueOnly(string, InvocationRequest)"/>
+        [HttpPost(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE_ASYNC + OutputModifier.VALUE, Name = "Shell_InvokeOperationAsyncValueOnly")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(InvocationResponse), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 405)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_InvokeOperationAsyncValueOnly(string submodelIdentifier, string idShortPath, [FromBody] InvocationRequest operationRequest)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.InvokeOperationAsyncValueOnly(idShortPath, operationRequest);
+        }
+
+        /// <summary>
+        /// Returns the Operation status of an asynchronous invoked Operation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Operation result object</response>
+        /// <inheritdoc cref="SubmodelController.GetOperationAsyncStatus(string, string)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_STATUS, Name = "Shell_GetOperationAsyncStatus")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Result), 302)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetOperationAsyncStatus(string submodelIdentifier, string idShortPath, string handleId)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetOperationAsyncStatus(idShortPath, handleId); ;
+        }
+
+        /// <summary>
         /// Returns the Operation result of an asynchronous invoked Operation
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -835,6 +1138,31 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetOperationAsyncResult(idShortPath, handleId);
+        }
+
+        /// <summary>
+        /// Returns the Operation result of an asynchronous invoked Operation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Operation result object</response>
+        /// <inheritdoc cref="SubmodelController.GetOperationAsyncResultValueOnly(string, string)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS + OutputModifier.VALUE, Name = "GetOperationAsyncResultValueOnly")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(InvocationResponse), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetOperationAsyncResultValueOnly(string submodelIdentifier, string idShortPath, string handleId)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetOperationAsyncResultValueOnly(idShortPath, handleId);
         }
         #endregion        
     }
