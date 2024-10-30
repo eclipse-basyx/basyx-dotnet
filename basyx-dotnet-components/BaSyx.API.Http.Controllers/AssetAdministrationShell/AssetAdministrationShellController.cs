@@ -250,7 +250,9 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetAllSubmodelReferences([FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            var result = serviceProvider.RetrieveAllSubmodelReferences(limit, cursor);
+            string submodelId = ResultHandling.Base64UrlDecode(cursor);
+
+            var result = serviceProvider.RetrieveAllSubmodelReferences(limit, submodelId);
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
