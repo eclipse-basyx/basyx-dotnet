@@ -247,7 +247,7 @@ namespace BaSyx.API.Http.Controllers
             var submodel = result.Entity;
 
             // contrary to the specification, the function currently works directly on the value of the submodel 
-            // to enable the functionality according to the specification, the foreach statement must switche with commented onw
+            // to enable the functionality according to the specification, the foreach statement must switche with commented in
 
             //foreach (var smeNode in requestBody.RootElement.EnumerateObject().First().Value.EnumerateObject())
             foreach (var smeNode in requestBody.RootElement.EnumerateObject())

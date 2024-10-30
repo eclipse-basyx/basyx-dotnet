@@ -349,14 +349,14 @@ namespace DevelopmentSubmodel
                             {
                                 new Property<string>(null, "Level 2 String"),
                                 new Property<int>(null, 123),
-                                //new SubmodelElementList(null)
-                                //{
-                                //    Value =
-                                //    {
-                                //        Value =
-                                //        {
-                                //            new Property<string>(null, "Level 3 String"),
-                                //            new Property<int>(null, 456),
+                                new SubmodelElementList(null)
+                                {
+                                    Value =
+                                    {
+                                        Value =
+                                        {
+                                            new Property<string>(null, "Level 3 String"),
+                                            new Property<int>(null, 456),
                                 //            new SubmodelElementList(null)
                                 //            {
                                 //                Value =
@@ -368,9 +368,9 @@ namespace DevelopmentSubmodel
                                 //                    }
                                 //                }
                                 //            }
-                                //        }
-                                //    }
-                                //}
+                                        }
+                                    }
+                                }
                             }
                         }
                     },

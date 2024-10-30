@@ -301,7 +301,14 @@ namespace BaSyx.API.Http.Controllers
         #endregion
 
         #region Submodel Interface
-
+        /// <summary>
+        /// Returns the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel references</response> 
         /// <inheritdoc cref="SubmodelController.GetSubmodel(RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "Shell_GetSubmodel")]
         [Produces("application/json")]
@@ -316,6 +323,13 @@ namespace BaSyx.API.Http.Controllers
             return service.GetSubmodel(level, extent);
         }
 
+        /// <summary>
+        /// Returns the metadata attributes of a specific Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodel</response>
+        /// <response code="404">Submodel not found</response>  
         /// <inheritdoc cref="SubmodelController.GetSubmodelMetadata()"/>
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.METADATA, Name = "Shell_GetSubmodelMetadata")]
         [Produces("application/json")]
@@ -330,6 +344,14 @@ namespace BaSyx.API.Http.Controllers
             return service.GetSubmodelMetadata();
         }
 
+        /// <summary>
+        /// Returns the Submodel in the ValueOnly representation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">ValueOnly representation of the Submodel</response>   
         /// <inheritdoc cref="SubmodelController.GetSubmodelValueOnly(RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.VALUE, Name = "Shell_GetSubmodelValue")]
         [Produces("application/json")]
@@ -344,6 +366,12 @@ namespace BaSyx.API.Http.Controllers
             return service.GetSubmodelValueOnly(level, extent);
         }
 
+        /// <summary>
+        /// Replaces the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel updated successfully</response>     
         /// <inheritdoc cref="SubmodelController.PutSubmodel(ISubmodel)"/>
         [HttpPut(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "Shell_PutSubmodel")]
         [Produces("application/json")]
@@ -358,6 +386,17 @@ namespace BaSyx.API.Http.Controllers
             return service.PutSubmodel(submodel);
         }
 
+        /// <summary>
+        /// Returns all submodel elements including their hierarchy
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements</response>
+        /// <response code="404">Submodel not found</response>   
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElements(int, string, RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "Shell_GetAllSubmodelElements")]
         [Produces("application/json")]
@@ -372,6 +411,15 @@ namespace BaSyx.API.Http.Controllers
             return service.GetAllSubmodelElements(limit, cursor, level, extent);
         }
 
+        /// <summary>
+        /// Returns the metadata attributes of all submodel elements including their hierarchy
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements</response>
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsMetadata(int, string, RequestLevel)"/>   
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.METADATA, Name = "Shell_GetAllSubmodelElementsMetadata")]
         [Produces("application/json")]
@@ -388,6 +436,16 @@ namespace BaSyx.API.Http.Controllers
             return service.GetAllSubmodelElementsMetadata(limit, cursor, level);
         }
 
+        /// <summary>
+        /// Returns all submodel elements including their hierarchy in the ValueOnly representation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements</response>  
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsValueOnly(int, string, RequestLevel, RequestExtent)"/>   
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "Shell_GetAllSubmodelElementsValueOnly")]
         [Produces("application/json")]
@@ -403,6 +461,7 @@ namespace BaSyx.API.Http.Controllers
             var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetAllSubmodelElementsValueOnly(limit, cursor, level, extent);
         }
+
 
         /// <inheritdoc cref="SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
         [HttpPost(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "Shell_PostSubmodelElement")]
