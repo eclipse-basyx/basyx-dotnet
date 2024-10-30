@@ -23,6 +23,7 @@ using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Routing;
+using System.Reflection.Emit;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -239,7 +240,7 @@ namespace BaSyx.API.Http.Controllers
         /// Returns all submodel references
         /// </summary>
         /// <param name="limit">The maximum number of elements in the response array</param>
-        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
         /// <returns></returns>
         /// <response code="200">Requested submodel references</response> 
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "GetAllSubmodelReferences")]
@@ -369,6 +370,51 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Returns the Reference of the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">ValueOnly representation of the Submodel</response> 
+        /// <inheritdoc cref="SubmodelController.GetSubmodelReference()"/>    
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.REFERENCE, Name = "Shell_GetSubmodelReference")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetSubmodelReference(string submodelIdentifier)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetSubmodelReference();
+        }
+
+        /// <summary>
+        /// Returns the Submodel in the Path notation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <returns></returns>
+        /// <response code="200">Submodel in Path notation</response>
+        /// <inheritdoc cref="SubmodelController.GetSubmodelPath(RequestLevel)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.PATH, Name = "Shell_GetSubmodelPath")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_GetSubmodelPath(string submodelIdentifier, [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetSubmodelPath(level);
+        }
+
+        /// <summary>
         /// Replaces the Submodel
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -386,6 +432,29 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new SubmodelController(provider, hostingEnvironment);
             return service.PutSubmodel(submodel);
+        }
+
+        /// <summary>
+        /// Updates the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <param name="submodel">Submodel object</param>
+        /// <response code="204">Submodel updated successfully</response>
+        /// <inheritdoc cref="SubmodelController.PatchSubmodel(ISubmodel)"/>
+        [HttpPatch(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "Shell_PatchSubmodel")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult Shell_PatchSubmodel(string submodelIdentifier, [FromBody] ISubmodel submodel)
+        {
+            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodel(submodel);
         }
 
         /// <summary>
