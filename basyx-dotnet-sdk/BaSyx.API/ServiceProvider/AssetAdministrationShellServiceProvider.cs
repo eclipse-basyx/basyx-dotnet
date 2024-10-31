@@ -299,5 +299,27 @@ namespace BaSyx.API.ServiceProvider
             else
                 return new Result(false, new ErrorMessage("Submodel reference could not be deleted"));
         }
+
+        public IResult DeleteSubmodel(Identifier id)
+        {
+            if (_assetAdministrationShell == null)
+                return new Result(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
+
+            var sp = GetSubmodelServiceProvider(id);
+            if (!sp.Success)
+                return new Result(false, new NotFoundMessage($"Submodel with id {id}"));
+
+            var result = UnregisterSubmodelServiceProvider(id);
+            if (!result.Success)
+                return result;
+
+            _assetAdministrationShell.Submodels.Remove(sp.Entity.ServiceDescriptor.IdShort);
+            var checkRetrieve = _assetAdministrationShell.Submodels.Retrieve(sp.Entity.ServiceDescriptor.IdShort);
+
+            if (!checkRetrieve.Success)
+                return new Result(true);
+            else
+                return new Result(false, new ErrorMessage("Submodel reference could not be deleted"));
+        }
     }
 }

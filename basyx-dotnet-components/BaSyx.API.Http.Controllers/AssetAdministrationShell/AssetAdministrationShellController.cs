@@ -555,6 +555,28 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Deletes the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel deleted successfully</response>
+        /// <inheritdoc cref="SubmodelController.PatchSubmodel(ISubmodel)"/>
+        [HttpDelete(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "Shell_DeleteSubmodel")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult Shell_DeleteSubmodel(string submodelIdentifier)
+        {
+            if (string.IsNullOrEmpty(submodelIdentifier))
+                return ResultHandling.NullResult(nameof(submodelIdentifier));
+
+            string submodelId = ResultHandling.Base64UrlDecode(submodelIdentifier);
+
+            var result = serviceProvider.DeleteSubmodel(submodelId);
+            return result.CreateActionResult(CrudOperation.Delete);
+        }
+
+        /// <summary>
         /// Returns all submodel elements including their hierarchy
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>

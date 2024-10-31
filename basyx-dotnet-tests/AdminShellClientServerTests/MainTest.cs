@@ -540,6 +540,11 @@ namespace AdminShellClientServerTests
             return ((IAssetAdministrationShellInterface)Client).DeleteSubmodelReference(id);
         }
 
+        public IResult DeleteSubmodel(Identifier id)
+        {
+            return ((IAssetAdministrationShellInterface)Client).DeleteSubmodel(id);
+        }
+
         #endregion
     }
 }

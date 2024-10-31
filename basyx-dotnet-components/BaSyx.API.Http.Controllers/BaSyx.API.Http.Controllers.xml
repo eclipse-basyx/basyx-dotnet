@@ -193,6 +193,15 @@
             <response code="204">Submodel updated successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_DeleteSubmodel(System.String)">
+            <summary>
+            Deletes the Submodel
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="204">Submodel deleted successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
             Returns all submodel elements including their hierarchy

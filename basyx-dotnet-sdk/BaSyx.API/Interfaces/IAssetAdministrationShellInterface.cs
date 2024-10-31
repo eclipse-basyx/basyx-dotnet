@@ -30,5 +30,7 @@ namespace BaSyx.API.Interfaces
         IResult<IReference> CreateSubmodelReference(IReference submodelRef);
 
         IResult DeleteSubmodelReference(Identifier id);
+
+        IResult DeleteSubmodel(Identifier id);
     }
 }

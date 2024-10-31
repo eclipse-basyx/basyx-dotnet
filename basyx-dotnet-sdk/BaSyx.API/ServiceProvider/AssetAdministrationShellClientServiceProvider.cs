@@ -146,5 +146,10 @@ namespace BaSyx.API.ServiceProvider
             else
                 return new Result(false, new NotFoundMessage(id));
         }
+
+        public IResult DeleteSubmodel(Identifier id)
+        {
+            return _shellClient.DeleteSubmodel(id);
+        }
     }
 }
