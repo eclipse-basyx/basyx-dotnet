@@ -21,7 +21,7 @@ namespace BaSyx.API.Interfaces
 
         IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(Identifier id);
 
-        IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells();
+        IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "");
 
         IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "");
 

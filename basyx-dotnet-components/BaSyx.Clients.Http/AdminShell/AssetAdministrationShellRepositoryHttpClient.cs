@@ -109,9 +109,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return RetrieveAssetAdministrationShellAsync(id).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells()
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "")
         {
-            return RetrieveAssetAdministrationShellsAsync().GetAwaiter().GetResult();
+            return RetrieveAssetAdministrationShellsAsync(limit, cursor).GetAwaiter().GetResult();
         }
 
         public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")
@@ -153,9 +153,15 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync()
+        public async Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync(int limit = 100, string cursor = "")
         {
             Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS);
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["limit"] = limit.ToString();
+            query["cursor"] = cursor;
+            var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
+            uri = uriBuilder.Uri;
+
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<IAssetAdministrationShell>>>(response, response.Entity);

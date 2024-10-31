@@ -27,7 +27,7 @@ namespace DevelopmentSubmodel
         {
             var domainId = "DemoAAS";
 
-            AssetAdministrationShell aas = new AssetAdministrationShell(domainId, new BaSyxShellIdentifier("SimpleAAS", "1.0.0"))
+            AssetAdministrationShell aas = new AssetAdministrationShell(domainId, new BaSyxShellIdentifier(domainId, "1.0.0"))
             {
                 Description = new LangStringSet()
                 {

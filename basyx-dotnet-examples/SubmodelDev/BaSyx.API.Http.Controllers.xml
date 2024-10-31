@@ -518,10 +518,12 @@
             <param name="assetAdministrationShellRepositoryServiceProvider"></param>
             <param name="environment">The Hosting Environment provided by the dependency injection</param>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.GetAllAssetAdministrationShells">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.GetAllAssetAdministrationShells(System.Int32,System.String)">
             <summary>
             Returns all Asset Administration Shells
             </summary>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Asset Administration Shells</response>
         </member>
@@ -539,7 +541,7 @@
             Returns References to all Asset Administration Shells
             </summary>
             <param name="limit">The maximum number of elements in the response array</param>
-            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Asset Administration Shells</response>
         </member>

@@ -22,7 +22,7 @@ namespace BaSyx.API.Clients
 
         Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(Identifier id);
 
-        Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync();
+        Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync(int limit = 100, string cursor = "");
 
         Task<IResult> UpdateAssetAdministrationShellAsync(Identifier id, IAssetAdministrationShell aas);
 

@@ -148,8 +148,22 @@ namespace BaSyx.API.ServiceProvider
             return new Result<IAssetAdministrationShell>(false, new NotFoundMessage("Asset Administration Shell Service Provider"));
         }
 
-        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells()
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "")
         {
+            var aasDict = AssetAdministrationShells.ToDictionary(aas => aas.Id.Id, aas => aas);
+
+            // create the paged data
+            var paginationHelper = new PaginationHelper<IAssetAdministrationShell>(aasDict, elem => elem.Id.Id);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var aasPaged = new ElementContainer<IAssetAdministrationShell>();
+            aasPaged.AddRange(pagedResult.Result as IEnumerable<IAssetAdministrationShell>);
+            var paginatedAAs = new PagedResult<IElementContainer<IAssetAdministrationShell>>(aasPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IElementContainer<IAssetAdministrationShell>>>(true, paginatedAAs);
+
+
             return new Result<PagedResult<IElementContainer<IAssetAdministrationShell>>>(true, 
                 new PagedResult<IElementContainer<IAssetAdministrationShell>>(
                 new ElementContainer<IAssetAdministrationShell>(null, AssetAdministrationShells)));

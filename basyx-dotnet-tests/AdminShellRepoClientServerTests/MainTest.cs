@@ -633,9 +633,9 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellAsync(id);
         }
 
-        public Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync()
+        public Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync(int limit = 100, string cursor = "")
         {
-            return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellsAsync();
+            return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellsAsync(limit, cursor);
         }
 
         public Task<IResult> UpdateAssetAdministrationShellAsync(Identifier id, IAssetAdministrationShell aas)
@@ -658,9 +658,9 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShell(id);
         }
 
-        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells()
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "")
         {
-            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShells();
+            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShells(limit, cursor);
         }
 
         public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")
