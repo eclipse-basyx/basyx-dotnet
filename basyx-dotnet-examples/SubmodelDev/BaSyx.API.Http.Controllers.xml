@@ -62,7 +62,15 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PutThumbnail(Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
-            Updates the Asset Information
+            Updates the thumbnail of the Asset Information.
+            </summary>
+            <param name="assetInformation">Asset Information object</param>
+            <returns></returns>
+            <response code="204">Asset Information updated successfully</response>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.DeleteThumbnail">
+            <summary>
+            Delete the thumbnail of the Asset Information.
             </summary>
             <param name="assetInformation">Asset Information object</param>
             <returns></returns>

@@ -184,7 +184,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Updates the Asset Information
+        /// Updates the thumbnail of the Asset Information.
         /// </summary>
         /// <param name="assetInformation">Asset Information object</param>
         /// <returns></returns>
@@ -208,6 +208,7 @@ namespace BaSyx.API.Http.Controllers
             string fileName;
             if (retrieveAssetInformation.Entity.DefaultThumbnail == null)
             {
+                // create new Asset Information with Thumbnail
                 var assetInformation = new AssetInformation
                 {
                     DefaultThumbnail = new Resource { ContentType = file.ContentType, Path  = file.FileName},
@@ -233,6 +234,55 @@ namespace BaSyx.API.Http.Controllers
             {
                 await file.CopyToAsync(stream);
             }
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Delete the thumbnail of the Asset Information.
+        /// </summary>
+        /// <param name="assetInformation">Asset Information object</param>
+        /// <returns></returns>
+        /// <response code="204">Asset Information updated successfully</response>
+        [HttpDelete(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "DeleteThumbnail")]
+        [Produces("application/json")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public async Task<IActionResult> DeleteThumbnail()
+        {
+            var retrieveAssetInformation = serviceProvider.RetrieveAssetInformation();
+            if (!retrieveAssetInformation.Success || retrieveAssetInformation.Entity == null)
+                return retrieveAssetInformation.CreateActionResult(CrudOperation.Retrieve);
+
+            if (retrieveAssetInformation.Entity.DefaultThumbnail == null)
+                return NotFound(new { message = "Asset information has no thumbnail" });
+
+            var fileName = retrieveAssetInformation.Entity.DefaultThumbnail.Path.TrimStart('/');
+
+            // create new Asset Information without Thumbnail
+            var assetInformation = new AssetInformation
+            {
+                DefaultThumbnail = null,
+                AssetKind = retrieveAssetInformation.Entity.AssetKind,
+                AssetType = retrieveAssetInformation.Entity.AssetType,
+                GlobalAssetId = retrieveAssetInformation.Entity.GlobalAssetId,
+                SpecificAssetIds = retrieveAssetInformation.Entity.SpecificAssetIds
+            };
+
+            var updateAssetInformation = serviceProvider.UpdateAssetInformation(assetInformation);
+            if (!updateAssetInformation.Success)
+                return updateAssetInformation.CreateActionResult(CrudOperation.Update);
+
+            IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
+            var file = fileProvider.GetFileInfo(fileName);
+
+            if (file.Exists && !string.IsNullOrEmpty(file.PhysicalPath))
+                System.IO.File.Delete(file.PhysicalPath);
+            else
+                return NotFound(new { message = "Physical file not found", itemId = file.PhysicalPath });
 
             return Ok();
         }
