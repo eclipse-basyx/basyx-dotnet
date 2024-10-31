@@ -26,9 +26,8 @@ namespace DevelopmentSubmodel
             Console.WriteLine("Hello World!");
 
             
-            AssetAdministrationShell aas = DevelopmentSubmodel.GetAssetAdministrationShell();
-            ISubmodel testSubmodel = aas.Submodels["DevSubmodel"];
-
+            var aas = DevelopmentSubmodel.GetAssetAdministrationShell();
+            var submodel = aas.Submodels[0];
 
             // Submodel Server
             ServerSettings submodelServerSettings = ServerSettings.CreateSettings();
@@ -39,7 +38,7 @@ namespace DevelopmentSubmodel
 
             SubmodelHttpServer submodelServer = new SubmodelHttpServer(submodelServerSettings);
             submodelServer.WebHostBuilder.UseNLog();
-            ISubmodelServiceProvider submodelServiceProvider = testSubmodel.CreateServiceProvider();
+            ISubmodelServiceProvider submodelServiceProvider = submodel.CreateServiceProvider();
             submodelServer.SetServiceProvider(submodelServiceProvider);
             submodelServiceProvider.UseAutoEndpointRegistration(submodelServerSettings.ServerConfig);
             submodelServer.AddBaSyxUI(PageNames.SubmodelServer);
@@ -56,7 +55,7 @@ namespace DevelopmentSubmodel
             aasServerSettings.Miscellaneous.Add("CompanyLogo", "/images/MyCompanyLogo.png");
 
             IAssetAdministrationShellServiceProvider aasServiceProvider = aas.CreateServiceProvider(true);
-            aasServiceProvider.SubmodelProviderRegistry.RegisterSubmodelServiceProvider(testSubmodel.Id, submodelServiceProvider);
+            aasServiceProvider.SubmodelProviderRegistry.RegisterSubmodelServiceProvider(submodel.Id, submodelServiceProvider);
             aasServiceProvider.UseAutoEndpointRegistration(aasServerSettings.ServerConfig);
 
             var aasServer = new AssetAdministrationShellHttpServer(aasServerSettings);

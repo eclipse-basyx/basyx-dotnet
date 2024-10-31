@@ -249,9 +249,6 @@ namespace BaSyx.API.ServiceProvider
             var paginatedRef = new PagedResult<IEnumerable<IReference<ISubmodel>>>(refPaged, pagedResult.PagingMetadata);
 
             return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(true, paginatedRef);
-
-            //return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(true, 
-             //   new PagedResult<IEnumerable<IReference<ISubmodel>>>(_assetAdministrationShell.SubmodelReferences));
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)

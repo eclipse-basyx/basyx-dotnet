@@ -11,6 +11,7 @@
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Collections.Generic;
 
 namespace BaSyx.API.Interfaces
 {
@@ -21,6 +22,8 @@ namespace BaSyx.API.Interfaces
         IResult<IAssetAdministrationShell> RetrieveAssetAdministrationShell(Identifier id);
 
         IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells();
+
+        IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "");
 
         IResult UpdateAssetAdministrationShell(Identifier id, IAssetAdministrationShell aas);
 

@@ -25,7 +25,9 @@ namespace DevelopmentSubmodel
 
         public static AssetAdministrationShell GetAssetAdministrationShell()
         {
-            AssetAdministrationShell aas = new AssetAdministrationShell("SimpleAAS", new BaSyxShellIdentifier("SimpleAAS", "1.0.0"))
+            var domainId = "DemoAAS";
+
+            AssetAdministrationShell aas = new AssetAdministrationShell(domainId, new BaSyxShellIdentifier("SimpleAAS", "1.0.0"))
             {
                 Description = new LangStringSet()
                 {
@@ -40,7 +42,7 @@ namespace DevelopmentSubmodel
                 AssetInformation = new AssetInformation()
                 {
                     AssetKind = AssetKind.Instance,
-                    GlobalAssetId = new BaSyxAssetIdentifier("SimpleAsset", "1.0.0")
+                    GlobalAssetId = new BaSyxAssetIdentifier(domainId, "1.0.0")
                 }
             };
 
@@ -52,7 +54,9 @@ namespace DevelopmentSubmodel
 
         public static Submodel GetDevSubmodel2()
         {
-            Submodel testSubmodel = new Submodel("DevSubmodel2", new BaSyxSubmodelIdentifier("DevSubmodel2", "1.0.0"))
+            var domainId = "SimpleSM";
+
+            Submodel testSubmodel = new Submodel(domainId, new BaSyxSubmodelIdentifier(domainId, "1.0.0"))
             {
                 SubmodelElements = new ElementContainer<ISubmodelElement>
                 {
@@ -66,6 +70,8 @@ namespace DevelopmentSubmodel
 
         public static Submodel GetDevSubmodel()
         {
+            var domainId = "DemoSM";
+
             var blob = new Blob("Blob_L1")
             {
                 Value = new BlobValue("application/octet-stream", "decaf")
@@ -263,7 +269,7 @@ namespace DevelopmentSubmodel
                     new BaSyxPropertyIdentifier("HelloBasicEventElement", "1.0.0").ToUrn())),
             };
 
-            Submodel testSubmodel = new Submodel("DevSubmodel", new BaSyxSubmodelIdentifier("DevSubmodel", "1.0.0"))
+            Submodel testSubmodel = new Submodel(domainId, new BaSyxSubmodelIdentifier(domainId, "1.0.0"))
             {
                 //Description = new LangStringSet()
                 //{

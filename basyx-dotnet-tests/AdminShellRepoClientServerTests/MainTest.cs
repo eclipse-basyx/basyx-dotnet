@@ -663,6 +663,11 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShells();
         }
 
+        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")
+        {
+            return((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShellsReference(limit, cursor);
+        }
+
         public IResult UpdateAssetAdministrationShell(Identifier id, IAssetAdministrationShell aas)
         {
             return ((IAssetAdministrationShellRepositoryInterface)RepoClient).UpdateAssetAdministrationShell(id, aas);

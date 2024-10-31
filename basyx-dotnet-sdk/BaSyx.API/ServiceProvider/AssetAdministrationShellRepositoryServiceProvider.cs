@@ -14,7 +14,9 @@ using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.ResultHandling.http;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -151,6 +153,25 @@ namespace BaSyx.API.ServiceProvider
             return new Result<PagedResult<IElementContainer<IAssetAdministrationShell>>>(true, 
                 new PagedResult<IElementContainer<IAssetAdministrationShell>>(
                 new ElementContainer<IAssetAdministrationShell>(null, AssetAdministrationShells)));
+        }
+
+        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")
+        {
+            var references = AssetAdministrationShells.Select(shell => shell.CreateReference());
+
+            var refDict = references.ToDictionary(reference => reference.First.Value, reference => reference);
+
+            // create the paged data
+            var paginationHelper = new PaginationHelper<IReference<IAssetAdministrationShell>>(refDict, elem => elem.First.Value);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var refPaged = new List<IReference<IAssetAdministrationShell>>();
+            refPaged.AddRange(pagedResult.Result as IEnumerable<IReference<IAssetAdministrationShell>>);
+            var paginatedRef = new PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>(refPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>>(true, paginatedRef);
+
         }
 
         public IResult UpdateAssetAdministrationShell(Identifier id, IAssetAdministrationShell aas)

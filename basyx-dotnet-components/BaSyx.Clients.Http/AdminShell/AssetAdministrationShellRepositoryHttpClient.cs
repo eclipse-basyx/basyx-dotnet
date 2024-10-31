@@ -13,6 +13,7 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Utils.Client.Http;
 using BaSyx.Utils.ResultHandling;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using BaSyx.Models.Connectivity;
 using System.Linq;
@@ -24,6 +25,7 @@ using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Web;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -112,6 +114,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return RetrieveAssetAdministrationShellsAsync().GetAwaiter().GetResult();
         }
 
+        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")
+        {
+            return RetrieveAssetAdministrationShellsReferenceAsync(limit, cursor).GetAwaiter().GetResult();
+        }
+
         public IResult UpdateAssetAdministrationShell(Identifier id, IAssetAdministrationShell aas)
         {
             return UpdateAssetAdministrationShellAsync(id, aas).GetAwaiter().GetResult();
@@ -152,6 +159,22 @@ namespace BaSyx.Clients.AdminShell.Http
             var request = base.CreateRequest(uri, HttpMethod.Get);
             var response = await base.SendRequestAsync(request, CancellationToken.None);
             var result = await base.EvaluateResponseAsync<PagedResult<IElementContainer<IAssetAdministrationShell>>>(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>>> RetrieveAssetAdministrationShellsReferenceAsync(int limit = 100, string cursor = "")
+        {
+            Uri uri = GetPath(AssetAdministrationShellRepositoryRoutes.SHELLS + OutputModifier.REFERENCE);
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["limit"] = limit.ToString();
+            query["cursor"] = cursor;
+            var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
+            uri = uriBuilder.Uri;
+
+            var request = base.CreateRequest(uri, HttpMethod.Get);
+            var response = await base.SendRequestAsync(request, CancellationToken.None);
+            var result = await base.EvaluateResponseAsync<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>>(response, response.Entity);
             response?.Entity?.Dispose();
             return result;
         }

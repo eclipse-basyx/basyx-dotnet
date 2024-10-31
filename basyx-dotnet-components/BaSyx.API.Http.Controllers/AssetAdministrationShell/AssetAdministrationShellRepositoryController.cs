@@ -81,6 +81,24 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Returns References to all Asset Administration Shells
+        /// </summary>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Asset Administration Shells</response>
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS + OutputModifier.REFERENCE, Name = "GetAllAssetAdministrationShells-Reference")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedResult<List<AssetAdministrationShell>>), 200)]
+        public IActionResult GetAllAssetAdministrationShellsReference([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        {
+            var aasId = ResultHandling.Base64UrlDecode(cursor);
+
+            var result = serviceProvider.RetrieveAssetAdministrationShellsReference(limit, aasId);
+            return result.CreateActionResult(CrudOperation.Retrieve);
+        }
+
+        /// <summary>
         /// Returns a specific Asset Administration Shell
         /// </summary>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
