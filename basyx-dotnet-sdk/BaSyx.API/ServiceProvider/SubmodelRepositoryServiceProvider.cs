@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.ResultHandling.http;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -145,10 +146,22 @@ namespace BaSyx.API.ServiceProvider
             return new Result<ISubmodel>(false, new NotFoundMessage("Submodel Service Provider"));
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels()
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels(int limit = 100, string cursor = "")
         {
-            return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, 
-                new PagedResult<IElementContainer<ISubmodel>>(new ElementContainer<ISubmodel>(null, Submodels)));
+            var allSubmodels = Submodels;
+            var smDict = allSubmodels.ToDictionary(sm => sm.Id.ToString(), sm => sm);
+
+            var paginationHelper = new PaginationHelper<ISubmodel>(smDict, elem => elem.Id);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var smcPaged = new ElementContainer<ISubmodel>();
+            smcPaged.AddRange(pagedResult.Result as IEnumerable<ISubmodel>);
+            var paginatedSubmodels = new PagedResult<IElementContainer<ISubmodel>>(smcPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, paginatedSubmodels, new EmptyMessage());
+            //return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, 
+               // new PagedResult<IElementContainer<ISubmodel>>(new ElementContainer<ISubmodel>(null, Submodels)));
         }
 
         public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)

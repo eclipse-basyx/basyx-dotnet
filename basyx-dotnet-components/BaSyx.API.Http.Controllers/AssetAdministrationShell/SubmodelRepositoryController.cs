@@ -45,14 +45,15 @@ namespace BaSyx.API.Http.Controllers
         /// Returns all Submodels
         /// </summary>
         /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
-        /// <param name="idShort">The Submodel's idShort</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
         /// <returns>Requested Submodels</returns>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODELS, Name = "GetAllSubmodels")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult<List<Submodel>>), 200)]
-        public IActionResult GetAllSubmodels([FromQuery] string semanticId = null, [FromQuery] string idShort = null)
+        public IActionResult GetAllSubmodels([FromQuery] string semanticId = null, [FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            var result = serviceProvider.RetrieveSubmodels();
+            var result = serviceProvider.RetrieveSubmodels(limit, cursor);
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 

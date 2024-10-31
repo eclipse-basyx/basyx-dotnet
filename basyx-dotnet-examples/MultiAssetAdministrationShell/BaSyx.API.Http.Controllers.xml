@@ -979,13 +979,12 @@
             <param name="submodelRepositoryServiceProvider"></param>
             <param name="environment">The Hosting Environment provided by the dependency injection</param>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodels(System.String,System.Int32,System.String)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodels(System.String,System.String)">
             <summary>
             Returns all Submodels
             </summary>
             <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
-            <param name="limit">The maximum number of elements in the response array</param>
-            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <param name="idShort">The Submodel's idShort</param>
             <returns>Requested Submodels</returns>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PostSubmodel(BaSyx.Models.AdminShell.ISubmodel)">

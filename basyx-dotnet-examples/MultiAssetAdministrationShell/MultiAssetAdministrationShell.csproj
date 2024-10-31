@@ -15,6 +15,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BaSyx.API.Http.Controllers.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BaSyx.API.Http.Controllers.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.5" />
   </ItemGroup>
 
