@@ -196,6 +196,12 @@ namespace BaSyx.API.Http.Controllers
 
         #region Asset Adminstration Shell Interface
 
+        /// <summary>
+        /// Returns the Asset Information
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Asset Information</response>
         /// <inheritdoc cref="AssetAdministrationShellController.GetAssetInformation"/>
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION, Name = "ShellRepo_GetAssetInformation")]
         [ProducesResponseType(200)]
@@ -209,6 +215,13 @@ namespace BaSyx.API.Http.Controllers
             return service.GetAssetInformation();
         }
 
+        /// <summary>
+        /// Updates the Asset Information
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="assetInformation">Asset Information object</param>
+        /// <returns></returns>
+        /// <response code="204">Asset Information updated successfully</response>
         /// <inheritdoc cref="AssetAdministrationShellController.PutAssetInformation(IAssetInformation)"/>
         [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION, Name = "ShellRepo_PutAssetInformation")]
         [ProducesResponseType(204)]
