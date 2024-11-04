@@ -58,23 +58,22 @@
             The thumbnail of the Asset Information.
             </summary>
             <returns></returns>
-            <response code="200">Requested Asset Information</response>
+            <response code="200">The thumbnail of the Asset Information</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PutThumbnail(Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
             Updates the thumbnail of the Asset Information.
             </summary>
-            <param name="assetInformation">Asset Information object</param>
+            <param name="file">Thumbnail to upload</param>
             <returns></returns>
-            <response code="204">Asset Information updated successfully</response>
+            <response code="204">Thumbnail updated successfully</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.DeleteThumbnail">
             <summary>
             Delete the thumbnail of the Asset Information.
             </summary>
-            <param name="assetInformation">Asset Information object</param>
             <returns></returns>
-            <response code="204">Asset Information updated successfully</response>
+            <response code="200">Thumbnail deletion successful</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAllSubmodelReferences(System.Int32,System.String)">
             <summary>
@@ -585,6 +584,33 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PutAssetInformation(System.String,BaSyx.Models.AdminShell.IAssetInformation)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PutAssetInformation(BaSyx.Models.AdminShell.IAssetInformation)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetThumbnail(System.String)">
+            <summary>
+            The thumbnail of the Asset Information.
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">The thumbnail of the Asset Information</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetThumbnail"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PutThumbnail(System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Updates the thumbnail of the Asset Information.
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="file">Thumbnail to upload</param>
+            <returns></returns>
+            <response code="204">Thumbnail updated successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PutThumbnail(Microsoft.AspNetCore.Http.IFormFile)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_DeleteThumbnail(System.String)">
+            <summary>
+            Delete the thumbnail of the Asset Information.
+            </summary>
+            <param name="aasIdentifier">Asset Information object</param>
+            <returns></returns>
+            <response code="200">Thumbnail deletion successful</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelReferences(System.String)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAllSubmodelReferences(System.Int32,System.String)"/>

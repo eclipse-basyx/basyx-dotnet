@@ -64,7 +64,7 @@ namespace DevelopmentSubmodel
             aasServer.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
             aasServer.AddSwagger(Interface.AssetAdministrationShell);
             //aasServer.Run();
-            //_ = aasServer.RunAsync();
+            _ = aasServer.RunAsync();
 
 
             // AAS Repository Server

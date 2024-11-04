@@ -223,8 +223,78 @@ namespace BaSyx.API.Http.Controllers
             return service.PutAssetInformation(assetInformation);
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.GetAllSubmodelReferences"/>
-        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "ShellRepo_GetAllSubmodelReferences")]
+        /// <summary>
+        /// The thumbnail of the Asset Information.
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">The thumbnail of the Asset Information</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.GetThumbnail()"/>
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL,
+            Name = "ShellRepo_GetThumbnail")]
+        [ProducesResponseType(typeof(AssetInformation), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_GetThumbnail(string aasIdentifier)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.GetThumbnail();
+        }
+
+        /// <summary>
+        /// Updates the thumbnail of the Asset Information.
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="file">Thumbnail to upload</param>
+        /// <returns></returns>
+        /// <response code="204">Thumbnail updated successfully</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.PutThumbnail(IFormFile)"/>
+        [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL,
+            Name = "ShellRepo_PutThumbnail")]
+        [Produces("application/json")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public async Task<IActionResult> ShellRepo_PutThumbnail(string aasIdentifier, IFormFile file)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return await service.PutThumbnail(file);
+        }
+
+        /// <summary>
+        /// Delete the thumbnail of the Asset Information.
+        /// </summary>
+        /// <param name="aasIdentifier">Asset Information object</param>
+        /// <returns></returns>
+        /// <response code="200">Thumbnail deletion successful</response>
+        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "DeleteThumbnail")]
+        [Produces("application/json")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public async Task<IActionResult> ShellRepo_DeleteThumbnail(string aasIdentifier)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return await service.DeleteThumbnail();
+        }
+
+    /// <inheritdoc cref="AssetAdministrationShellController.GetAllSubmodelReferences"/>
+    [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "ShellRepo_GetAllSubmodelReferences")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult<Reference[]>), 200)]
         [ProducesResponseType(typeof(Result), 404)]

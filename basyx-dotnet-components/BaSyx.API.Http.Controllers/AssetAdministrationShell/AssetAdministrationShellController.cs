@@ -151,7 +151,7 @@ namespace BaSyx.API.Http.Controllers
         /// The thumbnail of the Asset Information.
         /// </summary>
         /// <returns></returns>
-        /// <response code="200">Requested Asset Information</response>
+        /// <response code="200">The thumbnail of the Asset Information</response>
         [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "GetThumbnail")]
         [ProducesResponseType(typeof(AssetInformation), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -186,9 +186,9 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Updates the thumbnail of the Asset Information.
         /// </summary>
-        /// <param name="assetInformation">Asset Information object</param>
+        /// <param name="file">Thumbnail to upload</param>
         /// <returns></returns>
-        /// <response code="204">Asset Information updated successfully</response>
+        /// <response code="204">Thumbnail updated successfully</response>
         [HttpPut(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "PutThumbnail")]
         [Produces("application/json")]
         [Consumes("multipart/form-data")]
@@ -241,13 +241,12 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Delete the thumbnail of the Asset Information.
         /// </summary>
-        /// <param name="assetInformation">Asset Information object</param>
         /// <returns></returns>
-        /// <response code="204">Asset Information updated successfully</response>
+        /// <response code="200">Thumbnail deletion successful</response>
         [HttpDelete(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "DeleteThumbnail")]
         [Produces("application/json")]
         [Consumes("multipart/form-data")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
