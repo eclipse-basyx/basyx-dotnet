@@ -404,7 +404,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="submodel">The metadata attributes of the Submodel object</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>
-        /// <inheritdoc cref="SubmodelController.GetSubmodelMetadata()"/> 
+        /// <inheritdoc cref="SubmodelController.PatchSubmodelMetadata(ISubmodel)"/> 
         [HttpPatch(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.METADATA, Name = "Shell_PatchSubmodelMetadata")]
         [Produces("application/json")]
         [ProducesResponseType(204)]

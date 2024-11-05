@@ -131,7 +131,7 @@
             <param name="submodel">The metadata attributes of the Submodel object</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata"/> 
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelMetadata(BaSyx.Models.AdminShell.ISubmodel)"/> 
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelValue(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
@@ -723,6 +723,17 @@
             <response code="200">Requested Submodel</response>
             <response code="404">Submodel not found</response>  
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelMetadata(System.String)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PatchSubmodelMetadata(System.String,System.String,BaSyx.Models.AdminShell.ISubmodel)">
+            <summary>
+            Updates the metadata attributes of the Submodel
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodel">The metadata attributes of the Submodel object</param>
+            <returns></returns>
+            <response code="200">Requested Submodel</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PatchSubmodelMetadata(System.String,BaSyx.Models.AdminShell.ISubmodel)"/> 
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelElements(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
