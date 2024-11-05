@@ -514,6 +514,7 @@ namespace BaSyx.API.Http.Controllers
         /// Replaces the Submodel
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodel">Submodel object</param>
         /// <returns></returns>
         /// <response code="204">Submodel updated successfully</response>     
         /// <inheritdoc cref="SubmodelController.PutSubmodel(ISubmodel)"/>
@@ -534,8 +535,8 @@ namespace BaSyx.API.Http.Controllers
         /// Updates the Submodel
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
-        /// <returns></returns>
         /// <param name="submodel">Submodel object</param>
+        /// <returns></returns>
         /// <response code="204">Submodel updated successfully</response>
         /// <inheritdoc cref="SubmodelController.PatchSubmodel(ISubmodel)"/>
         [HttpPatch(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "Shell_PatchSubmodel")]

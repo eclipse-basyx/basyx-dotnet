@@ -162,11 +162,6 @@ namespace BaSyx.API.ServiceProvider
             var paginatedAAs = new PagedResult<IElementContainer<IAssetAdministrationShell>>(aasPaged, pagedResult.PagingMetadata);
 
             return new Result<PagedResult<IElementContainer<IAssetAdministrationShell>>>(true, paginatedAAs);
-
-
-            return new Result<PagedResult<IElementContainer<IAssetAdministrationShell>>>(true, 
-                new PagedResult<IElementContainer<IAssetAdministrationShell>>(
-                new ElementContainer<IAssetAdministrationShell>(null, AssetAdministrationShells)));
         }
 
         public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")

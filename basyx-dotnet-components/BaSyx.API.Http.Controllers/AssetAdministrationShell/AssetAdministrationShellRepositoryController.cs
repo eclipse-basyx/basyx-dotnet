@@ -21,6 +21,7 @@ using System.Text.Json;
 using BaSyx.Models.Connectivity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using BaSyx.Models.Extensions;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -191,10 +192,32 @@ namespace BaSyx.API.Http.Controllers
             aasIdentifier = ResultHandling.Base64UrlDecode(aasIdentifier);
 
             var result = serviceProvider.DeleteAssetAdministrationShell(aasIdentifier);
-            return result.CreateActionResult(CrudOperation.Delete);            
+            return result.CreateActionResult(CrudOperation.Delete);
         }
 
         #region Asset Adminstration Shell Interface
+
+        /// <summary>
+        /// Returns a specific Asset Administration Shell as a Reference
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Asset Administration Shel</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.GetAssetAdministrationShellReference"/>
+        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + OutputModifier.REFERENCE, Name = "ShellRepo_GetAssetAdministrationShellsReference")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        [Produces("application/json")]
+        public IActionResult ShellRepo_GetAssetAdministrationShellsReference(string aasIdentifier)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.GetAssetAdministrationShellReference();
+        }
 
         /// <summary>
         /// Returns the Asset Information
@@ -287,7 +310,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Delete the thumbnail of the Asset Information.
         /// </summary>
-        /// <param name="aasIdentifier">Asset Information object</param>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <returns></returns>
         /// <response code="200">Thumbnail deletion successful</response>
         [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "DeleteThumbnail")]
@@ -306,20 +329,36 @@ namespace BaSyx.API.Http.Controllers
             return await service.DeleteThumbnail();
         }
 
-    /// <inheritdoc cref="AssetAdministrationShellController.GetAllSubmodelReferences"/>
-    [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "ShellRepo_GetAllSubmodelReferences")]
+        /// <summary>
+        /// Returns all submodel references
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel references</response> 
+        /// <inheritdoc cref="AssetAdministrationShellController.GetAllSubmodelReferences"/>
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "ShellRepo_GetAllSubmodelReferences")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult<Reference[]>), 200)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_GetAllSubmodelReferences(string aasIdentifier)
+        public IActionResult ShellRepo_GetAllSubmodelReferences(string aasIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
             if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.GetAllSubmodelReferences();
+            return service.GetAllSubmodelReferences(limit, cursor);
         }
 
+        /// <summary>
+        /// Creates a submodel reference at the Asset Administration Shell
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelReference">Reference to the Submodel</param>
+        /// <returns></returns>
+        /// <response code="201">Submodel reference created successfully</response>
+        /// <response code="400">Bad Request</response>       
         /// <inheritdoc cref="AssetAdministrationShellController.PostSubmodelReference(IReference)"/>          
         [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS, Name = "ShellRepo_PostSubmodelReference")]
         [Produces("application/json")]
@@ -335,7 +374,14 @@ namespace BaSyx.API.Http.Controllers
             return service.PostSubmodelReference(submodelReference);
         }
 
-
+        /// <summary>
+        /// Deletes the submodel reference from the Asset Administration Shell. Does not delete the submodel itself!
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel deleted successfully</response>
+        /// <response code="400">Bad Request</response>    
         /// <inheritdoc cref="AssetAdministrationShellController.DeleteSubmodelReferenceById(string)"/>          
         [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS_BYID, Name = "ShellRepo_DeleteSubmodelReferenceById")]
         [Produces("application/json")]
@@ -354,6 +400,16 @@ namespace BaSyx.API.Http.Controllers
 
         #region Submodel Interface
 
+        /// <summary>
+        /// Returns the Submodel
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel references</response> 
+        /// <response code="200">Submodel in Path notation</response>
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodel(string, RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "ShellRepo_GetSubmodel")]
         [Produces("application/json")]
@@ -368,6 +424,14 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_GetSubmodel(submodelIdentifier, level, extent);
         }
 
+        /// <summary>
+        /// Replaces the Submodel
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodel">Submodel object</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel updated successfully</response>     
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodel(string, ISubmodel)"/>
         [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "ShellRepo_PutSubmodel")]
         [Produces("application/json")]
@@ -380,6 +444,74 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_PutSubmodel(submodelIdentifier, submodel);
+        }
+
+        /// <summary>
+        /// Updates the Submodel
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodel">Submodel object</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel updated successfully</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PatchSubmodel(string, ISubmodel)"/>
+        [HttpPatch(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "ShellRepo_PatchSubmodel")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_PatchSubmodel(string aasIdentifier, string submodelIdentifier, [FromBody] ISubmodel submodel)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_PatchSubmodel(submodelIdentifier, submodel);
+        }
+
+        /// <summary>
+        /// Deletes the submodel from the Asset Administration Shell and the Repository.
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel deleted successfully</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_DeleteSubmodel(string)"/>
+        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, Name = "ShellRepo_DeleteSubmodel")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_DeleteSubmodel(string aasIdentifier, string submodelIdentifier)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_DeleteSubmodel(submodelIdentifier);
+        }
+
+
+        /// <summary>
+        /// Returns the Submodel's metadata elements
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodel</response>
+        /// <response code="404">Submodel not found</response>  
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodelMetadata(string)"/>
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.METADATA, Name = "ShellRepo_GetSubmodelMetadata")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Submodel), 200)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_GetSubmodelMetadata(string aasIdentifier, string submodelIdentifier)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetSubmodelMetadata(submodelIdentifier);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElements(string, int, string, RequestLevel, RequestExtent)"/>

@@ -178,6 +178,7 @@
             Replaces the Submodel
             </summary>
             <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodel">Submodel object</param>
             <returns></returns>
             <response code="204">Submodel updated successfully</response>     
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodel(BaSyx.Models.AdminShell.ISubmodel)"/>
@@ -187,8 +188,8 @@
             Updates the Submodel
             </summary>
             <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
-            <returns></returns>
             <param name="submodel">Submodel object</param>
+            <returns></returns>
             <response code="204">Submodel updated successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel)"/>
         </member>
@@ -579,6 +580,15 @@
             <returns></returns>
             <response code="200">Asset Administration Shell deleted successfully</response>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAssetAdministrationShellsReference(System.String)">
+            <summary>
+            Returns a specific Asset Administration Shell as a Reference
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">Requested Asset Administration Shel</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAssetAdministrationShellReference"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAssetInformation(System.String)">
             <summary>
             Returns the Asset Information
@@ -621,24 +631,98 @@
             <summary>
             Delete the thumbnail of the Asset Information.
             </summary>
-            <param name="aasIdentifier">Asset Information object</param>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Thumbnail deletion successful</response>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelReferences(System.String)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelReferences(System.String,System.Int32,System.String)">
+            <summary>
+            Returns all submodel references
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">Requested submodel references</response> 
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAllSubmodelReferences(System.Int32,System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PostSubmodelReference(System.String,BaSyx.Models.AdminShell.IReference)">
+            <summary>
+            Creates a submodel reference at the Asset Administration Shell
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelReference">Reference to the Submodel</param>
+            <returns></returns>
+            <response code="201">Submodel reference created successfully</response>
+            <response code="400">Bad Request</response>       
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.PostSubmodelReference(BaSyx.Models.AdminShell.IReference)"/>          
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_DeleteSubmodelReferenceById(System.String,System.String)">
+            <summary>
+            Deletes the submodel reference from the Asset Administration Shell. Does not delete the submodel itself!
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="204">Submodel deleted successfully</response>
+            <response code="400">Bad Request</response>    
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.DeleteSubmodelReferenceById(System.String)"/>          
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodel(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns the Submodel
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">Requested submodel references</response> 
+            <response code="200">Submodel in Path notation</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodel(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PutSubmodel(System.String,System.String,BaSyx.Models.AdminShell.ISubmodel)">
+            <summary>
+            Replaces the Submodel
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodel">Submodel object</param>
+            <returns></returns>
+            <response code="204">Submodel updated successfully</response>     
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PatchSubmodel(System.String,System.String,BaSyx.Models.AdminShell.ISubmodel)">
+            <summary>
+            Updates the Submodel
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodel">Submodel object</param>
+            <returns></returns>
+            <response code="204">Submodel updated successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PatchSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_DeleteSubmodel(System.String,System.String)">
+            <summary>
+            Deletes the submodel from the Asset Administration Shell and the Repository.
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="204">Submodel deleted successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_DeleteSubmodel(System.String)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelMetadata(System.String,System.String)">
+            <summary>
+            Returns the Submodel's metadata elements
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">Requested Submodel</response>
+            <response code="404">Submodel not found</response>  
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelMetadata(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelElements(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
