@@ -1221,7 +1221,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Operation result object</response>
         /// <inheritdoc cref="SubmodelController.GetOperationAsyncResultValueOnly(string, string)"/>
-        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS + OutputModifier.VALUE, Name = "GetOperationAsyncResultValueOnly")]
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS + OutputModifier.VALUE, Name = "Shell_GetOperationAsyncResultValueOnly")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(InvocationResponse), 200)]
         [ProducesResponseType(typeof(Result), 400)]

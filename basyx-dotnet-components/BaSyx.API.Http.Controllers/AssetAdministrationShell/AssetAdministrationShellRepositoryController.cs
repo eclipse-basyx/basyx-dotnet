@@ -1167,54 +1167,6 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Asynchronously invokes an Operation at a specified path
-        /// </summary>
-        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
-        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-        /// <param name="operationRequest">Operation request object</param>
-        /// <returns></returns>
-        /// <response code="200">Operation invoked successfully</response>
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_InvokeOperationAsync(string, string, InvocationRequest)"/>
-        [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE_ASYNC, Name = "ShellRepo_InvokeOperationAsync")]
-        [Produces("application/json")]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(Result), 400)]
-        [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_InvokeOperationAsync(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] InvocationRequest operationRequest)
-        {
-            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
-                return result;
-
-            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_InvokeOperationAsync(submodelIdentifier, idShortPath, operationRequest);
-        }
-
-        /// <summary>
-        /// Returns the Operation result of an asynchronous invoked Operation
-        /// </summary>
-        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
-        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-        /// <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
-        /// <returns></returns>
-        /// <response code="200">Operation result object</response>
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetOperationAsyncResult(string, string, string)"/>
-        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS, Name = "ShellRepo_GetOperationAsyncResult")]
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(InvocationResponse), 200)]
-        [ProducesResponseType(typeof(Result), 400)]
-        [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_GetOperationAsyncResult(string aasIdentifier, string submodelIdentifier, string idShortPath, string handleId)
-        {
-            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
-                return result;
-
-            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_GetOperationAsyncResult(submodelIdentifier, idShortPath, handleId);
-        }
-
-        /// <summary>
         /// Synchronously invokes an Operation at a specified path
         /// </summary>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
@@ -1240,6 +1192,30 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_InvokeOperationSyncValueOnly(submodelIdentifier, idShortPath, operationRequest);
+        }
+
+        /// <summary>
+        /// Asynchronously invokes an Operation at a specified path
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="operationRequest">Operation request object</param>
+        /// <returns></returns>
+        /// <response code="200">Operation invoked successfully</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_InvokeOperationAsync(string, string, InvocationRequest)"/>
+        [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE_ASYNC, Name = "ShellRepo_InvokeOperationAsync")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_InvokeOperationAsync(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] InvocationRequest operationRequest)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_InvokeOperationAsync(submodelIdentifier, idShortPath, operationRequest);
         }
 
         /// <summary>
@@ -1294,6 +1270,56 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_GetOperationAsyncStatus(submodelIdentifier, idShortPath, handleId);
+        }
+
+        /// <summary>
+        /// Returns the Operation result of an asynchronous invoked Operation
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Operation result object</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetOperationAsyncResult(string, string, string)"/>
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS, Name = "ShellRepo_GetOperationAsyncResult")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(InvocationResponse), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_GetOperationAsyncResult(string aasIdentifier, string submodelIdentifier, string idShortPath, string handleId)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetOperationAsyncResult(submodelIdentifier, idShortPath, handleId);
+        }
+
+        /// <summary>
+        /// Returns the Operation result of an asynchronous invoked Operation
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Operation result object</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetOperationAsyncResultValueOnly(string, string, string)"/>
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS + OutputModifier.VALUE, Name = "ShellRepo_GetOperationAsyncResultValueOnly")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(InvocationResponse), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_GetOperationAsyncResultValueOnly(string aasIdentifier, string submodelIdentifier, string idShortPath, string handleId)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetOperationAsyncResultValueOnly(submodelIdentifier, idShortPath, handleId);
         }
 
         #endregion     
