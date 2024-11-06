@@ -681,38 +681,120 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_PostSubmodelElement(submodelIdentifier, submodelElement);
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElementsMetadata(string, RequestLevel, RequestExtent)"/>   
+        /// <summary>
+        /// Returns the metadata attributes of all submodel elements including their hierarchy
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElementsMetadata(string, int, string, RequestLevel)"/>   
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.METADATA, Name = "ShellRepo_GetAllSubmodelElementsMetadata")]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(Submodel), 200)]
 		[ProducesResponseType(typeof(Result), 400)]
 		[ProducesResponseType(typeof(Result), 403)]
 		[ProducesResponseType(typeof(Result), 500)]
-		public IActionResult ShellRepo_GetAllSubmodelElementsMetadata(string aasIdentifier, string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+		public IActionResult ShellRepo_GetAllSubmodelElementsMetadata(string aasIdentifier, string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default)
 		{
 			if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
 				return result;
 
 			var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-			return service.Shell_GetAllSubmodelElementsMetadata(submodelIdentifier);
+			return service.Shell_GetAllSubmodelElementsMetadata(submodelIdentifier, limit, cursor, level);
 		}
 
-		/// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElementsValueOnly(string, int, string, RequestLevel, RequestExtent)"/>   
-		[HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "ShellRepo_GetAllSubmodelElementsValueOnly")]
+        /// <summary>
+        /// Returns all submodel elements including their hierarchy in the ValueOnly representation
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements</response>  
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElementsValueOnly(string, int, string, RequestLevel, RequestExtent)"/>   
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "ShellRepo_GetAllSubmodelElementsValueOnly")]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(Submodel), 200)]
 		[ProducesResponseType(typeof(Result), 400)]
 		[ProducesResponseType(typeof(Result), 403)]
 		[ProducesResponseType(typeof(Result), 500)]
-		public IActionResult ShellRepo_GetAllSubmodelElementsValueOnly(string aasIdentifier, string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+		public IActionResult ShellRepo_GetAllSubmodelElementsValueOnly(string aasIdentifier, string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
 		{
 			if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
 				return result;
 
 			var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-			return service.Shell_GetAllSubmodelElementsValueOnly(submodelIdentifier);
+			return service.Shell_GetAllSubmodelElementsValueOnly(submodelIdentifier, limit, cursor, level, extent);
 		}
 
+        /// <summary>
+        /// Returns the References of all submodel elements
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements</response>  
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElementsReference(string, int, string)"/>   
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE, Name = "ShellRepo_GetAllSubmodelElementsReference")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Submodel), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_GetAllSubmodelElementsReference(string aasIdentifier, string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetAllSubmodelElementsReference(submodelIdentifier, limit, cursor);
+        }
+
+        /// <summary>
+        /// Returns the References of all submodel elements
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements</response>  
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElementsPath(string, int, string, RequestLevel)"/>   
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.PATH, Name = "ShellRepo_GetAllSubmodelElementsPath")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Submodel), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_GetAllSubmodelElementsPath(string aasIdentifier, string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetAllSubmodelElementsPath(submodelIdentifier, limit, cursor, level);
+        }
+
+        /// <summary>
+        /// Returns a specific submodel element from the Submodel at a specified path
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel element</response>  
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodelElementByPath(string, string, RequestLevel, RequestExtent)"/>
         [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "ShellRepo_GetSubmodelElementByPath")]
         [Produces("application/json")]
@@ -725,6 +807,106 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_GetSubmodelElementByPath(submodelIdentifier, idShortPath, level, extent);
+        }
+
+        /// <summary>
+        /// Creates a new submodel element at a specified path within submodel elements hierarchy
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="submodelElement">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="201">Submodel element created successfully</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PostSubmodelElementByPath(string, string, ISubmodelElement)"/>
+        [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "ShellRepo_PostSubmodelElementByPath")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(SubmodelElement), 201)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_PostSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_PostSubmodelElementByPath(submodelIdentifier, idShortPath, submodelElement);
+        }
+
+        /// <summary>
+        /// Replaces an existing submodel element at a specified path within the submodel element hierarchy
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="requestBody">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel element updated successfully</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodelElementByPath(string, string, ISubmodelElement)"/>
+        [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "ShellRepo_PutSubmodelElementByPath")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(SubmodelElement), 201)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_PutSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement requestBody)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_PutSubmodelElementByPath(submodelIdentifier, idShortPath, requestBody);
+        }
+
+        /// <summary>
+        /// Updates an existing SubmodelElement
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="requestBody">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel element updated successfully</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PatchSubmodelElementByPath(string, string, ISubmodelElement)"/>
+        [HttpPatch(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH,
+            Name = "ShellRepo_PatchSubmodelElementByPath")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_PatchSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement requestBody)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_PatchSubmodelElementByPath(submodelIdentifier, idShortPath, requestBody);
+        }
+
+        /// <summary>
+        /// Deletes a submodel element at a specified path within the submodel elements hierarchy
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel element deleted successfully</response>
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_DeleteSubmodelElementByPath(string, string)"/>
+        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "ShellRepo_DeleteSubmodelElementByPath")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult ShellRepo_DeleteSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_DeleteSubmodelElementByPath(submodelIdentifier, idShortPath);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetFileByPath(string, string)"/>
@@ -786,52 +968,6 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_PatchSubmodelElementValueByPathValueOnly(submodelIdentifier, idShortPath, requestBody);
-        }
-
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PostSubmodelElementByPath(string, string, ISubmodelElement)"/>
-        [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "ShellRepo_PostSubmodelElementByPath")]
-        [Produces("application/json")]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(SubmodelElement), 201)]
-        [ProducesResponseType(typeof(Result), 400)]
-        [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_PostSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
-        {
-            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
-                return result;
-
-            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_PostSubmodelElementByPath(submodelIdentifier, idShortPath, submodelElement);
-        }
-
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutSubmodelElementByPath(string, string, ISubmodelElement)"/>
-        [HttpPut(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "ShellRepo_PutSubmodelElementByPath")]
-        [Produces("application/json")]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(SubmodelElement), 201)]
-        [ProducesResponseType(typeof(Result), 400)]
-        [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_PutSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement requestBody)
-        {
-            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
-                return result;
-
-            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_PutSubmodelElementByPath(submodelIdentifier, idShortPath, requestBody);
-        }
-
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_DeleteSubmodelElementByPath(string, string)"/>
-        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "ShellRepo_DeleteSubmodelElementByPath")]
-        [Produces("application/json")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult ShellRepo_DeleteSubmodelElementByPath(string aasIdentifier, string submodelIdentifier, string idShortPath)
-        {
-            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
-                return result;
-
-            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return service.Shell_DeleteSubmodelElementByPath(submodelIdentifier, idShortPath);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutFileByPath(string, string, IFormFile)"/>
