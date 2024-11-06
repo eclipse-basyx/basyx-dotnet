@@ -492,7 +492,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Returns the Submodel's metadata elements
+        /// Returns the metadata attributes of a specific Submodel
         /// </summary>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -514,7 +514,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Updates the metadata attributes of the Submodel
+        /// Updates the metadata attributes of an existing Submodel
         /// </summary>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -538,7 +538,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Returns the Submodel's ValueOnly representation
+        /// Returns a specific Submodel in the ValueOnly representation
         /// </summary>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -561,7 +561,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Updates the values of the Submodel
+        /// Updates the values of an existing Submodel
         /// </summary>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -582,6 +582,53 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
             return service.Shell_PatchSubmodelValueOnly(submodelIdentifier, requestBody);
+        }
+
+        /// <summary>
+        /// Returns the Reference of a specific Submodel
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">ValueOnly representation of the Submodel</response> 
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodelReference(string)"/>    
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.REFERENCE, Name = "ShellRepo_GetSubmodelReference")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_GetSubmodelReference(string aasIdentifier, string submodelIdentifier)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetSubmodelReference(submodelIdentifier);
+        }
+
+        /// <summary>
+        /// Returns a specific Submodel in the Path notation
+        /// </summary>
+        /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <returns></returns>
+        /// <response code="200">ValueOnly representation of the Submodel</response> 
+        /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetSubmodelPath(string, RequestLevel)"/>    
+        [HttpGet(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + OutputModifier.PATH, Name = "ShellRepo_GetSubmodelPath")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult ShellRepo_GetSubmodelPath(string aasIdentifier, string submodelIdentifier, [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
+                return result;
+
+            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
+            return service.Shell_GetSubmodelPath(submodelIdentifier, level);
         }
 
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_GetAllSubmodelElements(string, int, string, RequestLevel, RequestExtent)"/>

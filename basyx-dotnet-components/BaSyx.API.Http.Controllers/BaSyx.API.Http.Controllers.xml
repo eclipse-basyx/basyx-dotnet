@@ -715,7 +715,7 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelMetadata(System.String,System.String)">
             <summary>
-            Returns the Submodel's metadata elements
+            Returns the metadata attributes of a specific Submodel
             </summary>
             <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
             <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -726,7 +726,7 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PatchSubmodelMetadata(System.String,System.String,BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
-            Updates the metadata attributes of the Submodel
+            Updates the metadata attributes of an existing Submodel
             </summary>
             <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
             <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -737,7 +737,7 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelValue(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
-            Returns the Submodel's ValueOnly representation
+            Returns a specific Submodel in the ValueOnly representation
             </summary>
             <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
             <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -749,7 +749,7 @@
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PatchSubmodelValueOnly(System.String,System.String,System.Text.Json.JsonDocument)">
             <summary>
-            Updates the values of the Submodel
+            Updates the values of an existing Submodel
             </summary>
             <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
             <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -757,6 +757,27 @@
             <returns></returns>
             <response code="204">Submodel object in its ValueOnly representation</response>  
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PatchSubmodelValueOnly(System.String,System.Text.Json.JsonDocument)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelReference(System.String,System.String)">
+            <summary>
+            Returns the Reference of a specific Submodel
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">ValueOnly representation of the Submodel</response> 
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelReference(System.String)"/>    
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <summary>
+            Returns a specific Submodel in the Path notation
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <returns></returns>
+            <response code="200">ValueOnly representation of the Submodel</response> 
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelPath(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>    
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetAllSubmodelElements(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
