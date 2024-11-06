@@ -1142,22 +1142,6 @@ namespace BaSyx.API.Http.Controllers
             return service.Shell_PatchSubmodelElementValueByPathValueOnly(submodelIdentifier, idShortPath, requestBody);
         }
 
-        /// <inheritdoc cref="AssetAdministrationShellController.Shell_PutFileByPath(string, string, IFormFile)"/>
-        [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "ShellRepo_UploadFileContentByIdShort")]
-        [Produces("application/json")]
-        [Consumes("multipart/form-data")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(Result), 400)]
-        [ProducesResponseType(typeof(Result), 404)]
-        public async Task<IActionResult> ShellRepo_UploadFileContentByIdShort(string aasIdentifier, string submodelIdentifier, string idShortPath, IFormFile file)
-        {
-            if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
-                return result;
-
-            var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return await service.Shell_PutFileByPath(submodelIdentifier, idShortPath, file);
-        }
-
         /// <inheritdoc cref="AssetAdministrationShellController.Shell_InvokeOperationSync(string, string, InvocationRequest)"/>
         [HttpPost(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE, Name = "ShellRepo_InvokeOperationSync")]
         [Produces("application/json")]

@@ -1029,9 +1029,6 @@
             <response code="400">Bad Request</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PatchSubmodelElementValueByPathValueOnly(System.String,System.String,System.Text.Json.JsonDocument)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_UploadFileContentByIdShort(System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutFileByPath(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
-        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_InvokeOperationSync(System.String,System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_InvokeOperationSync(System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)"/>
         </member>
