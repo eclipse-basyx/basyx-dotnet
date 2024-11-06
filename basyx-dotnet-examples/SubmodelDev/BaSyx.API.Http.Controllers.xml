@@ -917,16 +917,116 @@
             <response code="204">Submodel element deleted successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_DeleteSubmodelElementByPath(System.String,System.String)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelElementByPathMetadata(System.String,System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <summary>
+            Returns the matadata attributes of a specific submodel element from the Submodel at a specified
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <returns></returns>
+            <response code="200">Requested submodel element in its ValueOnly representation</response>
+            <response code="404">Submodel Element not found</response>     
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathMetadata(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PatchSubmodelElementByPathMetadata(System.String,System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
+            <summary>
+            Updates the metadata attributes an existing SubmodelElement
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
+            <returns></returns>
+            <response code="200">Requested submodel element in its ValueOnly representation</response> 
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PatchSubmodelElementByPathMetadata(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/> 
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelElementByPathValueOnly(System.String,System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">Requested submodel element in its ValueOnly representation</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelElementByPathReference(System.String,System.String,System.String)">
+            <summary>
+            Returns the Reference of a specific submodel element from the Submodel at a specified path
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <returns></returns>
+            <response code="200">Requested submodel element in its ValueOnly representation</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathReference(System.String,System.String)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelElementByPathPath(System.String,System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <summary>
+            Returns the Reference of a specific submodel element from the Submodel at a specified path
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <returns></returns>
+            <response code="200">Requested submodel element in its ValueOnly representation</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPathPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetFileByPath(System.String,System.String,System.String)">
+            <summary>
+            Downloads file content from a specific submodel element from the Submodel at a specified path
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+            <returns></returns>
+            <response code="200">Requested file</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetFileByPath(System.String,System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PutFileByPath(System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Uploads file content to an existing submodel element at a specified path within submodel elements hierarchy
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+            <param name="file">Content to upload</param>
+            <returns></returns>
+            <response code="200">Content uploaded successfully</response>
+            <response code="400">Bad Request</response>
+            <response code="404">File not found</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PutFileByPath(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_GetSubmodelElementByPathValueOnly(System.String,System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
-            <inheritdoc cref="!:AssetAdministrationShellController.Shell_GetSubmodelElementByPathValueOnly(string, string, RequestLevel)"/>
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_DeleteFileByPath(System.String,System.String,System.String)">
+            <summary>
+            Deletes file content of an existing submodel element at a specified path within submodel elements hierarchy
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+            <returns></returns>
+            <response code="200">Content uploaded successfully</response>
+            <response code="400">Bad Request</response>
+            <response code="404">File not found</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_DeleteFileByPath(System.String,System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_PatchSubmodelElementValueByPathValueOnly(System.String,System.String,System.String,System.Text.Json.JsonDocument)">
+            <summary>
+            Updates the value of an existing submodel element value at a specified path within submodel elements hierarchy
+            </summary>
+            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="requestBody">Requested submodel element</param>
+            <returns></returns>
+            <response code="204">Submodel element updated successfully</response>
+            <response code="400">Bad Request</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_PatchSubmodelElementValueByPathValueOnly(System.String,System.String,System.Text.Json.JsonDocument)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.ShellRepo_UploadFileContentByIdShort(System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
