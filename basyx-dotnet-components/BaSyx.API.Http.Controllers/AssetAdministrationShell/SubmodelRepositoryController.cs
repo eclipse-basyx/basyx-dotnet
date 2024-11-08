@@ -53,7 +53,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(PagedResult<List<Submodel>>), 200)]
         public IActionResult GetAllSubmodels([FromQuery] string semanticId = null, [FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            var result = serviceProvider.RetrieveSubmodels(limit, cursor);
+            var result = serviceProvider.RetrieveSubmodels(limit, ResultHandling.TryBase64UrlDecode(cursor));
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
