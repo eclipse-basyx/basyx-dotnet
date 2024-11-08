@@ -87,19 +87,22 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="extent"></param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>
-        /// <response code="404">No Submodel found</response>        
+        /// <response code="404">No Submodel found</response>
+        /// <inheritdoc cref="SubmodelController.GetSubmodel"/> 
         [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID, Name = "GetSubmodelById")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetSubmodelById(string submodelIdentifier, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
-            if (string.IsNullOrEmpty(submodelIdentifier))
-                return ResultHandling.NullResult(nameof(submodelIdentifier));
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
 
-            submodelIdentifier = ResultHandling.Base64UrlDecode(submodelIdentifier);
-
-            var result = serviceProvider.RetrieveSubmodel(submodelIdentifier);
-            return result.CreateActionResult(CrudOperation.Retrieve);
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetSubmodel(level, extent);
         }
 
         /// <summary>
