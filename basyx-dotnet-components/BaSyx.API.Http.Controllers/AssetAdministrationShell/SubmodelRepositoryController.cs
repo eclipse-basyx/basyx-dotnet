@@ -203,6 +203,30 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Returns a specific Submodel in the Path notation
+        /// </summary>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodel</response>
+        /// <inheritdoc cref="SubmodelController.GetSubmodelPath(RequestLevel)"/>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.PATH, Name = "GetSubmodelById-Path")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Submodel), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_GetSubmodelPath(string submodelIdentifier, [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetSubmodelPath(level);
+        }
+
+        /// <summary>
         /// Returns all submodel elements including their hierarchy
         /// </summary>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
