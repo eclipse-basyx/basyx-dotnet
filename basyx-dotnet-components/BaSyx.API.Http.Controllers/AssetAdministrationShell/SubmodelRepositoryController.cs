@@ -183,7 +183,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
-        /// <response code="200">ValueOnly representation of the Submodel</response>    
+        /// <response code="200">ValueOnly representation of the requested Submodel</response>    
         /// <inheritdoc cref="SubmodelController.GetSubmodelValueOnly(RequestLevel, RequestExtent)"/>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.VALUE, Name = "GetSubmodelById-ValueOnly")]
         [Produces("application/json")]
@@ -200,6 +200,30 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetSubmodelValueOnly(level, extent);
+        }
+
+        /// <summary>
+        /// Returns the Reference of a specific Submodel
+        /// </summary>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodel</response>    
+        /// <inheritdoc cref="SubmodelController.GetSubmodelReference()"/>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.REFERENCE, Name = "GetSubmodelById-Reference")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Submodel), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_GetSubmodelReference(string submodelIdentifier)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetSubmodelReference();
         }
 
         /// <summary>
