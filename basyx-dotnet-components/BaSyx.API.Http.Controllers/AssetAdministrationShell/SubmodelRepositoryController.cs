@@ -159,10 +159,9 @@ namespace BaSyx.API.Http.Controllers
         /// Returns the metadata attributes of a specific Submodel
         /// </summary>
         /// <returns></returns>
-        /// <response code="200">Requested Submodel</response>
-        /// <response code="404">Submodel not found</response> 
+        /// <response code="200">Requested Submodel in the metadata representation</response>
         /// <inheritdoc cref="SubmodelController.GetSubmodelMetadata()"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.METADATA, Name = "SubmodelRepo_GetSubmodelMetadata")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.METADATA, Name = "GetSubmodelById-Metadata")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
