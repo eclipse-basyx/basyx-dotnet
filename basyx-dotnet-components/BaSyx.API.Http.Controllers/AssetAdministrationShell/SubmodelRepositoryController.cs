@@ -158,6 +158,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the metadata attributes of a specific Submodel
         /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel in the metadata representation</response>
         /// <inheritdoc cref="SubmodelController.GetSubmodelMetadata()"/>
@@ -179,6 +180,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns a specific Submodel in the ValueOnly representation
         /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
@@ -204,6 +206,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the Reference of a specific Submodel
         /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>    
@@ -228,6 +231,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns a specific Submodel in the Path notation
         /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>
@@ -252,6 +256,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns all submodel elements including their hierarchy
         /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
@@ -279,6 +284,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the metadata attributes of all submodel elements including their hierarchy
         /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
         /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
@@ -304,6 +310,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns all submodel elements including their hierarchy in the Path notation
         /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
         /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
@@ -329,6 +336,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns all submodel elements including their hierarchy in the ValueOnly representation
         /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
@@ -367,6 +375,7 @@ namespace BaSyx.API.Http.Controllers
             return service.PostSubmodelElement(submodelElement);
         }
 
+        
         /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPath(string, RequestLevel, RequestExtent)"/>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "SubmodelRepo_GetSubmodelElementByPath")]
         [Produces("application/json")]
