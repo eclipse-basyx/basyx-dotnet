@@ -326,6 +326,31 @@ namespace BaSyx.API.Http.Controllers
             return service.GetAllSubmodelElementsPath(limit, cursor, level);
         }
 
+        /// <summary>
+        /// Returns all submodel elements including their hierarchy in the ValueOnly representation
+        /// </summary>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">List of found submodel elements in the ValueOnly representation</response>
+        /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsValueOnly(int, string, RequestLevel, RequestExtent)"/>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "GetAllSubmodelElements-ValueOnly_SubmodelRepo")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedResult), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_GetAllSubmodelElementsValueOnly(string submodelIdentifier, [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetAllSubmodelElementsValueOnly(limit, cursor, level, extent);
+        }
+
         /// <inheritdoc cref="SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
         [HttpPost(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "SubmodelRepo_PostSubmodelElement")]
         [Produces("application/json")]
