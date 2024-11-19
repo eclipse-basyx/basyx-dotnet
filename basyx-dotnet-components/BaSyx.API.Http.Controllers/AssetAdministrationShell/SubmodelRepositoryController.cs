@@ -400,9 +400,17 @@ namespace BaSyx.API.Http.Controllers
             return service.PostSubmodelElement(submodelElement);
         }
 
-        
+        /// <summary>
+        /// Returns a specific submodel element from the Submodel at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel element</response>  
         /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPath(string, RequestLevel, RequestExtent)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "SubmodelRepo_GetSubmodelElementByPath")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "GetSubmodelElementByPath_SubmodelRepo")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 200)]
         [ProducesResponseType(typeof(Result), 404)]
