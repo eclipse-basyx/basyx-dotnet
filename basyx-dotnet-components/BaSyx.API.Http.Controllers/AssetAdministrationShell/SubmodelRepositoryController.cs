@@ -480,8 +480,34 @@ namespace BaSyx.API.Http.Controllers
             return service.GetSubmodelElementByPathValueOnly(idShortPath, level, extent);
         }
 
+        /// <summary>
+        /// Returns a specific submodel element from the Submodel at a specified path in the Path notation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel element in the Path notation</response>
+        /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathPath(string, RequestLevel)"/>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.PATH, Name = "GetSubmodelElementByPath-Path_SubmodelRepo")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult GetSubmodelElementByPathPath(string submodelIdentifier, string idShortPath, [FromQuery] RequestLevel level = default)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetSubmodelElementByPathPath(idShortPath, level);
+        }
+
         /// <inheritdoc cref="SubmodelController.PostSubmodelElementByPath(string, ISubmodelElement)"/>
-        [HttpPost(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "SubmodelRepo_PostSubmodelElementByPath")]
+            [HttpPost(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "SubmodelRepo_PostSubmodelElementByPath")]
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 201)]
