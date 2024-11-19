@@ -640,7 +640,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
-        /// <response code="200">Requested submodel element in its ValueOnly representation</response>
+        /// <response code="200">Metadata attributes of the requested submodel element</response>
         /// <response code="404">Submodel Element not found</response>     
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "GetSubmodelElementByPathMetadata")]
         [Produces("application/json")]
