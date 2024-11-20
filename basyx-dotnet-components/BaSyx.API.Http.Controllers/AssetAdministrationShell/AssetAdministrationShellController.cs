@@ -22,9 +22,6 @@ using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
-using Microsoft.AspNetCore.Mvc.Routing;
-using System.Reflection.Emit;
-using System.Xml.Linq;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -524,11 +521,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 404)]
         public IActionResult Shell_PutSubmodel(string submodelIdentifier, [FromBody] ISubmodel submodel)
         {
-            if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
-                return result;
+            if (string.IsNullOrEmpty(submodelIdentifier))
+                return ResultHandling.NullResult(nameof(submodelIdentifier));
 
-            var service = new SubmodelController(provider, hostingEnvironment);
-            return service.PutSubmodel(submodel);
+            var submodelId = ResultHandling.Base64UrlDecode(submodelIdentifier);
+            
+            var result = serviceProvider.PutSubmodel(new Identifier(submodelId), submodel);
+            return result.CreateActionResult(CrudOperation.Delete);
         }
 
         /// <summary>
@@ -572,7 +571,7 @@ namespace BaSyx.API.Http.Controllers
 
             string submodelId = ResultHandling.Base64UrlDecode(submodelIdentifier);
 
-            var result = serviceProvider.DeleteSubmodel(submodelId);
+            var result = serviceProvider.DeleteSubmodel(new Identifier(submodelId));
             return result.CreateActionResult(CrudOperation.Delete);
         }
 

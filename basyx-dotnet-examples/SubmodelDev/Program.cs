@@ -45,12 +45,12 @@ namespace DevelopmentSubmodel
             submodelServer.AddSwagger(Interface.Submodel);
             //submodelServer.Run();
             _ = submodelServer.RunAsync();
-            
+
             // AAS Server
             ServerSettings aasServerSettings = ServerSettings.CreateSettings();
             aasServerSettings.ServerConfig.Hosting.ContentPath = "Content";
             aasServerSettings.ServerConfig.Hosting.Environment = "Development";
-            aasServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5060");
+            aasServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5020");
             aasServerSettings.ServerConfig.Hosting.Urls.Add("https://+:5443");
             aasServerSettings.Miscellaneous.Add("CompanyLogo", "/images/MyCompanyLogo.png");
 
@@ -63,25 +63,25 @@ namespace DevelopmentSubmodel
             aasServer.SetServiceProvider(aasServiceProvider);
             aasServer.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
             aasServer.AddSwagger(Interface.AssetAdministrationShell);
-            //aasServer.Run();
-            _ = aasServer.RunAsync();
+            aasServer.Run();
+            //_ = aasServer.RunAsync();
 
 
             // AAS Repository Server
-            ServerSettings aasRepositorySettings = ServerSettings.CreateSettings();
-            aasRepositorySettings.ServerConfig.Hosting.ContentPath = "Content";
-            aasRepositorySettings.ServerConfig.Hosting.Urls.Add("http://+:5080");
-            aasRepositorySettings.ServerConfig.Hosting.Urls.Add("https://+:5446");
+            //ServerSettings aasRepositorySettings = ServerSettings.CreateSettings();
+            //aasRepositorySettings.ServerConfig.Hosting.ContentPath = "Content";
+            //aasRepositorySettings.ServerConfig.Hosting.Urls.Add("http://+:5080");
+            //aasRepositorySettings.ServerConfig.Hosting.Urls.Add("https://+:5446");
 
-            AssetAdministrationShellRepositoryHttpServer server = new AssetAdministrationShellRepositoryHttpServer(aasRepositorySettings);
-            AssetAdministrationShellRepositoryServiceProvider repositoryService = new AssetAdministrationShellRepositoryServiceProvider();
-            repositoryService.RegisterAssetAdministrationShellServiceProvider(aas.Id, aasServiceProvider);
-            repositoryService.UseAutoEndpointRegistration(server.Settings.ServerConfig);
+            //AssetAdministrationShellRepositoryHttpServer server = new AssetAdministrationShellRepositoryHttpServer(aasRepositorySettings);
+            //AssetAdministrationShellRepositoryServiceProvider repositoryService = new AssetAdministrationShellRepositoryServiceProvider();
+            //repositoryService.RegisterAssetAdministrationShellServiceProvider(aas.Id, aasServiceProvider);
+            //repositoryService.UseAutoEndpointRegistration(server.Settings.ServerConfig);
 
-            server.SetServiceProvider(repositoryService);
-            server.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
-            server.AddSwagger(Interface.AssetAdministrationShellRepository);
-            server.Run();
+            //server.SetServiceProvider(repositoryService);
+            //server.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
+            //server.AddSwagger(Interface.AssetAdministrationShellRepository);
+            //server.Run();
         }     
     }
 }

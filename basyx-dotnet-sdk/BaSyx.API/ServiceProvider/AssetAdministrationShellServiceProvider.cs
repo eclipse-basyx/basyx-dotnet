@@ -293,8 +293,39 @@ namespace BaSyx.API.ServiceProvider
 
             if (!checkRetrieve.Success)
                 return new Result(true);
-            else
-                return new Result(false, new ErrorMessage("Submodel reference could not be deleted"));
+
+            return new Result(false, new ErrorMessage("Submodel reference could not be deleted"));
+        }
+
+        public IResult PutSubmodel(Identifier id, ISubmodel submodel)
+        {
+            if (_assetAdministrationShell == null)
+                return new Result(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
+
+            var sp = GetSubmodelServiceProvider(id);
+            if (!sp.Success)
+                return new Result(false, new NotFoundMessage($"Submodel with id {id}"));
+
+            var unRegResult = UnregisterSubmodelServiceProvider(id);
+            if (!unRegResult.Success)
+                return unRegResult;
+
+            var submodelSp = submodel.CreateServiceProvider();
+            var regResult = RegisterSubmodelServiceProvider(submodelSp.ServiceDescriptor.Id, submodelSp);
+            if (!regResult.Success)
+                return regResult;
+
+            var result = _assetAdministrationShell.Submodels.Update(sp.Entity.ServiceDescriptor.IdShort, submodel);
+
+            var checkNewSm = _assetAdministrationShell.Submodels.Retrieve(submodelSp.ServiceDescriptor.IdShort);
+            if (!checkNewSm.Success)
+                return new Result(false, new ErrorMessage("Submodel could not be replaced"));
+
+            var checkOldSm = _assetAdministrationShell.Submodels.Retrieve(sp.Entity.ServiceDescriptor.IdShort);
+            if (checkOldSm.Success)
+                return new Result(false, new ErrorMessage("Submodel could not be replaced"));
+
+            return result;
         }
 
         public IResult DeleteSubmodel(Identifier id)

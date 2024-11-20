@@ -111,6 +111,11 @@ namespace BaSyx.API.ServiceProvider
             return _shellClient.DeleteSubmodelReference(id);
         }
 
+        public IResult PutSubmodel(Identifier id, ISubmodel submodel)
+        {
+            return _shellClient.PutSubmodel(id, submodel);
+        }
+
         public virtual IResult<IEnumerable<ISubmodelServiceProvider>> GetSubmodelServiceProviders()
         {
             if (SubmodelServiceProviders.Values == null)

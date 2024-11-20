@@ -155,6 +155,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return DeleteSubmodelReferenceAsync(id).GetAwaiter().GetResult();
         }
 
+        public IResult PutSubmodel(Identifier id, ISubmodel submodel)
+        {
+            return DeletePutSubmodelAsync(id, submodel).GetAwaiter().GetResult();
+        }
+
         #endregion
 
         #region Asset Administration Shell Client Interface
@@ -229,6 +234,16 @@ namespace BaSyx.Clients.AdminShell.Http
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS_BYID, id);
             var request = CreateRequest(uri, HttpMethod.Delete);
+            var response = await SendRequestAsync(request, CancellationToken.None);
+            var result = await EvaluateResponseAsync(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult> DeletePutSubmodelAsync(Identifier id, ISubmodel submodel)
+        {
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
+            var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
             var response = await SendRequestAsync(request, CancellationToken.None);
             var result = await EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();
