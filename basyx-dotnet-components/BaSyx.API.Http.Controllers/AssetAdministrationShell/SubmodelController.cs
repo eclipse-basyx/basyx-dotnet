@@ -788,7 +788,7 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <returns></returns>
-        /// <response code="200">Requested submodel element in its ValueOnly representation</response>
+        /// <response code="200">A Reference of the requested submodel element</response>
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.REFERENCE, Name = "GetSubmodelElementByPathReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
