@@ -205,6 +205,29 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Updates the values of the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="requestBody">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel object in its ValueOnly representation</response>     
+        /// <inheritdoc cref="SubmodelController.PatchSubmodelValueOnly(JsonDocument)"/>
+        [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.VALUE, Name = "SubmodelRepo_PatchSubmodelValueOnly")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_PatchSubmodelValueOnly(string submodelIdentifier, [FromBody] JsonDocument requestBody)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodelValueOnly(requestBody);
+        }
+
+        /// <summary>
         /// Returns the Reference of a specific Submodel
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>

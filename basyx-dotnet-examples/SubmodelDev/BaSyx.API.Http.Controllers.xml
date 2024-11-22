@@ -1314,7 +1314,7 @@
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
-            <response code="200">Requested submodel element in its ValueOnly representation</response>
+            <response code="200">Metadata attributes of the requested submodel element</response>
             <response code="404">Submodel Element not found</response>     
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
@@ -1352,7 +1352,7 @@
             </summary>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <returns></returns>
-            <response code="200">Requested submodel element in its ValueOnly representation</response>
+            <response code="200">A Reference of the requested submodel element</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathPath(System.String,BaSyx.Models.AdminShell.RequestLevel)">
             <summary>
@@ -1361,7 +1361,7 @@
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
-            <response code="200">Requested submodel element in its ValueOnly representation</response>
+            <response code="200">Requested submodel element in the Path notation</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetFileByPath(System.String)">
             <summary>
@@ -1467,12 +1467,13 @@
             <param name="submodelRepositoryServiceProvider"></param>
             <param name="environment">The Hosting Environment provided by the dependency injection</param>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodels(System.String,System.String)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodels(System.String,System.Int32,System.String)">
             <summary>
             Returns all Submodels
             </summary>
             <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
-            <param name="idShort">The Submodel's idShort</param>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <returns>Requested Submodels</returns>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PostSubmodel(BaSyx.Models.AdminShell.ISubmodel)">
@@ -1493,7 +1494,8 @@
             <param name="extent"></param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
-            <response code="404">No Submodel found</response>        
+            <response code="404">No Submodel found</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodel(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/> 
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PutSubmodelById(System.String,BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
@@ -1516,22 +1518,175 @@
             <response code="200">Submodel deleted successfully</response>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelMetadata(System.String)">
+            <summary>
+            Returns the metadata attributes of a specific Submodel
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">Requested Submodel in the metadata representation</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelValue(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns a specific Submodel in the ValueOnly representation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">ValueOnly representation of the requested Submodel</response>    
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelValueOnly(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PatchSubmodelValueOnly(System.String,System.Text.Json.JsonDocument)">
+            <summary>
+            Updates the values of the Submodel
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="requestBody">Requested submodel element</param>
+            <returns></returns>
+            <response code="204">Submodel object in its ValueOnly representation</response>     
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelValueOnly(System.Text.Json.JsonDocument)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelReference(System.String)">
+            <summary>
+            Returns the Reference of a specific Submodel
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">Requested Submodel</response>    
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelReference"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelPath(System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <summary>
+            Returns a specific Submodel in the Path notation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <returns></returns>
+            <response code="200">Requested Submodel</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelPath(BaSyx.Models.AdminShell.RequestLevel)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetAllSubmodelElements(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns all submodel elements including their hierarchy
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns></returns>
+            <response code="200">List of found submodel elements</response>
+            <response code="404">Submodel not found</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElements(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetAllSubmodelElementsMetadata(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <summary>
+            Returns the metadata attributes of all submodel elements including their hierarchy
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns></returns>
+            <response code="200">List of found submodel elements in the metadata representation</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElementsMetadata(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetAllSubmodelElementsPath(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <summary>
+            Returns all submodel elements including their hierarchy in the Path notation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns></returns>
+            <response code="200">List of found submodel elements in the Path notation</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElementsPath(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetAllSubmodelElementsValueOnly(System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns all submodel elements including their hierarchy in the ValueOnly representation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns></returns>
+            <response code="200">List of found submodel elements in the ValueOnly representation</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElementsValueOnly(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetAllSubmodelElementsReference(System.String,System.Int32,System.String)">
+            <summary>
+            Returns the References of all submodel elements
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns></returns>
+            <response code="200">List of found submodel elements</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElementsReference(System.Int32,System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PostSubmodelElement(System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
             <inheritdoc cref="!:SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns a specific submodel element from the Submodel at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">Requested submodel element</response>  
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPathMetadata(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <summary>
+            Returns the metadata attributes of a specific submodel element from the Submodel at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <returns></returns>
+            <response code="200">Metadata attributes of the requested submodel element</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <returns></returns>
+            <response code="200">Requested submodel element in its ValueOnly representation</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathValueOnly(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPathPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel)">
+            <summary>
+            Returns a specific submodel element from the Submodel at a specified path in the Path notation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <returns></returns>
+            <response code="200">Requested submodel element in the Path notation</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathPath(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPathReference(System.String,System.String)">
+            <summary>
+            Returns the Reference of a specific submodel element from the Submodel at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <returns></returns>
+            <response code="200">A Reference of the requested submodel element</response>
+            /// <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathReference(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PostSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/>
@@ -1727,6 +1882,13 @@
         <member name="M:BaSyx.API.Http.Controllers.ResultHandling.Base64UrlDecode(System.String)">
             <summary>
             Decodes a Base64UrlEncoded string to a regular string(UTF8)
+            </summary>
+            <param name="toDecode">String to decode</param>
+            <returns></returns>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.ResultHandling.TryBase64UrlDecode(System.String)">
+            <summary>
+            Tries to decode a string that should be a Base64UrlEncoded string. If it fails, the original string is returned
             </summary>
             <param name="toDecode">String to decode</param>
             <returns></returns>
