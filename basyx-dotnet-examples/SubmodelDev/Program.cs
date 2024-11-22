@@ -30,7 +30,7 @@ namespace DevelopmentSubmodel
             var submodel = aas.Submodels[0];
 
             // Submodel Server
-            ServerSettings submodelServerSettings = ServerSettings.CreateSettings();
+            var submodelServerSettings = ServerSettings.CreateSettings();
             submodelServerSettings.ServerConfig.Hosting.ContentPath = "Content";
             submodelServerSettings.ServerConfig.Hosting.Environment = "Development";
             submodelServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5040");
@@ -46,7 +46,23 @@ namespace DevelopmentSubmodel
             //submodelServer.Run();
             _ = submodelServer.RunAsync();
 
-            // AAS Server
+            //var submodelRepoServerSettings = ServerSettings.CreateSettings();
+            //submodelRepoServerSettings.ServerConfig.Hosting.ContentPath = "Content";
+            //submodelRepoServerSettings.ServerConfig.Hosting.Environment = "Development";
+            //submodelRepoServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5000");
+            //submodelRepoServerSettings.ServerConfig.Hosting.Urls.Add("https://+:5441");
+
+            //var server = new SubmodelRepositoryHttpServer(submodelRepoServerSettings);
+            //var repositoryService = new SubmodelRepositoryServiceProvider();
+            //repositoryService.RegisterSubmodelServiceProvider(aas.Id, submodelServiceProvider);
+            //repositoryService.UseAutoEndpointRegistration(server.Settings.ServerConfig);
+
+            //server.SetServiceProvider(repositoryService);
+            //server.AddBaSyxUI(PageNames.SubmodelRepositoryServer);
+            //server.AddSwagger(Interface.SubmodelRepository);
+            //server.Run();
+
+            //AAS Server
             ServerSettings aasServerSettings = ServerSettings.CreateSettings();
             aasServerSettings.ServerConfig.Hosting.ContentPath = "Content";
             aasServerSettings.ServerConfig.Hosting.Environment = "Development";
@@ -82,6 +98,6 @@ namespace DevelopmentSubmodel
             server.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
             server.AddSwagger(Interface.AssetAdministrationShellRepository);
             server.Run();
-        }     
+        }
     }
 }
