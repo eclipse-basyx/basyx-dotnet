@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Text.Json;
 
 namespace AdminShellRepoClientServerTests
 {
@@ -633,9 +634,9 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellAsync(id);
         }
 
-        public Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync(int limit = 100, string cursor = "")
+        public Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync(int limit = 100, string cursor = "", string assetIds = "", string idShort = "")
         {
-            return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellsAsync(limit, cursor);
+            return ((IAssetAdministrationShellRepositoryClient)RepoClient).RetrieveAssetAdministrationShellsAsync(limit, cursor, assetIds, idShort);
         }
 
         public Task<IResult> UpdateAssetAdministrationShellAsync(Identifier id, IAssetAdministrationShell aas)
@@ -658,9 +659,9 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShell(id);
         }
 
-        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "", JsonDocument assetIds = null, string idShort = "")
         {
-            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShells(limit, cursor);
+            return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShells(limit, cursor, assetIds, idShort);
         }
 
         public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")

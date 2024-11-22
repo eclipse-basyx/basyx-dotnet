@@ -27,6 +27,13 @@ namespace DevelopmentSubmodel
         {
             var domainId = "DemoAAS";
 
+            var specificAssetIds = new List<SpecificAssetId>();
+            specificAssetIds.Add(new SpecificAssetId
+            {
+                Name = "MySpecificAssetId",
+                Value = "MySpecificAssetIdValue"
+            });
+
             AssetAdministrationShell aas = new AssetAdministrationShell(domainId, new BaSyxShellIdentifier(domainId, "1.0.0"))
             {
                 Description = new LangStringSet()
@@ -42,7 +49,8 @@ namespace DevelopmentSubmodel
                 AssetInformation = new AssetInformation()
                 {
                     AssetKind = AssetKind.Instance,
-                    GlobalAssetId = new BaSyxAssetIdentifier(domainId, "1.0.0")
+                    GlobalAssetId = new BaSyxAssetIdentifier(domainId, "1.0.0"),
+                    SpecificAssetIds = specificAssetIds
                 }
             };
 

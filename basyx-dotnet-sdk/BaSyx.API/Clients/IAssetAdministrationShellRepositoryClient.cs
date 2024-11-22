@@ -12,6 +12,7 @@ using BaSyx.API.Interfaces;
 using BaSyx.Models.AdminShell;
 using BaSyx.Utils.ResultHandling;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BaSyx.API.Clients
@@ -22,7 +23,7 @@ namespace BaSyx.API.Clients
 
         Task<IResult<IAssetAdministrationShell>> RetrieveAssetAdministrationShellAsync(Identifier id);
 
-        Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync(int limit = 100, string cursor = "");
+        Task<IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsAsync(int limit = 100, string cursor = "", string assetIds = "", string idShort = "");
 
         Task<IResult> UpdateAssetAdministrationShellAsync(Identifier id, IAssetAdministrationShell aas);
 

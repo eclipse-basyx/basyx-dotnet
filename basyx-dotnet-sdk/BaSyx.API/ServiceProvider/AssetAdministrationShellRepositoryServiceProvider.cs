@@ -17,6 +17,7 @@ using System.Linq;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.ResultHandling.http;
+using System.Text.Json;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -148,9 +149,19 @@ namespace BaSyx.API.ServiceProvider
             return new Result<IAssetAdministrationShell>(false, new NotFoundMessage("Asset Administration Shell Service Provider"));
         }
 
-        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "", string assetIds = "", string idShort = "")
         {
-            var aasDict = AssetAdministrationShells.ToDictionary(aas => aas.Id.Id, aas => aas);
+            var filteredAas = AssetAdministrationShells;
+
+            // filter by asset IDs if set
+            if (!string.IsNullOrEmpty(assetIds))
+                filteredAas = FilterShellsByAssetIds(JsonDocument.Parse(assetIds));
+
+            // else filter by ID short if set
+            else if (!string.IsNullOrEmpty(idShort))
+                filteredAas = AssetAdministrationShells.Where(e => idShort == e.IdShort);
+
+            var aasDict = filteredAas.ToDictionary(aas => aas.Id.Id, aas => aas);
 
             // create the paged data
             var paginationHelper = new PaginationHelper<IAssetAdministrationShell>(aasDict, elem => elem.Id.Id);
@@ -196,6 +207,51 @@ namespace BaSyx.API.ServiceProvider
                 return serviceProvider.UpdateAssetAdministrationShell(aas);
             }
             return new Result<IAssetAdministrationShell>(false, new NotFoundMessage("Asset Administration Shell Service Provider"));
+        }
+
+        private IEnumerable<IAssetAdministrationShell> FilterShellsByAssetIds(JsonDocument assetIds)
+        {
+            var globalIds = assetIds.RootElement
+                .EnumerateArray()
+                .Where(e => e.GetProperty("key").GetString() == "globalAssetId")
+                .Select(e => e.GetProperty("value").GetString())
+                .ToList();
+
+            var specificIds = assetIds.RootElement
+                .EnumerateArray()
+                .Where(e => e.GetProperty("key").GetString() != "globalAssetId"
+                            && !string.IsNullOrEmpty(e.GetProperty("key").GetString()))
+                .ToDictionary(
+                    e => e.GetProperty("key").GetString(),
+                    e => e.GetProperty("value").GetString()
+                );
+
+            var filteredAas = new List<IAssetAdministrationShell>();
+
+            foreach (var aas in AssetAdministrationShells)
+            {
+                if (aas.AssetInformation == null)
+                    continue;
+
+                // check global IDs
+                if (globalIds.Contains(aas.AssetInformation.GlobalAssetId?.Id) && !filteredAas.Contains(aas))
+                {
+                    filteredAas.Add(aas);
+                    continue;
+                }
+
+                // check specific IDs
+                foreach (var aasSpecificId in aas.AssetInformation.SpecificAssetIds)
+                {
+                    if (specificIds.TryGetValue(aasSpecificId.Name, out var specificIdValue) && specificIdValue == aasSpecificId.Value)
+                    {
+                        filteredAas.Add(aas);
+                        break;
+                    }
+                }
+            }
+
+            return filteredAas;
         }
     }
 }
