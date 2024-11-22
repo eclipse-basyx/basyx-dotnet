@@ -48,6 +48,23 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Tries to decode a string that should be a Base64UrlEncoded string. If it fails, the original string is returned
+        /// </summary>
+        /// <param name="toDecode">String to decode</param>
+        /// <returns></returns>
+        public static string TryBase64UrlDecode(string toDecode)
+        {
+            try
+            {
+                return Base64UrlDecode(toDecode);
+            }
+            catch
+            {
+                return toDecode;
+            }
+        }
+
+        /// <summary>
         /// Checks whether submodelId is null or Submodel Service Provider cannot be found
         /// </summary>
         /// <param name="spRegistry">The Submodel Service Provider Registry</param>
