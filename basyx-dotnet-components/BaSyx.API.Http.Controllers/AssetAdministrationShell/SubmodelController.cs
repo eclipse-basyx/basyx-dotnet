@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
-using System.Linq;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using BaSyx.Utils.DependencyInjection;
@@ -484,7 +483,7 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            string json = JsonSerializer.Serialize(result.Entity.Result, new JsonSerializerOptions()
+            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
             {
                 Converters = {new FullPathConverter(new PathConverterOptions()
                 {
