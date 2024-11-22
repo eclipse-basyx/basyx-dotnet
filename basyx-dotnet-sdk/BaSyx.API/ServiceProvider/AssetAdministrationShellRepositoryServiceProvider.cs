@@ -175,9 +175,19 @@ namespace BaSyx.API.ServiceProvider
             return new Result<PagedResult<IElementContainer<IAssetAdministrationShell>>>(true, paginatedAAs);
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "", string assetIds = "", string idShort = "")
         {
-            var references = AssetAdministrationShells.Select(shell => shell.CreateReference());
+            var filteredAas = AssetAdministrationShells;
+
+            // filter by asset IDs if set
+            if (!string.IsNullOrEmpty(assetIds))
+                filteredAas = FilterShellsByAssetIds(JsonDocument.Parse(assetIds));
+
+            // else filter by ID short if set
+            else if (!string.IsNullOrEmpty(idShort))
+                filteredAas = AssetAdministrationShells.Where(e => idShort == e.IdShort);
+
+            var references = filteredAas.Select(shell => shell.CreateReference());
 
             var refDict = references.ToDictionary(reference => reference.First.Value, reference => reference);
 

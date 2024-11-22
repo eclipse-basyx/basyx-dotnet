@@ -115,7 +115,7 @@ namespace BaSyx.Clients.AdminShell.Http
             return RetrieveAssetAdministrationShellsAsync(limit, cursor, assetIds, idShort).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "", string assetIds = null, string idShort = "")
         {
             return RetrieveAssetAdministrationShellsReferenceAsync(limit, cursor).GetAwaiter().GetResult();
         }

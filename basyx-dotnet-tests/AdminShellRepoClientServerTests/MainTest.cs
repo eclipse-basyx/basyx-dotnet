@@ -659,12 +659,12 @@ namespace AdminShellRepoClientServerTests
             return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShell(id);
         }
 
-        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "", JsonDocument assetIds = null, string idShort = "")
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "", string assetIds = "", string idShort = "")
         {
             return ((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShells(limit, cursor, assetIds, idShort);
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "", string assetIds = "", string idShort = "")
         {
             return((IAssetAdministrationShellRepositoryInterface)RepoClient).RetrieveAssetAdministrationShellsReference(limit, cursor);
         }

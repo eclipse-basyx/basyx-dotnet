@@ -538,12 +538,14 @@
             <response code="201">Asset Administration Shell created successfully</response>
             <response code="400">Bad Request</response>             
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.GetAllAssetAdministrationShellsReference(System.Int32,System.String)">
+        <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellRepositoryController.GetAllAssetAdministrationShellsReference(System.Int32,System.String,System.String,System.String)">
             <summary>
             Returns References to all Asset Administration Shells
             </summary>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
+            <param name="assetIds">A list of specific Asset identifiers. Each Asset identifier is a base64-url-encoded</param>
+            <param name="idShort">The Asset Administration Shell’s IdShort</param>
             <returns></returns>
             <response code="200">Requested Asset Administration Shells</response>
         </member>
