@@ -1829,8 +1829,60 @@
             <response code="200">Operation invoked successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.InvokeOperationAsync(System.String,BaSyx.Models.AdminShell.InvocationRequest)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_InvokeOperationSyncValueOnly(System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)">
+            <summary>
+            Synchronously invokes an Operation at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+            <param name="operationRequest">Operation request object</param>
+            <returns></returns>
+            <response code="200">Operation invoked successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.InvokeOperationSyncValueOnly(System.String,BaSyx.Models.AdminShell.InvocationRequest)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_InvokeOperationAsyncValueOnly(System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)">
+            <summary>
+            Asynchronously invokes an Operation at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+            <param name="operationRequest">Operation request object</param>
+            <returns></returns>
+            <response code="200">Operation invoked successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.InvokeOperationAsyncValueOnly(System.String,BaSyx.Models.AdminShell.InvocationRequest)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetOperationAsyncStatus(System.String,System.String,System.String)">
+            <summary>
+            Returns the Operation status of an asynchronous invoked Operation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">Operation result object</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncStatus(System.String,System.String)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetOperationAsyncResult(System.String,System.String,System.String)">
+            <summary>
+            Returns the Operation result of an asynchronous invoked Operation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncResult(System.String,System.String)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetOperationAsyncResultValueOnly(System.String,System.String,System.String)">
+            <summary>
+            Returns the Operation result of an asynchronous invoked Operation
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <returns></returns>
+            <response code="200">Operation result object</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncResultValueOnly(System.String,System.String)"/>
         </member>
         <member name="T:BaSyx.API.Http.Controllers.DescriptionController">
             <summary>

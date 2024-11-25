@@ -866,6 +866,93 @@ namespace BaSyx.API.Http.Controllers
             return service.InvokeOperationAsync(idShortPath, operationRequest);
         }
 
+        /// <summary>
+        /// Synchronously invokes an Operation at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="operationRequest">Operation request object</param>
+        /// <returns></returns>
+        /// <response code="200">Operation invoked successfully</response>
+        /// <inheritdoc cref="SubmodelController.InvokeOperationSyncValueOnly(string, InvocationRequest)"/>
+        [HttpPost(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE + OutputModifier.VALUE, Name = "SubmodelRepo_InvokeOperationSyncValueOnly")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(InvocationResponse), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 405)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_InvokeOperationSyncValueOnly(string submodelIdentifier, string idShortPath, [FromBody] InvocationRequest operationRequest)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.InvokeOperationSyncValueOnly(idShortPath, operationRequest);
+        }
+
+        /// <summary>
+        /// Asynchronously invokes an Operation at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="operationRequest">Operation request object</param>
+        /// <returns></returns>
+        /// <response code="200">Operation invoked successfully</response>
+        /// <inheritdoc cref="SubmodelController.InvokeOperationAsyncValueOnly(string, InvocationRequest)"/>
+        [HttpPost(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_INVOKE_ASYNC + OutputModifier.VALUE, Name = "SubmodelRepo_InvokeOperationAsyncValueOnly")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(InvocationResponse), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 405)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_InvokeOperationAsyncValueOnly(string submodelIdentifier, string idShortPath, [FromBody] InvocationRequest operationRequest)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.InvokeOperationAsyncValueOnly(idShortPath, operationRequest);
+        }
+
+        /// <summary>
+        /// Returns the Operation status of an asynchronous invoked Operation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Operation result object</response>
+        /// <inheritdoc cref="SubmodelController.GetOperationAsyncStatus(string, string)"/>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_STATUS, Name = "SubmodelRepo_GetOperationAsyncStatus")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Result), 302)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_GetOperationAsyncStatus(string submodelIdentifier, string idShortPath, string handleId)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetOperationAsyncStatus(idShortPath, handleId); ;
+        }
+
+        /// <summary>
+        /// Returns the Operation result of an asynchronous invoked Operation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Operation result object</response>
         /// <inheritdoc cref="SubmodelController.GetOperationAsyncResult(string, string)"/>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS, Name = "SubmodelRepo_GetOperationAsyncResult")]
         [Produces("application/json")]
@@ -879,6 +966,31 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new SubmodelController(provider, hostingEnvironment);
             return service.GetOperationAsyncResult(idShortPath, handleId);
+        }
+
+        /// <summary>
+        /// Returns the Operation result of an asynchronous invoked Operation
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+        /// <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+        /// <returns></returns>
+        /// <response code="200">Operation result object</response>
+        /// <inheritdoc cref="SubmodelController.GetOperationAsyncResultValueOnly(string, string)"/>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_OPERATION_RESULTS + OutputModifier.VALUE, Name = "SubmodelRepo_GetOperationAsyncResultValueOnly")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(InvocationResponse), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_GetOperationAsyncResultValueOnly(string submodelIdentifier, string idShortPath, string handleId)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.GetOperationAsyncResultValueOnly(idShortPath, handleId);
         }
         #endregion     
     }
