@@ -706,6 +706,15 @@ namespace BaSyx.API.Http.Controllers
             return service.DeleteSubmodelElementByPath(idShortPath);
         }
 
+        /// <summary>
+        /// Updates the value of an existing submodel element value at a specified path within submodel elements hierarchy
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="requestBody">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel element updated successfully</response>
+        /// <response code="400">Bad Request</response>
         /// <inheritdoc cref="SubmodelController.PatchSubmodelElementValueByPathValueOnly(string, JsonDocument)"/>
         [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "SubmodelRepo_PatchSubmodelElementValueByPathValueOnly")]
         [Produces("application/json")]
