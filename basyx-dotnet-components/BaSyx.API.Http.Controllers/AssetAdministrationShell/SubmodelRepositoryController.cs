@@ -18,7 +18,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using System.Reflection.Emit;
+using BaSyx.Models.Extensions;
+using BaSyx.Utils.DependencyInjection;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -30,6 +31,7 @@ namespace BaSyx.API.Http.Controllers
     {
         private readonly ISubmodelRepositoryServiceProvider serviceProvider;
         private readonly IWebHostEnvironment hostingEnvironment;
+        private static JsonSerializerOptions _metadataSerializerOptions;
 
         /// <summary>
         /// The constructor for the Submodel Repository Controller
@@ -40,6 +42,12 @@ namespace BaSyx.API.Http.Controllers
         {
             serviceProvider = submodelRepositoryServiceProvider;
             hostingEnvironment = environment;
+
+            var services = DefaultImplementation.GetStandardServiceCollection();
+            DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
+            options.AddDependencyInjection(new DependencyInjectionExtension(services));
+            options.AddMetadataSubmodelElementConverter();
+            _metadataSerializerOptions = options.Build();
         }
 
         /// <summary>
@@ -56,6 +64,30 @@ namespace BaSyx.API.Http.Controllers
         {
             var result = serviceProvider.RetrieveSubmodels(limit, ResultHandling.TryBase64UrlDecode(cursor));
             return result.CreateActionResult(CrudOperation.Retrieve);
+        }
+
+        /// <summary>
+        /// Returns the metadata attributes of all Submodels
+        /// </summary>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns>Requested Submodels</returns>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.METADATA, Name = "GetAllSubmodels-Metadata")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedResult<List<Submodel>>), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult GetAllSubmodelsMetadata([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        {
+            var result = serviceProvider.RetrieveSubmodelsMetadata(limit, ResultHandling.TryBase64UrlDecode(cursor));
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            var jsonOptions = _metadataSerializerOptions;
+            string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
+            return Content(json, "application/json");
         }
 
         /// <summary>
