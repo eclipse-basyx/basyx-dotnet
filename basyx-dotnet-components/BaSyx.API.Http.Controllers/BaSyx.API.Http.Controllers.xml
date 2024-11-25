@@ -271,7 +271,7 @@
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
             <response code="201">Submodel element created successfully</response>
-            <inheritdoc cref="!:SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElement(BaSyx.Models.AdminShell.ISubmodelElement)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
@@ -1640,7 +1640,14 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetAllSubmodelElementsReference(System.Int32,System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PostSubmodelElement(System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
-            <inheritdoc cref="!:SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
+            <summary>
+            Creates a new submodel element
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelElement">Requested submodel element</param>
+            <returns></returns>
+            <response code="201">Submodel element created successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElement(BaSyx.Models.AdminShell.ISubmodelElement)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>

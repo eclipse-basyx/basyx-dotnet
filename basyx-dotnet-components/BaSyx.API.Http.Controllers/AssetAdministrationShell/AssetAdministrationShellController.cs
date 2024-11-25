@@ -708,7 +708,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="submodelElement">Requested submodel element</param>
         /// <returns></returns>
         /// <response code="201">Submodel element created successfully</response>
-        /// <inheritdoc cref="SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
+        /// <inheritdoc cref="SubmodelController.PostSubmodelElement(ISubmodelElement)"/>
         [HttpPost(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "Shell_PostSubmodelElement")]
         [Produces("application/json")]
         [Consumes("application/json")]

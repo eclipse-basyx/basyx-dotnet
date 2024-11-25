@@ -431,7 +431,14 @@ namespace BaSyx.API.Http.Controllers
 
         }
 
-        /// <inheritdoc cref="SubmodelController.PostSubmodelElement(ISubmodelElement, RequestLevel, RequestExtent)"/>
+        /// <summary>
+        /// Creates a new submodel element
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodelElement">Requested submodel element</param>
+        /// <returns></returns>
+        /// <response code="201">Submodel element created successfully</response>
+        /// <inheritdoc cref="SubmodelController.PostSubmodelElement(ISubmodelElement)"/>
         [HttpPost(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "SubmodelRepo_PostSubmodelElement")]
         [Produces("application/json")]
         [Consumes("application/json")]
