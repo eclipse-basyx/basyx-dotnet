@@ -731,6 +731,13 @@ namespace BaSyx.API.Http.Controllers
             return service.PatchSubmodelElementValueByPathValueOnly(idShortPath, requestBody);
         }
 
+        /// <summary>
+        /// Downloads file content from a specific submodel element from the Submodel at a specified path
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+        /// <returns></returns>
+        /// <response code="200">Requested file</response>
         /// <inheritdoc cref="SubmodelController.GetFileByPath(string)"/>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "SubmodelRepo_GetFileByPath")]
         [ProducesResponseType(200)]
@@ -762,6 +769,55 @@ namespace BaSyx.API.Http.Controllers
 
             var service = new SubmodelController(provider, hostingEnvironment);
             return await service.PutFileByPath(idShortPath, file);
+        }
+
+        /// <summary>
+        /// Uploads file content to an existing submodel element at a specified path within submodel elements hierarchy
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+        /// <param name="file">Content to upload</param>
+        /// <returns></returns>
+        /// <response code="200">Content uploaded successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">File not found</response>
+        /// <inheritdoc cref="SubmodelController.PutFileByPath(string, IFormFile)"/>
+        [HttpPut(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT, Name = "SubmodelRepo_PutFileByPath")]
+        [Produces("application/json")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public async Task<IActionResult> SubmodelRepo_PutFileByPath(string submodelIdentifier, string idShortPath, IFormFile file)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return await service.PutFileByPath(idShortPath, file);
+        }
+
+        /// <summary>
+        /// Deletes file content of an existing submodel element at a specified path within submodel elements hierarchy
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+        /// <returns></returns>
+        /// <response code="200">File deleted successfully</response>
+        /// <inheritdoc cref="SubmodelController.DeleteFileByPath(string)"/>
+        [HttpDelete(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH_ATTACHMENT,
+            Name = "SubmodelRepo_DeleteFileByPath")]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 404)]
+        public IActionResult SubmodelRepo_DeleteFileByPath(string submodelIdentifier, string idShortPath)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.DeleteFileByPath(idShortPath);
         }
 
         /// <inheritdoc cref="SubmodelController.InvokeOperationSync(string, InvocationRequest)"/>

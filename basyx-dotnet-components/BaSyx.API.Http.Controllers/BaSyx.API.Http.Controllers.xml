@@ -1772,10 +1772,40 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelElementValueByPathValueOnly(System.String,System.Text.Json.JsonDocument)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetFileByPath(System.String,System.String)">
+            <summary>
+            Downloads file content from a specific submodel element from the Submodel at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+            <returns></returns>
+            <response code="200">Requested file</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetFileByPath(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_UploadFileContentByIdShort(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutFileByPath(System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PutFileByPath(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Uploads file content to an existing submodel element at a specified path within submodel elements hierarchy
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+            <param name="file">Content to upload</param>
+            <returns></returns>
+            <response code="200">Content uploaded successfully</response>
+            <response code="400">Bad Request</response>
+            <response code="404">File not found</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutFileByPath(System.String,Microsoft.AspNetCore.Http.IFormFile)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_DeleteFileByPath(System.String,System.String)">
+            <summary>
+            Deletes file content of an existing submodel element at a specified path within submodel elements hierarchy
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
+            <returns></returns>
+            <response code="200">File deleted successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.DeleteFileByPath(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_InvokeOperationSync(System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.InvokeOperationSync(System.String,BaSyx.Models.AdminShell.InvocationRequest)"/>
