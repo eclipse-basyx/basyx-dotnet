@@ -1706,6 +1706,14 @@
             /// <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathReference(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PostSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
+            <summary>
+            Creates a new submodel element at a specified path within submodel elements hierarchy
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="submodelElement">Requested submodel element</param>
+            <returns></returns>
+            <response code="201">Submodel element created successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PutSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
