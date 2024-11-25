@@ -1672,6 +1672,17 @@
             <response code="200">Metadata attributes of the requested submodel element</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.RequestLevel)"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PatchSubmodelElementByPathMetadata(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
+            <summary>
+            Updates the metadata attributes an existing SubmodelElement
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
+            <returns></returns>
+            <response code="200">Requested submodel element in its ValueOnly representation</response> 
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelElementByPathMetadata(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/> 
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelElementByPathValueOnly(System.String,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
             Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
@@ -1727,7 +1738,7 @@
             <response code="204">Submodel element updated successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.Shell_PatchSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PatchSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
             <summary>
             Updates an existing SubmodelElement
             </summary>

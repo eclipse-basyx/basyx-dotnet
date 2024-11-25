@@ -508,6 +508,32 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
+        /// Updates the metadata attributes an existing SubmodelElement
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+        /// <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
+        /// <returns></returns>
+        /// <response code="200">Requested submodel element in its ValueOnly representation</response> 
+        /// <inheritdoc cref="SubmodelController.PatchSubmodelElementByPathMetadata(string, ISubmodelElement)"/> 
+        [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA,
+            Name = "SubmodelRepo_PatchSubmodelElementByPathMetadata")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 404)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult SubmodelRepo_PatchSubmodelElementByPathMetadata(string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodelElementByPathMetadata(idShortPath, submodelElement);
+        }
+
+        /// <summary>
         /// Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
@@ -642,7 +668,7 @@ namespace BaSyx.API.Http.Controllers
         /// <response code="204">Submodel element updated successfully</response>
         /// <inheritdoc cref="SubmodelController.PatchSubmodelElementByPath(string, ISubmodelElement)"/>
         [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH,
-            Name = "Shell_PatchSubmodelElementByPath")]
+            Name = "SubmodelRepo_PatchSubmodelElementByPath")]
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(204)]
@@ -650,7 +676,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult Shell_PatchSubmodelElementByPath(string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
+        public IActionResult SubmodelRepo_PatchSubmodelElementByPath(string submodelIdentifier, string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
             if (serviceProvider.SubmodelProviderRegistry.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
