@@ -1526,6 +1526,16 @@
             <response code="200">Requested Submodel in the metadata representation</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata"/>
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRep_PatchSubmodelMetadata(System.String,BaSyx.Models.AdminShell.ISubmodel)">
+            <summary>
+            Updates the metadata attributes of the Submodel
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodel">The metadata attributes of the Submodel object</param>
+            <returns></returns>
+            <response code="200">Requested Submodel</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelMetadata(BaSyx.Models.AdminShell.ISubmodel)"/> 
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetSubmodelValue(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
             Returns a specific Submodel in the ValueOnly representation
