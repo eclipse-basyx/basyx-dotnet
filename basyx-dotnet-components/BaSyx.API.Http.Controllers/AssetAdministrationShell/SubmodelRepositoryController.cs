@@ -20,6 +20,7 @@ using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.DependencyInjection;
+using System.Text.Json.Nodes;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -31,6 +32,8 @@ namespace BaSyx.API.Http.Controllers
     {
         private readonly ISubmodelRepositoryServiceProvider serviceProvider;
         private readonly IWebHostEnvironment hostingEnvironment;
+
+        private static JsonSerializerOptions _defaultSerializerOptions;
         private static JsonSerializerOptions _metadataSerializerOptions;
 
         /// <summary>
@@ -44,6 +47,11 @@ namespace BaSyx.API.Http.Controllers
             hostingEnvironment = environment;
 
             var services = DefaultImplementation.GetStandardServiceCollection();
+
+            DefaultJsonSerializerOptions defaultOptions = new DefaultJsonSerializerOptions();
+            defaultOptions.AddDependencyInjection(new DependencyInjectionExtension(services));
+            _defaultSerializerOptions = defaultOptions.Build();
+
             DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
             options.AddDependencyInjection(new DependencyInjectionExtension(services));
             options.AddMetadataSubmodelElementConverter();
@@ -88,6 +96,49 @@ namespace BaSyx.API.Http.Controllers
             var jsonOptions = _metadataSerializerOptions;
             string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
             return Content(json, "application/json");
+        }
+
+        /// <summary>
+        /// Returns all Submodels in their ValueOnly representation
+        /// </summary>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodels in their ValueOnly representation</response>  
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.VALUE, Name = "GetAllSubmodels-ValueOnly")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedResult), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult GetAllSubmodelsValueOnly([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        {
+            var result = serviceProvider.RetrieveSubmodels(limit, cursor);
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            JsonArray allSmValues = new JsonArray();
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions, new SubmodelElementContainerValueOnlyConverterOptions()
+            {
+                RequestLevel = level,
+                RequestExtent = extent
+            }));
+
+            foreach (var submodel in result.Entity.Result)
+            {
+                var smValue = new JsonObject();
+                var node = JsonSerializer.SerializeToNode(submodel.SubmodelElements, jsonOptions);
+                string smIdShort = submodel.IdShort;
+                smValue.Add(smIdShort, node);
+                allSmValues.Add(smValue);
+            }
+
+            var pagedSmValues = new PagedResult<JsonArray>(allSmValues, result.Entity.PagingMetadata);
+            var valueResult = new Result<PagedResult<JsonArray>>(true, pagedSmValues, new EmptyMessage());
+            return valueResult.CreateActionResult(CrudOperation.Retrieve);
         }
 
         /// <summary>
