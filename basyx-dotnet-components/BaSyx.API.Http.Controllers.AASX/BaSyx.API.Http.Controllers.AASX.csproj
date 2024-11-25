@@ -19,7 +19,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
     <Configurations>Debug;Release;Azure</Configurations>
-    <Version>2.0.22</Version><PublishReadyToRun>true</PublishReadyToRun>
+    <Version>2.0.23</Version><PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <ItemGroup>
