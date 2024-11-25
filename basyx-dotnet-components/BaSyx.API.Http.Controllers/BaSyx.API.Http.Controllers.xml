@@ -1717,13 +1717,39 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PostSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PutSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
+            <summary>
+            Replaces an existing submodel element at a specified path within the submodel element hierarchy
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="requestBody">Requested submodel element</param>
+            <returns></returns>
+            <response code="204">Submodel element updated successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PutSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.Shell_PatchSubmodelElementByPath(System.String,System.String,BaSyx.Models.AdminShell.ISubmodelElement)">
+            <summary>
+            Updates an existing SubmodelElement
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <param name="submodelElement">Requested submodel element</param>
+            <returns></returns>
+            <response code="204">Submodel element updated successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelElementByPath(System.String,BaSyx.Models.AdminShell.ISubmodelElement)"/>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_DeleteSubmodelElementByPath(System.String,System.String)">
+            <summary>
+            Deletes a submodel element at a specified path within the submodel elements hierarchy
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
+            <returns></returns>
+            <response code="204">Submodel element deleted successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.DeleteSubmodelElementByPath(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PatchSubmodelElementValueByPathValueOnly(System.String,System.String,System.Text.Json.JsonDocument)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodelElementValueByPathValueOnly(System.String,System.Text.Json.JsonDocument)"/>
-        </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_DeleteSubmodelElementByPath(System.String,System.String)">
-            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.DeleteSubmodelElementByPath(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetFileByPath(System.String,System.String)">
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetFileByPath(System.String)"/>
