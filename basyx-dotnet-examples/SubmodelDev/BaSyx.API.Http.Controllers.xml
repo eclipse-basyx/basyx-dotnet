@@ -1497,14 +1497,12 @@
             <response code="404">No Submodel found</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodel(BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)"/> 
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PutSubmodelById(System.String,BaSyx.Models.AdminShell.ISubmodel,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PutSubmodelById(System.String,BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
             Updates an existing Submodel
             </summary>
             <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">Submodel object</param>
-            <param name="level"></param>
-            <param name="extent"></param>
             <returns></returns>
             <response code="201">Submodel updated successfully</response>
             <response code="400">Bad Request</response>             
@@ -1526,7 +1524,7 @@
             <response code="200">Requested Submodel in the metadata representation</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata"/>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRep_PatchSubmodelMetadata(System.String,BaSyx.Models.AdminShell.ISubmodel)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_PatchSubmodelMetadata(System.String,BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
             Updates the metadata attributes of the Submodel
             </summary>

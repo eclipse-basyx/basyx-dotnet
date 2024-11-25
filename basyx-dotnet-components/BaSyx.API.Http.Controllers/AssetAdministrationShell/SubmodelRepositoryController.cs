@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
-using System.Reflection.Emit;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -111,8 +110,6 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
         /// <param name="submodel">Submodel object</param>
-        /// <param name="level"></param>
-        /// <param name="extent"></param>
         /// <returns></returns>
         /// <response code="201">Submodel updated successfully</response>
         /// <response code="400">Bad Request</response>             
@@ -120,7 +117,7 @@ namespace BaSyx.API.Http.Controllers
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(Submodel), 201)]
-        public IActionResult PutSubmodelById(string submodelIdentifier, [FromBody] ISubmodel submodel, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult PutSubmodelById(string submodelIdentifier, [FromBody] ISubmodel submodel)
         {
             if (string.IsNullOrEmpty(submodelIdentifier))
                 return ResultHandling.NullResult(nameof(submodelIdentifier));
@@ -186,13 +183,13 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>
         /// <inheritdoc cref="SubmodelController.PatchSubmodelMetadata(ISubmodel)"/> 
-        [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.METADATA, Name = "SubmodelRep_PatchSubmodelMetadata")]
+        [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.METADATA, Name = "SubmodelRepo_PatchSubmodelMetadata")]
         [Produces("application/json")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult SubmodelRep_PatchSubmodelMetadata(string submodelIdentifier, [FromBody] ISubmodel submodel)
+        public IActionResult SubmodelRepo_PatchSubmodelMetadata(string submodelIdentifier, [FromBody] ISubmodel submodel)
         {
             if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
