@@ -1808,9 +1808,25 @@
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.DeleteFileByPath(System.String)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_InvokeOperationSync(System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)">
+            <summary>
+            Synchronously invokes an Operation at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+            <param name="operationRequest">Operation request object</param>
+            <returns></returns>
+            <response code="200">Operation invoked successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.InvokeOperationSync(System.String,BaSyx.Models.AdminShell.InvocationRequest)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_InvokeOperationAsync(System.String,System.String,BaSyx.Models.AdminShell.InvocationRequest)">
+            <summary>
+            Asynchronously invokes an Operation at a specified path
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
+            <param name="operationRequest">Operation request object</param>
+            <returns></returns>
+            <response code="200">Operation invoked successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.InvokeOperationAsync(System.String,BaSyx.Models.AdminShell.InvocationRequest)"/>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.SubmodelRepo_GetOperationAsyncResult(System.String,System.String,System.String)">
