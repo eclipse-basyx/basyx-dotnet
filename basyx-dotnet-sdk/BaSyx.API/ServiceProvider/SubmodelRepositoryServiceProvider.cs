@@ -187,6 +187,21 @@ namespace BaSyx.API.ServiceProvider
             return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, paginatedSubmodels, new EmptyMessage());
         }
 
+        public IResult<PagedResult<IEnumerable<IReference>>> RetrieveSubmodelsReference(int limit = 100, string cursor = "")
+        {
+            var result = RetrieveSubmodels(limit, cursor);
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
+                return new Result<PagedResult<IEnumerable<IReference>>>(false, new NotFoundMessage("Submodels"));
+
+            var references = new List<IReference>();
+            foreach (var submodel in result.Entity.Result)
+            {
+                references.Add(submodel.CreateReference());
+            }
+            
+            return new Result<PagedResult<IEnumerable<IReference>>>(true, new PagedResult<IEnumerable<IReference>>(references, result.Entity.PagingMetadata));
+        }
+
         public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)
         {
             if (string.IsNullOrEmpty(id))
