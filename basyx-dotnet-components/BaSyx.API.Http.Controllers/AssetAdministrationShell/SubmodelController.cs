@@ -218,7 +218,8 @@ namespace BaSyx.API.Http.Controllers
 
             var node = JsonSerializer.SerializeToNode(result.Entity.Result, jsonOptions);
 
-            smValue.Add("submodelElements", node);
+            var smIdShort = serviceProvider.RetrieveSubmodel().Entity.IdShort;
+            smValue.Add(smIdShort, node);
             string json = smValue.ToJsonString(); 
             return Content(json, "application/json");
         }
