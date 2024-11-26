@@ -217,7 +217,8 @@ namespace BaSyx.API.Http.Controllers
 
             var node = JsonSerializer.SerializeToNode(result.Entity.Result, jsonOptions);
 
-            smValue.Add("submodelElements", node);
+            var smIdShort = serviceProvider.RetrieveSubmodel().Entity.IdShort;
+            smValue.Add(smIdShort, node);
             string json = smValue.ToJsonString(); 
             return Content(json, "application/json");
         }
@@ -282,7 +283,7 @@ namespace BaSyx.API.Http.Controllers
         /// Returns the Reference of the Submodel
         /// </summary>
         /// <returns></returns>
-        /// <response code="200">ValueOnly representation of the Submodel</response>     
+        /// <response code="200">Reference of the Submodel</response>     
         [HttpGet(SubmodelRoutes.SUBMODEL + OutputModifier.REFERENCE, Name = "GetSubmodelReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]

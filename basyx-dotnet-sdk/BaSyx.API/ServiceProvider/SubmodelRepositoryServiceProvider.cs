@@ -14,6 +14,7 @@ using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.ResultHandling.http;
 
@@ -162,6 +163,43 @@ namespace BaSyx.API.ServiceProvider
             return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, paginatedSubmodels, new EmptyMessage());
             //return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, 
                // new PagedResult<IElementContainer<ISubmodel>>(new ElementContainer<ISubmodel>(null, Submodels)));
+        }
+
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsMetadata(int limit = 100, string cursor = "")
+        {
+            var allSubmodels = Submodels;
+            
+            var metadataSubmodels = new List<ISubmodel>();
+            foreach (var submodel in allSubmodels)
+            {
+                ISubmodel metadataSubmodel = submodel.GetMetadata();
+                metadataSubmodels.Add(metadataSubmodel);
+            }
+            var smDict = metadataSubmodels.ToDictionary(sm => sm.Id.ToString(), sm => sm);
+            var paginationHelper = new PaginationHelper<ISubmodel>(smDict, elem => elem.Id);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var smcPaged = new ElementContainer<ISubmodel>();
+            smcPaged.AddRange(pagedResult.Result as IEnumerable<ISubmodel>);
+            var paginatedSubmodels = new PagedResult<IElementContainer<ISubmodel>>(smcPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, paginatedSubmodels, new EmptyMessage());
+        }
+
+        public IResult<PagedResult<IEnumerable<IReference>>> RetrieveSubmodelsReference(int limit = 100, string cursor = "")
+        {
+            var result = RetrieveSubmodels(limit, cursor);
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
+                return new Result<PagedResult<IEnumerable<IReference>>>(false, new NotFoundMessage("Submodels"));
+
+            var references = new List<IReference>();
+            foreach (var submodel in result.Entity.Result)
+            {
+                references.Add(submodel.CreateReference());
+            }
+            
+            return new Result<PagedResult<IEnumerable<IReference>>>(true, new PagedResult<IEnumerable<IReference>>(references, result.Entity.PagingMetadata));
         }
 
         public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)

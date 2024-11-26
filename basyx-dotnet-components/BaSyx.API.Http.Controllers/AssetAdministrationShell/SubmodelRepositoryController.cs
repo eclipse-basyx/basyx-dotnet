@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using BaSyx.Models.AdminShell;
@@ -18,6 +19,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Models.Extensions;
+using BaSyx.Utils.DependencyInjection;
+using System.Text.Json.Nodes;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -30,6 +34,10 @@ namespace BaSyx.API.Http.Controllers
         private readonly ISubmodelRepositoryServiceProvider serviceProvider;
         private readonly IWebHostEnvironment hostingEnvironment;
 
+        private static JsonSerializerOptions _defaultSerializerOptions;
+        private static JsonSerializerOptions _metadataSerializerOptions;
+        private static JsonSerializerOptions _fullSerializerOptions;
+
         /// <summary>
         /// The constructor for the Submodel Repository Controller
         /// </summary>
@@ -39,6 +47,22 @@ namespace BaSyx.API.Http.Controllers
         {
             serviceProvider = submodelRepositoryServiceProvider;
             hostingEnvironment = environment;
+
+            var services = DefaultImplementation.GetStandardServiceCollection();
+
+            DefaultJsonSerializerOptions defaultOptions = new DefaultJsonSerializerOptions();
+            defaultOptions.AddDependencyInjection(new DependencyInjectionExtension(services));
+            _defaultSerializerOptions = defaultOptions.Build();
+
+            DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
+            options.AddDependencyInjection(new DependencyInjectionExtension(services));
+            options.AddMetadataSubmodelElementConverter();
+            _metadataSerializerOptions = options.Build();
+
+            DefaultJsonSerializerOptions options3 = new DefaultJsonSerializerOptions();
+            options3.AddDependencyInjection(new DependencyInjectionExtension(services));
+            options3.AddFullSubmodelElementConverter();
+            _fullSerializerOptions = options3.Build();
         }
 
         /// <summary>
@@ -55,6 +79,98 @@ namespace BaSyx.API.Http.Controllers
         {
             var result = serviceProvider.RetrieveSubmodels(limit, ResultHandling.TryBase64UrlDecode(cursor));
             return result.CreateActionResult(CrudOperation.Retrieve);
+        }
+
+        /// <summary>
+        /// Returns the metadata attributes of all Submodels
+        /// </summary>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns>Requested Submodels</returns>
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.METADATA, Name = "GetAllSubmodels-Metadata")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedResult<List<Submodel>>), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult GetAllSubmodelsMetadata([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        {
+            var result = serviceProvider.RetrieveSubmodelsMetadata(limit, ResultHandling.TryBase64UrlDecode(cursor));
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            var jsonOptions = _metadataSerializerOptions;
+            string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
+            return Content(json, "application/json");
+        }
+
+        /// <summary>
+        /// Returns all Submodels in their ValueOnly representation
+        /// </summary>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">Requested Submodels in their ValueOnly representation</response>  
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.VALUE, Name = "GetAllSubmodels-ValueOnly")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedResult), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult GetAllSubmodelsValueOnly([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        {
+            var result = serviceProvider.RetrieveSubmodels(limit, cursor);
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            JsonArray allSmValues = new JsonArray();
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new SubmodelElementContainerValueOnlyConverter(_defaultSerializerOptions, new SubmodelElementContainerValueOnlyConverterOptions()
+            {
+                RequestLevel = level,
+                RequestExtent = extent
+            }));
+
+            foreach (var submodel in result.Entity.Result)
+            {
+                var smValue = new JsonObject();
+                var node = JsonSerializer.SerializeToNode(submodel.SubmodelElements, jsonOptions);
+                string smIdShort = submodel.IdShort;
+                smValue.Add(smIdShort, node);
+                allSmValues.Add(smValue);
+            }
+
+            var pagedSmValues = new PagedResult<JsonArray>(allSmValues, result.Entity.PagingMetadata);
+            var valueResult = new Result<PagedResult<JsonArray>>(true, pagedSmValues, new EmptyMessage());
+            return valueResult.CreateActionResult(CrudOperation.Retrieve);
+        }
+
+        /// <summary>
+        /// Returns the References for all Submodels
+        /// </summary>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">References of the requested Submodels</response>     
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.REFERENCE, Name = "GetAllSubmodels-Reference")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult GetAllSubmodelsReference([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        {
+            var result = serviceProvider.RetrieveSubmodelsReference(limit, cursor);
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            var json = JsonSerializer.Serialize(result.Entity, _fullSerializerOptions);
+            return Content(json, "application/json");
         }
 
         /// <summary>
