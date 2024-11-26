@@ -80,29 +80,6 @@ namespace BaSyx.API.Http.Controllers
         }        
         
         /// <summary>
-        /// Updates the Submodel
-        /// </summary>
-        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
-        /// <param name="submodel">Submodel object</param>
-        /// <returns></returns>
-        /// <response code="204">Submodel updated successfully</response>
-        /// <inheritdoc cref="SubmodelController.PatchSubmodel(ISubmodel)"/>
-        [HttpPatch(SubmodelRepositoryRoutes.SUBMODELS, Name = "PatchSubmodel")]
-        [Produces("application/json")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(Result), 400)]
-        [ProducesResponseType(typeof(Result), 403)]
-        [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodel(string submodelIdentifier, [FromBody] ISubmodel submodel)
-        {
-            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
-                return result;
-
-            var service = new SubmodelController(provider, hostingEnvironment);
-            return service.PatchSubmodel(submodel);
-        }
-
-        /// <summary>
         /// Returns a specific Submodel
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
@@ -129,7 +106,7 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Updates an existing Submodel
+        /// Replace Replace an existing Submodel
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
         /// <param name="submodel">Submodel object</param>
@@ -153,9 +130,32 @@ namespace BaSyx.API.Http.Controllers
             return result.CreateActionResult(CrudOperation.Update);
         }
 
+        /// <summary>
+        /// Updates an existing Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodel">Submodel object</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel updated successfully</response>
+        /// <inheritdoc cref="SubmodelController.PatchSubmodel(ISubmodel)"/>
+        [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID, Name = "PatchSubmodel")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult PatchSubmodel(string submodelIdentifier, [FromBody] ISubmodel submodel)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodel(submodel);
+        }
+
 
         /// <summary>
-        /// Deletes a Submodel
+        /// Deletes an existing Submodel
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
         /// <returns></returns>
