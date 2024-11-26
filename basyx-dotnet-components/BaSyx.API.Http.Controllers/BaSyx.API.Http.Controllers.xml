@@ -1485,6 +1485,16 @@
             <response code="201">Submodel created successfully</response>
             <response code="400">Bad Request</response>             
         </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PatchSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel)">
+            <summary>
+            Updates the Submodel
+            </summary>
+            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodel">Submodel object</param>
+            <returns></returns>
+            <response code="204">Submodel updated successfully</response>
+            <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel)"/>
+        </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetSubmodelById(System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
             Returns a specific Submodel

@@ -77,6 +77,29 @@ namespace BaSyx.API.Http.Controllers
 
             var result = serviceProvider.CreateSubmodel(submodel);
             return result.CreateActionResult(CrudOperation.Create, SubmodelRepositoryRoutes.SUBMODELS + "/ " + submodelId);
+        }        
+        
+        /// <summary>
+        /// Updates the Submodel
+        /// </summary>
+        /// <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+        /// <param name="submodel">Submodel object</param>
+        /// <returns></returns>
+        /// <response code="204">Submodel updated successfully</response>
+        /// <inheritdoc cref="SubmodelController.PatchSubmodel(ISubmodel)"/>
+        [HttpPatch(SubmodelRepositoryRoutes.SUBMODELS, Name = "PatchSubmodel")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult PatchSubmodel(string submodelIdentifier, [FromBody] ISubmodel submodel)
+        {
+            if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
+                return result;
+
+            var service = new SubmodelController(provider, hostingEnvironment);
+            return service.PatchSubmodel(submodel);
         }
 
         /// <summary>
