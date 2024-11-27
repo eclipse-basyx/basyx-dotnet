@@ -23,7 +23,7 @@ namespace BaSyx.API.ServiceProvider
 
         IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsMetadata(int limit = 100, string cursor = "", string semanticId = "", string idShort = "");
 
-        IResult<PagedResult<IEnumerable<IReference>>> RetrieveSubmodelsReference(int limit = 100, string cursor = "");
+        IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveSubmodelsReference(int limit = 100, string cursor = "", string semanticId = "", string idShort = "");
 
     }
 }

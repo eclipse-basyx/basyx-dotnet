@@ -24,6 +24,7 @@ using BaSyx.Utils.DependencyInjection;
 using System.Text.Json.Nodes;
 using BaSyx.Models.Extensions.JsonConverters;
 using System.Reflection.Emit;
+using System;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -180,6 +181,8 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the References for all Submodels
         /// </summary>
+        /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
+        /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
         /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
         /// <returns></returns>
@@ -191,14 +194,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 401)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelsReference([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        public IActionResult GetAllSubmodelsReference([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            var result = serviceProvider.RetrieveSubmodelsReference(limit, cursor);
-            if (!result.Success || result.Entity == null)
-                return result.CreateActionResult(CrudOperation.Retrieve);
+            cursor = ResultHandling.Base64UrlEncode(cursor);
+            semanticId = ResultHandling.Base64UrlDecode(semanticId);
 
-            var json = JsonSerializer.Serialize(result.Entity, _fullSerializerOptions);
-            return Content(json, "application/json");
+            var result = serviceProvider.RetrieveSubmodelsReference(limit, cursor, semanticId, idShort); 
+            return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
 
