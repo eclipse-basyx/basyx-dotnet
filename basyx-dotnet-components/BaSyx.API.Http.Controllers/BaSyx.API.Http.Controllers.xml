@@ -1467,13 +1467,16 @@
             <param name="submodelRepositoryServiceProvider"></param>
             <param name="environment">The Hosting Environment provided by the dependency injection</param>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodels(System.String,System.Int32,System.String)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodels(System.String,System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
             <summary>
             Returns all Submodels
             </summary>
             <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
+            <param name="idShort">The Asset Administration Shell’s IdShort</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns>Requested Submodels</returns>
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsMetadata(System.Int32,System.String)">

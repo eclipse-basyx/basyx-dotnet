@@ -101,11 +101,9 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(PagedResult<List<AssetAdministrationShell>>), 200)]
         public IActionResult GetAllAssetAdministrationShellsReference([FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] string assetIds = "", [FromQuery] string idShort = "")
         {
-            var assetIdsEncoded = string.Empty;
-            if (!string.IsNullOrEmpty(assetIds))
-                assetIdsEncoded = ResultHandling.Base64UrlDecode(assetIds);
+            assetIds = ResultHandling.Base64UrlDecode(assetIds);
 
-            var result = serviceProvider.RetrieveAssetAdministrationShellsReference(limit, cursor, assetIdsEncoded, idShort);
+            var result = serviceProvider.RetrieveAssetAdministrationShellsReference(limit, cursor, assetIds, idShort);
             return result.CreateActionResult(CrudOperation.Retrieve);
         }
 

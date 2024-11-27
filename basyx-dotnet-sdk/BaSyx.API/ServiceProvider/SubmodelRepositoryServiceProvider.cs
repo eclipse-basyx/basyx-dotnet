@@ -17,10 +17,12 @@ using System.Linq;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.ResultHandling.http;
+using System.Text.Json;
 
 namespace BaSyx.API.ServiceProvider
 {
-    public class SubmodelRepositoryServiceProvider : ISubmodelRepositoryServiceProvider, ISubmodelServiceProviderRegistry
+    public class SubmodelRepositoryServiceProvider : ISubmodelRepositoryServiceProvider,
+        ISubmodelServiceProviderRegistry
     {
         public IEnumerable<ISubmodel> Submodels => GetBinding();
 
@@ -29,6 +31,7 @@ namespace BaSyx.API.ServiceProvider
         private Dictionary<string, ISubmodelServiceProvider> SubmodelServiceProviders { get; }
 
         private ISubmodelRepositoryDescriptor _serviceDescriptor;
+
         public ISubmodelRepositoryDescriptor ServiceDescriptor
         {
             get
@@ -38,11 +41,9 @@ namespace BaSyx.API.ServiceProvider
 
                 return _serviceDescriptor;
             }
-            private set
-            {
-                _serviceDescriptor = value;
-            }
+            private set { _serviceDescriptor = value; }
         }
+
         public SubmodelRepositoryServiceProvider(ISubmodelRepositoryDescriptor descriptor) : this()
         {
             ServiceDescriptor = descriptor;
@@ -59,13 +60,16 @@ namespace BaSyx.API.ServiceProvider
             {
                 RegisterSubmodelServiceProvider(submodel.Id, submodel.CreateServiceProvider());
             }
+
             ServiceDescriptor = ServiceDescriptor ?? new SubmodelRepositoryDescriptor(submodels, null);
         }
+
         public IEnumerable<ISubmodel> GetBinding()
         {
             List<ISubmodel> submodels = new List<ISubmodel>();
             var retrievedSubmodelServiceProviders = GetSubmodelServiceProviders();
-            if (retrievedSubmodelServiceProviders.TryGetEntity(out IEnumerable<ISubmodelServiceProvider> serviceProviders))
+            if (retrievedSubmodelServiceProviders.TryGetEntity(
+                    out IEnumerable<ISubmodelServiceProvider> serviceProviders))
             {
                 foreach (var serviceProvider in serviceProviders)
                 {
@@ -73,6 +77,7 @@ namespace BaSyx.API.ServiceProvider
                     submodels.Add(binding);
                 }
             }
+
             return submodels;
         }
 
@@ -89,7 +94,8 @@ namespace BaSyx.API.ServiceProvider
             if (retrievedSubmodelServiceProvider.TryGetEntity(out ISubmodelServiceProvider serviceProvider))
                 return new Result<ISubmodel>(true, serviceProvider.GetBinding());
             else
-                return new Result<ISubmodel>(false, new Message(MessageType.Error, "Could not retrieve Submodel Service Provider"));
+                return new Result<ISubmodel>(false,
+                    new Message(MessageType.Error, "Could not retrieve Submodel Service Provider"));
         }
 
         public IResult DeleteSubmodel(Identifier id)
@@ -110,12 +116,14 @@ namespace BaSyx.API.ServiceProvider
         public IResult<IEnumerable<ISubmodelServiceProvider>> GetSubmodelServiceProviders()
         {
             if (SubmodelServiceProviders.Values == null)
-                return new Result<IEnumerable<ISubmodelServiceProvider>>(false, new NotFoundMessage("Submodel Service Providers"));
+                return new Result<IEnumerable<ISubmodelServiceProvider>>(false,
+                    new NotFoundMessage("Submodel Service Providers"));
 
             return new Result<IEnumerable<ISubmodelServiceProvider>>(true, SubmodelServiceProviders.Values?.ToList());
         }
 
-        public IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(Identifier id, ISubmodelServiceProvider submodelServiceProvider)
+        public IResult<ISubmodelDescriptor> RegisterSubmodelServiceProvider(Identifier id,
+            ISubmodelServiceProvider submodelServiceProvider)
         {
             if (SubmodelServiceProviders.ContainsKey(id))
                 SubmodelServiceProviders[id] = submodelServiceProvider;
@@ -139,18 +147,29 @@ namespace BaSyx.API.ServiceProvider
         public IResult<ISubmodel> RetrieveSubmodel(Identifier id)
         {
             var retrievedSubmodelServiceProvider = GetSubmodelServiceProvider(id);
-            if(retrievedSubmodelServiceProvider.TryGetEntity(out ISubmodelServiceProvider serviceProvider))
+            if (retrievedSubmodelServiceProvider.TryGetEntity(out ISubmodelServiceProvider serviceProvider))
             {
                 ISubmodel binding = serviceProvider.GetBinding();
                 return new Result<ISubmodel>(true, binding);
             }
+
             return new Result<ISubmodel>(false, new NotFoundMessage("Submodel Service Provider"));
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels(int limit = 100, string cursor = "",
+            string semanticId = "", string idShort = "")
         {
-            var allSubmodels = Submodels;
-            var smDict = allSubmodels.ToDictionary(sm => sm.Id.ToString(), sm => sm);
+            var filteredSms = Submodels;
+
+            // filter by Semantic IDs if set
+            if (!string.IsNullOrEmpty(semanticId))
+                filteredSms = Submodels.Where(sm => sm.SemanticId?.Keys.Any(key => key.Value == semanticId) == true);
+
+            // else filter by ID short if set
+            else if (!string.IsNullOrEmpty(idShort))
+                filteredSms = Submodels.Where(e => idShort == e.IdShort);
+
+            var smDict = filteredSms.ToDictionary(sm => sm.Id.ToString(), sm => sm);
 
             var paginationHelper = new PaginationHelper<ISubmodel>(smDict, elem => elem.Id);
             var pagingMetadata = new PagingMetadata(cursor);
@@ -158,23 +177,24 @@ namespace BaSyx.API.ServiceProvider
 
             var smcPaged = new ElementContainer<ISubmodel>();
             smcPaged.AddRange(pagedResult.Result as IEnumerable<ISubmodel>);
-            var paginatedSubmodels = new PagedResult<IElementContainer<ISubmodel>>(smcPaged, pagedResult.PagingMetadata);
+            var paginatedSubmodels =
+                new PagedResult<IElementContainer<ISubmodel>>(smcPaged, pagedResult.PagingMetadata);
 
             return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, paginatedSubmodels, new EmptyMessage());
-            //return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, 
-               // new PagedResult<IElementContainer<ISubmodel>>(new ElementContainer<ISubmodel>(null, Submodels)));
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsMetadata(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsMetadata(int limit = 100,
+            string cursor = "")
         {
             var allSubmodels = Submodels;
-            
+
             var metadataSubmodels = new List<ISubmodel>();
             foreach (var submodel in allSubmodels)
             {
                 ISubmodel metadataSubmodel = submodel.GetMetadata();
                 metadataSubmodels.Add(metadataSubmodel);
             }
+
             var smDict = metadataSubmodels.ToDictionary(sm => sm.Id.ToString(), sm => sm);
             var paginationHelper = new PaginationHelper<ISubmodel>(smDict, elem => elem.Id);
             var pagingMetadata = new PagingMetadata(cursor);
@@ -182,12 +202,14 @@ namespace BaSyx.API.ServiceProvider
 
             var smcPaged = new ElementContainer<ISubmodel>();
             smcPaged.AddRange(pagedResult.Result as IEnumerable<ISubmodel>);
-            var paginatedSubmodels = new PagedResult<IElementContainer<ISubmodel>>(smcPaged, pagedResult.PagingMetadata);
+            var paginatedSubmodels =
+                new PagedResult<IElementContainer<ISubmodel>>(smcPaged, pagedResult.PagingMetadata);
 
             return new Result<PagedResult<IElementContainer<ISubmodel>>>(true, paginatedSubmodels, new EmptyMessage());
         }
 
-        public IResult<PagedResult<IEnumerable<IReference>>> RetrieveSubmodelsReference(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IEnumerable<IReference>>> RetrieveSubmodelsReference(int limit = 100,
+            string cursor = "")
         {
             var result = RetrieveSubmodels(limit, cursor);
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
@@ -198,8 +220,9 @@ namespace BaSyx.API.ServiceProvider
             {
                 references.Add(submodel.CreateReference());
             }
-            
-            return new Result<PagedResult<IEnumerable<IReference>>>(true, new PagedResult<IEnumerable<IReference>>(references, result.Entity.PagingMetadata));
+
+            return new Result<PagedResult<IEnumerable<IReference>>>(true,
+                new PagedResult<IEnumerable<IReference>>(references, result.Entity.PagingMetadata));
         }
 
         public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)
@@ -212,7 +235,7 @@ namespace BaSyx.API.ServiceProvider
             var retrievedSubmodelServiceProvider = GetSubmodelServiceProvider(id);
             if (retrievedSubmodelServiceProvider.TryGetEntity(out ISubmodelServiceProvider serviceProvider))
                 return serviceProvider.UpdateSubmodel(submodel);
-            
+
             return new Result<ISubmodel>(false, new NotFoundMessage("Submodel Service Provider"));
         }
     }

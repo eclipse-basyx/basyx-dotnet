@@ -295,7 +295,7 @@ namespace DevelopmentSubmodel
                 //    new("en-US", "submodel")
                 //},
                 Category = "test_category",
-                //SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
+                SemanticId = new Reference(new Key(KeyType.GlobalReference, new BaSyxPropertyIdentifier("HelloSubmodelElementList", "1.0.0").ToUrn())),
                 //ConceptDescription = new ConceptDescription()
                 //{
                 //	Id = new Identifier("0173-1#02-AAO689#001"),

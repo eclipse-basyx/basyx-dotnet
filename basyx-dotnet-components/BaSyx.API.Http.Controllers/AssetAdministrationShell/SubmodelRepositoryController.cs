@@ -71,16 +71,33 @@ namespace BaSyx.API.Http.Controllers
         /// Returns all Submodels
         /// </summary>
         /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
+        /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
         /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns>Requested Submodels</returns>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODELS, Name = "GetAllSubmodels")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult<List<Submodel>>), 200)]
-        public IActionResult GetAllSubmodels([FromQuery] string semanticId = null, [FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        public IActionResult GetAllSubmodels([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
-            var result = serviceProvider.RetrieveSubmodels(limit, ResultHandling.TryBase64UrlDecode(cursor));
-            return result.CreateActionResult(CrudOperation.Retrieve);
+            cursor = ResultHandling.Base64UrlEncode(cursor);
+            semanticId = ResultHandling.Base64UrlDecode(semanticId);
+
+            var result = serviceProvider.RetrieveSubmodels(limit, cursor, semanticId, idShort);
+            //return result.CreateActionResult(CrudOperation.Retrieve);
+
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new ElementContainerConverter(new ConverterOptions()
+            {
+                ValueSerialization = true,
+                RequestLevel = level,
+                RequestExtent = extent
+            }));
+
+            string json = JsonSerializer.Serialize(result.Entity, jsonOptions);
+            return Content(json, "application/json");
         }
 
         /// <summary>
