@@ -184,12 +184,14 @@ namespace BaSyx.API.ServiceProvider
         }
 
         public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsMetadata(int limit = 100,
-            string cursor = "")
+            string cursor = "", string semanticId = "", string idShort = "")
         {
-            var allSubmodels = Submodels;
+            var result = RetrieveSubmodels(limit, cursor, semanticId, idShort);
+            if (!result.Success)
+                return result;
 
             var metadataSubmodels = new List<ISubmodel>();
-            foreach (var submodel in allSubmodels)
+            foreach (var submodel in result.Entity.Result)
             {
                 ISubmodel metadataSubmodel = submodel.GetMetadata();
                 metadataSubmodels.Add(metadataSubmodel);

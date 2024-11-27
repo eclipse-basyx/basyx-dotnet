@@ -86,7 +86,6 @@ namespace BaSyx.API.Http.Controllers
             semanticId = ResultHandling.Base64UrlDecode(semanticId);
 
             var result = serviceProvider.RetrieveSubmodels(limit, cursor, semanticId, idShort);
-            //return result.CreateActionResult(CrudOperation.Retrieve);
 
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
             jsonOptions.Converters.Add(new ElementContainerConverter(new ConverterOptions()
@@ -103,6 +102,8 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the metadata attributes of all Submodels
         /// </summary>
+        /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
+        /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
         /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
         /// <returns>Requested Submodels</returns>
@@ -113,9 +114,12 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 401)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelsMetadata([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        public IActionResult GetAllSubmodelsMetadata([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            var result = serviceProvider.RetrieveSubmodelsMetadata(limit, ResultHandling.TryBase64UrlDecode(cursor));
+            cursor = ResultHandling.Base64UrlEncode(cursor);
+            semanticId = ResultHandling.Base64UrlDecode(semanticId);
+
+            var result = serviceProvider.RetrieveSubmodelsMetadata(limit, cursor, semanticId, idShort);
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 

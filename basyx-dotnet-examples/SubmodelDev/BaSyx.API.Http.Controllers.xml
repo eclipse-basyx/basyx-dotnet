@@ -1479,10 +1479,12 @@
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns>Requested Submodels</returns>
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsMetadata(System.Int32,System.String)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsMetadata(System.String,System.String,System.Int32,System.String)">
             <summary>
             Returns the metadata attributes of all Submodels
             </summary>
+            <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
+            <param name="idShort">The Asset Administration Shell’s IdShort</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <returns>Requested Submodels</returns>
