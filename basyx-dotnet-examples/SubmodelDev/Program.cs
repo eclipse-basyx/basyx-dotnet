@@ -62,7 +62,7 @@ namespace DevelopmentSubmodel
             server.AddSwagger(Interface.SubmodelRepository);
             server.Run();
 
-            //AAS Server
+            ////AAS Server
             //ServerSettings aasServerSettings = ServerSettings.CreateSettings();
             //aasServerSettings.ServerConfig.Hosting.ContentPath = "Content";
             //aasServerSettings.ServerConfig.Hosting.Environment = "Development";

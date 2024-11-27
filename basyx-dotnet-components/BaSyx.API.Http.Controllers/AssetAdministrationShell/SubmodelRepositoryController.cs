@@ -22,6 +22,8 @@ using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.DependencyInjection;
 using System.Text.Json.Nodes;
+using BaSyx.Models.Extensions.JsonConverters;
+using System.Reflection.Emit;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -171,6 +173,40 @@ namespace BaSyx.API.Http.Controllers
 
             var json = JsonSerializer.Serialize(result.Entity, _fullSerializerOptions);
             return Content(json, "application/json");
+        }
+
+
+        /// <summary>
+        /// Returns the Paths for all Submodels
+        /// </summary>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <returns></returns>
+        /// <response code="200">References of the requested Submodels</response>     
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.PATH, Name = "GetAllSubmodelsPath-Path")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reference), 200)]
+        [ProducesResponseType(typeof(Result), 400)]
+        [ProducesResponseType(typeof(Result), 401)]
+        [ProducesResponseType(typeof(Result), 403)]
+        [ProducesResponseType(typeof(Result), 500)]
+        public IActionResult GetAllSubmodelsPath([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        {
+            var result = serviceProvider.RetrieveSubmodels(limit, cursor);
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            var json = JsonSerializer.Serialize(result.Entity, _fullSerializerOptions);
+            return Content(json, "application/json");
+            //string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
+            //{
+            //    Converters = {new FullPathConverter(new PathConverterOptions()
+            //    {
+            //        RequestLevel = level
+            //    })}
+            //});
+
+            //return Content(json, "application/json");
         }
 
         /// <summary>

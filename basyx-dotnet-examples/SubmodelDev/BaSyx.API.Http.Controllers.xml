@@ -1192,7 +1192,7 @@
             Returns the Reference of the Submodel
             </summary>
             <returns></returns>
-            <response code="200">ValueOnly representation of the Submodel</response>     
+            <response code="200">Reference of the Submodel</response>     
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelPath(BaSyx.Models.AdminShell.RequestLevel)">
             <summary>
@@ -1475,6 +1475,43 @@
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <returns>Requested Submodels</returns>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsMetadata(System.Int32,System.String)">
+            <summary>
+            Returns the metadata attributes of all Submodels
+            </summary>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns>Requested Submodels</returns>
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsValueOnly(System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel,BaSyx.Models.AdminShell.RequestExtent)">
+            <summary>
+            Returns all Submodels in their ValueOnly representation
+            </summary>
+            <param name="level">Determines the structural depth of the respective resource content</param>
+            <param name="extent">Determines to which extent the resource is being serialized</param>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns></returns>
+            <response code="200">Requested Submodels in their ValueOnly representation</response>  
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsReference(System.Int32,System.String)">
+            <summary>
+            Returns the References for all Submodels
+            </summary>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns></returns>
+            <response code="200">References of the requested Submodels</response>     
+        </member>
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsPath(System.Int32,System.String)">
+            <summary>
+            Returns the Paths for all Submodels
+            </summary>
+            <param name="limit">The maximum number of elements in the response array</param>
+            <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <returns></returns>
+            <response code="200">References of the requested Submodels</response>     
         </member>
         <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PostSubmodel(BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
