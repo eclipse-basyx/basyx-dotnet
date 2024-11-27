@@ -423,9 +423,9 @@ namespace SubmodelRepoClientServerTests
             return ((ISubmodelRepositoryClient)RepoClient).RetrieveSubmodelAsync(id);
         }
 
-        public Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync(int limit = 100, string cursor = "")
+        public Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync(int limit = 100, string cursor = "", string semanticId = "", string idShort = "")
         {
-            return ((ISubmodelRepositoryClient)RepoClient).RetrieveSubmodelsAsync(limit, cursor);
+            return ((ISubmodelRepositoryClient)RepoClient).RetrieveSubmodelsAsync(limit, cursor, semanticId, idShort);
         }
 
         public Task<IResult> UpdateSubmodelAsync(Identifier id, ISubmodel submodel)
@@ -448,9 +448,9 @@ namespace SubmodelRepoClientServerTests
             return ((ISubmodelRepositoryInterface)RepoClient).RetrieveSubmodel(id);
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels(int limit = 100, string cursor = "", string semanticId = "", string idShort = "")
         {
-            return ((ISubmodelRepositoryInterface)RepoClient).RetrieveSubmodels();
+            return ((ISubmodelRepositoryInterface)RepoClient).RetrieveSubmodels(limit, cursor, semanticId, idShort);
         }
 
         public IResult UpdateSubmodel(Identifier id, ISubmodel submodel)

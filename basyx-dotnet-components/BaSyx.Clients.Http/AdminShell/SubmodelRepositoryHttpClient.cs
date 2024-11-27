@@ -103,9 +103,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelAsync(id, submodel).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels(int limit = 100, string cursor = "")
+        public IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels(int limit = 100, string cursor = "", string semanticId = "", string idShort = "")
         {
-            return RetrieveSubmodelsAsync(limit, cursor).GetAwaiter().GetResult();
+            return RetrieveSubmodelsAsync(limit, cursor, semanticId, idShort).GetAwaiter().GetResult();
         }
 
         public IResult<ISubmodel> RetrieveSubmodel(Identifier id)
@@ -142,13 +142,15 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync(int limit = 100, string cursor = "")
+        public async Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync(int limit = 100, string cursor = "", string semanticId = "", string idShort = "")
         {
             Uri uri = GetPath(SubmodelRepositoryRoutes.SUBMODELS);
 
             var query = HttpUtility.ParseQueryString(uri.Query);
             query["limit"] = limit.ToString();
             query["cursor"] = cursor;
+            query["semanticId"] = semanticId;
+            query["idShort"] = idShort;
             var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
             uri = uriBuilder.Uri;
 
