@@ -218,7 +218,7 @@ namespace BaSyx.API.ServiceProvider
                 .Select(submodel => submodel.CreateReference())
                 .ToList();
 
-            var refDict = references.ToDictionary(e => e.First.ToString(), reference => reference);
+            var refDict = references.ToDictionary(e => e.First.Value, reference => reference);
             var paginationHelper = new PaginationHelper<IReference<ISubmodel>>(refDict, e => e.First.Value);
             var pagingMetadata = new PagingMetadata(cursor);
             var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
