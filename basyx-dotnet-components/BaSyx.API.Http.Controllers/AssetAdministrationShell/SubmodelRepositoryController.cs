@@ -25,6 +25,7 @@ using System.Text.Json.Nodes;
 using BaSyx.Models.Extensions.JsonConverters;
 using System.Reflection.Emit;
 using System;
+using System.Xml.Linq;
 
 namespace BaSyx.API.Http.Controllers
 {
@@ -207,8 +208,11 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the Paths for all Submodels
         /// </summary>
+        /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
+        /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
         /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">References of the requested Submodels</response>     
         [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.PATH, Name = "GetAllSubmodelsPath-Path")]
@@ -218,23 +222,32 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 401)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelsPath([FromQuery] int limit = 100, [FromQuery] string cursor = "")
+        public IActionResult GetAllSubmodelsPath([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default)
         {
-            var result = serviceProvider.RetrieveSubmodels(limit, cursor);
+            var result = serviceProvider.RetrieveSubmodels(limit, cursor, semanticId, idShort);
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            var json = JsonSerializer.Serialize(result.Entity, _fullSerializerOptions);
-            return Content(json, "application/json");
-            //string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
-            //{
-            //    Converters = {new FullPathConverter(new PathConverterOptions()
-            //    {
-            //        RequestLevel = level
-            //    })}
-            //});
+            JsonArray allSmPath = new JsonArray();
+            var jsonOptions = new GlobalJsonSerializerOptions().Build();
+            jsonOptions.Converters.Add(new SubmodelElementContainerPathConverter(new PathConverterOptions()
+            {
+                RequestLevel = level,
+                EncloseInBrackets = false
+            }));
 
-            //return Content(json, "application/json");
+            foreach (var submodel in result.Entity.Result)
+            {
+                var smValue = new JsonObject();
+                var node = JsonSerializer.SerializeToNode(submodel.SubmodelElements, jsonOptions);
+                string smIdShort = submodel.IdShort;
+                smValue.Add(smIdShort, node);
+                allSmPath.Add(smValue);
+            }
+
+            var pagedSmValues = new PagedResult<JsonArray>(allSmPath, result.Entity.PagingMetadata);
+            var valueResult = new Result<PagedResult<JsonArray>>(true, pagedSmValues, new EmptyMessage());
+            return valueResult.CreateActionResult(CrudOperation.Retrieve);
         }
 
         /// <summary>

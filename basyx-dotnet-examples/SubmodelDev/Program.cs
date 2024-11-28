@@ -28,6 +28,7 @@ namespace DevelopmentSubmodel
             
             var aas = DevelopmentSubmodel.GetAssetAdministrationShell();
             var submodel = aas.Submodels[0];
+            var submodel2 = aas.Submodels[1];
 
             // Submodel Server
             var submodelServerSettings = ServerSettings.CreateSettings();
@@ -52,9 +53,11 @@ namespace DevelopmentSubmodel
             submodelRepoServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5000");
             submodelRepoServerSettings.ServerConfig.Hosting.Urls.Add("https://+:5441");
 
+            var submodelServiceProvider2 = submodel2.CreateServiceProvider();
             var server = new SubmodelRepositoryHttpServer(submodelRepoServerSettings);
             var repositoryService = new SubmodelRepositoryServiceProvider();
             repositoryService.RegisterSubmodelServiceProvider(submodel.Id, submodelServiceProvider);
+            repositoryService.RegisterSubmodelServiceProvider(submodel2.Id, submodelServiceProvider2);
             repositoryService.UseAutoEndpointRegistration(server.Settings.ServerConfig);
 
             server.SetServiceProvider(repositoryService);

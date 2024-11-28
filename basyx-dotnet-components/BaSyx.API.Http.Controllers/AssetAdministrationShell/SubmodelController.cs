@@ -321,7 +321,7 @@ namespace BaSyx.API.Http.Controllers
 
             string json = JsonSerializer.Serialize(result.Entity.Result, new JsonSerializerOptions()
             {
-                Converters = {new FullPathConverter(new PathConverterOptions()
+                Converters = {new SubmodelElementContainerPathConverter(new PathConverterOptions()
                 {
                     RequestLevel = level
                 })}
@@ -486,7 +486,7 @@ namespace BaSyx.API.Http.Controllers
 
             string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
             {
-                Converters = {new FullPathConverter(new PathConverterOptions()
+                Converters = {new SubmodelElementContainerPathConverter(new PathConverterOptions()
                 {
                     RequestLevel = level
                 })}

@@ -1513,12 +1513,15 @@
             <returns></returns>
             <response code="200">References of the requested Submodels</response>     
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsPath(System.Int32,System.String)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.GetAllSubmodelsPath(System.String,System.String,System.Int32,System.String,BaSyx.Models.AdminShell.RequestLevel)">
             <summary>
             Returns the Paths for all Submodels
             </summary>
+            <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
+            <param name="idShort">The Asset Administration Shell’s IdShort</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+            <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
             <response code="200">References of the requested Submodels</response>     
         </member>
