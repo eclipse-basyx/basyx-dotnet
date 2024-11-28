@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using BaSyx.Models.Extensions;
-using System;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;

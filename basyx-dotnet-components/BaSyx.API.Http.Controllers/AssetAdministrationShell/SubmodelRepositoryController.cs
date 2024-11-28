@@ -23,9 +23,6 @@ using BaSyx.Models.Extensions;
 using BaSyx.Utils.DependencyInjection;
 using System.Text.Json.Nodes;
 using BaSyx.Models.Extensions.JsonConverters;
-using System.Reflection.Emit;
-using System;
-using System.Xml.Linq;
 
 namespace BaSyx.API.Http.Controllers
 {
