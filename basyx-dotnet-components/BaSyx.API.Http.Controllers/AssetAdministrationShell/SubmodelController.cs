@@ -323,7 +323,8 @@ namespace BaSyx.API.Http.Controllers
             {
                 Converters = {new SubmodelElementContainerPathConverter(new PathConverterOptions()
                 {
-                    RequestLevel = level
+                    RequestLevel = level,
+                    EncloseInBrackets = false
                 })}
             });
 
@@ -488,7 +489,8 @@ namespace BaSyx.API.Http.Controllers
             {
                 Converters = {new SubmodelElementContainerPathConverter(new PathConverterOptions()
                 {
-                    RequestLevel = level
+                    RequestLevel = level,
+                    EncloseInBrackets = false
                 })}
             });
             
@@ -844,7 +846,8 @@ namespace BaSyx.API.Http.Controllers
             {
                 Converters = {new PathConverter(new PathConverterOptions()
                 {
-                    RequestLevel = level
+                    RequestLevel = level,
+                    EncloseInBrackets = true
                 })}
             });
             return Content(json, "application/json");

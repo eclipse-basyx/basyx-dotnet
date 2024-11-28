@@ -75,7 +75,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
         /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
-        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns>Requested Submodels</returns>
@@ -84,7 +84,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(PagedResult<List<Submodel>>), 200)]
         public IActionResult GetAllSubmodels([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
-            cursor = ResultHandling.Base64UrlEncode(cursor);
+            cursor = ResultHandling.Base64UrlDecode(cursor);
             semanticId = ResultHandling.Base64UrlDecode(semanticId);
 
             var result = serviceProvider.RetrieveSubmodels(limit, cursor, semanticId, idShort);
@@ -107,7 +107,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
         /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
-        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
         /// <returns>Requested Submodels</returns>
         [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.METADATA, Name = "GetAllSubmodels-Metadata")]
         [Produces("application/json")]
@@ -118,7 +118,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetAllSubmodelsMetadata([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            cursor = ResultHandling.Base64UrlEncode(cursor);
+            cursor = ResultHandling.Base64UrlDecode(cursor);
             semanticId = ResultHandling.Base64UrlDecode(semanticId);
 
             var result = serviceProvider.RetrieveSubmodelsMetadata(limit, cursor, semanticId, idShort);
@@ -136,7 +136,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
         /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
-        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
@@ -150,7 +150,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetAllSubmodelsValueOnly([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
         {
-            cursor = ResultHandling.Base64UrlEncode(cursor);
+            cursor = ResultHandling.Base64UrlDecode(cursor);
             semanticId = ResultHandling.Base64UrlDecode(semanticId);
 
             var result = serviceProvider.RetrieveSubmodels(limit, cursor, semanticId, idShort);
@@ -185,7 +185,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
         /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
-        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
         /// <returns></returns>
         /// <response code="200">References of the requested Submodels</response>     
         [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.REFERENCE, Name = "GetAllSubmodels-Reference")]
@@ -197,7 +197,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetAllSubmodelsReference([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            cursor = ResultHandling.Base64UrlEncode(cursor);
+            cursor = ResultHandling.Base64UrlDecode(cursor);
             semanticId = ResultHandling.Base64UrlDecode(semanticId);
 
             var result = serviceProvider.RetrieveSubmodelsReference(limit, cursor, semanticId, idShort); 
@@ -211,7 +211,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
         /// <param name="idShort">The Asset Administration Shell’s IdShort</param>
         /// <param name="limit">The maximum number of elements in the response array</param>
-        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">References of the requested Submodels</response>     
@@ -224,6 +224,9 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetAllSubmodelsPath([FromQuery] string semanticId = "", [FromQuery] string idShort = "", [FromQuery] int limit = 100, [FromQuery] string cursor = "", [FromQuery] RequestLevel level = default)
         {
+            cursor = ResultHandling.Base64UrlDecode(cursor);
+            semanticId = ResultHandling.Base64UrlDecode(semanticId);
+
             var result = serviceProvider.RetrieveSubmodels(limit, cursor, semanticId, idShort);
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
