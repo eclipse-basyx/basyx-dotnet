@@ -26,9 +26,6 @@ namespace BaSyx.Deployment.AppDataService
 			public bool IsVirtual { get; set; }
 
             [XmlElement]
-            public string SystemInfoUrl { get; set; }
-
-            [XmlElement]
             public bool UseUnixSocket { get; set; }
         }   
     }
