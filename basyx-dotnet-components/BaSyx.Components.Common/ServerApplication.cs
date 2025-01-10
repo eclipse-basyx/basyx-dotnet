@@ -483,7 +483,13 @@ namespace BaSyx.Components.Common
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
+            if (!string.IsNullOrEmpty(_defaultRoute))
+            {
+                var options = new RewriteOptions().AddRedirect("^$", _defaultRoute);
+                app.UseRewriter(options);
+            }
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
@@ -494,13 +500,7 @@ namespace BaSyx.Components.Common
                     endpointBuilder.Invoke(endpoints);
                 }
             });
-
-            if (!string.IsNullOrEmpty(_defaultRoute))
-            {
-                var options = new RewriteOptions().AddRedirect("^$", _defaultRoute);
-                app.UseRewriter(options);
-            }
-
+           
             if (ApplicationStarted != null)
                 applicationLifetime.ApplicationStarted.Register(ApplicationStarted);
             if (ApplicationStopping != null)

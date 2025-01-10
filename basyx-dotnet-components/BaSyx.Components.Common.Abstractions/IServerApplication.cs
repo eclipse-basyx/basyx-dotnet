@@ -10,6 +10,7 @@
 *******************************************************************************/
 using BaSyx.Utils.Settings;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,6 +25,7 @@ namespace BaSyx.Components.Common.Abstractions
     {
         Assembly ControllerAssembly { get; }
         ServerSettings Settings { get; }
+        IWebHostBuilder WebHostBuilder { get; }
 
         void Configure(Action<IApplicationBuilder> app);
         void ConfigureServices(Action<IServiceCollection> services);

@@ -52,12 +52,12 @@ namespace BaSyx.Deployment.AppDataService
         /// <summary>
         /// Gets the SNAP_COMMON location
         /// </summary>
-        public static string SnapCommonLocation => Environment.GetEnvironmentVariable("SNAP_COMMON");
+        public static string SnapCommonLocation => GetCommonLocation();
 
         /// <summary>
         /// Gets the SNAP_DATA location
         /// </summary>
-        public static string SnapDataLocation => Environment.GetEnvironmentVariable("SNAP_DATA");
+        public static string SnapDataLocation => GetDataLocation();
 
         private bool disposedValue;
 
@@ -112,7 +112,29 @@ namespace BaSyx.Deployment.AppDataService
             };
 
             Singleton = this;
-        }     
+        }
+
+        /// <summary>
+        /// Returns either the SNAP_DATA location if snapped or the Current Directory
+        /// </summary>
+        /// <returns></returns>
+        private static string GetDataLocation()
+        {
+            return IsSnapped ?
+                Environment.GetEnvironmentVariable("SNAP_DATA") :
+                Environment.CurrentDirectory;
+        }
+
+        /// <summary>
+        /// Returns either the SNAP_COMMON location if snapped or the Current Directory
+        /// </summary>
+        /// <returns></returns>
+        private static string GetCommonLocation()
+        {
+            return IsSnapped ?
+                Environment.GetEnvironmentVariable("SNAP_COMMON") :
+                Environment.CurrentDirectory;
+        }
 
         private static string GetBaseStorageLocation(string appName)
         {
@@ -266,9 +288,12 @@ namespace BaSyx.Deployment.AppDataService
             logger.LogInformation($"File {settingsFileName} loaded successfully");
         }        
 
-        public void AddFile(string fileName)
+        public void AddFile(string fileName, string storageLocation = null)
         {
-            string filePathToReadFrom = GetOrCreateTargetFilePath(fileName, BaseStorageLocation);
+            if (string.IsNullOrEmpty(storageLocation))
+                storageLocation = BaseStorageLocation;
+
+            string filePathToReadFrom = GetOrCreateTargetFilePath(fileName, storageLocation);
             if(!AppDataContext.Files.ContainsKey(fileName))
                 AppDataContext.Files.Add(fileName, filePathToReadFrom);
             logger.LogInformation($"File {filePathToReadFrom} loaded successfully");
