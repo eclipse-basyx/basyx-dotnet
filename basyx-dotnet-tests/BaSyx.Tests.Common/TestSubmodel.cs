@@ -12,7 +12,9 @@ using BaSyx.Models.AdminShell;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using BaSyx.Models.Semantics;
 
 namespace SimpleAssetAdministrationShell
 {
@@ -26,6 +28,11 @@ namespace SimpleAssetAdministrationShell
 
             Submodel testSubmodel = new Submodel(id, new BaSyxSubmodelIdentifier(id, "1.0.0"))
             {
+                DisplayName = new LangStringSet()
+                {
+                    new("de-DE", "Submodel"),
+                    new("en-US", "submodel")
+                },
                 SubmodelElements =
                 {
                     new Property<string>("TestProperty1")
@@ -138,7 +145,7 @@ namespace SimpleAssetAdministrationShell
 
                            if(computingTime.HasValue)
                             await Task.Delay(computingTime.Value, cancellationToken);
-                     
+
                            if(cancellationToken.IsCancellationRequested)
                                return new OperationResult(false, new Message(MessageType.Information, "Cancellation was requested"));
 
@@ -233,6 +240,9 @@ namespace SimpleAssetAdministrationShell
                                                 Set = (prop, val) => { propertyValue = val; return Task.CompletedTask; },
                                                 Get = prop => { return Task.FromResult("MyListStringPropertyValue2"); }
                                             },
+                                            new SubmodelElementList(null)
+                                            {
+                                            }
                                         }
                                     }
                                 }

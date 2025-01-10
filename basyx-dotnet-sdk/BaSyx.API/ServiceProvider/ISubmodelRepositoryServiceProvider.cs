@@ -12,11 +12,18 @@ using BaSyx.API.Interfaces;
 using BaSyx.Models.Connectivity;
 using BaSyx.Models.AdminShell;
 using System.Collections.Generic;
+using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.ResultHandling;
 
 namespace BaSyx.API.ServiceProvider
 {
     public interface ISubmodelRepositoryServiceProvider : IServiceProvider<IEnumerable<ISubmodel>, ISubmodelRepositoryDescriptor>, ISubmodelRepositoryInterface
     {
         ISubmodelServiceProviderRegistry SubmodelProviderRegistry { get; }
+
+        IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodelsMetadata(int limit = 100, string cursor = "", string semanticId = "", string idShort = "");
+
+        IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveSubmodelsReference(int limit = 100, string cursor = "", string semanticId = "", string idShort = "");
+
     }
 }

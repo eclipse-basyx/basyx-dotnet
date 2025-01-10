@@ -18,7 +18,6 @@ using System.Web;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using System.Linq;
 using System.IO;
 using System.Text.Json.Nodes;
 using System.Text.Json;
@@ -26,8 +25,6 @@ using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.FileSystem;
 using Microsoft.Extensions.FileProviders;
-using Range = BaSyx.Models.AdminShell.Range;
-using System.Text.Json.Serialization;
 using BaSyx.Models.Extensions.JsonConverters;
 
 namespace BaSyx.API.Http.Controllers
@@ -220,7 +217,8 @@ namespace BaSyx.API.Http.Controllers
 
             var node = JsonSerializer.SerializeToNode(result.Entity.Result, jsonOptions);
 
-            smValue.Add("submodelElements", node);
+            var smIdShort = serviceProvider.RetrieveSubmodel().Entity.IdShort;
+            smValue.Add(smIdShort, node);
             string json = smValue.ToJsonString(); 
             return Content(json, "application/json");
         }
@@ -228,8 +226,7 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Updates the values of the Submodel
         /// </summary>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="requestBody">Requested submodel element</param>
         /// <returns></returns>
         /// <response code="204">Submodel object in its ValueOnly representation</response>     
         [HttpPatch(SubmodelRoutes.SUBMODEL + OutputModifier.VALUE, Name = "PatchSubmodelValueOnly")]
@@ -238,16 +235,55 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodelValueOnly([FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
+        public IActionResult PatchSubmodelValueOnly([FromBody] JsonDocument requestBody)
         {
-            throw new NotImplementedException();
+            if (requestBody.Equals(default(JsonDocument)))
+                return ResultHandling.NullResult(nameof(requestBody));
+
+            var result = serviceProvider.RetrieveSubmodel();
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            var submodel = result.Entity;
+
+            // contrary to the specification, the function currently works directly on the value of the submodel 
+            // to enable the functionality according to the specification, the foreach statement must switche with commented in
+
+            //foreach (var smeNode in requestBody.RootElement.EnumerateObject().First().Value.EnumerateObject())
+            foreach (var smeNode in requestBody.RootElement.EnumerateObject())
+            {
+                var idShortPath = smeNode.Name;
+                var elementContainer = submodel.SubmodelElements.GetChild(idShortPath);
+
+                if (elementContainer == null)
+                    return ResultHandling.NullResult(nameof(idShortPath));
+
+                var sme = elementContainer.Value as SubmodelElement;
+                try
+                {
+                    // removed the sme property node to get only the value json document that conforms to the converter
+                    var valueDocument = JsonDocument.Parse(smeNode.Value.GetRawText());
+                    var valueScope = ValueScopeConverter.ParseValueScope(sme, valueDocument, _fullSerializerOptions);
+                    
+                    if (valueScope == null)
+                        return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
+
+                    serviceProvider.UpdateSubmodelElementValue(sme, valueScope);
+                }
+                catch (Exception e)
+                {
+                    return new Result(false, new ErrorMessage($"{e.Message} | path '{idShortPath}'")).CreateActionResult(CrudOperation.Update);
+                }
+            }
+
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>
         /// Returns the Reference of the Submodel
         /// </summary>
         /// <returns></returns>
-        /// <response code="200">ValueOnly representation of the Submodel</response>     
+        /// <response code="200">Reference of the Submodel</response>     
         [HttpGet(SubmodelRoutes.SUBMODEL + OutputModifier.REFERENCE, Name = "GetSubmodelReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
@@ -260,7 +296,7 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            var reference = result.Entity.GetReference();
+            var reference = result.Entity.CreateReference();
             var json = JsonSerializer.Serialize(reference, _fullSerializerOptions);
             return Content(json, "application/json");
         }
@@ -279,7 +315,20 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 500)]
         public IActionResult GetSubmodelPath([FromQuery] RequestLevel level = default)
         {
-            throw new NotImplementedException();
+            var result = serviceProvider.RetrieveSubmodelElements();
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            string json = JsonSerializer.Serialize(result.Entity.Result, new JsonSerializerOptions()
+            {
+                Converters = {new SubmodelElementContainerPathConverter(new PathConverterOptions()
+                {
+                    RequestLevel = level,
+                    EncloseInBrackets = false
+                })}
+            });
+
+            return Content(json, "application/json");
         }
 
         /// <summary>
@@ -316,8 +365,6 @@ namespace BaSyx.API.Http.Controllers
         /// Creates a new submodel element
         /// </summary>
         /// <param name="submodelElement">Requested submodel element</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="201">Submodel element created successfully</response>
         [HttpPost(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "PostSubmodelElement")]
@@ -328,7 +375,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 409)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PostSubmodelElement([FromBody] ISubmodelElement submodelElement, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult PostSubmodelElement([FromBody] ISubmodelElement submodelElement)
         {
             if (submodelElement == null)
                 return ResultHandling.NullResult(nameof(submodelElement));
@@ -401,8 +448,8 @@ namespace BaSyx.API.Http.Controllers
         /// <summary>
         /// Returns the References of all submodel elements
         /// </summary>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
         /// <returns></returns>
         /// <response code="200">List of found submodel elements</response>  
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE, Name = "GetAllSubmodelElementsReference")]
@@ -411,16 +458,18 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetAllSubmodelElementsReference([FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
+        public IActionResult GetAllSubmodelElementsReference([FromQuery] int limit = 100, [FromQuery] string cursor = "")
         {
-            throw new NotImplementedException();
+            var result = serviceProvider.RetrieveSubmodelElementsReference(limit, cursor);
+            return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
         /// <summary>
         /// Returns all submodel elements including their hierarchy in the Path notation
         /// </summary>
+        /// <param name="limit">The maximum number of elements in the response array</param>
+        /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>      
         /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">List of found submodel elements in the Path notation</response>  
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.PATH, Name = "GetAllSubmodelElementsPath")]
@@ -436,11 +485,12 @@ namespace BaSyx.API.Http.Controllers
             if (!result.Success || result.Entity == null || result.Entity.Result == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
 
-            string json = JsonSerializer.Serialize(result.Entity.Result, new JsonSerializerOptions()
+            string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
             {
-                Converters = {new FullPathConverter(new PathConverterOptions()
+                Converters = {new SubmodelElementContainerPathConverter(new PathConverterOptions()
                 {
-                    RequestLevel = level
+                    RequestLevel = level,
+                    EncloseInBrackets = false
                 })}
             });
             
@@ -470,6 +520,9 @@ namespace BaSyx.API.Http.Controllers
             idShortPath = HttpUtility.UrlDecode(idShortPath);
 
             var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
+            if (!result.Success || result.Entity == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
             var jsonOptions = new GlobalJsonSerializerOptions().Build();
             jsonOptions.Converters.Add(new FullSubmodelElementConverter(new ConverterOptions()
             {
@@ -485,8 +538,6 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="submodelElement">Requested submodel element</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="201">Submodel element created successfully</response>
         [HttpPost(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "PostSubmodelElementByPath")]
@@ -498,7 +549,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 409)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PostSubmodelElementByPath(string idShortPath, [FromBody] ISubmodelElement submodelElement, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult PostSubmodelElementByPath(string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
             if (string.IsNullOrEmpty(idShortPath))
                 return ResultHandling.NullResult(nameof(idShortPath));
@@ -510,12 +561,10 @@ namespace BaSyx.API.Http.Controllers
         }
 
         /// <summary>
-        /// Updates an existing submodel element at a specified path within submodel elements hierarchy
+        /// Replaces an existing submodel element at a specified path within the submodel element hierarchy
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="submodelElement">Requested submodel element</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="204">Submodel element updated successfully</response>
         [HttpPut(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "PutSubmodelElementByPath")]
@@ -525,7 +574,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PutSubmodelElementByPath(string idShortPath, [FromBody] ISubmodelElement submodelElement, [FromQuery] RequestLevel level = default, [FromQuery] RequestExtent extent = default)
+        public IActionResult PutSubmodelElementByPath(string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
             if (string.IsNullOrEmpty(idShortPath))
                 return ResultHandling.NullResult(nameof(idShortPath));
@@ -541,8 +590,6 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="submodelElement">Requested submodel element</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="204">Submodel element updated successfully</response>
         [HttpPatch(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "PatchSubmodelElementByPath")]
@@ -553,9 +600,15 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodelElementByPath(string idShortPath, [FromBody] ISubmodelElement submodelElement, [FromQuery] RequestLevel level = RequestLevel.Core, [FromQuery] RequestExtent extent = default)
+        public IActionResult PatchSubmodelElementByPath(string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+            if (submodelElement == null)
+                return ResultHandling.NullResult(nameof(submodelElement));
+
+            var result = serviceProvider.UpdateSubmodelElementByPath(idShortPath, submodelElement);
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>
@@ -584,12 +637,12 @@ namespace BaSyx.API.Http.Controllers
 
 
         /// <summary>
-        /// Returns the matadata attributes of a specific submodel element from the Submodel at a specified path
+        /// Returns the metadata attributes of a specific submodel element from the Submodel at a specified path
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
-        /// <response code="200">Requested submodel element in its ValueOnly representation</response>
+        /// <response code="200">Metadata attributes of the requested submodel element</response>
         /// <response code="404">Submodel Element not found</response>     
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "GetSubmodelElementByPathMetadata")]
         [Produces("application/json")]
@@ -624,7 +677,7 @@ namespace BaSyx.API.Http.Controllers
         /// Updates the metadata attributes an existing SubmodelElement
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
+        /// <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
         /// <returns></returns>
         /// <response code="200">Requested submodel element in its ValueOnly representation</response>  
         [HttpPatch(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "PatchSubmodelElementByPathMetadata")]
@@ -634,9 +687,15 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodelElementByPathMetadata(string idShortPath, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult PatchSubmodelElementByPathMetadata(string idShortPath, [FromBody] ISubmodelElement submodelElement)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+            if (submodelElement == null)
+                return ResultHandling.NullResult(nameof(submodelElement));
+
+            var result = serviceProvider.UpdateSubmodelElementMetadata(idShortPath, submodelElement);
+            return result.CreateActionResult(CrudOperation.Update);
         }
 
         /// <summary>
@@ -684,7 +743,6 @@ namespace BaSyx.API.Http.Controllers
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="requestBody">Requested submodel element</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="204">Submodel element updated successfully</response>
         /// <response code="400">Bad Request</response>
@@ -693,122 +751,35 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 404)]
-        public IActionResult PatchSubmodelElementValueByPathValueOnly(string idShortPath, [FromBody] JsonDocument requestBody, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult PatchSubmodelElementValueByPathValueOnly(string idShortPath, [FromBody] JsonDocument requestBody)
         {
             if (string.IsNullOrEmpty(idShortPath))
                 return ResultHandling.NullResult(nameof(idShortPath));
-            if (requestBody.Equals(default(JsonElement)))
+
+            if (requestBody.Equals(default(JsonDocument)))
                 return ResultHandling.NullResult(nameof(requestBody));
 
-            var sme_retrieved = serviceProvider.RetrieveSubmodelElement(idShortPath);
-            if (!sme_retrieved.Success || sme_retrieved.Entity == null)
-                return sme_retrieved.CreateActionResult(CrudOperation.Retrieve);
+            var retrieveSubmodelElement = serviceProvider.RetrieveSubmodelElement(idShortPath);
+            if (!retrieveSubmodelElement.Success || retrieveSubmodelElement.Entity == null)
+                return retrieveSubmodelElement.CreateActionResult(CrudOperation.Retrieve);
 
-            SubmodelElement sme = sme_retrieved.Entity as SubmodelElement;
+            var sme = retrieveSubmodelElement.Entity as SubmodelElement;
             ValueScope valueScope;
+            try
+            {
+                // contrary to the specification, the function currently works directly on the value of the submodel element 
+                // to enable the functionality according to the specification, the next line must be commented in
 
-            if(sme.ModelType == ModelType.Property)
-            {
-				Property property = sme as Property;
-				valueScope = requestBody.Deserialize<PropertyValue>(new JsonSerializerOptions()
-				{
-					Converters = { new ValueScopeConverter<PropertyValue>(dataType: property.ValueType) }
-				});
-			}
-            else if (sme.ModelType == ModelType.SubmodelElementCollection)
-            {
-                valueScope = requestBody.Deserialize<SubmodelElementCollectionValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<SubmodelElementCollectionValue>(
-                        sme: sme,
-                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
-                        jsonOptions: _fullSerializerOptions) }
-                });
+                // requestBody = JsonDocument.Parse(requestBody.RootElement.EnumerateObject().First().Value.GetRawText());
+                valueScope = ValueScopeConverter.ParseValueScope(sme, requestBody, _fullSerializerOptions);
             }
-            else if (sme.ModelType == ModelType.SubmodelElementList)
+            catch (Exception e)
             {
-                valueScope = requestBody.Deserialize<SubmodelElementListValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<SubmodelElementListValue>(
-                        sme: sme,
-                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
-                        jsonOptions: _fullSerializerOptions) }
-                });
+                return new Result(false, new ErrorMessage($"{e.Message} | path '{idShortPath}'")).CreateActionResult(CrudOperation.Update);
             }
-            else if (sme.ModelType == ModelType.Range)
-            {
-                Range range = sme as Range;
-                valueScope = requestBody.Deserialize<RangeValue>(new JsonSerializerOptions() 
-                { 
-                    Converters = { new ValueScopeConverter<RangeValue>(dataType: range.ValueType) }
-                });
-            }
-            else if (sme.ModelType == ModelType.MultiLanguageProperty)
-            {
-				valueScope = requestBody.Deserialize<MultiLanguagePropertyValue>(new JsonSerializerOptions()
-				{
-					Converters = { new ValueScopeConverter<MultiLanguagePropertyValue>() }
-				});
-			}
-			else if (sme.ModelType == ModelType.ReferenceElement)
-			{
-				valueScope = requestBody.Deserialize<ReferenceElementValue>(new JsonSerializerOptions()
-				{
-					Converters = { new ValueScopeConverter<ReferenceElementValue>(jsonOptions: _fullSerializerOptions) }
-				});
-			}
-            else if (sme.ModelType == ModelType.BasicEventElement)
-            {
-                valueScope = requestBody.Deserialize<BasicEventElementValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<BasicEventElementValue>(jsonOptions: _fullSerializerOptions) }
-                });
-            }
-            else if (sme.ModelType == ModelType.RelationshipElement)
-            {
-                valueScope = requestBody.Deserialize<RelationshipElementValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<RelationshipElementValue>(jsonOptions: _fullSerializerOptions) }
-                });
-            }
-            else if (sme.ModelType == ModelType.AnnotatedRelationshipElement)
-            {
-                valueScope = requestBody.Deserialize<AnnotatedRelationshipElementValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<AnnotatedRelationshipElementValue>(
-                        sme: sme, 
-                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly }, 
-                        jsonOptions: _fullSerializerOptions) }
-                });
-            }
-            else if (sme.ModelType == ModelType.Entity)
-            {
-                valueScope = requestBody.Deserialize<EntityValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<EntityValue>(
-                        sme: sme,
-                        options: new ValueScopeConverterOptions() { SerializationOption = SerializationOption.ValueOnly },
-                        jsonOptions: _fullSerializerOptions) }
-                });
-            }
-            else if (sme.ModelType == ModelType.File)
-            {
-                valueScope = requestBody.Deserialize<FileElementValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<FileElementValue>() }
-                });
-            }
-            else if (sme.ModelType == ModelType.Blob)
-            {
-                valueScope = requestBody.Deserialize<BlobValue>(new JsonSerializerOptions()
-                {
-                    Converters = { new ValueScopeConverter<BlobValue>() }
-                });
-            }
-            else
-            {
-				return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
-			}
+
+            if (valueScope == null)
+                return new Result(false, new ErrorMessage("SubmodelElement is unknown or not implemented")).CreateActionResult(CrudOperation.Update);
 
             var result = serviceProvider.UpdateSubmodelElementValue(idShortPath, valueScope);
             return result.CreateActionResult(CrudOperation.Update);
@@ -818,9 +789,8 @@ namespace BaSyx.API.Http.Controllers
         /// Returns the Reference of a specific submodel element from the Submodel at a specified path
         /// </summary>
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
-        /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
-        /// <response code="200">Requested submodel element in its ValueOnly representation</response>
+        /// <response code="200">A Reference of the requested submodel element</response>
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.REFERENCE, Name = "GetSubmodelElementByPathReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
@@ -828,9 +798,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 404)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult GetSubmodelElementByPathReference(string idShortPath, [FromQuery] RequestLevel level = RequestLevel.Core)
+        public IActionResult GetSubmodelElementByPathReference(string idShortPath)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+
+            var result = serviceProvider.RetrieveSubmodelElementReference(idShortPath);
+            return result.CreateActionResult(CrudOperation.Retrieve);
         }
 
         /// <summary>
@@ -839,7 +813,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
-        /// <response code="200">Requested submodel element in its ValueOnly representation</response>
+        /// <response code="200">Requested submodel element in the Path notation</response>
         [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.PATH, Name = "GetSubmodelElementByPathPath")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
@@ -854,20 +828,29 @@ namespace BaSyx.API.Http.Controllers
 
             idShortPath = HttpUtility.UrlDecode(idShortPath);
 
-            var result = serviceProvider.RetrieveSubmodelElement(idShortPath);
-            if (result.Success && result.Entity != null)
-            {
-                string json = JsonSerializer.Serialize(result.Entity, new JsonSerializerOptions()
-                {
-                    Converters = {new PathConverter(new PathConverterOptions()
-                    {
-                        RequestLevel = level
-                    })}
-                });
-                return Content(json, "application/json");
-            }
-            else
+            var result = serviceProvider.RetrieveSubmodel();
+            if (!result.Success || result.Entity == null)
                 return result.CreateActionResult(CrudOperation.Retrieve);
+            
+            var sme= result.Entity.SubmodelElements.GetChild(idShortPath);
+
+            if (sme == null)
+                return result.CreateActionResult(CrudOperation.Retrieve);
+
+            // exception for properties in collections (see API spec page 171)
+            if (sme.Value.ModelType == ModelType.Property &&
+                sme.ParentContainer?.Value?.ModelType == ModelType.SubmodelElementCollection)
+                return Content("[]", "application/json");
+
+            var json = JsonSerializer.Serialize(sme.Value, new JsonSerializerOptions()
+            {
+                Converters = {new PathConverter(new PathConverterOptions()
+                {
+                    RequestLevel = level,
+                    EncloseInBrackets = true
+                })}
+            });
+            return Content(json, "application/json");
         }
 
         /// <summary>
@@ -911,7 +894,8 @@ namespace BaSyx.API.Http.Controllers
                     return File(file.CreateReadStream(), contentType, fileNameOnly);
                 }                   
             }
-            return NotFound();
+
+            return NotFound(new { message = "Physical file not found", itemId = file.PhysicalPath});
         }
 
 
@@ -940,6 +924,12 @@ namespace BaSyx.API.Http.Controllers
             var fileElementRetrieved = serviceProvider.RetrieveSubmodelElement(idShortPath);
             if(!fileElementRetrieved.Success || fileElementRetrieved.Entity == null)
                 return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
+            
+            if (fileElementRetrieved.Entity.ModelType != ModelType.File)
+            {
+                Result result = new Result(false, new ErrorMessage($"ModelType of {idShortPath} is not File but {fileElementRetrieved.Entity.ModelType}"));
+                return result.CreateActionResult(CrudOperation.Retrieve);
+            }
 
             IFileElement fileElement = fileElementRetrieved.Entity.Cast<IFileElement>();
             string fileName = fileElement.Value.Value.TrimStart('/');
@@ -967,7 +957,31 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 404)]
         public IActionResult DeleteFileByPath(string idShortPath)
         {
-           throw new NotImplementedException();
+            if (string.IsNullOrEmpty(idShortPath))
+                return ResultHandling.NullResult(nameof(idShortPath));
+
+            var fileElementRetrieved = serviceProvider.RetrieveSubmodelElement(idShortPath);
+            if (!fileElementRetrieved.Success || fileElementRetrieved.Entity == null)
+                return fileElementRetrieved.CreateActionResult(CrudOperation.Retrieve);
+
+            if (fileElementRetrieved.Entity.ModelType != ModelType.File)
+            {
+                Result result = new Result(false, new ErrorMessage($"ModelType of {idShortPath} is not File but {fileElementRetrieved.Entity.ModelType}"));
+                return result.CreateActionResult(CrudOperation.Retrieve);
+            }
+
+            IFileElement fileElement = fileElementRetrieved.Entity.Cast<IFileElement>();
+            string fileName = fileElement.Value.Value.TrimStart('/');
+
+            IFileProvider fileProvider = hostingEnvironment.ContentRootFileProvider;
+            var file = fileProvider.GetFileInfo(fileName);
+            
+            if (file.Exists && !string.IsNullOrEmpty(file.PhysicalPath))
+                System.IO.File.Delete(file.PhysicalPath);
+            else
+                return NotFound(new { message = "Physical file not found", itemId = file.PhysicalPath });
+
+            return Ok();
         }
 
         /// <summary>

@@ -9,17 +9,11 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.AdminShell;
-using BaSyx.Utils.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Range = BaSyx.Models.AdminShell.Range;
 
 namespace BaSyx.Models.Extensions
 {
@@ -49,9 +43,8 @@ namespace BaSyx.Models.Extensions
             if (_converterOptions.EncloseInBrackets)
                 writer.WriteStartArray();
             
-            if (value is IElementContainer<ISubmodelElement>)
+            if (value is IElementContainer<ISubmodelElement> rootContainer)
             {
-                var rootContainer = value as IElementContainer<ISubmodelElement>;
                 writer.WriteStringValue(rootContainer.Path);
 
                 var childPaths = new List<string>();
@@ -67,11 +60,8 @@ namespace BaSyx.Models.Extensions
                     writer.WriteStringValue(path);
             }
             else
-            {
-                // TODO: Return full IdShortPath
-                if (_converterOptions.RequestLevel == RequestLevel.Deep)
-                    writer.WriteStringValue(value.IdShort);
-            }
+                writer.WriteStringValue(value.IdShort);
+
             if (_converterOptions.EncloseInBrackets)
                 writer.WriteEndArray();
         }

@@ -16,6 +16,7 @@ using BaSyx.Models.Connectivity;
 using System;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.ResultHandling.http;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -172,17 +173,21 @@ namespace BaSyx.API.ServiceProvider
 
             AssetAdministrationShell tempShell = new AssetAdministrationShell(idShort, identifier)
             {
-                AssetInformation = aas.AssetInformation ?? _assetAdministrationShell.AssetInformation,
                 Administration = aas.Administration ?? _assetAdministrationShell.Administration,
-                DerivedFrom = aas.DerivedFrom ?? _assetAdministrationShell.DerivedFrom,
+                AssetInformation = aas.AssetInformation ?? _assetAdministrationShell.AssetInformation,
                 Category = aas.Category ?? _assetAdministrationShell.Category,
-                Description = aas.Description ?? _assetAdministrationShell.Description,
-                DisplayName = aas.DisplayName ?? _assetAdministrationShell.DisplayName,
-                Submodels = _assetAdministrationShell.Submodels,
-                SubmodelReferences = _assetAdministrationShell.SubmodelReferences,
-                EmbeddedDataSpecifications = _assetAdministrationShell.EmbeddedDataSpecifications,
-                ConceptDescription = _assetAdministrationShell.ConceptDescription                
+                ConceptDescription = aas.ConceptDescription ?? _assetAdministrationShell.ConceptDescription,
+                DerivedFrom = aas.DerivedFrom ?? _assetAdministrationShell.DerivedFrom,
+                Submodels = aas.Submodels ?? _assetAdministrationShell.Submodels,
+                SubmodelReferences = aas.SubmodelReferences ?? _assetAdministrationShell.SubmodelReferences,
             };
+
+            // default init as empty list
+            tempShell.Description = aas.Description.Any() ? aas.Description : _assetAdministrationShell.Description;
+            // default init as empty list
+            tempShell.DisplayName = aas.DisplayName.Any() ? aas.DisplayName : _assetAdministrationShell.DisplayName;
+            // default init as empty list
+            tempShell.EmbeddedDataSpecifications = aas.EmbeddedDataSpecifications.Any() ? aas.EmbeddedDataSpecifications : _assetAdministrationShell.EmbeddedDataSpecifications;
 
             _assetAdministrationShell = tempShell;
             return new Result(true);
@@ -208,24 +213,42 @@ namespace BaSyx.API.ServiceProvider
             {
                 Administration = _assetAdministrationShell.Administration,
                 AssetInformation = assetInformation,
-                DerivedFrom = _assetAdministrationShell.DerivedFrom,
                 Category = _assetAdministrationShell.Category,
+                ConceptDescription = _assetAdministrationShell.ConceptDescription,
+                DerivedFrom = _assetAdministrationShell.DerivedFrom,
                 Description = _assetAdministrationShell.Description,
                 DisplayName = _assetAdministrationShell.DisplayName,
+                EmbeddedDataSpecifications = _assetAdministrationShell.EmbeddedDataSpecifications,
                 Submodels = _assetAdministrationShell.Submodels,
+                SubmodelReferences = _assetAdministrationShell.SubmodelReferences
             };
 
             _assetAdministrationShell = tempShell;
             return new Result(true);
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences(int limit = 100, string cursor = "")
         {
             if (_assetAdministrationShell == null)
                 return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
 
-            return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(true, 
-                new PagedResult<IEnumerable<IReference<ISubmodel>>>(_assetAdministrationShell.SubmodelReferences));
+            var references = _assetAdministrationShell.SubmodelReferences;
+
+            if (references == null)
+                return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(false, new NotFoundMessage(nameof(_assetAdministrationShell.SubmodelReferences)));
+
+            var refDict = references.ToDictionary(reference => reference.First.Value, reference => reference);
+
+            // create the paged data
+            var paginationHelper = new PaginationHelper<IReference<ISubmodel>>(refDict, elem => elem.First.Value);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var refPaged = new List<IReference<ISubmodel>>();
+            refPaged.AddRange(pagedResult.Result as IEnumerable<IReference<ISubmodel>>);
+            var paginatedRef = new PagedResult<IEnumerable<IReference<ISubmodel>>>(refPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IEnumerable<IReference<ISubmodel>>>>(true, paginatedRef);
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)
@@ -259,6 +282,59 @@ namespace BaSyx.API.ServiceProvider
 
             var sp = GetSubmodelServiceProvider(id);
             if(!sp.Success)
+                return new Result(false, new NotFoundMessage($"Submodel with id {id}"));
+
+            var result = UnregisterSubmodelServiceProvider(id);
+            if (!result.Success)
+                return result;
+
+            _assetAdministrationShell.Submodels.Remove(sp.Entity.ServiceDescriptor.IdShort);
+            var checkRetrieve = _assetAdministrationShell.Submodels.Retrieve(sp.Entity.ServiceDescriptor.IdShort);
+
+            if (!checkRetrieve.Success)
+                return new Result(true);
+
+            return new Result(false, new ErrorMessage("Submodel reference could not be deleted"));
+        }
+
+        public IResult PutSubmodel(Identifier id, ISubmodel submodel)
+        {
+            if (_assetAdministrationShell == null)
+                return new Result(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
+
+            var sp = GetSubmodelServiceProvider(id);
+            if (!sp.Success)
+                return new Result(false, new NotFoundMessage($"Submodel with id {id}"));
+
+            var unRegResult = UnregisterSubmodelServiceProvider(id);
+            if (!unRegResult.Success)
+                return unRegResult;
+
+            var submodelSp = submodel.CreateServiceProvider();
+            var regResult = RegisterSubmodelServiceProvider(submodelSp.ServiceDescriptor.Id, submodelSp);
+            if (!regResult.Success)
+                return regResult;
+
+            var result = _assetAdministrationShell.Submodels.Update(sp.Entity.ServiceDescriptor.IdShort, submodel);
+
+            var checkNewSm = _assetAdministrationShell.Submodels.Retrieve(submodelSp.ServiceDescriptor.IdShort);
+            if (!checkNewSm.Success)
+                return new Result(false, new ErrorMessage("Submodel could not be replaced"));
+
+            var checkOldSm = _assetAdministrationShell.Submodels.Retrieve(sp.Entity.ServiceDescriptor.IdShort);
+            if (checkOldSm.Success)
+                return new Result(false, new ErrorMessage("Submodel could not be replaced"));
+
+            return result;
+        }
+
+        public IResult DeleteSubmodel(Identifier id)
+        {
+            if (_assetAdministrationShell == null)
+                return new Result(false, new ErrorMessage("The service provider's inner Asset Administration Shell object is null"));
+
+            var sp = GetSubmodelServiceProvider(id);
+            if (!sp.Success)
                 return new Result(false, new NotFoundMessage($"Submodel with id {id}"));
 
             var result = UnregisterSubmodelServiceProvider(id);

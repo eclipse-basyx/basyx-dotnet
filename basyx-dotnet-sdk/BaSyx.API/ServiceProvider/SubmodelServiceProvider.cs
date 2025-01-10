@@ -22,6 +22,9 @@ using System.Text.Json;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using BaSyx.Utils.ResultHandling.http;
 using System.Linq;
+using BaSyx.Utils.DependencyInjection;
+using Range = BaSyx.Models.AdminShell.Range;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -40,7 +43,7 @@ namespace BaSyx.API.ServiceProvider
         private readonly Dictionary<string, Action<ValueScope>> updateFunctions;
         private readonly Dictionary<string, EventDelegate> eventDelegates;
         private readonly Dictionary<string, InvocationResponse> invocationResults;
-        
+
         private IMessageClient messageClient;
         private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
@@ -511,8 +514,160 @@ namespace BaSyx.API.ServiceProvider
             if (_submodel == null)
                 return new Result(false, new NotFoundMessage("Submodel"));
 
+            if (submodelElement == null)
+                return new Result(false, new NotFoundMessage("submodelElement"));
+
             var updated = _submodel.SubmodelElements.Update(idShortPath, submodelElement);
             return updated;
+        }
+
+        public IResult UpdateSubmodelElementByPath(string idShortPath, ISubmodelElement submodelElement)
+        {
+            if (_submodel == null)
+                return new Result(false, new NotFoundMessage("Submodel"));
+
+            if (submodelElement == null)
+                return new Result(false, new NotFoundMessage("submodelElement"));
+
+            var retrievedSme = RetrieveSubmodelElement(idShortPath);
+            if (!retrievedSme.Success || retrievedSme.Entity == null)
+                return new Result(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
+
+            var sme = retrievedSme.Entity as SubmodelElement;
+
+            // update value if set
+            if (submodelElement.Value != null)
+            {
+                var valueResult = UpdateSubmodelElementValue(sme, submodelElement.Value);
+                if (!valueResult.Success)
+                    return valueResult;
+            }
+
+            // update metadata
+            var metadataResult = UpdateSubmodelElementMetadata(sme, submodelElement);
+            return metadataResult;
+        }
+
+        public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
+        {
+            if (_submodel == null)
+                return new Result(false, new NotFoundMessage("Submodel"));
+
+            if (submodelElement == null)
+                return new Result(false, new NotFoundMessage("submodelElement"));
+
+            var retrievedSme = RetrieveSubmodelElement(idShortPath);
+            if (!retrievedSme.Success || retrievedSme.Entity == null)
+                return new Result(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
+
+            var sme = retrievedSme.Entity as SubmodelElement;
+
+            return UpdateSubmodelElementMetadata(sme, submodelElement);
+        }
+
+        public IResult UpdateSubmodelElementMetadata(SubmodelElement sme, ISubmodelElement submodelElement)
+        {
+            if (sme.ModelType != submodelElement.ModelType)
+                return new Result(false, new ErrorMessage("Model type not matching for found submodel element and request body"));
+
+            sme.Category = submodelElement.Category ?? sme.Category;
+
+            // default init as empty list
+            if (submodelElement.Description.Count > 0)
+                sme.Description = submodelElement.Description;
+
+            // default init as empty list
+            if (submodelElement.DisplayName.Count > 0)
+                sme.DisplayName = submodelElement.DisplayName;
+            
+            sme.SemanticId = submodelElement.SemanticId ?? sme.SemanticId;
+            
+            // default init as empty list
+            if (submodelElement.SupplementalSemanticIds.Any())
+                sme.SupplementalSemanticIds = submodelElement.SupplementalSemanticIds;
+
+            // default init as empty list
+            if (submodelElement.Qualifiers.Any())
+                sme.Qualifiers = submodelElement.Qualifiers;
+
+            switch (sme.ModelType.Type)
+            {
+                case ModelTypes.Property:
+                    var smeProperty = (Property)sme;
+                    var submodelElementProperty = (Property)submodelElement;
+
+                    smeProperty.ValueId = submodelElementProperty.ValueId ?? smeProperty.ValueId;
+                    smeProperty.ValueType = submodelElementProperty.ValueType ?? smeProperty.ValueType;
+                    break;
+
+                case ModelTypes.BasicEventElement:
+                    var smeBasicEvent = (BasicEventElement)sme;
+                    var submodelElementBasicEvent = (BasicEventElement)submodelElement;
+                    smeBasicEvent.ObservableReference = submodelElementBasicEvent.ObservableReference ?? smeBasicEvent.ObservableReference;
+
+                    if (submodelElementBasicEvent.Direction != EventDirection.None)
+                        smeBasicEvent.Direction = submodelElementBasicEvent.Direction;
+
+                    if (submodelElementBasicEvent.State != EventState.None)
+                        smeBasicEvent.State = submodelElementBasicEvent.State;
+
+                    smeBasicEvent.MessageTopic = submodelElementBasicEvent.MessageTopic ?? smeBasicEvent.MessageTopic;
+                    smeBasicEvent.MessageBroker = submodelElementBasicEvent.MessageBroker ?? smeBasicEvent.MessageBroker;
+                    smeBasicEvent.LastUpdate = submodelElementBasicEvent.LastUpdate ?? smeBasicEvent.LastUpdate;
+                    smeBasicEvent.MinInterval = submodelElementBasicEvent.MinInterval ?? smeBasicEvent.MinInterval;
+                    smeBasicEvent.MaxInterval = submodelElementBasicEvent.MaxInterval ?? smeBasicEvent.MaxInterval;
+                    
+                    break;
+
+                case ModelTypes.Entity:
+                    var smeEntity = (Entity)sme;
+                    var submodelElementEntity = (Entity)submodelElement;
+
+                    if (submodelElementEntity.EntityType != EntityType.None)
+                        smeEntity.EntityType = submodelElementEntity.EntityType;
+
+                    break;
+
+                case ModelTypes.MultiLanguageProperty:
+                    var smeMultiLang = (MultiLanguageProperty)sme;
+                    var submodelElementMultiLang = (MultiLanguageProperty)submodelElement;
+
+                    smeMultiLang.ValueId = submodelElementMultiLang.ValueId ?? smeMultiLang.ValueId;
+
+                    break;
+
+                case ModelTypes.Operation:
+                    var smeOperation = (Operation)sme;
+                    var submodelElementOperation = (Operation)submodelElement;
+
+                    smeOperation.InputVariables = submodelElementOperation.InputVariables ?? smeOperation.InputVariables;
+                    smeOperation.InOutputVariables = submodelElementOperation.InOutputVariables ?? smeOperation.InOutputVariables;
+                    smeOperation.OutputVariables = submodelElementOperation.OutputVariables ?? smeOperation.OutputVariables;
+
+                    break;
+
+                case ModelTypes.Range:
+                    var smeRange = (Range)sme;
+                    var submodelElementRange = (Range)submodelElement;
+
+                    smeRange.ValueId = submodelElementRange.ValueId ?? smeRange.ValueId;
+                    smeRange.ValueType = submodelElementRange.ValueType ?? smeRange.ValueType;
+
+                    break;
+
+                case ModelTypes.SubmodelElementList:
+                    var smeList = (SubmodelElementList)sme;
+                    var submodelElementList = (SubmodelElementList)submodelElement;
+
+                    smeList.SemanticIdListElement =
+                        submodelElementList.SemanticIdListElement ?? smeList.SemanticIdListElement;
+                    smeList.TypeValueListElement = submodelElementList.TypeValueListElement ?? smeList.TypeValueListElement;
+
+                    break;
+            }
+
+
+            return new Result(true);
         }
 
         public IResult<ISubmodelElement> CreateOrUpdateSubmodelElement(string idShortPath, ISubmodelElement submodelElement, SubmodelElementHandler submodelElementHandler)
@@ -533,6 +688,9 @@ namespace BaSyx.API.ServiceProvider
                 return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(false, new NotFoundMessage("SubmodelElements"));
 
             var retrieved = _submodel.SubmodelElements.RetrieveAll();
+            if (!retrieved.Success || retrieved.Entity == null)
+                return new Result<PagedResult<IElementContainer<ISubmodelElement>>>(retrieved.Success, null, retrieved.Messages);
+
             var smeDict = retrieved.Entity.ToDictionary(sme => sme.IdShort, sme => sme);
 
             // create the paged data
@@ -582,22 +740,79 @@ namespace BaSyx.API.ServiceProvider
             //    return new Result<ValueScope>(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
         }
 
+        public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
+        {
+            if (_submodel == null)
+                return new Result<IReference>(false, new NotFoundMessage("Submodel"));
+
+            var submodelElement = _submodel.SubmodelElements.GetChild(idShortPath);
+            if (submodelElement == null)
+                return new Result<IReference>(false, new NotFoundMessage($"SubmodelElement {idShortPath}"));
+
+            var keys = new List<IKey>()
+            {
+                //add submodel reference key
+                Reference.CreateReferenceKey(_submodel)
+            };
+            //add submodel element keys (recursive with parent containers)
+            keys.AddRange(submodelElement.RetrieveReferenceKeys());
+
+            var reference = new Reference(keys)
+            {
+                Type = ReferenceType.ModelReference
+            };
+            return new Result<IReference>(true, reference);
+        }
+
+        public IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100,
+            string cursor = "")
+        {
+            if (_submodel == null)
+                return new Result<PagedResult<IReference>>(false, new NotFoundMessage("Submodel"));
+
+            var result = RetrieveSubmodelElements(limit, cursor);
+            if (!result.Success || result.Entity == null || result.Entity.Result == null)
+                return new Result<PagedResult<IReference>>(false, new NotFoundMessage("SubmodelElements"));
+
+            var keys = new List<IKey>()
+            {
+                //add submodel reference key
+                Reference.CreateReferenceKey(_submodel)
+            };
+
+            foreach (var sme in result.Entity.Result)
+                //add submodel element key
+                keys.Add(Reference.CreateReferenceKey(sme));
+
+            var reference = new Reference(keys);
+            reference.Type = ReferenceType.ModelReference;
+            return new Result<PagedResult<IReference>>(true, new PagedResult<IReference>(reference, result.Entity.PagingMetadata));
+        }
+
         public IResult UpdateSubmodelElementValue(string submodelElementId, ValueScope value)
         {
             if (_submodel == null)
                 return new Result(false, new NotFoundMessage("Submodel"));
 
+            if (value == null)
+                return new Result(false, new NotFoundMessage("value"));
+
             var submodelElement = _submodel.SubmodelElements.Retrieve<ISubmodelElement>(submodelElementId);
             if (!submodelElement.Success || submodelElement.Entity == null)
                 return new Result(false, new NotFoundMessage($"SubmodelElement {submodelElementId}"));
 
-            if (submodelElement.Entity.Set != null)
+            return UpdateSubmodelElementValue(submodelElement.Entity, value);
+        }
+
+        public IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value)
+        {
+            if (submodelElement.Set != null)
             {
-                submodelElement.Entity.Set.Invoke(submodelElement.Entity, value);
+                submodelElement.Set.Invoke(submodelElement, value);
                 return new Result(true);
             }
             else
-                return new Result(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElementId}"));
+                return new Result(false, new NotFoundMessage($"SubmodelElementHandler for {submodelElement.IdShort}"));
         }
 
         public IResult DeleteSubmodelElement(string submodelElementId)
@@ -612,7 +827,7 @@ namespace BaSyx.API.ServiceProvider
             return deleted;
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level, RequestExtent extent)
+        public IResult<ISubmodel> RetrieveSubmodel()
         {
             if (_submodel == null)
                 return new Result<ISubmodel>(false, new ErrorMessage("The service provider's inner Submodel object is null"));
@@ -623,23 +838,21 @@ namespace BaSyx.API.ServiceProvider
         public IResult UpdateSubmodel(ISubmodel submodel)
         {
             if (_submodel == null)
-                return new Result(false, new ErrorMessage("The service provider's inner Submodel object is null"));
+                return new Result(false, new NotFoundMessage("Submodel"));
 
-            var updatedSubmodel = new Submodel(_submodel.IdShort, _submodel.Id)
+            // update the metadata
+            var result = UpdateSubmodelMetadata(submodel);
+            if (!result.Success)
+                return result;
+
+            // update submodel elements
+            // default init as empty list
+            if (submodel.SubmodelElements.Count > 0)
             {
-                Administration = submodel.Administration ?? _submodel.Administration,
-                Category = submodel.Category ?? _submodel.Category,
-                SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
-                SupplementalSemanticIds = submodel.SupplementalSemanticIds ?? _submodel.SupplementalSemanticIds,
-                Qualifiers = submodel.Qualifiers ?? _submodel.Qualifiers,
-                Description = submodel.Description ?? _submodel.Description,
-                DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
-                EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications ?? _submodel.EmbeddedDataSpecifications,
-                ConceptDescription = submodel.ConceptDescription ?? _submodel.ConceptDescription,
-                SubmodelElements = submodel.SubmodelElements ?? _submodel.SubmodelElements
-            };
+                _submodel.SubmodelElements.Clear();
+                _submodel.SubmodelElements.AddRange(submodel.SubmodelElements);
+            }
 
-            _submodel = updatedSubmodel;
             return new Result(true);
         }
 
@@ -652,11 +865,21 @@ namespace BaSyx.API.ServiceProvider
             {
                 Administration = submodel.Administration ?? _submodel.Administration,
                 Category = submodel.Category ?? _submodel.Category,
-                Description = submodel.Description ?? _submodel.Description,
-                DisplayName = submodel.DisplayName ?? _submodel.DisplayName,
                 SemanticId = submodel.SemanticId ?? _submodel.SemanticId,
-                SubmodelElements = _submodel.SubmodelElements
+                ConceptDescription = submodel.ConceptDescription ?? _submodel.ConceptDescription,
+                SubmodelElements = _submodel.SubmodelElements,
             };
+
+            // default init as empty list
+            updatedSubmodel.SupplementalSemanticIds = submodel.SupplementalSemanticIds.Any() ? submodel.SupplementalSemanticIds : _submodel.SupplementalSemanticIds;
+            // default init as empty list
+            updatedSubmodel.Qualifiers = submodel.Qualifiers.Any() ? submodel.Qualifiers : _submodel.Qualifiers;
+            // default init as empty list
+            updatedSubmodel.Description = submodel.Description.Any() ? submodel.Description : _submodel.Description;
+            // default init as empty list
+            updatedSubmodel.DisplayName = submodel.DisplayName.Any() ? submodel.DisplayName : _submodel.DisplayName;
+            // default init as empty list
+            updatedSubmodel.EmbeddedDataSpecifications = submodel.EmbeddedDataSpecifications.Any() ? submodel.EmbeddedDataSpecifications : _submodel.EmbeddedDataSpecifications;
 
             _submodel = updatedSubmodel;
             return new Result(true);

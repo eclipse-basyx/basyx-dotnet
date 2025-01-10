@@ -20,7 +20,7 @@ namespace BaSyx.API.Interfaces
 
         IResult<ISubmodel> RetrieveSubmodel(Identifier id);
 
-        IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels();
+        IResult<PagedResult<IElementContainer<ISubmodel>>> RetrieveSubmodels(int limit = 100, string cursor = "", string semanticId = "", string idShort = "");
 
         IResult UpdateSubmodel(Identifier id, ISubmodel submodel);
 

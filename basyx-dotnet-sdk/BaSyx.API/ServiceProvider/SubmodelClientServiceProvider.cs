@@ -55,6 +55,11 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.CreateSubmodelElement(rootIdShortPath, submodelElement);
         }
 
+        public IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value)
+        {
+            return _submodelClient.UpdateSubmodelElementValue(submodelElement, value);
+        }
+
         public IResult DeleteSubmodelElement(string idShortPath)
         {
             return _submodelClient.DeleteSubmodelElement(idShortPath);
@@ -76,14 +81,24 @@ namespace BaSyx.API.ServiceProvider
             return _submodelClient.InvokeOperation(idShortPath, invocationRequest, async);
         }
 
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
+        public IResult<ISubmodel> RetrieveSubmodel()
         {
-            return _submodelClient.RetrieveSubmodel(level, extent);
+            return _submodelClient.RetrieveSubmodel();
         }
 
         public IResult<ISubmodelElement> RetrieveSubmodelElement(string idShortPath)
         {
             return _submodelClient.RetrieveSubmodelElement(idShortPath);
+        }
+
+        public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
+        {
+            return _submodelClient.UpdateSubmodelElementMetadata(idShortPath, submodelElement);
+        }
+
+        public IResult UpdateSubmodelElementByPath(string idShortPath, ISubmodelElement submodelElement)
+        {
+            return _submodelClient.UpdateSubmodelElementByPath(idShortPath, submodelElement);
         }
 
         public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100, string cursor = "")
@@ -94,7 +109,17 @@ namespace BaSyx.API.ServiceProvider
         public IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath)
         {
             return _submodelClient.RetrieveSubmodelElementValue(idShortPath);
-        }   
+        }
+
+        public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
+        {
+            return _submodelClient.RetrieveSubmodelElementReference(idShortPath);
+        }
+
+        public IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100, string cursor = "")
+        {
+            return _submodelClient.RetrieveSubmodelElementsReference(limit, cursor);
+        }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
         {

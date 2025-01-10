@@ -96,9 +96,9 @@ namespace BaSyx.API.ServiceProvider
             return _shellClient.UpdateAssetInformation(assetInformation);
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences(int limit = 100, string cursor = "")
         {
-            return _shellClient.RetrieveAllSubmodelReferences();
+            return _shellClient.RetrieveAllSubmodelReferences(limit, cursor);
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)
@@ -109,6 +109,11 @@ namespace BaSyx.API.ServiceProvider
         public IResult DeleteSubmodelReference(Identifier id)
         {
             return _shellClient.DeleteSubmodelReference(id);
+        }
+
+        public IResult PutSubmodel(Identifier id, ISubmodel submodel)
+        {
+            return _shellClient.PutSubmodel(id, submodel);
         }
 
         public virtual IResult<IEnumerable<ISubmodelServiceProvider>> GetSubmodelServiceProviders()
@@ -145,6 +150,11 @@ namespace BaSyx.API.ServiceProvider
             }
             else
                 return new Result(false, new NotFoundMessage(id));
+        }
+
+        public IResult DeleteSubmodel(Identifier id)
+        {
+            return _shellClient.DeleteSubmodel(id);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace BaSyx.API.Clients
 
         Task<IResult<ISubmodel>> RetrieveSubmodelAsync(Identifier id);
 
-        Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync();
+        Task<IResult<PagedResult<IElementContainer<ISubmodel>>>> RetrieveSubmodelsAsync(int limit = 100, string cursor = "", string semanticId = "", string idShort = "");
 
         Task<IResult> UpdateSubmodelAsync(Identifier id, ISubmodel submodel);
 

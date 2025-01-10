@@ -1,21 +1,17 @@
 ﻿using BaSyx.Models.AdminShell;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace BaSyx.Models.Extensions.JsonConverters
 {
-    public class FullPathConverter: JsonConverter<IElementContainer<ISubmodelElement>>
+    public class SubmodelElementContainerPathConverter : JsonConverter<IElementContainer<ISubmodelElement>>
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<PathConverter>();
         private PathConverterOptions _converterOptions;
 
-        public FullPathConverter(PathConverterOptions options = null)
+        public SubmodelElementContainerPathConverter(PathConverterOptions options = null)
         {
             _converterOptions = options ?? new PathConverterOptions();
         }
@@ -37,7 +33,7 @@ namespace BaSyx.Models.Extensions.JsonConverters
                         new PathConverter(options: new PathConverterOptions()
                         {
                             RequestLevel = _converterOptions.RequestLevel,
-                            EncloseInBrackets = false
+                            EncloseInBrackets = _converterOptions.EncloseInBrackets
                         })
                     }
                 });

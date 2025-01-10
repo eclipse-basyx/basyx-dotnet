@@ -14,7 +14,10 @@ using BaSyx.Utils.ResultHandling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using BaSyx.Utils.ResultHandling.http;
+using System.Text.Json;
 
 namespace BaSyx.API.ServiceProvider
 {
@@ -146,11 +149,59 @@ namespace BaSyx.API.ServiceProvider
             return new Result<IAssetAdministrationShell>(false, new NotFoundMessage("Asset Administration Shell Service Provider"));
         }
 
-        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells()
+        public IResult<PagedResult<IElementContainer<IAssetAdministrationShell>>> RetrieveAssetAdministrationShells(int limit = 100, string cursor = "", string assetIds = "", string idShort = "")
         {
-            return new Result<PagedResult<IElementContainer<IAssetAdministrationShell>>>(true, 
-                new PagedResult<IElementContainer<IAssetAdministrationShell>>(
-                new ElementContainer<IAssetAdministrationShell>(null, AssetAdministrationShells)));
+            var filteredAas = AssetAdministrationShells;
+
+            // filter by asset IDs if set
+            if (!string.IsNullOrEmpty(assetIds))
+                filteredAas = FilterShellsByAssetIds(JsonDocument.Parse(assetIds));
+
+            // else filter by ID short if set
+            else if (!string.IsNullOrEmpty(idShort))
+                filteredAas = AssetAdministrationShells.Where(e => idShort == e.IdShort);
+
+            var aasDict = filteredAas.ToDictionary(aas => aas.Id.Id, aas => aas);
+
+            // create the paged data
+            var paginationHelper = new PaginationHelper<IAssetAdministrationShell>(aasDict, elem => elem.Id.Id);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var aasPaged = new ElementContainer<IAssetAdministrationShell>();
+            aasPaged.AddRange(pagedResult.Result as IEnumerable<IAssetAdministrationShell>);
+            var paginatedAAs = new PagedResult<IElementContainer<IAssetAdministrationShell>>(aasPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IElementContainer<IAssetAdministrationShell>>>(true, paginatedAAs);
+        }
+
+        public IResult<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>> RetrieveAssetAdministrationShellsReference(int limit = 100, string cursor = "", string assetIds = "", string idShort = "")
+        {
+            var filteredAas = AssetAdministrationShells;
+
+            // filter by asset IDs if set
+            if (!string.IsNullOrEmpty(assetIds))
+                filteredAas = FilterShellsByAssetIds(JsonDocument.Parse(assetIds));
+
+            // else filter by ID short if set
+            else if (!string.IsNullOrEmpty(idShort))
+                filteredAas = AssetAdministrationShells.Where(e => idShort == e.IdShort);
+
+            var references = filteredAas.Select(shell => shell.CreateReference());
+
+            var refDict = references.ToDictionary(reference => reference.First.Value, reference => reference);
+
+            // create the paged data
+            var paginationHelper = new PaginationHelper<IReference<IAssetAdministrationShell>>(refDict, elem => elem.First.Value);
+            var pagingMetadata = new PagingMetadata(cursor);
+            var pagedResult = paginationHelper.GetPaged(limit, pagingMetadata);
+
+            var refPaged = new List<IReference<IAssetAdministrationShell>>();
+            refPaged.AddRange(pagedResult.Result as IEnumerable<IReference<IAssetAdministrationShell>>);
+            var paginatedRef = new PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>(refPaged, pagedResult.PagingMetadata);
+
+            return new Result<PagedResult<IEnumerable<IReference<IAssetAdministrationShell>>>>(true, paginatedRef);
+
         }
 
         public IResult UpdateAssetAdministrationShell(Identifier id, IAssetAdministrationShell aas)
@@ -166,6 +217,51 @@ namespace BaSyx.API.ServiceProvider
                 return serviceProvider.UpdateAssetAdministrationShell(aas);
             }
             return new Result<IAssetAdministrationShell>(false, new NotFoundMessage("Asset Administration Shell Service Provider"));
+        }
+
+        private IEnumerable<IAssetAdministrationShell> FilterShellsByAssetIds(JsonDocument assetIds)
+        {
+            var globalIds = assetIds.RootElement
+                .EnumerateArray()
+                .Where(e => e.GetProperty("key").GetString() == "globalAssetId")
+                .Select(e => e.GetProperty("value").GetString())
+                .ToList();
+
+            var specificIds = assetIds.RootElement
+                .EnumerateArray()
+                .Where(e => e.GetProperty("key").GetString() != "globalAssetId"
+                            && !string.IsNullOrEmpty(e.GetProperty("key").GetString()))
+                .ToDictionary(
+                    e => e.GetProperty("key").GetString(),
+                    e => e.GetProperty("value").GetString()
+                );
+
+            var filteredAas = new List<IAssetAdministrationShell>();
+
+            foreach (var aas in AssetAdministrationShells)
+            {
+                if (aas.AssetInformation == null)
+                    continue;
+
+                // check global IDs
+                if (globalIds.Contains(aas.AssetInformation.GlobalAssetId?.Id) && !filteredAas.Contains(aas))
+                {
+                    filteredAas.Add(aas);
+                    continue;
+                }
+
+                // check specific IDs
+                foreach (var aasSpecificId in aas.AssetInformation.SpecificAssetIds)
+                {
+                    if (specificIds.TryGetValue(aasSpecificId.Name, out var specificIdValue) && specificIdValue == aasSpecificId.Value)
+                    {
+                        filteredAas.Add(aas);
+                        break;
+                    }
+                }
+            }
+
+            return filteredAas;
         }
     }
 }

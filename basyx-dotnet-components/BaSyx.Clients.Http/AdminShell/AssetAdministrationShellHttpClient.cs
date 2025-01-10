@@ -25,6 +25,7 @@ using BaSyx.API.Http;
 using BaSyx.Models.Extensions;
 using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling.ResultTypes;
+using System.Web;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -139,9 +140,9 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateAssetInformationAsync(assetInformation).GetAwaiter().GetResult();
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences(int limit = 100, string cursor = "")
         {
-            return RetrieveAllSubmodelReferencesAsync().GetAwaiter().GetResult();
+            return RetrieveAllSubmodelReferencesAsync(limit, cursor).GetAwaiter().GetResult();
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)
@@ -152,6 +153,11 @@ namespace BaSyx.Clients.AdminShell.Http
         public IResult DeleteSubmodelReference(Identifier id)
         {
             return DeleteSubmodelReferenceAsync(id).GetAwaiter().GetResult();
+        }
+
+        public IResult PutSubmodel(Identifier id, ISubmodel submodel)
+        {
+            return DeletePutSubmodelAsync(id, submodel).GetAwaiter().GetResult();
         }
 
         #endregion
@@ -198,9 +204,15 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync()
+        public async Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync(int limit = 100, string cursor = "")
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS);
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            query["limit"] = limit.ToString();
+            query["cursor"] = cursor;
+            var uriBuilder = new UriBuilder(uri) { Query = query.ToString() };
+            uri = uriBuilder.Uri;
+
             var request = CreateRequest(uri, HttpMethod.Get);
             var response = await SendRequestAsync(request, CancellationToken.None);
             var result = await EvaluateResponseAsync<PagedResult<IEnumerable<IReference<ISubmodel>>>>(response, response.Entity);
@@ -222,6 +234,16 @@ namespace BaSyx.Clients.AdminShell.Http
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODEL_REFS_BYID, id);
             var request = CreateRequest(uri, HttpMethod.Delete);
+            var response = await SendRequestAsync(request, CancellationToken.None);
+            var result = await EvaluateResponseAsync(response, response.Entity);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult> DeletePutSubmodelAsync(Identifier id, ISubmodel submodel)
+        {
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
+            var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
             var response = await SendRequestAsync(request, CancellationToken.None);
             var result = await EvaluateResponseAsync(response, response.Entity);
             response?.Entity?.Dispose();
@@ -299,6 +321,11 @@ namespace BaSyx.Clients.AdminShell.Http
             return UpdateSubmodelElementValueAsync(id, idShortPath, value).GetAwaiter().GetResult();
         }
 
+        public IResult DeleteSubmodel(Identifier id)
+        {
+            return DeleteSubmodelAsync(id).GetAwaiter().GetResult();
+        }
+
         public async Task<IResult<ISubmodel>> RetrieveSubmodelAsync(Identifier id, RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue)
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
@@ -323,6 +350,16 @@ namespace BaSyx.Clients.AdminShell.Http
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
             var request = CreateJsonContentRequest(uri, HttpMethod.Put, submodel);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            response?.Entity?.Dispose();
+            return result;
+        }
+
+        public async Task<IResult> DeleteSubmodelAsync(Identifier id)
+        {
+            Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
+            var request = CreateRequest(uri, HttpMethod.Delete);
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
             var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
@@ -436,6 +473,8 @@ namespace BaSyx.Clients.AdminShell.Http
             response?.Entity?.Dispose();
             return result;
         }
+
+
 
         #endregion
     }

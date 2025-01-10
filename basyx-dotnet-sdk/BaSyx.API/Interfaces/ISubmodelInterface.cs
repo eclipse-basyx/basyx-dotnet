@@ -16,7 +16,7 @@ namespace BaSyx.API.Interfaces
 {
     public interface ISubmodelInterface
     {
-        IResult<ISubmodel> RetrieveSubmodel(RequestLevel level = default, RequestExtent extent = default);
+        IResult<ISubmodel> RetrieveSubmodel();
 
         IResult UpdateSubmodel(ISubmodel submodel);
 
@@ -28,6 +28,10 @@ namespace BaSyx.API.Interfaces
 
         IResult UpdateSubmodelElement(string rootIdShortPath, ISubmodelElement submodelElement);
 
+        IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement);
+
+        IResult UpdateSubmodelElementByPath(string idShortPath, ISubmodelElement submodelElement);
+
         IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit = 100,
             string cursor = "");
 
@@ -35,7 +39,13 @@ namespace BaSyx.API.Interfaces
 
         IResult<ValueScope> RetrieveSubmodelElementValue(string idShortPath);
 
+        IResult<IReference> RetrieveSubmodelElementReference(string idShortPath);
+
+        IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100, string cursor = "");
+
         IResult UpdateSubmodelElementValue(string idShortPath, ValueScope value);
+
+        IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value);
 
         IResult DeleteSubmodelElement(string idShortPath);
 

@@ -151,6 +151,18 @@ namespace BaSyx.Models.AdminShell
 
         public bool IsReadOnly => false;
 
+        public List<IKey> RetrieveReferenceKeys()
+        {
+            var keys = new List<IKey>();
+
+            if (ParentContainer != null)
+                keys.AddRange(ParentContainer.RetrieveReferenceKeys());
+
+            if (Value != null)
+                keys.Add(Reference.CreateReferenceKey(Value));
+
+            return keys;
+        }
 
         public void AppendRootPath(string rootPath, bool rootIsList)
         {
@@ -244,6 +256,26 @@ namespace BaSyx.Models.AdminShell
                 else
                     return HasChild(idShortPath);
             }
+        }
+
+        /// <summary>
+        /// Get a direct child of the current container
+        /// </summary>
+        /// <param name="idShortOrPath">IdShort or Path for SubmodelElementList children</param>
+        /// <returns>Child element</returns>
+        public IElementContainer<TElement> GetDirectChild(string idShortOrPath)
+        {
+            if (_children == null || _children.Count == 0)
+                return null;
+
+            IElementContainer<TElement> child = null;
+
+            if (Value?.ModelType == ModelType.SubmodelElementList)
+                child = _children.FirstOrDefault(c => c.Path == idShortOrPath);
+            else
+                child = _children.FirstOrDefault(c => c.IdShort == idShortOrPath);
+
+            return child;
         }
 
         public IElementContainer<TElement> GetChild(string idShortPath)
@@ -443,36 +475,44 @@ namespace BaSyx.Models.AdminShell
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
 
-            string idShortOrIndex = GetIdShortOrIndex(element);
+            var isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
 
-            if (this[idShortOrIndex] == null)
+            //prevent to create list children with short ID
+            if (isListParent && !string.IsNullOrEmpty(element.IdShort))
+                throw new InvalidOperationException($"List element children must not have short IDs '{element.IdShort}'");
+
+            //prevent to create collection children without short ID
+            if (!isListParent && string.IsNullOrEmpty(element.IdShort))
+                throw new ArgumentNullException(nameof(element.IdShort));
+
+            var idShortOrIndex = GetIdShortOrIndex(element);
+
+            //element with same short ID exists in container
+            if (this[idShortOrIndex] != null)
+                return;
+            
+            element.Parent = this.Parent;
+            
+            IElementContainer<TElement> node;
+            if (element is IElementContainer<TElement> subElements)
             {
-                element.Parent = this.Parent;
-                bool isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
-                IElementContainer<TElement> node;
-                if (element is IElementContainer<TElement> subElements)
-                {
-                    subElements.Parent = this.Parent;
-                    subElements.ParentContainer = this;
+                subElements.Parent = this.Parent;
+                subElements.ParentContainer = this;
+                subElements.AppendRootPath(this.Path, isListParent);
+                node = subElements;
+            }
+            else
+            {
+                node = new ElementContainer<TElement>(Parent, element, this);
+                if (isListParent)
+                    node.AppendRootPath(this.Path, true);
+            }
 
-                    if (isListParent) 
-                        Console.WriteLine("");
-                    subElements.AppendRootPath(this.Path, isListParent);
+            // set index of nested SubmodelElements of type IElementContainer
+            node.Index = _children.Count;
 
-                    node = subElements;
-                    // set index of nested SubmodelElements of type IElementContainer
-                    node.Index = _children.Count;
-                }
-                else
-                {
-                    node = new ElementContainer<TElement>(Parent, element, this);
-                    if (isListParent)
-                        node.AppendRootPath(this.Path, true);
-                }
-
-                this._children.Add(node);
-                OnCreated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Created));
-            } 
+            _children.Add(node);
+            OnCreated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Created));
         }
 
         /// <summary>
@@ -483,21 +523,15 @@ namespace BaSyx.Models.AdminShell
         /// <exception cref="ArgumentNullException"></exception>
         private string GetIdShortOrIndex(TElement element)
         {
-            string idShortOrIndex = "";
-            if (string.IsNullOrEmpty(element.IdShort))
-            {
-                if (this.Value.ModelType == ModelType.SubmodelElementList)
-                {
-                    int newIndex = _children.Count; // index starts with 0!
-                    idShortOrIndex = newIndex.ToString();
-                }
-                else
-                    throw new ArgumentNullException(nameof(element.IdShort));
-            }
-            else
-                idShortOrIndex = element.IdShort;
+            //if container is a list, the index is always returned (children of the list must not have short IDs)
+            if (Value?.ModelType == ModelType.SubmodelElementList)
+                return _children.Count.ToString(); // index starts with 0!
 
-            return idShortOrIndex;
+            //if the container is a collection and the element does not have a short ID, this is an error (the children of the collection must have short IDs)
+            if (string.IsNullOrEmpty(element.IdShort))
+                throw new ArgumentNullException(nameof(element.IdShort));
+
+            return element.IdShort;
         }
 
         public virtual IResult<TElement> CreateOrUpdate(string idShortPath, TElement element)
@@ -559,24 +593,46 @@ namespace BaSyx.Models.AdminShell
                 return this.Create(element);
             else
             {
-                if (HasChild(idShortPath))
+                var directChild = GetDirectChild(idShortPath);
+                if (directChild != null)
                 {
-                    int index = _children.FindIndex(c => c.IdShort == idShortPath);
+                    var isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
+
+                    //prevent to create list children with short ID
+                    if (isListParent && !string.IsNullOrEmpty(element.IdShort))
+                        return new Result<TElement>(false, new ErrorMessage($"List element child must not have short ID '{element.IdShort}'"));
+
+                    //prevent to create collection children without short ID
+                    if (!isListParent && string.IsNullOrEmpty(element.IdShort))
+                        return new Result<TElement>(false, new ErrorMessage($"{nameof(element.IdShort)} is null or empty"));
+
+                    var index = directChild.Index;
                     if (index != -1)
                     {
-                        if(element is IElementContainer<TElement> containerElement)
-                            _children[index] = containerElement;
+                        if (element is IElementContainer<TElement> containerElement)
+                        {
+                        }
                         else
-							_children[index] = new ElementContainer<TElement>(Parent, element, this);
+                            containerElement = new ElementContainer<TElement>(Parent, element, this);
 
-						OnUpdated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Updated));
+                        //set index for new child
+                        containerElement.Index = index;
+                        _children[index] = containerElement;
+
+                        OnUpdated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Updated));
                         return new Result<TElement>(true, element);
                     }
                 }
+
                 var child = GetChild(idShortPath);
                 if (child != null)
                 {
-                    return child.ParentContainer.Update(child.IdShort, element);
+                    var idShort = child.IdShort;
+
+                    if (string.IsNullOrEmpty(child.IdShort))
+                        idShort = child.Path;
+
+                    return child.ParentContainer.Update(idShort, element);
                 }
                 return new Result<TElement>(false, new NotFoundMessage($"Element {idShortPath} not found"));
             }

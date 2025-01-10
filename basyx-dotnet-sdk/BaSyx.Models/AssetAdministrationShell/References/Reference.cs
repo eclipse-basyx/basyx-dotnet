@@ -74,7 +74,20 @@ namespace BaSyx.Models.AdminShell
             }
             return referenceString;
         }
+        public static IKey CreateReferenceKey(IReferable referable)
+        {
+            if (referable is IIdentifiable identifiable)
+                return CreateReferenceKey(identifiable);
+
+            return new Key(Key.GetKeyElementFromType(referable.GetType()), referable.IdShort);
+        }
+
+        public static IKey CreateReferenceKey(IIdentifiable identifiable)
+        {
+            return new Key(Key.GetKeyElementFromType(identifiable.GetType()), identifiable.Id);
+        }
     }
+
 
     [DataContract]
     public class Reference<T> : Reference, IReference<T> where T : IReferable
@@ -98,18 +111,20 @@ namespace BaSyx.Models.AdminShell
             
             if (element is IIdentifiable identifiable)
             {
-                keys.Add(new Key(Key.GetKeyElementFromType(identifiable.GetType()), identifiable.Id));
+                keys.Add(CreateReferenceKey(identifiable));
             }
             else if (element is IReferable referable)
             {
                 if (referable.Parent != null && referable.Parent is IIdentifiable parentIdentifiable)
-                    keys.Add(new Key(Key.GetKeyElementFromType(parentIdentifiable.GetType()), parentIdentifiable.Id));
+                    keys.Add(CreateReferenceKey(parentIdentifiable));
 
-                keys.Add(new Key(Key.GetKeyElementFromType(referable.GetType()), referable.IdShort));
+                keys.Add(CreateReferenceKey(referable));
             }
 
-			Type = ReferenceType.ModelReference;
+            Type = ReferenceType.ModelReference;
 			Keys = keys;
         }
     }
+
+
 }

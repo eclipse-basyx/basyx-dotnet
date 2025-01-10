@@ -490,9 +490,9 @@ namespace AdminShellClientServerTests
             return ((IAssetAdministrationShellClient)Client).UpdateAssetInformationAsync(assetInformation);
         }
 
-        public Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync()
+        public Task<IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>>> RetrieveAllSubmodelReferencesAsync(int limit = 100, string cursor = "")
         {
-            return ((IAssetAdministrationShellClient)Client).RetrieveAllSubmodelReferencesAsync();
+            return ((IAssetAdministrationShellClient)Client).RetrieveAllSubmodelReferencesAsync(limit, cursor);
         }
 
         public Task<IResult<IReference>> CreateSubmodelReferenceAsync(IReference submodelRef)
@@ -525,9 +525,9 @@ namespace AdminShellClientServerTests
             return ((IAssetAdministrationShellInterface)Client).UpdateAssetInformation(assetInformation);
         }
 
-        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences()
+        public IResult<PagedResult<IEnumerable<IReference<ISubmodel>>>> RetrieveAllSubmodelReferences(int limit = 100, string cursor = "")
         {
-            return ((IAssetAdministrationShellInterface)Client).RetrieveAllSubmodelReferences();
+            return ((IAssetAdministrationShellInterface)Client).RetrieveAllSubmodelReferences(limit, cursor);
         }
 
         public IResult<IReference> CreateSubmodelReference(IReference submodelRef)
@@ -538,6 +538,16 @@ namespace AdminShellClientServerTests
         public IResult DeleteSubmodelReference(Identifier id)
         {
             return ((IAssetAdministrationShellInterface)Client).DeleteSubmodelReference(id);
+        }
+
+        public IResult PutSubmodel(Identifier id, ISubmodel submodel)
+        {
+            return ((IAssetAdministrationShellClient)Client).PutSubmodel(id, submodel);
+        }
+
+        public IResult DeleteSubmodel(Identifier id)
+        {
+            return ((IAssetAdministrationShellInterface)Client).DeleteSubmodel(id);
         }
 
         #endregion

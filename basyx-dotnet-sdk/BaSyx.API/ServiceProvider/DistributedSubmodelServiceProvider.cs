@@ -115,6 +115,16 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.UpdateSubmodelElement(rootSubmodelElementPath, submodelElement);
         }
 
+        public IResult UpdateSubmodelElementMetadata(string idShortPath, ISubmodelElement submodelElement)
+        {
+            return submodelClient.UpdateSubmodelElementMetadata(idShortPath, submodelElement);
+        }
+
+        public IResult UpdateSubmodelElementByPath(string idShortPath, ISubmodelElement submodelElement)
+        {
+            return submodelClient.UpdateSubmodelElementByPath(idShortPath, submodelElement);
+        }
+
         public IResult<PagedResult<IElementContainer<ISubmodelElement>>> RetrieveSubmodelElements(int limit, string cursor)
         {
             return submodelClient.RetrieveSubmodelElements(limit, cursor);
@@ -130,6 +140,21 @@ namespace BaSyx.API.ServiceProvider
             return submodelClient.RetrieveSubmodelElementValue(submodelElementId);
         }
 
+        public IResult<IReference> RetrieveSubmodelElementReference(string idShortPath)
+        {
+            return submodelClient.RetrieveSubmodelElementReference(idShortPath);
+        }
+
+        public IResult<PagedResult<IReference>> RetrieveSubmodelElementsReference(int limit = 100, string cursor = "")
+        {
+            return submodelClient.RetrieveSubmodelElementsReference(limit, cursor);
+        }
+
+        public IResult UpdateSubmodelElementValue(ISubmodelElement submodelElement, ValueScope value)
+        {
+            return submodelClient.UpdateSubmodelElementValue(submodelElement, value);
+        }
+
         public IResult DeleteSubmodelElement(string submodelElementId)
         {
             return submodelClient.DeleteSubmodelElement(submodelElementId);
@@ -143,11 +168,6 @@ namespace BaSyx.API.ServiceProvider
         public IResult UpdateSubmodelElementValue(string submodelElementId, ValueScope value)
         {
             return submodelClient.UpdateSubmodelElementValue(submodelElementId, value);
-        }
-
-        public IResult<ISubmodel> RetrieveSubmodel(RequestLevel level, RequestExtent extent)
-        {
-            return submodelClient.RetrieveSubmodel(level, extent);
         }
 
         public IResult UpdateSubmodel(ISubmodel submodel)
