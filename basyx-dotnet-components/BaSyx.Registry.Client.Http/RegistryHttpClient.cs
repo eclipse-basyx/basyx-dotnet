@@ -171,9 +171,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result<IAssetAdministrationShellDescriptor>(new ArgumentNullException(nameof(aasDescriptor)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTORS);
-            var request = await base.CreateJsonContentRequest(uri, HttpMethod.Post, aasDescriptor).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync<IAssetAdministrationShellDescriptor>(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateJsonContentRequest(uri, HttpMethod.Post, aasDescriptor).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<IAssetAdministrationShellDescriptor>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
@@ -186,9 +186,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result(new ArgumentNullException(nameof(aasDescriptor)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID, aasIdentifier);
-            var request = await base.CreateJsonContentRequest(uri, HttpMethod.Put, aasDescriptor).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateJsonContentRequest(uri, HttpMethod.Put, aasDescriptor).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
@@ -199,9 +199,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result<IAssetAdministrationShellDescriptor>(new ArgumentNullException(nameof(aasIdentifier)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID, aasIdentifier);
-            var request = await base.CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync<IAssetAdministrationShellDescriptor>(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<IAssetAdministrationShellDescriptor>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
@@ -209,9 +209,9 @@ namespace BaSyx.Registry.Client.Http
         public async Task<IResult<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>> RetrieveAllAssetAdministrationShellRegistrationsAsync()
         {
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTORS);
-            var request = await base.CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
@@ -222,9 +222,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>(new ArgumentNullException(nameof(predicate)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTORS);
-            var request = await base.CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<PagedResult<IEnumerable<IAssetAdministrationShellDescriptor>>>(response, response.Entity).ConfigureAwait(false);
 
             if (!result.Success || result.Entity == null)
             {
@@ -246,9 +246,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result(new ArgumentNullException(nameof(aasIdentifier)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID, aasIdentifier);
-            var request = await base.CreateRequest(uri, HttpMethod.Delete).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateRequest(uri, HttpMethod.Delete).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
@@ -261,9 +261,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result<ISubmodelDescriptor>(new ArgumentNullException(nameof(submodelDescriptor)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTORS, aasIdentifier);
-            var request = await base.CreateJsonContentRequest(uri, HttpMethod.Post, submodelDescriptor).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync<ISubmodelDescriptor>(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateJsonContentRequest(uri, HttpMethod.Post, submodelDescriptor).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<ISubmodelDescriptor>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
@@ -278,9 +278,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result(new ArgumentNullException(nameof(submodelDescriptor)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTOR_ID, aasIdentifier, submodelIdentifier);
-            var request = await base.CreateJsonContentRequest(uri, HttpMethod.Put, submodelDescriptor).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateJsonContentRequest(uri, HttpMethod.Put, submodelDescriptor).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
@@ -291,9 +291,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result<PagedResult<IEnumerable<ISubmodelDescriptor>>>(new ArgumentNullException(nameof(aasIdentifier)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTORS, aasIdentifier);
-            var request = await base.CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync<PagedResult<IEnumerable<ISubmodelDescriptor>>>(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<PagedResult<IEnumerable<ISubmodelDescriptor>>>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return new Result<PagedResult<IEnumerable<ISubmodelDescriptor>>>(result.Success, result.Entity, result.Messages);
         }
@@ -306,9 +306,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result<PagedResult<IEnumerable<ISubmodelDescriptor>>>(new ArgumentNullException(nameof(predicate)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTORS, aasIdentifier);
-            var request = await base.CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync<PagedResult<IEnumerable<ISubmodelDescriptor>>>(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<PagedResult<IEnumerable<ISubmodelDescriptor>>>(response, response.Entity).ConfigureAwait(false);
 
             if (!result.Success || result.Entity == null)
             {
@@ -332,9 +332,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result<ISubmodelDescriptor>(new ArgumentNullException(nameof(submodelIdentifier)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTOR_ID, aasIdentifier, submodelIdentifier);
-            var request = await base.CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync<ISubmodelDescriptor>(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<ISubmodelDescriptor>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
@@ -347,9 +347,9 @@ namespace BaSyx.Registry.Client.Http
                 return new Result(new ArgumentNullException(nameof(submodelIdentifier)));
 
             Uri uri = GetPath(AssetAdministrationShellRegistryRoutes.SHELL_DESCRIPTOR_ID_SUBMODEL_DESCRIPTOR_ID, aasIdentifier, submodelIdentifier);
-            var request = await base.CreateRequest(uri, HttpMethod.Delete).ConfigureAwait(false);
-            var response = await base.SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await base.EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
+            var request = await CreateRequest(uri, HttpMethod.Delete).ConfigureAwait(false);
+            var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }
