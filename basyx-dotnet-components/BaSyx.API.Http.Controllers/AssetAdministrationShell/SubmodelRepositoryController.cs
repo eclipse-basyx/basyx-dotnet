@@ -467,7 +467,6 @@ namespace BaSyx.API.Http.Controllers
         /// Returns the Reference of a specific Submodel
         /// </summary>
         /// <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
-        /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>    
         /// <inheritdoc cref="SubmodelController.GetSubmodelReference()"/>
