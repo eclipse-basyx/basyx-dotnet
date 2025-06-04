@@ -246,7 +246,7 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public async Task<IActionResult> DeleteThumbnail()
+        public IActionResult DeleteThumbnail()
         {
             var retrieveAssetInformation = serviceProvider.RetrieveAssetInformation();
             if (!retrieveAssetInformation.Success || retrieveAssetInformation.Entity == null)
