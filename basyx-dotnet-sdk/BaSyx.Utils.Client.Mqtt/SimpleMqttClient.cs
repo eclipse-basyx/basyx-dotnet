@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaSyx.Utils.ResultHandling;
 using MQTTnet;
-using MQTTnet.Client;
 using MQTTnet.Protocol;
 using Microsoft.Extensions.Logging;
 using System.Security.Authentication;
@@ -202,7 +201,7 @@ namespace BaSyx.Utils.Client.Mqtt
                 LoadConfiguration(MqttConfig);
                 manualStop = false;
 
-                mqttClient = new MqttFactory().CreateMqttClient();
+                mqttClient = new MqttClientFactory().CreateMqttClient();
                 mqttClient.ApplicationMessageReceivedAsync += MessageReceivedHandler;
                 mqttClient.ConnectedAsync += ConnectedHandler;
                 mqttClient.DisconnectedAsync += DisconnectedHandler;
