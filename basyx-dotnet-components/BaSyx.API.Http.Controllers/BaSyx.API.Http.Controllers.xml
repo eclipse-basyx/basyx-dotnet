@@ -97,7 +97,7 @@
             <summary>
             Deletes the submodel reference from the Asset Administration Shell. Does not delete the submodel itself!
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="204">Submodel deleted successfully</response>
             <response code="400">Bad Request</response>    
@@ -106,7 +106,7 @@
             <summary>
             Returns the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
@@ -117,7 +117,7 @@
             <summary>
             Returns the metadata attributes of a specific Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
             <response code="404">Submodel not found</response>  
@@ -127,7 +127,7 @@
             <summary>
             Updates the metadata attributes of the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">The metadata attributes of the Submodel object</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
@@ -137,7 +137,7 @@
             <summary>
             Returns the Submodel in the ValueOnly representation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
@@ -148,7 +148,7 @@
             <summary>
             Updates the values of the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
             <response code="204">Submodel object in its ValueOnly representation</response>     
@@ -158,7 +158,7 @@
             <summary>
             Returns the Reference of the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">ValueOnly representation of the Submodel</response> 
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelReference"/>    
@@ -167,7 +167,7 @@
             <summary>
             Returns the Submodel in the Path notation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
             <response code="200">Submodel in Path notation</response>
@@ -177,7 +177,7 @@
             <summary>
             Replaces the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">Submodel object</param>
             <returns></returns>
             <response code="204">Submodel updated successfully</response>     
@@ -187,7 +187,7 @@
             <summary>
             Updates the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">Submodel object</param>
             <returns></returns>
             <response code="204">Submodel updated successfully</response>
@@ -197,7 +197,7 @@
             <summary>
             Deletes the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="204">Submodel deleted successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.PatchSubmodel(BaSyx.Models.AdminShell.ISubmodel)"/>
@@ -206,7 +206,7 @@
             <summary>
             Returns all submodel elements including their hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <param name="limit">The maximum number of elements in the response array</param>
@@ -220,7 +220,7 @@
             <summary>
             Returns the metadata attributes of all submodel elements including their hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
@@ -232,7 +232,7 @@
             <summary>
             Returns all submodel elements including their hierarchy in the ValueOnly representation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <param name="limit">The maximum number of elements in the response array</param>
@@ -245,7 +245,7 @@
             <summary>
             Returns the References of all submodel elements
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <returns></returns>
@@ -256,7 +256,7 @@
             <summary>
             Returns all submodel elements including their hierarchy in the Path notation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>      
             <param name="level">Determines the structural depth of the respective resource content</param>
@@ -267,7 +267,7 @@
             <summary>
             Creates a new submodel element
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
             <response code="201">Submodel element created successfully</response>
@@ -277,7 +277,7 @@
             <summary>
             Returns a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
@@ -289,7 +289,7 @@
             <summary>
             Returns the metadata attributes of a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
@@ -301,7 +301,7 @@
             <summary>
             Updates the metadata attributes an existing SubmodelElement
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
             <returns></returns>
@@ -312,7 +312,7 @@
             <summary>
             Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
@@ -324,7 +324,7 @@
             <summary>
             Returns the Reference of a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <returns></returns>
             <response code="200">Requested submodel element in its ValueOnly representation</response>
@@ -334,7 +334,7 @@
             <summary>
             Returns a specific submodel element from the Submodel at a specified path in the Path notation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
@@ -345,7 +345,7 @@
             <summary>
             Creates a new submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
@@ -356,7 +356,7 @@
             <summary>
             Replaces an existing submodel element at a specified path within the submodel element hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
@@ -367,7 +367,7 @@
             <summary>
             Updates an existing SubmodelElement
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
@@ -378,7 +378,7 @@
             <summary>
             Updates the value of an existing submodel element value at a specified path within submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
@@ -390,7 +390,7 @@
             <summary>
             Deletes a submodel element at a specified path within the submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <returns></returns>
             <response code="204">Submodel element deleted successfully</response>
@@ -400,7 +400,7 @@
             <summary>
             Downloads file content from a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <returns></returns>
             <response code="200">Requested file</response>
@@ -410,7 +410,7 @@
             <summary>
             Uploads file content to an existing submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <param name="file">Content to upload</param>
             <returns></returns>
@@ -423,7 +423,7 @@
             <summary>
             Deletes file content of an existing submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <returns></returns>
             <response code="200">File deleted successfully</response>
@@ -433,7 +433,7 @@
             <summary>
             Synchronously invokes an Operation at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -444,7 +444,7 @@
             <summary>
             Asynchronously invokes an Operation at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -455,7 +455,7 @@
             <summary>
             Synchronously invokes an Operation at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -466,7 +466,7 @@
             <summary>
             Asynchronously invokes an Operation at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -477,9 +477,9 @@
             <summary>
             Returns the Operation status of an asynchronous invoked Operation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncStatus(System.String,System.String)"/>
@@ -488,9 +488,9 @@
             <summary>
             Returns the Operation result of an asynchronous invoked Operation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncResult(System.String,System.String)"/>
@@ -499,9 +499,9 @@
             <summary>
             Returns the Operation result of an asynchronous invoked Operation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncResultValueOnly(System.String,System.String)"/>
@@ -525,7 +525,7 @@
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <param name="assetIds">A list of specific Asset identifiers. Each Asset identifier is a base64-url-encoded</param>
-            <param name="idShort">The Asset Administration Shell’s IdShort</param>
+            <param name="idShort">The Asset Administration Shell�s IdShort</param>
             <returns></returns>
             <response code="200">Requested Asset Administration Shells</response>
         </member>
@@ -545,7 +545,7 @@
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <param name="assetIds">A list of specific Asset identifiers. Each Asset identifier is a base64-url-encoded</param>
-            <param name="idShort">The Asset Administration Shell’s IdShort</param>
+            <param name="idShort">The Asset Administration Shell�s IdShort</param>
             <returns></returns>
             <response code="200">Requested Asset Administration Shells</response>
         </member>
@@ -553,7 +553,7 @@
             <summary>
             Returns a specific Asset Administration Shell
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Returns the requested Asset Administration Shell</response>
             <response code="404">No Asset Administration Shell found</response>           
@@ -562,7 +562,7 @@
             <summary>
             Returns a specific Asset Administration Shell Descriptor
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Returns the requested Asset Administration Shell Descriptor</response>
             <response code="404">No Asset Administration Shell Descriptor found</response>           
@@ -571,7 +571,7 @@
             <summary>
             Updates an existing Asset Administration Shell
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <param name="aas">Asset Administration Shell object</param>
             <returns></returns>
             <response code="204">Asset Administration Shell updated successfully</response>          
@@ -580,7 +580,7 @@
             <summary>
             Deletes an Asset Administration Shell
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Asset Administration Shell deleted successfully</response>
         </member>
@@ -588,7 +588,7 @@
             <summary>
             Returns a specific Asset Administration Shell as a Reference
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Asset Administration Shel</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAssetAdministrationShellReference"/>
@@ -597,7 +597,7 @@
             <summary>
             Returns the Asset Information
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Asset Information</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetAssetInformation"/>
@@ -606,7 +606,7 @@
             <summary>
             Updates the Asset Information
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <param name="assetInformation">Asset Information object</param>
             <returns></returns>
             <response code="204">Asset Information updated successfully</response>
@@ -616,7 +616,7 @@
             <summary>
             The thumbnail of the Asset Information.
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">The thumbnail of the Asset Information</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.GetThumbnail"/>
@@ -625,7 +625,7 @@
             <summary>
             Updates the thumbnail of the Asset Information.
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <param name="file">Thumbnail to upload</param>
             <returns></returns>
             <response code="204">Thumbnail updated successfully</response>
@@ -635,7 +635,7 @@
             <summary>
             Delete the thumbnail of the Asset Information.
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Thumbnail deletion successful</response>
         </member>
@@ -643,7 +643,7 @@
             <summary>
             Returns all submodel references
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <returns></returns>
@@ -654,7 +654,7 @@
             <summary>
             Creates a submodel reference at the Asset Administration Shell
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <param name="submodelReference">Reference to the Submodel</param>
             <returns></returns>
             <response code="201">Submodel reference created successfully</response>
@@ -665,8 +665,8 @@
             <summary>
             Deletes the submodel reference from the Asset Administration Shell. Does not delete the submodel itself!
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="204">Submodel deleted successfully</response>
             <response code="400">Bad Request</response>    
@@ -676,8 +676,8 @@
             <summary>
             Returns the Submodel
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
@@ -689,8 +689,8 @@
             <summary>
             Replaces the Submodel
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">Submodel object</param>
             <returns></returns>
             <response code="204">Submodel updated successfully</response>     
@@ -700,8 +700,8 @@
             <summary>
             Updates the Submodel
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">Submodel object</param>
             <returns></returns>
             <response code="204">Submodel updated successfully</response>
@@ -711,8 +711,8 @@
             <summary>
             Deletes the submodel from the Asset Administration Shell and the Repository.
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="204">Submodel deleted successfully</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_DeleteSubmodel(System.String)"/>
@@ -721,8 +721,8 @@
             <summary>
             Returns the metadata attributes of a specific Submodel
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
             <response code="404">Submodel not found</response>  
@@ -732,8 +732,8 @@
             <summary>
             Updates the metadata attributes of an existing Submodel
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">The metadata attributes of the Submodel object</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
@@ -743,8 +743,8 @@
             <summary>
             Returns a specific Submodel in the ValueOnly representation
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
@@ -755,8 +755,8 @@
             <summary>
             Updates the values of an existing Submodel
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
             <response code="204">Submodel object in its ValueOnly representation</response>  
@@ -766,8 +766,8 @@
             <summary>
             Returns the Reference of a specific Submodel
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">ValueOnly representation of the Submodel</response> 
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetSubmodelReference(System.String)"/>    
@@ -776,8 +776,8 @@
             <summary>
             Returns a specific Submodel in the Path notation
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
             <response code="200">ValueOnly representation of the Submodel</response> 
@@ -787,8 +787,8 @@
             <summary>
             Returns all submodel elements including their hierarchy
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <param name="limit">The maximum number of elements in the response array</param>
@@ -802,8 +802,8 @@
             <summary>
             Creates a new submodel element
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
             <response code="201">Submodel element created successfully</response>
@@ -813,8 +813,8 @@
             <summary>
             Returns the metadata attributes of all submodel elements including their hierarchy
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
@@ -826,8 +826,8 @@
             <summary>
             Returns all submodel elements including their hierarchy in the ValueOnly representation
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
@@ -840,8 +840,8 @@
             <summary>
             Returns the References of all submodel elements
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <returns></returns>
@@ -852,8 +852,8 @@
             <summary>
             Returns the References of all submodel elements
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
@@ -865,8 +865,8 @@
             <summary>
             Returns a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
@@ -878,8 +878,8 @@
             <summary>
             Creates a new submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
@@ -890,8 +890,8 @@
             <summary>
             Replaces an existing submodel element at a specified path within the submodel element hierarchy
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
@@ -902,8 +902,8 @@
             <summary>
             Updates an existing SubmodelElement
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
@@ -914,8 +914,8 @@
             <summary>
             Deletes a submodel element at a specified path within the submodel elements hierarchy
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <returns></returns>
             <response code="204">Submodel element deleted successfully</response>
@@ -925,8 +925,8 @@
             <summary>
             Returns the matadata attributes of a specific submodel element from the Submodel at a specified
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
@@ -938,8 +938,8 @@
             <summary>
             Updates the metadata attributes an existing SubmodelElement
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
             <returns></returns>
@@ -950,8 +950,8 @@
             <summary>
             Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
@@ -963,8 +963,8 @@
             <summary>
             Returns the Reference of a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <returns></returns>
             <response code="200">Requested submodel element in its ValueOnly representation</response>
@@ -974,8 +974,8 @@
             <summary>
             Returns the Reference of a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
@@ -986,8 +986,8 @@
             <summary>
             Downloads file content from a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <returns></returns>
             <response code="200">Requested file</response>
@@ -997,8 +997,8 @@
             <summary>
             Uploads file content to an existing submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <param name="file">Content to upload</param>
             <returns></returns>
@@ -1011,8 +1011,8 @@
             <summary>
             Deletes file content of an existing submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <returns></returns>
             <response code="200">Content uploaded successfully</response>
@@ -1024,8 +1024,8 @@
             <summary>
             Updates the value of an existing submodel element value at a specified path within submodel elements hierarchy
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
@@ -1037,8 +1037,8 @@
             <summary>
             Synchronously invokes an Operation at a specified path
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -1049,8 +1049,8 @@
             <summary>
             Synchronously invokes an Operation at a specified path
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -1061,8 +1061,8 @@
             <summary>
             Asynchronously invokes an Operation at a specified path
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -1073,8 +1073,8 @@
             <summary>
             Asynchronously invokes an Operation at a specified path
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -1085,10 +1085,10 @@
             <summary>
             Returns the Operation status of an asynchronous invoked Operation
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetOperationAsyncStatus(System.String,System.String,System.String)"/>
@@ -1097,10 +1097,10 @@
             <summary>
             Returns the Operation result of an asynchronous invoked Operation
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetOperationAsyncResult(System.String,System.String,System.String)"/>
@@ -1109,10 +1109,10 @@
             <summary>
             Returns the Operation result of an asynchronous invoked Operation
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.AssetAdministrationShellController.Shell_GetOperationAsyncResultValueOnly(System.String,System.String,System.String)"/>
@@ -1431,7 +1431,7 @@
             Returns the Operation status of an asynchronous invoked Operation
             </summary>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
         </member>
@@ -1440,7 +1440,7 @@
             Returns the Operation result of an asynchronous invoked Operation
             </summary>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <response code="400">Bad Request</response>
@@ -1451,7 +1451,7 @@
             Returns the Operation result of an asynchronous invoked Operation
             </summary>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
         </member>
@@ -1472,7 +1472,7 @@
             Returns all Submodels
             </summary>
             <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
-            <param name="idShort">The Asset Administration Shell’s IdShort</param>
+            <param name="idShort">The Asset Administration Shell�s IdShort</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
@@ -1484,7 +1484,7 @@
             Returns the metadata attributes of all Submodels
             </summary>
             <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
-            <param name="idShort">The Asset Administration Shell’s IdShort</param>
+            <param name="idShort">The Asset Administration Shell�s IdShort</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <returns>Requested Submodels</returns>
@@ -1494,7 +1494,7 @@
             Returns all Submodels in their ValueOnly representation
             </summary>
             <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
-            <param name="idShort">The Asset Administration Shell’s IdShort</param>
+            <param name="idShort">The Asset Administration Shell�s IdShort</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
@@ -1507,7 +1507,7 @@
             Returns the References for all Submodels
             </summary>
             <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
-            <param name="idShort">The Asset Administration Shell’s IdShort</param>
+            <param name="idShort">The Asset Administration Shell�s IdShort</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <returns></returns>
@@ -1518,7 +1518,7 @@
             Returns the Paths for all Submodels
             </summary>
             <param name="semanticId">The value of the semantic id reference (BASE64-URL-encoded)</param>
-            <param name="idShort">The Asset Administration Shell’s IdShort</param>
+            <param name="idShort">The Asset Administration Shell�s IdShort</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
@@ -1538,7 +1538,7 @@
             <summary>
             Returns a specific Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="level"></param>
             <param name="extent"></param>
             <returns></returns>
@@ -1550,7 +1550,7 @@
             <summary>
             Replace Replace an existing Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">Submodel object</param>
             <returns></returns>
             <response code="201">Submodel updated successfully</response>
@@ -1560,7 +1560,7 @@
             <summary>
             Updates an existing Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">Submodel object</param>
             <returns></returns>
             <response code="204">Submodel updated successfully</response>
@@ -1570,7 +1570,7 @@
             <summary>
             Deletes an existing Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Submodel deleted successfully</response>
         </member>
@@ -1578,7 +1578,7 @@
             <summary>
             Returns the metadata attributes of a specific Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Submodel in the metadata representation</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetSubmodelMetadata"/>
@@ -1587,7 +1587,7 @@
             <summary>
             Updates the metadata attributes of the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodel">The metadata attributes of the Submodel object</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
@@ -1597,7 +1597,7 @@
             <summary>
             Returns a specific Submodel in the ValueOnly representation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
@@ -1608,7 +1608,7 @@
             <summary>
             Updates the values of the Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
             <response code="204">Submodel object in its ValueOnly representation</response>     
@@ -1618,7 +1618,7 @@
             <summary>
             Returns the Reference of a specific Submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>    
@@ -1628,7 +1628,7 @@
             <summary>
             Returns a specific Submodel in the Path notation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
             <response code="200">Requested Submodel</response>
@@ -1638,7 +1638,7 @@
             <summary>
             Returns all submodel elements including their hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <param name="limit">The maximum number of elements in the response array</param>
@@ -1652,7 +1652,7 @@
             <summary>
             Returns the metadata attributes of all submodel elements including their hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
@@ -1664,7 +1664,7 @@
             <summary>
             Returns all submodel elements including their hierarchy in the Path notation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
@@ -1676,7 +1676,7 @@
             <summary>
             Returns all submodel elements including their hierarchy in the ValueOnly representation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
             <param name="limit">The maximum number of elements in the response array</param>
@@ -1689,7 +1689,7 @@
             <summary>
             Returns the References of all submodel elements
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="limit">The maximum number of elements in the response array</param>
             <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue</param>
             <returns></returns>
@@ -1700,7 +1700,7 @@
             <summary>
             Creates a new submodel element
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
             <response code="201">Submodel element created successfully</response>
@@ -1710,7 +1710,7 @@
             <summary>
             Returns a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
@@ -1722,7 +1722,7 @@
             <summary>
             Returns the metadata attributes of a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
@@ -1733,7 +1733,7 @@
             <summary>
             Updates the metadata attributes an existing SubmodelElement
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="submodelElement">Metadata attributes of the SubmodelElement</param>
             <returns></returns>
@@ -1744,7 +1744,7 @@
             <summary>
             Returns a specific submodel element from the Submodel at a specified path in the ValueOnly representation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <param name="extent">Determines to which extent the resource is being serialized</param>
@@ -1756,7 +1756,7 @@
             <summary>
             Returns a specific submodel element from the Submodel at a specified path in the Path notation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="level">Determines the structural depth of the respective resource content</param>
             <returns></returns>
@@ -1767,7 +1767,7 @@
             <summary>
             Returns the Reference of a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (UTF8-BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (UTF8-BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <returns></returns>
             <response code="200">A Reference of the requested submodel element</response>
@@ -1777,7 +1777,7 @@
             <summary>
             Creates a new submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
@@ -1788,7 +1788,7 @@
             <summary>
             Replaces an existing submodel element at a specified path within the submodel element hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
@@ -1799,7 +1799,7 @@
             <summary>
             Updates an existing SubmodelElement
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="submodelElement">Requested submodel element</param>
             <returns></returns>
@@ -1810,7 +1810,7 @@
             <summary>
             Deletes a submodel element at a specified path within the submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <returns></returns>
             <response code="204">Submodel element deleted successfully</response>
@@ -1820,7 +1820,7 @@
             <summary>
             Updates the value of an existing submodel element value at a specified path within submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated)</param>
             <param name="requestBody">Requested submodel element</param>
             <returns></returns>
@@ -1832,7 +1832,7 @@
             <summary>
             Downloads file content from a specific submodel element from the Submodel at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <returns></returns>
             <response code="200">Requested file</response>
@@ -1845,7 +1845,7 @@
             <summary>
             Uploads file content to an existing submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <param name="file">Content to upload</param>
             <returns></returns>
@@ -1858,7 +1858,7 @@
             <summary>
             Deletes file content of an existing submodel element at a specified path within submodel elements hierarchy
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case a file</param>
             <returns></returns>
             <response code="200">File deleted successfully</response>
@@ -1868,7 +1868,7 @@
             <summary>
             Synchronously invokes an Operation at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -1879,7 +1879,7 @@
             <summary>
             Asynchronously invokes an Operation at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -1890,7 +1890,7 @@
             <summary>
             Synchronously invokes an Operation at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -1901,7 +1901,7 @@
             <summary>
             Asynchronously invokes an Operation at a specified path
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
             <param name="operationRequest">Operation request object</param>
             <returns></returns>
@@ -1912,9 +1912,9 @@
             <summary>
             Returns the Operation status of an asynchronous invoked Operation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncStatus(System.String,System.String)"/>
@@ -1923,9 +1923,9 @@
             <summary>
             Returns the Operation result of an asynchronous invoked Operation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncResult(System.String,System.String)"/>
@@ -1934,9 +1934,9 @@
             <summary>
             Returns the Operation result of an asynchronous invoked Operation
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="idShortPath">IdShort path to the submodel element (dot-separated), in this case an operation</param>
-            <param name="handleId">The returned handle id of an operation’s asynchronous invocation used to request the current state of the operation’s execution (BASE64-URL-encoded)</param>
+            <param name="handleId">The returned handle id of an operation�s asynchronous invocation used to request the current state of the operation�s execution (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Operation result object</response>
             <inheritdoc cref="M:BaSyx.API.Http.Controllers.SubmodelController.GetOperationAsyncResultValueOnly(System.String,System.String)"/>
@@ -1997,7 +1997,7 @@
             <summary>
             Returns a specific Asset Administration Shell Descriptor
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Asset Administration Shell Descriptor</response>
             <response code="404">No Asset Administration Shell with passed id found</response>     
@@ -2006,7 +2006,7 @@
             <summary>
             Updates an existing Asset Administration Shell Descriptor
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <param name="aasDescriptor">Asset Administration Shell Descriptor object</param>
             <returns></returns>
             <response code="204">Asset Administration Shell Descriptor updated successfully</response>
@@ -2017,7 +2017,7 @@
             <summary>
             Deletes an Asset Administration Shell Descriptor, i.e. de-registers an AAS
             </summary>
-            <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
+            <param name="aasIdentifier">The Asset Administration Shell�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="204">Asset Administration Shell Descriptor deleted successfully</response>
             <response code="404">No Asset Administration Shell with passed id found</response>     
@@ -2068,7 +2068,7 @@
             <summary>
             Updates an existing Submodel Descriptor
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <param name="submodelDescriptor">The Submodel Descriptor</param>
             <returns></returns>
             <response code="204">Submodel Descriptor updated successfully</response>
@@ -2079,7 +2079,7 @@
             <summary>
             Returns a specific Submodel Descriptor
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="200">Requested Submodel Descriptor</response>
             <response code="404">No Submodel descriptor with passed id found</response>     
@@ -2088,7 +2088,7 @@
             <summary>
             Deletes a Submodel Descriptor, i.e. de-registers a submodel
             </summary>
-            <param name="submodelIdentifier">The Submodel’s unique id (BASE64-URL-encoded)</param>
+            <param name="submodelIdentifier">The Submodel�s unique id (BASE64-URL-encoded)</param>
             <returns></returns>
             <response code="204">Submodel Descriptor deleted successfully</response>
             <response code="404">No Submodel descriptor with passed id found</response>  
