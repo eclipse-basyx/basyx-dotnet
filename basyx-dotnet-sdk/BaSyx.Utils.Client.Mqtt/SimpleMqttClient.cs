@@ -54,7 +54,7 @@ namespace BaSyx.Utils.Client.Mqtt
             {
                 Uri endpoint = new Uri(config.BrokerEndpoint);
                 if(endpoint.Scheme ==  Uri.UriSchemeWs || endpoint.Scheme == Uri.UriSchemeWss)                           
-                    builder.WithWebSocketServer(options => options.WithUri(config.BrokerEndpoint.Replace(endpoint.Scheme + "://", string.Empty)));   
+                    builder.WithWebSocketServer(options => options.WithUri(config.BrokerEndpoint));   
                 else
                     builder.WithTcpServer(endpoint.Host, endpoint.Port);    
             }
