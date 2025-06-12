@@ -14,11 +14,19 @@ using BaSyx.Utils.ResultHandling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using BaSyx.Models.Extensions;
+using System.Text.Json;
 
 namespace BaSyx.Utils.DependencyInjection
 {
     public static class DefaultImplementation
     {
+        private static IServiceCollection ServiceCollection { get; set; }
+        private static IServiceProvider ServiceProvider { get; set; }
+        private static JsonSerializerOptions DefaultJsonSerializerOptions { get; set; }
+        private static JsonSerializerOptions FullJsonSerializerOptions { get; set; }
+        private static JsonSerializerOptions MetaDataJsonSerializerOptions { get; set; }
+
         public static IServiceCollection AddStandardImplementation(this IServiceCollection services)
         {
             services.AddTransient<IAssetInformation, AssetInformation>();
@@ -88,16 +96,76 @@ namespace BaSyx.Utils.DependencyInjection
 
         public static IServiceCollection GetStandardServiceCollection()
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddStandardImplementation();
-            return services;
+            if (ServiceCollection == null)
+            {
+                ServiceCollection = new ServiceCollection();
+                ServiceCollection.AddStandardImplementation();
+            }
+            return ServiceCollection;
         }
 
         public static IServiceProvider GetStandardServiceProvider()
         {
-            IServiceCollection standardServiceCollection = GetStandardServiceCollection();
-            DefaultServiceProviderFactory serviceProviderFactory = new DefaultServiceProviderFactory();
-            return serviceProviderFactory.CreateServiceProvider(standardServiceCollection);
+            if (ServiceProvider == null)
+            {
+                IServiceCollection standardServiceCollection = GetStandardServiceCollection();
+                DefaultServiceProviderFactory serviceProviderFactory = new DefaultServiceProviderFactory();
+                ServiceProvider = serviceProviderFactory.CreateServiceProvider(standardServiceCollection);
+            }
+            return ServiceProvider;
+        }
+
+        /// <summary>
+        /// Returns a JsonSerializerOptions with the full submodel element converters and options set for the full AAS model
+        /// </summary>
+        /// <returns></returns>
+        public static JsonSerializerOptions GetFullJsonSerializerOptions()
+        {
+            if(FullJsonSerializerOptions == null)
+            {
+                DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
+                var services = GetStandardServiceCollection();
+                var extensions = new DependencyInjectionExtension(services);
+                options.AddDependencyInjection(extensions);
+                options.AddFullSubmodelElementConverter();
+                FullJsonSerializerOptions = options.Build();
+            }
+            return FullJsonSerializerOptions;
+        }
+
+        /// <summary>
+        /// Returns a JsonSerializerOptions with the metadata submodel element converters and options set for the full AAS model
+        /// </summary>
+        /// <returns></returns>
+        public static JsonSerializerOptions GetMetaDataJsonSerializerOptions()
+        {
+            if (MetaDataJsonSerializerOptions == null)
+            {
+                DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
+                var services = GetStandardServiceCollection();
+                var extensions = new DependencyInjectionExtension(services);
+                options.AddDependencyInjection(extensions);
+                options.AddMetadataSubmodelElementConverter();
+                MetaDataJsonSerializerOptions = options.Build();
+            }
+            return MetaDataJsonSerializerOptions;
+        }
+
+        /// <summary>
+        /// Returns the default JsonSerializerOptions
+        /// </summary>
+        /// <returns></returns>
+        public static JsonSerializerOptions GetDefaultJsonSerializerOptions()
+        {
+            if (DefaultJsonSerializerOptions == null)
+            {
+                DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
+                var services = GetStandardServiceCollection();
+                var extensions = new DependencyInjectionExtension(services);
+                options.AddDependencyInjection(extensions);
+                DefaultJsonSerializerOptions = options.Build();
+            }
+            return DefaultJsonSerializerOptions;
         }
     }
 }

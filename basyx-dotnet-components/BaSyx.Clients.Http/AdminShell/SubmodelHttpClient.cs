@@ -23,28 +23,34 @@ using Microsoft.Extensions.Logging;
 using BaSyx.API.Http;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
-using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using System.Web;
+using System.Text.Json;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
     public class SubmodelHttpClient : SimpleHttpClient, ISubmodelClient
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<SubmodelHttpClient>();
+        private bool _standalone;
 
         public IEndpoint Endpoint { get; }
 
-        private bool _standalone;
-
+        private JsonSerializerOptions _jsonSerializerOptions;
+        public override JsonSerializerOptions JsonSerializerOptions
+        {
+            get
+            {
+                if (_jsonSerializerOptions == null)
+                    _jsonSerializerOptions = DefaultImplementation.GetFullJsonSerializerOptions();
+                return _jsonSerializerOptions;
+            }
+            set { _jsonSerializerOptions = value; }
+        }
+      
         private SubmodelHttpClient(HttpMessageHandler messageHandler, bool standalone = true) : base(messageHandler)
         {
-            _standalone = standalone;
-            var options = new DefaultJsonSerializerOptions();
-            var services = DefaultImplementation.GetStandardServiceCollection();
-            options.AddDependencyInjection(new DependencyInjectionExtension(services));
-            options.AddFullSubmodelElementConverter();
-            JsonSerializerOptions = options.Build();         
+            _standalone = standalone;        
         }
 
         public SubmodelHttpClient(Uri endpoint, bool standalone = true) : this(endpoint, null, standalone)

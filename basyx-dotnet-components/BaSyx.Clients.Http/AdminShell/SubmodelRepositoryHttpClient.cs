@@ -17,15 +17,14 @@ using System.Net.Http;
 using BaSyx.Models.Connectivity;
 using System.Linq;
 using BaSyx.Utils.DependencyInjection;
-using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using BaSyx.API.Http;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
-using BaSyx.Models.Extensions;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using System.Web;
+using System.Text.Json;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
@@ -35,14 +34,20 @@ namespace BaSyx.Clients.AdminShell.Http
 
         public IEndpoint Endpoint { get; }
 
-        private SubmodelRepositoryHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
+        private JsonSerializerOptions _jsonSerializerOptions;
+        public override JsonSerializerOptions JsonSerializerOptions
         {
-            var options = new DefaultJsonSerializerOptions();
-            var services = DefaultImplementation.GetStandardServiceCollection();
-            options.AddDependencyInjection(new DependencyInjectionExtension(services));
-            options.AddFullSubmodelElementConverter();
-            JsonSerializerOptions = options.Build();
+            get
+            {
+                if (_jsonSerializerOptions == null)
+                    _jsonSerializerOptions = DefaultImplementation.GetFullJsonSerializerOptions();
+                return _jsonSerializerOptions;
+            }
+            set { _jsonSerializerOptions = value; }
         }
+
+        private SubmodelRepositoryHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
+        { }
 
         public SubmodelRepositoryHttpClient(Uri endpoint) : this(endpoint, null)
         { }

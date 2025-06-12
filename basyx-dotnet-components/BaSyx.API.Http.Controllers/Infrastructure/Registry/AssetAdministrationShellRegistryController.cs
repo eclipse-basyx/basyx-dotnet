@@ -11,7 +11,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using BaSyx.Utils.ResultHandling;
-using System.Web;
 using BaSyx.Models.Connectivity;
 using BaSyx.API.Interfaces;
 using BaSyx.Utils.ResultHandling.ResultTypes;

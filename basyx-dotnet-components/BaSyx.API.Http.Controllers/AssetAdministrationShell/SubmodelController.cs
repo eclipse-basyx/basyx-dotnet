@@ -43,21 +43,9 @@ namespace BaSyx.API.Http.Controllers
         private static JsonSerializerOptions _fullSerializerOptions;
         static SubmodelController()
         {
-            var services = DefaultImplementation.GetStandardServiceCollection();
-
-            DefaultJsonSerializerOptions defaultOptions = new DefaultJsonSerializerOptions();            
-            defaultOptions.AddDependencyInjection(new DependencyInjectionExtension(services));
-            _defaultSerializerOptions = defaultOptions.Build();
-
-            DefaultJsonSerializerOptions options = new DefaultJsonSerializerOptions();
-            options.AddDependencyInjection(new DependencyInjectionExtension(services));
-            options.AddMetadataSubmodelElementConverter();
-            _metadataSerializerOptions = options.Build();
-
-            DefaultJsonSerializerOptions options3 = new DefaultJsonSerializerOptions();
-            options3.AddDependencyInjection(new DependencyInjectionExtension(services));
-            options3.AddFullSubmodelElementConverter();
-            _fullSerializerOptions = options3.Build();
+            _defaultSerializerOptions = DefaultImplementation.GetDefaultJsonSerializerOptions();
+            _metadataSerializerOptions = DefaultImplementation.GetMetaDataJsonSerializerOptions();
+            _fullSerializerOptions = DefaultImplementation.GetFullJsonSerializerOptions();
         }
 
         /// <summary>

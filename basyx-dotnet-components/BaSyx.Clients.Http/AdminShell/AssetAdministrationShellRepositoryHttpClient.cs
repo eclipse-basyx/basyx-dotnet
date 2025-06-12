@@ -36,14 +36,20 @@ namespace BaSyx.Clients.AdminShell.Http
 
         public IEndpoint Endpoint { get; }
 
-        private AssetAdministrationShellRepositoryHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
+        private JsonSerializerOptions _jsonSerializerOptions;
+        public override JsonSerializerOptions JsonSerializerOptions
         {
-            var options = new DefaultJsonSerializerOptions();
-            var services = DefaultImplementation.GetStandardServiceCollection();
-            options.AddDependencyInjection(new DependencyInjectionExtension(services));
-            options.AddFullSubmodelElementConverter();
-            JsonSerializerOptions = options.Build();
+            get
+            {
+                if (_jsonSerializerOptions == null)
+                    _jsonSerializerOptions = DefaultImplementation.GetFullJsonSerializerOptions();
+                return _jsonSerializerOptions;
+            }
+            set { _jsonSerializerOptions = value; }
         }
+
+        private AssetAdministrationShellRepositoryHttpClient(HttpMessageHandler messageHandler) : base(messageHandler)
+        { }
 
         public AssetAdministrationShellRepositoryHttpClient(Uri endpoint) : this(endpoint, null)
         { }
