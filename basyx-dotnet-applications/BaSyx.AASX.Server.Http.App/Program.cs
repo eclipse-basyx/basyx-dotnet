@@ -57,7 +57,7 @@ namespace BaSyx.AASX.Server.Http.App
         {
             logger.Info("Starting AASX Http-Server...");
 
-            string[] inputFiles = null;
+            string[] inputFiles = [];
 
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
@@ -96,9 +96,9 @@ namespace BaSyx.AASX.Server.Http.App
                        }
                        else
                        {
-                           if (File.Exists(args[0]))
+                           if (args.Length > 0 && File.Exists(args[0]))
                                inputFiles = new string[] { args[0] };
-                           else if (Directory.Exists(args[0]))
+                           else if (args.Length > 0 && Directory.Exists(args[0]))
                                inputFiles = Directory.GetFiles(args[0]);
                        }
 
@@ -107,51 +107,43 @@ namespace BaSyx.AASX.Server.Http.App
             if (args.Contains("--help") || args.Contains("--version"))
                 return;
            
-            if (inputFiles == null || inputFiles.Length == 0)
+            registryHttpClient = new RegistryHttpClient();
+            repositoryServer = new AssetAdministrationShellRepositoryHttpServer(serverSettings);
+            repositoryServer.WebHostBuilder.UseNLog();
+            repositoryService = new AssetAdministrationShellRepositoryServiceProvider();
+            endpoints = serverSettings.ServerConfig.Hosting.Urls.ConvertAll(c =>
             {
-                logger.Error("No AASX-File(s) found --> Application is shutting down...");
-                return;
+                string address = c.Replace("+", "127.0.0.1");
+                logger.Info("Using " + address + " as base endpoint url");
+                return new Endpoint(address, InterfaceName.AssetAdministrationShellRepositoryInterface);
+            });
+            repositoryService.UseDefaultEndpointRegistration(endpoints);
+            repositoryServer.SetServiceProvider(repositoryService);
+
+            repositoryServer.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
+            repositoryServer.AddSwagger(Interface.AssetAdministrationShellRepository);
+
+            for (int i = 0; i < inputFiles.Length; i++)
+            {
+                LoadAASX(inputFiles[i]);
             }
-            else
+
+            repositoryServer.ApplicationStopping = () =>
             {
-                registryHttpClient = new RegistryHttpClient();
-                repositoryServer = new AssetAdministrationShellRepositoryHttpServer(serverSettings);
-                repositoryServer.WebHostBuilder.UseNLog();
-                repositoryService = new AssetAdministrationShellRepositoryServiceProvider();
-                endpoints = serverSettings.ServerConfig.Hosting.Urls.ConvertAll(c =>
+                if (serverSettings.Miscellaneous.ContainsKey("AutoRegister") && serverSettings.Miscellaneous["AutoRegister"] == "true")
                 {
-                    string address = c.Replace("+", "127.0.0.1");
-                    logger.Info("Using " + address + " as base endpoint url");
-                    return new Endpoint(address, InterfaceName.AssetAdministrationShellRepositoryInterface);
-                });
-                repositoryService.UseDefaultEndpointRegistration(endpoints);
-                repositoryServer.SetServiceProvider(repositoryService);
-
-                repositoryServer.AddBaSyxUI(PageNames.AssetAdministrationShellRepositoryServer);
-                repositoryServer.AddSwagger(Interface.AssetAdministrationShellRepository);
-
-                for (int i = 0; i < inputFiles.Length; i++)
-                {
-                    LoadAASX(inputFiles[i]);
-                }
-
-                repositoryServer.ApplicationStopping = () =>
-                {
-                    if (serverSettings.Miscellaneous.ContainsKey("AutoRegister") && serverSettings.Miscellaneous["AutoRegister"] == "true")
+                    var providers = repositoryService.GetAssetAdministrationShellServiceProviders().Entity;
+                    foreach (var shellProvider in providers)
                     {
-                        var providers = repositoryService.GetAssetAdministrationShellServiceProviders().Entity;
-                        foreach (var shellProvider in providers)
-                        {
-                            var result = registryHttpClient
-                            .DeleteAssetAdministrationShellRegistration(shellProvider.ServiceDescriptor.Id.Id);
+                        var result = registryHttpClient
+                        .DeleteAssetAdministrationShellRegistration(shellProvider.ServiceDescriptor.Id.Id);
 
-                            logger.Info($"Success: {result.Success} | Messages: {result.Messages.ToString()}");
-                        }
+                        logger.Info($"Success: {result.Success} | Messages: {result.Messages.ToString()}");
                     }
-                };
+                }
+            };
 
-                repositoryServer.Run();
-            }
+            repositoryServer.Run();
         }
 
         private static async void Watcher_Changed(object sender, FileSystemEventArgs e)
