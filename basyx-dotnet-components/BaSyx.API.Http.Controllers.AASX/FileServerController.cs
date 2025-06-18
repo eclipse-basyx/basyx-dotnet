@@ -61,6 +61,7 @@ namespace BaSyx.API.Http.Controllers.PackageService
         /// </summary>
         /// <returns>Package Description</returns>
         /// <response code="200"></response>     
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("packages", Name = "PostAASXPackage")]
         [ProducesResponseType(201, Type = typeof(PackageDescription))]
         [DisableRequestSizeLimit]
