@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release</Configurations>
+    <Authors>Constantin Ziesche</Authors>
+    <Copyright>Copyright 2024 - Bosch Rexroth AG</Copyright>
+    <PackageProjectUrl>https://wiki.eclipse.org/BaSyx</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eclipse-basyx/basyx-dotnet</RepositoryUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <Description>The official BaSyx AASX Package Server</Description>
+    <Company>Bosch Rexroth AG</Company>
+    <PackageTags>BaSys BaSyx Component HTTP REST-API AssetAdministrationShell AASX Package Server</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MyAssetPackage.aasx" />
+    <None Remove="RegistryClientSettings.xml" />
+    <None Remove="ServerSettings.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MyAssetPackage.aasx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="RegistryClientSettings.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ServerSettings.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI\BaSyx.Common.UI.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Common.UI.Swagger\BaSyx.Common.UI.Swagger.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.API.Http.Controllers.AASX\BaSyx.API.Http.Controllers.AASX.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Discovery.mDNS\BaSyx.Discovery.mDNS.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Registry.Client.Http\BaSyx.Registry.Client.Http.csproj" />
+    <ProjectReference Include="..\..\basyx-dotnet-components\BaSyx.Servers.Http\BaSyx.Servers.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-components\')">
+    <PackageReference Include="BaSyx.Common.UI" Version="*" />
+    <PackageReference Include="BaSyx.Common.UI.Swagger" Version="*" />
+    <PackageReference Include="BaSyx.Servers.Http" Version="*" />
+    <PackageReference Include="BaSyx.API.Http.Controllers.AASX" Version="*" />
+    <PackageReference Include="BaSyx.Discovery.mDNS" Version="*" />
+    <PackageReference Include="BaSyx.Registry.Client.Http" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\basyx-dotnet-sdk\')">
+    <ProjectReference Include="..\..\basyx-dotnet-sdk\BaSyx.Models.Export\BaSyx.Models.Export.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('..\..\basyx-dotnet-sdk\')">
+    <PackageReference Include="BaSyx.Models.Export" Version="*" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.5" />
+    <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Update="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

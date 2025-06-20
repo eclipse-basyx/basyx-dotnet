@@ -98,6 +98,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubmodelDev", "basyx-dotnet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubmodelRepository", "SubmodelRepository\SubmodelRepository.csproj", "{A4E27382-7DF2-489F-AE0C-B494D65A1B03}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaSyx.AASX.SM.Server.Http.App", "basyx-dotnet-applications\BaSyx.AASX.SM.Server.Http.App\BaSyx.AASX.SM.Server.Http.App.csproj", "{96DA5166-0834-2996-11C3-45E33F7AAF12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -260,6 +262,10 @@ Global
 		{A4E27382-7DF2-489F-AE0C-B494D65A1B03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4E27382-7DF2-489F-AE0C-B494D65A1B03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4E27382-7DF2-489F-AE0C-B494D65A1B03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96DA5166-0834-2996-11C3-45E33F7AAF12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96DA5166-0834-2996-11C3-45E33F7AAF12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96DA5166-0834-2996-11C3-45E33F7AAF12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96DA5166-0834-2996-11C3-45E33F7AAF12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -304,6 +310,7 @@ Global
 		{DA3A403B-09E9-43DA-9949-8958D96EE790} = {355B90BE-8EF1-4803-84AA-C6AF306E3577}
 		{5D54C600-121E-44EF-8A36-4DE60FC4EE09} = {ABAA386C-F692-4397-968F-12C674FF0825}
 		{A4E27382-7DF2-489F-AE0C-B494D65A1B03} = {ABAA386C-F692-4397-968F-12C674FF0825}
+		{96DA5166-0834-2996-11C3-45E33F7AAF12} = {72EFDB7E-5698-40E0-8E43-D4DB75F679B9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B028A9A2-E37C-44AF-8032-C8F0492BDB00}
