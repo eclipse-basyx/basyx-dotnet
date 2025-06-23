@@ -35,26 +35,26 @@ namespace SubmodelDev
             var submodelSettings = ServerSettings.CreateSettings();
             submodelSettings.ServerConfig.Hosting.ContentPath = "Content";
             submodelSettings.ServerConfig.Hosting.Environment = "Development";
-            submodelSettings.ServerConfig.Hosting.Urls.Add("http://+:5040");
-            submodelSettings.ServerConfig.Hosting.Urls.Add("https://+:5440");
+            submodelSettings.ServerConfig.Hosting.Urls.Add("http://+:5030");
+            submodelSettings.ServerConfig.Hosting.Urls.Add("https://+:5430");
             // Submodel Repository Server
             var submodelRepoSettings = ServerSettings.CreateSettings();
             submodelRepoSettings.ServerConfig.Hosting.ContentPath = "Content";
             submodelRepoSettings.ServerConfig.Hosting.Environment = "Development";
-            submodelRepoSettings.ServerConfig.Hosting.Urls.Add("http://+:5041");
-            submodelRepoSettings.ServerConfig.Hosting.Urls.Add("https://+:5441");
+            submodelRepoSettings.ServerConfig.Hosting.Urls.Add("http://+:5031");
+            submodelRepoSettings.ServerConfig.Hosting.Urls.Add("https://+:5431");
             //AAS Server
             var aasSettings = ServerSettings.CreateSettings();
             aasSettings.ServerConfig.Hosting.ContentPath = "Content";
             aasSettings.ServerConfig.Hosting.Environment = "Development";
-            aasSettings.ServerConfig.Hosting.Urls.Add("http://+:5042");
-            aasSettings.ServerConfig.Hosting.Urls.Add("https://+:5442");
+            aasSettings.ServerConfig.Hosting.Urls.Add("http://+:5032");
+            aasSettings.ServerConfig.Hosting.Urls.Add("https://+:5432");
             //// AAS Repository Server
             var aasRepoSettings = ServerSettings.CreateSettings();
             aasRepoSettings.ServerConfig.Hosting.ContentPath = "Content";
             aasRepoSettings.ServerConfig.Hosting.Environment = "Development";
-            aasRepoSettings.ServerConfig.Hosting.Urls.Add("http://+:5043");
-            aasRepoSettings.ServerConfig.Hosting.Urls.Add("https://+:5443");
+            aasRepoSettings.ServerConfig.Hosting.Urls.Add("http://+:5033");
+            aasRepoSettings.ServerConfig.Hosting.Urls.Add("https://+:5433");
 
             //SM Service Porvider
             var smServiceProvider = submodel.CreateServiceProvider();
