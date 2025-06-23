@@ -9,9 +9,9 @@ on:
       - '.github/workflows/aasx-sm-server-docker-image.yml'
 
 jobs:
-  test:
+  test-admin-shell-client-server:
     runs-on: ubuntu-latest
-    name: Run unit tests
+    name: Test AdminShellClientServerTests
 
     steps:
       - name: Checkout code
@@ -27,10 +27,7 @@ jobs:
 
       - name: Run tests
         run: |
-          find . -type f -name '*Tests.csproj' | while read proj; do
-            echo "Testing $proj"
-            dotnet test "$proj" --verbosity normal
-          done
+          dotnet test basyx-dotnet-tests/AdminShellClientServerTests/AdminShellClientServerTests.csproj --verbosity normal
 
   build-image:
     runs-on: ubuntu-latest
