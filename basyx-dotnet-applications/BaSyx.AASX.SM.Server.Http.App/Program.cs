@@ -133,9 +133,8 @@ namespace BaSyx.AASX.SM.Server.Http.App
             {
                 message = "Welcome to Fluid4.0 AAS / Submodel Server",
                 status_code = 200,
-                information = "Use /shells or /submodels to access the respective repositories. " +
-                              "AAS Repository server runs on http://127.0.0.1:5042/. " +
-                              "Submodel Repository server runs on http://127.0.0.1:5041/."
+                aas_repository_server_url = "http://127.0.0.1:5042/",
+                submodel_repository_server_url = "http://127.0.0.1:5041/"
             }));
             app.Run();
         }
