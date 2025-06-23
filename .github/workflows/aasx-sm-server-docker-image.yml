@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'basyx-dotnet-tests/**'
-      - '.github/workflows/docker-image.yml'
+      - '.github/workflows/aasx-sm-server-docker-image.yml'
 
 jobs:
   test:
