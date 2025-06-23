@@ -26,8 +26,12 @@ jobs:
         run: dotnet restore
 
       - name: Run tests
-        run: dotnet test BaSyx.sln --no-build --verbosity normal
-
+        run: |
+          find . -type f -name '*Tests.csproj' | while read proj; do
+            echo "Testing $proj"
+            dotnet test "$proj" --no-build --verbosity normal
+          done
+          
   build-image:
     runs-on: ubuntu-latest
     needs: test 
