@@ -129,7 +129,14 @@ namespace BaSyx.AASX.SM.Server.Http.App
 
             var app = builder.Build();
             app.MapReverseProxy();
-            app.MapGet("/", () => Results.Text("Welcome to Fluid4.0 AAS / Submodel Server", "text/plain"));
+            app.MapGet("/", () => Results.Json(new
+            {
+                message = "Welcome to Fluid4.0 AAS / Submodel Server",
+                status_code = 200,
+                information = "Use /shells or /submodels to access the respective repositories. " +
+                              "AAS Repository server runs on http://127.0.0.1:5042/. " +
+                              "Submodel Repository server runs on http://127.0.0.1:5041/."
+            }));
             app.Run();
         }
     }
