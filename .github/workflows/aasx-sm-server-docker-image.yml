@@ -4,9 +4,30 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - 'basyx-dotnet-tests/**'
+      - '.github/workflows/docker-image.yml'
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run Unit Tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # oder passende Version
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+
   build-docker-image:
     runs-on: ubuntu-latest
 
