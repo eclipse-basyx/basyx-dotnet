@@ -35,20 +35,23 @@ namespace BaSyx.AASX.SM.Server.Http.App
         {
             Logger.Info("Starting AASX Http-Server...");
 
+            var reverseProxyUrl = "http://0.0.0.0:5043";
+            var submodelRepoPort = "5041";
+            var aasRepoPort = "5042";
+
             // SM Repo Server
             var smRepoSettings = ServerSettings.CreateSettings();
             smRepoSettings.ServerConfig.Hosting.ContentPath = "Content";
             smRepoSettings.ServerConfig.Hosting.Environment = "Development";
-            smRepoSettings.ServerConfig.Hosting.Urls.Add("http://0.0.0.0:5041");
+            smRepoSettings.ServerConfig.Hosting.Urls.Add($"http://0.0.0.0:{submodelRepoPort}");
 
             var smRepositoryServer = new SubmodelRepositoryHttpServer(smRepoSettings);
             smRepositoryServer.WebHostBuilder.UseNLog();
             var smRepositoryService = new SubmodelRepositoryServiceProvider();
             var smEndpoints = smRepoSettings.ServerConfig.Hosting.Urls.ConvertAll(c =>
             {
-                var address = c.Replace("+", "0.0.0.0");
-                Logger.Info("Using " + address + " as base endpoint url");
-                return new Endpoint(address, InterfaceName.SubmodelInterface);
+                Logger.Info("Using " + c + " as submodel repository base endpoint url");
+                return new Endpoint(c, InterfaceName.SubmodelInterface);
             });
             smRepositoryService.UseDefaultEndpointRegistration(smEndpoints);
             smRepositoryServer.SetServiceProvider(smRepositoryService);
@@ -65,16 +68,15 @@ namespace BaSyx.AASX.SM.Server.Http.App
             var aasRepoSettings = ServerSettings.CreateSettings();
             aasRepoSettings.ServerConfig.Hosting.ContentPath = "Content";
             aasRepoSettings.ServerConfig.Hosting.Environment = "Development";
-            aasRepoSettings.ServerConfig.Hosting.Urls.Add("http://0.0.0.0:5042");
+            aasRepoSettings.ServerConfig.Hosting.Urls.Add($"http://0.0.0.0:{aasRepoPort}");
 
             var aasRepositoryServer = new AssetAdministrationShellRepositoryHttpServer(aasRepoSettings);
             aasRepositoryServer.WebHostBuilder.UseNLog();
             var aasRepositoryService = new AssetAdministrationShellRepositoryServiceProvider();
-            var aasEndpoints = aasRepoSettings.ServerConfig.Hosting.Urls.ConvertAll(c =>
+            var aasEndpoints = aasRepoSettings.ServerConfig.Hosting.Urls.ConvertAll(url =>
             {
-                var address = c.Replace("+", "0.0.0.0");
-                Logger.Info("Using " + address + " as base endpoint url");
-                return new Endpoint(address, InterfaceName.AssetAdministrationShellRepositoryInterface);
+                Logger.Info("Using " + url + " as aas repository base endpoint url");
+                return new Endpoint(url, InterfaceName.AssetAdministrationShellRepositoryInterface);
             });
             aasRepositoryService.UseDefaultEndpointRegistration(aasEndpoints);
             aasRepositoryServer.SetServiceProvider(aasRepositoryService);
@@ -87,7 +89,6 @@ namespace BaSyx.AASX.SM.Server.Http.App
 
             // Start YARP reverse proxy on public port (e.g. 5043)
             var builder = WebApplication.CreateBuilder(args);
-            var reverseProxyUrl = "http://0.0.0.0:5043";
             builder.WebHost.UseUrls(reverseProxyUrl);
             Logger.Info($"Reverse Proxy URL: {reverseProxyUrl}");
 
@@ -113,7 +114,7 @@ namespace BaSyx.AASX.SM.Server.Http.App
                             ClusterId = "aasCluster",
                             Destinations = new Dictionary<string, Yarp.ReverseProxy.Configuration.DestinationConfig>
                             {
-                                { "shells", new Yarp.ReverseProxy.Configuration.DestinationConfig { Address = "http://127.0.0.1:5042/" }}
+                                { "shells", new Yarp.ReverseProxy.Configuration.DestinationConfig { Address = $"http://127.0.0.1:{aasRepoPort}/" }}
                             }
                         },
                         new Yarp.ReverseProxy.Configuration.ClusterConfig
@@ -121,7 +122,7 @@ namespace BaSyx.AASX.SM.Server.Http.App
                             ClusterId = "submodelCluster",
                             Destinations = new Dictionary<string, Yarp.ReverseProxy.Configuration.DestinationConfig>
                             {
-                                { "submodels", new Yarp.ReverseProxy.Configuration.DestinationConfig { Address = "http://127.0.0.1:5041/" }}
+                                { "submodels", new Yarp.ReverseProxy.Configuration.DestinationConfig { Address = $"http://127.0.0.1:{submodelRepoPort}/" }}
                             }
                         }
                     ]
@@ -133,8 +134,8 @@ namespace BaSyx.AASX.SM.Server.Http.App
             {
                 message = "Welcome to Fluid4.0 AAS / Submodel Server",
                 status_code = 200,
-                aas_repository_server_url = "http://127.0.0.1:5042/",
-                submodel_repository_server_url = "http://127.0.0.1:5041/"
+                aas_repository_server_url = $"http://127.0.0.1:{aasRepoPort}/",
+                submodel_repository_server_url = $"http://127.0.0.1:{submodelRepoPort}/"
             }));
             app.Run();
         }
