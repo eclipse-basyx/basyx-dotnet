@@ -26,6 +26,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./basyx-dotnet-applications/BaSyx.AASX.SM.Server.Http.App
+          file: ./basyx-dotnet-applications/BaSyx.AASX.SM.Server.Http.App/Dockerfile
           push: true
           tags: danielkleinemag/fluid-basyx-dotnet-aasx-server:latest
