@@ -4,17 +4,11 @@ IF "%BASYX_REPO%"=="" (
 
 ECHO Using BaSyx-Package-Source: %BASYX_REPO%
 
+start /w Clear_bin_obj_Folders.bat
 start /w Clear_Local_BaSyx_NuGet_Cache.bat
 
-dotnet clean basyx-dotnet-sdk\BaSyx.Core.sln
-dotnet build -c Release basyx-dotnet-sdk\BaSyx.Core.sln --force
-IF NOT %ERRORLEVEL% EQU 0 (
-	Echo One or more errors occured during compiling
-	pause
-)
-
-dotnet clean basyx-dotnet-components\BaSyx.Components.sln
-dotnet build -c Release basyx-dotnet-components\BaSyx.Components.sln --force
+dotnet clean BaSyx.sln
+dotnet build -c Release BaSyx.sln --force
 IF NOT %ERRORLEVEL% EQU 0 (
 	Echo One or more errors occured during compiling
 	pause
