@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaSyx.Utils.ResultHandling;
 using MQTTnet;
-using MQTTnet.Client;
 using MQTTnet.Protocol;
 using Microsoft.Extensions.Logging;
 using System.Security.Authentication;
@@ -55,7 +54,7 @@ namespace BaSyx.Utils.Client.Mqtt
             {
                 Uri endpoint = new Uri(config.BrokerEndpoint);
                 if(endpoint.Scheme ==  Uri.UriSchemeWs || endpoint.Scheme == Uri.UriSchemeWss)                           
-                    builder.WithWebSocketServer(options => options.WithUri(config.BrokerEndpoint.Replace(endpoint.Scheme + "://", string.Empty)));   
+                    builder.WithWebSocketServer(options => options.WithUri(config.BrokerEndpoint));   
                 else
                     builder.WithTcpServer(endpoint.Host, endpoint.Port);    
             }
@@ -202,7 +201,7 @@ namespace BaSyx.Utils.Client.Mqtt
                 LoadConfiguration(MqttConfig);
                 manualStop = false;
 
-                mqttClient = new MqttFactory().CreateMqttClient();
+                mqttClient = new MqttClientFactory().CreateMqttClient();
                 mqttClient.ApplicationMessageReceivedAsync += MessageReceivedHandler;
                 mqttClient.ConnectedAsync += ConnectedHandler;
                 mqttClient.DisconnectedAsync += DisconnectedHandler;

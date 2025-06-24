@@ -8,6 +8,7 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +21,8 @@ namespace BaSyx.Models.AdminShell
     /// </summary>
     public class IdShortPathResolver
     {
+        private static readonly ILogger logger = LoggingExtentions.CreateLogger<IdShortPathResolver>();
+
         public const char PATH_SEPERATOR = '.';
         private readonly IElementContainer<ISubmodelElement> _submodelElements;
 
@@ -54,7 +57,7 @@ namespace BaSyx.Models.AdminShell
             }
             catch (InvalidDataException e)
             {
-                Console.WriteLine($"Element with index {fullIdShortPath} does not exist.");
+                logger.LogError(e, $"Element with index {fullIdShortPath} does not exist.");
                 throw;
             }
         }

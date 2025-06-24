@@ -22,29 +22,35 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using BaSyx.Utils.Extensions;
 using BaSyx.API.Http;
-using BaSyx.Models.Extensions;
 using BaSyx.Utils.DependencyInjection;
 using BaSyx.Utils.ResultHandling.ResultTypes;
 using System.Web;
+using System.Text.Json;
 
 namespace BaSyx.Clients.AdminShell.Http
 {
-    public class AssetAdministrationShellHttpClient : SimpleHttpClient, 
-        IAssetAdministrationShellClient
+    public class AssetAdministrationShellHttpClient : SimpleHttpClient, IAssetAdministrationShellClient
     {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<AssetAdministrationShellHttpClient>();
         private bool _standalone;
 
         public IEndpoint Endpoint { get; }
 
+        private JsonSerializerOptions _jsonSerializerOptions;
+        public override JsonSerializerOptions JsonSerializerOptions
+        {
+            get
+            {
+                if (_jsonSerializerOptions == null)
+                    _jsonSerializerOptions = DefaultImplementation.GetFullJsonSerializerOptions();
+                return _jsonSerializerOptions;
+            }
+            set { _jsonSerializerOptions = value; }
+        }
+
         private AssetAdministrationShellHttpClient(HttpMessageHandler messageHandler, bool standalone = true) : base(messageHandler)
         {
-            _standalone = standalone;
-            var options = new DefaultJsonSerializerOptions();
-            var services = DefaultImplementation.GetStandardServiceCollection();
-            options.AddDependencyInjection(new DependencyInjectionExtension(services));
-            options.AddFullSubmodelElementConverter();
-            JsonSerializerOptions = options.Build();
+            _standalone = standalone;            
         }
 
         public AssetAdministrationShellHttpClient(Uri endpoint, bool standalone = true) : this(endpoint, null, standalone)
@@ -257,7 +263,7 @@ namespace BaSyx.Clients.AdminShell.Http
         public ISubmodelClient CreateSubmodelClient(Identifier id)
         {
             Uri uri = GetPath(AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID, id);
-            SubmodelHttpClient submodelClient = new SubmodelHttpClient(uri);
+            SubmodelHttpClient submodelClient = new SubmodelHttpClient(uri) {  JsonSerializerOptions = JsonSerializerOptions };
             return submodelClient;
         }
 

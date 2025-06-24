@@ -53,7 +53,7 @@ namespace BaSyx.Registry.Server.Http.App
                 {
                     serverOptions.ConfigureHttpsDefaults(listenOptions =>
                     {
-                        X509Certificate2 certificate = new X509Certificate2(
+                        X509Certificate2 certificate = X509CertificateLoader.LoadPkcs12FromFile(
                             serverSettings.ServerConfig.Security.ServerCertificatePath,
                             serverSettings.ServerConfig.Security.ServerCertificatePassword);
                         listenOptions.ServerCertificate = certificate;

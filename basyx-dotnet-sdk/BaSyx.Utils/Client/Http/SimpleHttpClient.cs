@@ -29,7 +29,19 @@ namespace BaSyx.Utils.Client.Http
         private static readonly ILogger logger = LoggingExtentions.CreateLogger<SimpleHttpClient>();
         public HttpClient HttpClient { get; }
         public HttpMessageHandler HttpMessageHandler { get; }
-        public JsonSerializerOptions JsonSerializerOptions { get; set; }
+
+        private JsonSerializerOptions _jsonSerializerOptions;
+        public virtual JsonSerializerOptions JsonSerializerOptions 
+        { 
+            get 
+            {
+                if (_jsonSerializerOptions == null)
+                    _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+                return _jsonSerializerOptions;                
+            }
+            set { _jsonSerializerOptions = value; }
+        } 
+
         public static SimpleHttpClientTimeoutHandler DEFAULT_HTTP_CLIENT_HANDLER
         {
             get
@@ -65,8 +77,6 @@ namespace BaSyx.Utils.Client.Http
 
             if (HttpMessageHandler is SimpleHttpClientTimeoutHandler)
                 HttpClient.Timeout = Timeout.InfiniteTimeSpan;
-
-            JsonSerializerOptions = new JsonSerializerOptions();
         }
 
         public virtual void LoadProxy(ProxyConfiguration proxyConfiguration)
@@ -275,7 +285,5 @@ namespace BaSyx.Utils.Client.Http
             Dispose(true);
         }
         #endregion
-
-
     }
 }

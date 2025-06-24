@@ -21,8 +21,10 @@ namespace BaSyx.Utils.Client.Http
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
+            if (timeout == null || !timeout.HasValue)
+                throw new ArgumentNullException(nameof(timeout));
 
-            request.Properties[TIMEOUT_KEY] = timeout;
+            request.Options.Set(new HttpRequestOptionsKey<TimeSpan>(TIMEOUT_KEY), timeout.Value);
         }
 
         public static TimeSpan? GetTimeout(this HttpRequestMessage request)
@@ -30,7 +32,7 @@ namespace BaSyx.Utils.Client.Http
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            if (request.Properties.TryGetValue(TIMEOUT_KEY, out var value) && value is TimeSpan timeout)
+            if (request.Options.TryGetValue(new HttpRequestOptionsKey<TimeSpan>(TIMEOUT_KEY), out var value) && value is TimeSpan timeout)
                 return timeout;
             return null;
         }

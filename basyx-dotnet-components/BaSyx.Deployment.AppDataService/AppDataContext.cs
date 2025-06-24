@@ -11,8 +11,8 @@
 using BaSyx.API.Interfaces;
 using BaSyx.API.ServiceProvider;
 using BaSyx.Utils.Settings;
-using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -28,17 +28,16 @@ namespace BaSyx.Deployment.AppDataService
         public Dictionary<string, Settings> Settings { get; set; }
         public Dictionary<string, string> Files { get; set; }       
 
-        private Dictionary<Type, IAssetAdministrationShellServiceProvider> AdminShellServices { get; set; }
+        private ConcurrentDictionary<Type, IAssetAdministrationShellServiceProvider> AdminShellServices { get; set; }
         private IAssetAdministrationShellRegistryInterface Registry { get; set; }
-
-        private IServiceCollection Services { get; set; }
+        private ConcurrentDictionary<Type, object> Services { get; set; }      
 
         public AppDataContext()
         {
             Settings = new Dictionary<string, Settings>();
             Files= new Dictionary<string, string>();
-            AdminShellServices = new Dictionary<Type, IAssetAdministrationShellServiceProvider>();
-            Services = new ServiceCollection();
+            AdminShellServices = new ConcurrentDictionary<Type, IAssetAdministrationShellServiceProvider>();
+            Services = new ConcurrentDictionary<Type, object>();
         }
 
         public void AddRegistry(IAssetAdministrationShellRegistryInterface registry)
@@ -53,13 +52,15 @@ namespace BaSyx.Deployment.AppDataService
 
         public void AddService<T>(T instance) where T : class
         {
-            Services.AddSingleton<T>(instance);
+            Services.TryAdd(typeof(T), instance);
         }
 
 		public T GetService<T>() where T : class
 		{
-            var provider = Services.BuildServiceProvider();
-            return provider.GetService<T>();
+            if (Services.TryGetValue(typeof(T), out var service))
+                return (T)service;
+            else
+                return default;
 		}
 
 		public void AddAdminShellService<T>(T service) where T : IAssetAdministrationShellServiceProvider
@@ -74,7 +75,5 @@ namespace BaSyx.Deployment.AppDataService
             else
                 return default;
         }
-
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <OutputType>Library</OutputType>
     <Configurations>Debug;Release;Azure</Configurations>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
@@ -13,7 +13,7 @@
     <PackageTags>BaSys BaSyx Models</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>basyxlogo.png</PackageIcon>
-    <Version>2.0.24</Version><PublishReadyToRun>true</PublishReadyToRun>
+    <Version>2.1.0</Version><PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

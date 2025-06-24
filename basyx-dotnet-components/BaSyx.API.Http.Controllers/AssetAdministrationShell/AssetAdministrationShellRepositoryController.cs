@@ -324,13 +324,13 @@ namespace BaSyx.API.Http.Controllers
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public async Task<IActionResult> ShellRepo_DeleteThumbnail(string aasIdentifier)
+        public IActionResult ShellRepo_DeleteThumbnail(string aasIdentifier)
         {
             if (serviceProvider.IsNullOrNotFound(aasIdentifier, out IActionResult result, out IAssetAdministrationShellServiceProvider provider))
                 return result;
 
             var service = new AssetAdministrationShellController(provider, hostingEnvironment);
-            return await service.DeleteThumbnail();
+            return service.DeleteThumbnail();
         }
 
         /// <summary>

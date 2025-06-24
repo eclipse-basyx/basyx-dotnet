@@ -10,7 +10,7 @@
 *******************************************************************************/
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
-using MQTTnet.Client;
+using MQTTnet;
 
 namespace BaSyx.Utils.Client.Mqtt
 {
