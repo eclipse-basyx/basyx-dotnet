@@ -91,7 +91,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="limit">The maximum number of elements in the response array</param>
         /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
         /// <returns>Requested Submodels</returns>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.METADATA, Name = "GetAllSubmodels-Metadata")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.METADATA, Name = "GetAllSubmodelsMetadata")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult<List<Submodel>>), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -123,7 +123,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="extent">Determines to which extent the resource is being serialized</param>
         /// <returns></returns>
         /// <response code="200">Requested Submodels in their ValueOnly representation</response>  
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.VALUE, Name = "GetAllSubmodels-ValueOnly")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.VALUE, Name = "GetAllSubmodelsValueOnly")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -170,7 +170,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="cursor">A server-generated identifier retrieved from pagingMetadata that specifies from which position the result listing should continue (BASE64-URL-encoded)</param>
         /// <returns></returns>
         /// <response code="200">References of the requested Submodels</response>     
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.REFERENCE, Name = "GetAllSubmodels-Reference")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.REFERENCE, Name = "GetAllSubmodelsReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -197,7 +197,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="level">Determines the structural depth of the respective resource content</param>
         /// <returns></returns>
         /// <response code="200">References of the requested Submodels</response>     
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.PATH, Name = "GetAllSubmodelsPath-Path")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODELS + OutputModifier.PATH, Name = "GetAllSubmodelsPath")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -316,13 +316,13 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="204">Submodel updated successfully</response>
         /// <inheritdoc cref="SubmodelController.PatchSubmodel(ISubmodel)"/>
-        [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID, Name = "PatchSubmodel")]
+        [HttpPatch(SubmodelRepositoryRoutes.SUBMODEL_BYID, Name = "PatchSubmodelById")]
         [Produces("application/json")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Result), 400)]
         [ProducesResponseType(typeof(Result), 403)]
         [ProducesResponseType(typeof(Result), 500)]
-        public IActionResult PatchSubmodel(string submodelIdentifier, [FromBody] ISubmodel submodel)
+        public IActionResult PatchSubmodelById(string submodelIdentifier, [FromBody] ISubmodel submodel)
         {
             if (serviceProvider.IsNullOrNotFound(submodelIdentifier, out IActionResult result, out ISubmodelServiceProvider provider))
                 return result;
@@ -361,7 +361,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Requested Submodel in the metadata representation</response>
         /// <inheritdoc cref="SubmodelController.GetSubmodelMetadata()"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.METADATA, Name = "GetSubmodelById-Metadata")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.METADATA, Name = "SubmodelRepo_GetSubmodelMetadata")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 404)]
@@ -408,7 +408,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">ValueOnly representation of the requested Submodel</response>    
         /// <inheritdoc cref="SubmodelController.GetSubmodelValueOnly(RequestLevel, RequestExtent)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.VALUE, Name = "GetSubmodelById-ValueOnly")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.VALUE, Name = "SubmodelRepo_GetSubmodelValue")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -455,7 +455,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>    
         /// <inheritdoc cref="SubmodelController.GetSubmodelReference()"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.REFERENCE, Name = "GetSubmodelById-Reference")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.REFERENCE, Name = "SubmodelRepo_GetSubmodelReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -480,7 +480,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Requested Submodel</response>
         /// <inheritdoc cref="SubmodelController.GetSubmodelPath(RequestLevel)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.PATH, Name = "GetSubmodelById-Path")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + OutputModifier.PATH, Name = "SubmodelRepo_GetSubmodelPath")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Submodel), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -509,7 +509,7 @@ namespace BaSyx.API.Http.Controllers
         /// <response code="200">List of found submodel elements</response>
         /// <response code="404">Submodel not found</response>
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElements(int, string, RequestLevel, RequestExtent)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "GetAllSubmodelElements_SubmodelRepository")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS, Name = "SubmodelRepo_GetAllSubmodelElements")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement[]), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -535,7 +535,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">List of found submodel elements in the metadata representation</response>
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsMetadata(int, string, RequestLevel)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.METADATA, Name = "GetAllSubmodelElements-Metadata_SubmodelRepository")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.METADATA, Name = "SubmodelRepo_GetAllSubmodelElementsMetadata")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement[]), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -561,7 +561,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">List of found submodel elements in the Path notation</response>
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsPath(int, string, RequestLevel)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.PATH, Name = "GetAllSubmodelElements-Path_SubmodelRepo")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.PATH, Name = "SubmodelRepo_GetAllSubmodelElementsPath")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement[]), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -588,7 +588,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">List of found submodel elements in the ValueOnly representation</response>
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsValueOnly(int, string, RequestLevel, RequestExtent)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "GetAllSubmodelElements-ValueOnly_SubmodelRepo")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.VALUE, Name = "SubmodelRepo_GetAllSubmodelElementsValueOnly")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -612,7 +612,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">List of found submodel elements</response>
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsReference(int, string)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE, Name = "GetAllSubmodelElements-Reference_SubmodelRepo")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE, Name = "SubmodelRepo_GetAllSubmodelElementsReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -661,7 +661,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Requested submodel element</response>  
         /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPath(string, RequestLevel, RequestExtent)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "GetSubmodelElementByPath_SubmodelRepo")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH, Name = "SubmodelRepo_GetSubmodelElementByPath")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -687,7 +687,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Metadata attributes of the requested submodel element</response>
         /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathMetadata(string, RequestLevel)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "GetSubmodelElementByPath-Metadata_SubmodelRepo")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.METADATA, Name = "SubmodelRepo_GetSubmodelElementByPathMetadata")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -740,7 +740,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Requested submodel element in its ValueOnly representation</response>
         /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathValueOnly(string, RequestLevel, RequestExtent)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "GetSubmodelElementByPath-ValueOnly_SubmodelRepo")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.VALUE, Name = "SubmodelRepo_GetSubmodelElementByPathValueOnly")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(SubmodelElement), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -766,7 +766,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">Requested submodel element in the Path notation</response>
         /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathPath(string, RequestLevel)"/>
-        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.PATH, Name = "GetSubmodelElementByPath-Path_SubmodelRepo")]
+        [HttpGet(SubmodelRepositoryRoutes.SUBMODEL_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.PATH, Name = "SubmodelRepo_GetSubmodelElementByPathPath")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
         [ProducesResponseType(typeof(Result), 400)]
@@ -791,7 +791,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">A Reference of the requested submodel element</response>
         /// /// <inheritdoc cref="SubmodelController.GetSubmodelElementByPathReference(string)"/>
-        [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.REFERENCE, Name = "GetSubmodelElementByPath-Reference_SubmodelRepo")]
+        [HttpGet(SubmodelRoutes.SUBMODEL + SubmodelRoutes.SUBMODEL_ELEMENTS_IDSHORTPATH + OutputModifier.REFERENCE, Name = "SubmodelRepo_GetSubmodelElementByPathReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Reference), 200)]
         [ProducesResponseType(typeof(Result), 400)]

@@ -1556,7 +1556,7 @@
             <response code="201">Submodel updated successfully</response>
             <response code="400">Bad Request</response>             
         </member>
-        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PatchSubmodel(System.String,BaSyx.Models.AdminShell.ISubmodel)">
+        <member name="M:BaSyx.API.Http.Controllers.SubmodelRepositoryController.PatchSubmodelById(System.String,BaSyx.Models.AdminShell.ISubmodel)">
             <summary>
             Updates an existing Submodel
             </summary>
