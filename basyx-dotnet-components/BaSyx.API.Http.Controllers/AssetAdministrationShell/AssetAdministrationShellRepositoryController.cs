@@ -317,7 +317,7 @@ namespace BaSyx.API.Http.Controllers
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <returns></returns>
         /// <response code="200">Thumbnail deletion successful</response>
-        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "DeleteThumbnail")]
+        [HttpDelete(AssetAdministrationShellRepositoryRoutes.SHELLS_AAS + AssetAdministrationShellRoutes.AAS_ASSET_INFORMATION_THUMBNAIL, Name = "ShellRepo_DeleteThumbnail")]
         [Produces("application/json")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(200)]

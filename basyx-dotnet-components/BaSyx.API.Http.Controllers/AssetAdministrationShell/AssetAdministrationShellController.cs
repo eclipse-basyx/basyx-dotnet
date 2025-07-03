@@ -659,7 +659,7 @@ namespace BaSyx.API.Http.Controllers
         /// <returns></returns>
         /// <response code="200">List of found submodel elements</response>  
         /// <inheritdoc cref="SubmodelController.GetAllSubmodelElementsReference(int, string)"/>
-        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE, Name = "GetAllSubmodelElementsReference")]
+        [HttpGet(AssetAdministrationShellRoutes.AAS + AssetAdministrationShellRoutes.AAS_SUBMODELS_BYID + SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.REFERENCE, Name = "Shell_GetAllSubmodelElementsReference")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedResult), 200)]
         [ProducesResponseType(typeof(Result), 400)]
