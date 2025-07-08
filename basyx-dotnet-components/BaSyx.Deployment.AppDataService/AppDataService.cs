@@ -50,6 +50,12 @@ namespace BaSyx.Deployment.AppDataService
         public static bool IsSnapped => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP"));
 
         /// <summary>
+        /// Indicates whether the application is running in Docker
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsDocker => Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+
+        /// <summary>
         /// Gets the SNAP_COMMON location
         /// </summary>
         public static string SnapCommonLocation => GetCommonLocation();
