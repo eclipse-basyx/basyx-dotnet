@@ -44,22 +44,7 @@ namespace BaSyx.Registry.Server.Http.App
 
             //Configure the pathbase as default prefix for all routes
             if (!string.IsNullOrEmpty(serverSettings.ServerConfig.PathBase))
-                server.UsePathBase(serverSettings.ServerConfig.PathBase);
-
-            //Check if ServerCertificate is present
-            if (!string.IsNullOrEmpty(serverSettings.ServerConfig.Security.ServerCertificatePath))
-            {
-                server.WebHostBuilder.ConfigureKestrel(serverOptions =>
-                {
-                    serverOptions.ConfigureHttpsDefaults(listenOptions =>
-                    {
-                        X509Certificate2 certificate = X509CertificateLoader.LoadPkcs12FromFile(
-                            serverSettings.ServerConfig.Security.ServerCertificatePath,
-                            serverSettings.ServerConfig.Security.ServerCertificatePassword);
-                        listenOptions.ServerCertificate = certificate;
-                    });
-                });
-            }
+                server.UsePathBase(serverSettings.ServerConfig.PathBase);            
 
             //Instantiate implementation backend for the Registry
             InMemoryRegistry registryImpl = new InMemoryRegistry();                       
