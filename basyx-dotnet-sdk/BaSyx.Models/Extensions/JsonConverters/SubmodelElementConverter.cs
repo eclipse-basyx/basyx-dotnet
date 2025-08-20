@@ -363,6 +363,13 @@ namespace BaSyx.Models.Extensions
                         else if (submodelElement is SubmodelElementList sml)
                         {
                             int i = 0;
+
+                            //Added workaround for multiple value in response JSON body
+                            if (sml.Value?.Value?.Count > 0)
+                                SkipValue(ref reader);
+                            if (reader.TokenType == JsonTokenType.EndArray)
+                                break;
+
                             while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                             {
                                 if (reader.TokenType == JsonTokenType.StartObject)
@@ -405,10 +412,36 @@ namespace BaSyx.Models.Extensions
                             file.Value.Value = reader.GetString();
                         }
                         break;
+                    default:
+                        // Skip unknown properties
+                        SkipValue(ref reader);
+                        break;
                 }
             }
 
             return submodelElement;
+        }
+
+        private void SkipValue(ref Utf8JsonReader reader)
+        {
+            // Skip to the end of the current value
+            int depth = 0;
+            do
+            {
+                switch (reader.TokenType)
+                {
+                    case JsonTokenType.StartObject:
+                    case JsonTokenType.StartArray:
+                        depth++;
+                        break;
+                    case JsonTokenType.EndObject:
+                    case JsonTokenType.EndArray:
+                        depth--;
+                        break;
+                }
+
+                // Continue reading until we've exited the current value
+            } while (depth > 0 && reader.Read());
         }
 
         public override void Write(Utf8JsonWriter writer, ISubmodelElement value, JsonSerializerOptions options)
