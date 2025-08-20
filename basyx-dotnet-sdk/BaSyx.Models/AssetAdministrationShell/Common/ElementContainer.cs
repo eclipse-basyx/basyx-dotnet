@@ -413,9 +413,14 @@ namespace BaSyx.Models.AdminShell
                 return new Result<TElement>(new ArgumentNullException(nameof(element)));
             try
             {
-                string idShortOrIndex = GetIdShortOrIndex(element);
+                var idShortOrIndex = GetIdShortOrIndex(element);
+                TElement existingElement;
+                if (idShortOrIndex.Item1 != -1)
+                    existingElement = this[idShortOrIndex.Item1];
+                else
+                    existingElement = this[idShortOrIndex.Item2];
 
-                if (this[idShortOrIndex] == null)
+                if (existingElement == null)
                 {
                     Add(element);
                     return new Result<TElement>(true, element);
@@ -435,9 +440,14 @@ namespace BaSyx.Models.AdminShell
                 return new Result<T>(new ArgumentNullException(nameof(element)));
             try
             {
-                string idShortOrIndex = GetIdShortOrIndex(element);
+                var idShortOrIndex = GetIdShortOrIndex(element);
+                TElement existingElement;
+                if (idShortOrIndex.Item1 != -1)
+                    existingElement = this[idShortOrIndex.Item1];
+                else
+                    existingElement = this[idShortOrIndex.Item2];
 
-                if (this[idShortOrIndex] == null)
+                if (existingElement == null)
                 {
                     Add(element);
                     return new Result<T>(true, element);
@@ -487,11 +497,18 @@ namespace BaSyx.Models.AdminShell
                 throw new ArgumentNullException(nameof(element.IdShort));
 
             var idShortOrIndex = GetIdShortOrIndex(element);
-
-            //element with same short ID exists in container
-            if (this[idShortOrIndex] != null)
-                return;
-            
+            if (idShortOrIndex.Item1 != -1)
+            {
+                if (this[idShortOrIndex.Item1] != null)
+                    return;
+            }
+            else
+            {
+                //element with same short ID exists in container
+                if (this[idShortOrIndex.Item2] != null)
+                    return;
+            }
+                       
             element.Parent = this.Parent;
             
             IElementContainer<TElement> node;
@@ -522,17 +539,17 @@ namespace BaSyx.Models.AdminShell
         /// <param name="element"></param>
         /// <returns>Value that will be used to add/ create a new element as child.</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private string GetIdShortOrIndex(TElement element)
+        private (int, string) GetIdShortOrIndex(TElement element)
         {
             //if container is a list, the index is always returned (children of the list must not have short IDs)
             if (Value?.ModelType == ModelType.SubmodelElementList)
-                return _children.Count.ToString(); // index starts with 0!
+                return (_children.Count, null); // index starts with 0!
 
             //if the container is a collection and the element does not have a short ID, this is an error (the children of the collection must have short IDs)
             if (string.IsNullOrEmpty(element.IdShort))
                 throw new ArgumentNullException(nameof(element.IdShort));
 
-            return element.IdShort;
+            return (-1, element.IdShort);
         }
 
         public virtual IResult<TElement> CreateOrUpdate(string idShortPath, TElement element)
