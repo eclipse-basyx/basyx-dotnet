@@ -479,8 +479,8 @@ namespace BaSyx.Models.AdminShell
             var isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
 
             //prevent to create list children with short ID
-            if (isListParent && !string.IsNullOrEmpty(element.IdShort))
-                throw new InvalidOperationException($"List element children must not have short IDs '{element.IdShort}'");
+            //if (isListParent && !string.IsNullOrEmpty(element.IdShort))
+            //    throw new InvalidOperationException($"List element children must not have short IDs '{element.IdShort}'");
 
             //prevent to create collection children without short ID
             if (!isListParent && string.IsNullOrEmpty(element.IdShort))
