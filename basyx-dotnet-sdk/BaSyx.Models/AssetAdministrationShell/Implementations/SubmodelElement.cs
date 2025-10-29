@@ -76,6 +76,9 @@ namespace BaSyx.Models.AdminShell
         [JsonIgnore, IgnoreDataMember]
         public ValueScope Value { get => Get(this).Result; set => Set(this, value); }
 
+        [JsonIgnore, IgnoreDataMember]
+        public bool Optional { get; set; } = false;
+
         public IEnumerable<IEmbeddedDataSpecification> EmbeddedDataSpecifications { get; set; }
 
         private IConceptDescription conceptDescription;

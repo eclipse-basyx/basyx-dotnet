@@ -18,6 +18,9 @@ namespace BaSyx.Models.AdminShell
     {
         [JsonIgnore, IgnoreDataMember]
         ValueScope Value { get; }
+
+        [JsonIgnore, IgnoreDataMember]
+        bool Optional { get; }
     }
 
     public interface ISubmodelElement<TValueScope> : ISubmodelElement where TValueScope: ValueScope

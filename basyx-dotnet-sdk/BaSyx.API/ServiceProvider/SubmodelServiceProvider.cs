@@ -295,7 +295,7 @@ namespace BaSyx.API.ServiceProvider
             {
                 if(inputArguments == null)
                 {
-                    if(operation.InputVariables.Count == 0)
+                    if(operation.InputVariables.Count == 0 || operation.InputVariables.All(v => v.Value != null && v.Value.Optional))
                         return new Result<IOperationVariableSet>(true, new OperationVariableSet());
                     else
                         return new Result<IOperationVariableSet>(false, new ErrorMessage("InputArgument are null but there are expected input variables"));
