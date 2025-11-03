@@ -9,8 +9,11 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using BaSyx.Models.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json;
@@ -21,6 +24,8 @@ namespace BaSyx.Models.AdminShell
     [DataContract, JsonConverter(typeof(DataTypeConverter))]
     public class DataType : IEquatable<DataType>
     {
+        private static readonly ILogger logger = LoggingExtentions.CreateLogger<DataType>();
+
         [IgnoreDataMember]
         public DataObjectType DataObjectType { get; internal set; }
 
@@ -262,6 +267,108 @@ namespace BaSyx.Models.AdminShell
                 return JsonValueKind.String;
             else
                 return JsonValueKind.Null;
+        }
+
+        public static Type GetTypeFromString(string typeName)
+        {
+            switch (typeName.ToLower())
+            {                
+                case "bool":
+                case "boolean":
+                    return typeof(bool);
+                case "uint8":
+                case "byte":
+                    return typeof(byte);
+                case "int8":
+                case "sbyte":
+                    return typeof(sbyte);
+                case "int16":
+                case "short":
+                    return typeof(short);
+                case "uint16":
+                case "ushort":
+                    return typeof(ushort);
+                case "int":
+                case "int32":
+                    return typeof(int);
+                case "uint":
+                case "uint32":
+                    return typeof(uint);
+                case "int64":
+                case "long":
+                    return typeof(long);
+                case "uint64":
+                case "ulong":
+                    return typeof(ulong);
+                case "single":
+                case "float":
+                    return typeof(float);
+                case "double":
+                    return typeof(double);
+                case "decimal":
+                    return typeof(decimal);
+                case "char":
+                    return typeof(char);
+                case "string":
+                    return typeof(string);
+                case "datetime":
+                    return typeof(DateTime);
+                default:
+                    if (DataObjectType.TryParse(typeName, out DataObjectType dataObjectType))
+                        return GetSystemTypeFromDataType(dataObjectType);
+                    else
+                        return null;
+            }
+        }
+
+        /// <summary>
+		/// Converts a string representation of a value to its specified type.
+		/// This method is designed to be comprehensive and handles a wide range of .NET types.
+		/// </summary>
+		/// <param name="valueString">The string value to convert.</param>
+		/// <param name="typeName">The name of the target type (e.g., "int", "System.Boolean", "xs:double").</param>
+		/// <returns>The converted object, or null if conversion fails or the type is not recognized.</returns>
+		public static object ConvertStringToType(string valueString, string typeName)
+        {
+            Type targetType = GetTypeFromString(typeName);
+
+            if (targetType == null)
+            {
+                logger.LogError($"Type '{typeName}' is not recognized or could not be loaded.");
+                return null;
+            }
+
+            if (targetType == typeof(string))
+            {
+                return valueString ?? string.Empty;
+            }
+
+            if (string.IsNullOrEmpty(valueString))
+            {
+                // If the target is a value type (struct) like int, bool, DateTime, it cannot be null.
+                // Return its default value (0 for int, false for bool, etc.).
+                if (targetType.IsValueType)
+                {
+                    return Activator.CreateInstance(targetType);
+                }
+                return null;
+            }
+
+            try
+            {
+                System.ComponentModel.TypeConverter converter = TypeDescriptor.GetConverter(targetType);
+                if (converter != null && converter.CanConvertFrom(typeof(string)))
+                {
+                    return converter.ConvertFromString(null, CultureInfo.InvariantCulture, valueString);
+                }
+
+                return Convert.ChangeType(valueString, targetType, CultureInfo.InvariantCulture);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error converting string '{valueString}' to type {targetType.FullName}: {ex.Message}");
+                return null;
+            }
         }
 
         public static Type GetSystemTypeFromDataType(DataType dataType)
