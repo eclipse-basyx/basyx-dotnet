@@ -132,9 +132,54 @@ namespace BaSyx.Models.Extensions
                     PropertyValue<T> propertyValue = new PropertyValue<T>(value);
                     await sme.SetValueScope(propertyValue).ConfigureAwait(false);
                 }               
-            }            
-        }
+            }
+            else if (sme.ModelType == ModelType.SubmodelElementList)
+            {
+                if(value is SubmodelElementListValue smlValue)
+                {
+                    await sme.SetValueScope(smlValue).ConfigureAwait(false);
+                }
+                else if (value is ICollection collection)
+                {
+                    var enumerable = collection.Cast<object>();
+                    IElementContainer<ISubmodelElement> smeElements = new ElementContainer<ISubmodelElement>();
+                    for (int i = 0; i < collection.Count; i++)
+                    {
+                        var element = enumerable.ElementAt(i);
+                        smeElements.Add(new Property($"{i}", element.GetType(), element));
+                    }
+                    SubmodelElementListValue listValue = new SubmodelElementListValue(smeElements);                 
+                    await sme.SetValueScope(listValue).ConfigureAwait(false);
+                }
+            }
+            else if (sme.ModelType == ModelType.SubmodelElementCollection)
+            {
+                if (value is SubmodelElementCollectionValue smcValue)
+                {
+                    await sme.SetValueScope(smcValue).ConfigureAwait(false);
+                }
+                else
+                {
+                    IElementContainer<ISubmodelElement> smeElements = new ElementContainer<ISubmodelElement>();
+                    var type = value.GetType();
+                    foreach (var propertyInfo in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                    {
+                        if (propertyInfo.CanRead)
+                        {
+                            var propertyValue = propertyInfo.GetValue(value);
 
+                            Property smProp = new Property(propertyInfo.Name, propertyInfo.PropertyType);
+                            smProp.Value = new PropertyValue(new ElementValue(propertyValue, propertyInfo.PropertyType));
+
+                            smeElements.Add(smProp);
+                        }                            
+                    }
+                    SubmodelElementCollectionValue collectionValue = new SubmodelElementCollectionValue(smeElements);
+                    await sme.SetValueScope(collectionValue).ConfigureAwait(false);
+                }
+            }
+        }
+        
         public static Task<OperationResult> Invoke(this IOperation operation, IOperationVariableSet inputArguments, IOperationVariableSet inoutputArguments, IOperationVariableSet outputArguments, CancellationToken ct)
         {
             return operation?.OnMethodCalled?.Invoke(operation, inputArguments, inoutputArguments, outputArguments, ct);
