@@ -12,7 +12,9 @@ variables:
   # solution: '**/*.sln'
   # buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  feedProject: 'FACTORY-Orchestration-Platform' # Azure DevOps project name
   feedName: 'BaSyx-NET-SDK-Packages' # Azure Artifacts feed name
+  packageName: 'BaSyx.API'
 
 stages:
   - stage: SDK
@@ -32,39 +34,125 @@ stages:
         - task: PowerShell@2
           name: ComputeVersion
           displayName: Compute package version
+          env:
+            CUSTOM_VERSION: ${{ parameters.customVersion }}
+            FEED_PROJECT: $(feedProject)
+            FEED_NAME: $(feedName)
+            PACKAGE_NAME: $(packageName)
+            BUILD_REASON: $(Build.Reason)
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           inputs:
             targetType: 'inline'
             script: |
-              $custom = '$(customVersion)'.Trim()
-              if ($custom) {
+              function Get-OrgFromCollectionUri {
+              param($collectionUri)
+              $u = [Uri]$collectionUri
+              $segments = $u.AbsolutePath.Trim('/').Split('/')
+              if ($u.Host -ne 'dev.azure.com' -or $segments.Length -lt 1) {
+              throw "Unexpected collection URI: $collectionUri"
+              }
+              return $segments[0]
+              }
+
+              function Get-HighestStableSemVer {
+              param([string[]]$versions)
+              $stable = @()
+              foreach ($v in $versions) {
+              $vs = $v.Trim()
+              if ($vs -match '^\d+.\d+.\d+$') {
+              try { $stable += [Version]$vs } catch {}
+              }
+              }
+              if ($stable.Count -eq 0) { return $null }
+              return ($stable | Sort-Object -Descending | Select-Object -First 1)
+              }
+
+              $custom = $env:CUSTOM_VERSION
+              if (-not [string]::IsNullOrWhiteSpace($custom)) {
               Write-Host "Using custom version: $custom"
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$custom"
               exit 0
               }
 
-              $propsPath = "$(Build.SourcesDirectory)\Directory.Build.props"
-              if (!(Test-Path $propsPath)) {
-              Write-Error "Directory.Build.props not found at $propsPath. Add it with a <VersionPrefix>x.y.z</VersionPrefix>."
+              $org = Get-OrgFromCollectionUri $(System.CollectionUri)
+              $project = $env:FEED_PROJECT
+              $feedName = $env:FEED_NAME
+              $packageName = $env:PACKAGE_NAME
+              $reason = $env:BUILD_REASON
+              $isCI = $reason -eq 'IndividualCI' -or $reason -eq 'BatchedCI'
+
+              if ($isCI) {
+              Write-Host "CI run detected (Build.Reason=$reason). Looking up latest stable version for package '$packageName' in feed '$feedName'..."
+              $token = $env:SYSTEM_ACCESSTOKEN
+              if ([string]::IsNullOrWhiteSpace($token)) {
+              Write-Error "System.AccessToken not available. Enable 'Allow scripts to access OAuth token' in pipeline settings."
               exit 1
               }
 
-              [xml]$xml = Get-Content $propsPath
-              $versionPrefixNode = $xml.Project.PropertyGroup.VersionPrefix
-              if (!$versionPrefixNode) {
+              # Resolve feed ID
+              $feedsUri = "https://feeds.dev.azure.com/$org/$project/_apis/packaging/feeds?api-version=7.1-preview.1"
+              $feedsResp = Invoke-RestMethod -Method Get -Uri $feedsUri -Headers @{ Authorization = "Bearer $token" }
+              $feed = $feedsResp.value | Where-Object { $_.name -eq $feedName }
+              if ($null -eq $feed) {
+              Write-Warning "Feed '$feedName' not found in project '$project'. Falling back to Directory.Build.props."
+              } else {
+              $feedId = $feed.id
+              Write-Host "Resolved feed '$feedName' -> $feedId"
+
+              # Query this single package, include all versions
+              $pkgsUri = "https://feeds.dev.azure.com/$org/$project/_apis/packaging/feeds/$feedId/packages?protocolType=NuGet&packageNameQuery=$([uri]::EscapeDataString($packageName))&includeAllVersions=true&isListed=true&api-version=7.1-preview.1"
+              $pkgsResp = Invoke-RestMethod -Method Get -Uri $pkgsUri -Headers @{ Authorization = "Bearer $token" }
+
+              $pkg = $pkgsResp.value | Where-Object { $_.name -ieq $packageName } | Select-Object -First 1
+              if ($null -ne $pkg) {
+              $versionStrings = @()
+              foreach ($ver in $pkg.versions) {
+              if ($ver.version) { $versionStrings += $ver.version }
+              }
+
+              $latest = Get-HighestStableSemVer $versionStrings
+              if ($null -ne $latest) {
+              Write-Host "Latest stable $packageName version in feed: $($latest.ToString())"
+              $major = $latest.Major
+              $minor = $latest.Minor
+              $patch = $latest.Build + 1
+              $computed = "$major.$minor.$patch"
+              Write-Host "Computed bumped version (patch++): $computed"
+              Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
+              exit 0
+              } else {
+              Write-Warning "No stable versions found for '$packageName' in feed; falling back to Directory.Build.props."
+              }
+              } else {
+              Write-Warning "Package '$packageName' not found in feed '$feedName'; falling back to Directory.Build.props."
+              }
+              }
+              } else {
+              Write-Host "Non-CI run (Build.Reason=$reason). Will use Directory.Build.props unless customVersion is provided."
+              }
+
+              # Fallback: bump patch from Directory.Build.props
+              $propsPath = Join-Path "$(Build.SourcesDirectory)" "Directory.Build.props"
+              if (!(Test-Path $propsPath)) {
+              Write-Error "Directory.Build.props not found at $propsPath."
+              exit 1
+              }
+              [xml]$xml = Get-Content -Raw $propsPath
+              $node = $xml.SelectSingleNode('//VersionPrefix')
+              if ($null -eq $node) {
               Write-Error "VersionPrefix not found in Directory.Build.props."
               exit 1
               }
-              $base = $versionPrefixNode.'#text'
+              $base = $node.InnerText.Trim()
               Write-Host "Base VersionPrefix: $base"
 
               $parts = $base.Split('.')
               if ($parts.Length -lt 3) { Write-Error "VersionPrefix must be Major.Minor.Patch"; exit 1 }
               $major = [int]$parts[0]
-              $minor = [int]$parts[1] + 1
-              $patch = 0
+              $minor = [int]$parts[1]
+              $patch = [int]$parts[2] + 1
               $computed = "$major.$minor.$patch"
-              Write-Host "Computed bumped version: $computed"
-
+              Write-Host "Computed bumped version (from props, patch++): $computed"
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
 
         - task: NuGetAuthenticate@1
@@ -88,7 +176,7 @@ stages:
           inputs:
             command: 'pack'
             packagesToPack: 'basyx-dotnet-sdk/**/*.csproj'
-            arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(ComputeVersion.PackageVersion)'
+            arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(PackageVersion)'
             packDirectory: '$(Build.ArtifactStagingDirectory)/packages/sdk'
 
         - task: NuGetCommand@2
@@ -96,5 +184,54 @@ stages:
           inputs:
             command: 'push'
             packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/sdk/*.nupkg'
-            publishVstsFeed: '$(feedName)'
+            publishVstsFeed: '$(feedProject)/$(feedName)'
+            allowPackageConflicts: true
+    
+  - stage: Components
+    displayName: Pack and publish Components
+    dependsOn: SDK
+    variables:
+      PackageVersionFromSDK: $[ stageDependencies.SDK.BuildSDK.outputs['ComputeVersion.PackageVersion'] ]
+    jobs:
+    - job: Components
+      displayName: Build and pack Components
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+        - checkout: self
+          fetchDepth: 0
+
+        - task: NuGetToolInstaller@1
+          inputs:
+            checkLatest: true
+        - task: NuGetAuthenticate@1
+          displayName: Authenticate to Azure Artifacts
+
+        - task: DotNetCoreCLI@2
+          displayName: Restore Components (from internal feed)
+          inputs:
+            command: 'restore'
+            projects: 'basyx-dotnet-components/**/*.csproj'
+
+        - task: DotNetCoreCLI@2
+          displayName: Build Components
+          inputs:
+            command: 'build'
+            projects: 'basyx-dotnet-components/**/*.csproj'
+            arguments: '--configuration $(buildConfiguration)'
+
+        - task: DotNetCoreCLI@2
+          displayName: Pack Components
+          inputs:
+            command: 'pack'
+            packagesToPack: 'basyx-dotnet-components/**/*.csproj'
+            arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(PackageVersionFromSDK)'
+            packDirectory: '$(Build.ArtifactStagingDirectory)/packages/components'
+
+        - task: NuGetCommand@2
+          displayName: Push Components packages to internal feed
+          inputs:
+            command: 'push'
+            packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/components/*.nupkg'
+            publishVstsFeed: '$(feedProject)/$(feedName)'
             allowPackageConflicts: true
