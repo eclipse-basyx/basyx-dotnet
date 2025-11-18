@@ -260,3 +260,19 @@ stages:
             packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/components/*.nupkg'
             publishVstsFeed: '$(feedProject)/$(feedName)'
             allowPackageConflicts: true
+        
+        - task: PowerShell@2
+          displayName: Write computed version artifact
+          inputs:
+            targetType: 'inline'
+            script: |
+              $dir = "$(Build.ArtifactStagingDirectory)\version"
+              New-Item -ItemType Directory -Path $dir -Force | Out-Null
+              Set-Content -Path (Join-Path $dir 'package-version.txt') -Value "$(PackageVersion)"
+              Write-Host "Wrote version file: $(Build.ArtifactStagingDirectory)\version\package-version.txt"
+        
+        - task: PublishPipelineArtifact@1
+          displayName: Publish version artifact
+          inputs:
+            targetPath: '$(Build.ArtifactStagingDirectory)/version'
+            artifact: 'version'
