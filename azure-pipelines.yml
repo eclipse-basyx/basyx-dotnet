@@ -268,7 +268,7 @@ stages:
             script: |
               $dir = "$(Build.ArtifactStagingDirectory)\version"
               New-Item -ItemType Directory -Path $dir -Force | Out-Null
-              Set-Content -Path (Join-Path $dir 'package-version.txt') -Value "$(PackageVersion)"
+              Set-Content -Path (Join-Path $dir 'package-version.txt') -Value "$(PackageVersionFromSDK)"
               Write-Host "Wrote version file: $(Build.ArtifactStagingDirectory)\version\package-version.txt"
         
         - task: PublishPipelineArtifact@1
