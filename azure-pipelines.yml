@@ -35,23 +35,112 @@ stages:
           displayName: Compute package version
           env:
             CUSTOM_VERSION: ${{ parameters.customVersion }}
+            FEED_PROJECT: $(feedProject)
+            FEED_NAME: $(feedName)
+            BUILD_REASON: $(Build.Reason)
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           inputs:
             targetType: 'inline'
             script: |
+              function Get-OrgFromCollectionUri {
+              param($collectionUri)
+              # Example: https://dev.azure.com/ESF-Cloud/
+              $u = [Uri]$collectionUri
+              if ($u.Host -ne 'dev.azure.com') { throw "Unexpected collection URI host: $($u.Host)" }
+              # Take the first segment after host as the org
+              $segments = $u.AbsolutePath.Trim('/').Split('/')
+              if ($segments.Length -lt 1) { throw "Cannot parse organization from $collectionUri" }
+              return $segments[0]
+              }
+
+              function Get-HighestStableSemVer {
+              param($versions)
+              # Filter to x.y.z only (stable), parse with [Version], return highest
+              $stable = @()
+              foreach ($v in $versions) {
+              $vs = $v.Trim()
+              if ($vs -match '^\d+.\d+.\d+$') {
+              try { $stable += [Version]$vs } catch {}
+              }
+              }
+              if ($stable.Count -eq 0) { return $null }
+              return ($stable | Sort-Object -Descending | Select-Object -First 1)
+              }
+
               $custom = $env:CUSTOM_VERSION
               if (-not [string]::IsNullOrWhiteSpace($custom)) {
               Write-Host "Using custom version: $custom"
-              # Make it available to later steps in this job and as an output for other jobs
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$custom"
               exit 0
               }
 
-              $propsPath = Join-Path "$(Build.SourcesDirectory)" "Directory.Build.props"
-              if (!(Test-Path $propsPath)) {
-              Write-Error "Directory.Build.props not found at $propsPath. Add <VersionPrefix>x.y.z</VersionPrefix>."
+              $reason = $env:BUILD_REASON
+              $isCI = $reason -eq 'IndividualCI' -or $reason -eq 'BatchedCI'
+              if ($isCI) {
+              Write-Host "CI run detected (Build.Reason=$reason). Fetching latest version from Azure Artifacts feed..."
+              $org = Get-OrgFromCollectionUri $(System.CollectionUri)
+              $project = $env:FEED_PROJECT
+              $feedName = $env:FEED_NAME
+              $token = $env:SYSTEM_ACCESSTOKEN
+              if ([string]::IsNullOrWhiteSpace($token)) {
+              Write-Error "System.AccessToken not available. Enable 'Allow scripts to access OAuth token' in pipeline settings."
               exit 1
               }
 
+              # Get feed ID by name
+              $feedsUri = "https://feeds.dev.azure.com/$org/$project/_apis/packaging/feeds?api-version=7.1-preview.1"
+              $feedsResp = Invoke-RestMethod -Method Get -Uri $feedsUri -Headers @{ Authorization = "Bearer $token" }
+              $feed = $feedsResp.value | Where-Object { $_.name -eq $feedName }
+              if ($null -eq $feed) {
+              Write-Error "Feed '$feedName' not found in project '$project'."
+              exit 1
+              }
+              $feedId = $feed.id
+              Write-Host "Resolved feed '$feedName' -> $feedId"
+
+              # Get all NuGet packages with all versions
+              $pkgsUri = "https://feeds.dev.azure.com/$org/$project/_apis/packaging/feeds/$feedId/packages?protocolType=NuGet&includeDeleted=false&isListed=true&includeAllVersions=true&api-version=7.1-preview.1"
+              $pkgsResp = Invoke-RestMethod -Method Get -Uri $pkgsUri -Headers @{ Authorization = "Bearer $token" }
+
+              # Collect all version strings across all BaSyx packages (or all packages in the feed)
+              $versionStrings = @()
+              foreach ($p in $pkgsResp.value) {
+              foreach ($ver in $p.versions) {
+              if ($null -ne $ver.version -and $ver.isLatest -ne $true) {
+              # Include every version string; we'll sort later. You can skip pre-release here too.
+              $versionStrings += $ver.version
+              }
+              }
+              # Include the latest version record too (some payloads mark one as isLatest)
+              if ($p.versions) {
+              $latestRec = ($p.versions | Where-Object { $_.isLatest -eq $true } | Select-Object -First 1)
+              if ($latestRec -and $latestRec.version) { $versionStrings += $latestRec.version }
+              }
+              }
+
+              $latest = Get-HighestStableSemVer $versionStrings
+              if ($null -eq $latest) {
+              Write-Warning "No stable versions found in feed; falling back to Directory.Build.props"
+              }
+              else {
+              Write-Host "Latest stable version in feed: $($latest.ToString())"
+              $major = $latest.Major
+              $minor = $latest.Minor + 1
+              # Set patch to 1 to match your example 2.1.0 -> 2.2.1
+              $patch = 1 # change to 0 if you want 2.2.0 instead
+              $computed = "$major.$minor.$patch"
+              Write-Host "Computed bumped version: $computed"
+              Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
+              exit 0
+              }
+              }
+
+              # Fallback: bump from Directory.Build.props
+              $propsPath = Join-Path "$(Build.SourcesDirectory)" "Directory.Build.props"
+              if (!(Test-Path $propsPath)) {
+              Write-Error "Directory.Build.props not found at $propsPath."
+              exit 1
+              }
               [xml]$xml = Get-Content -Raw $propsPath
               $node = $xml.SelectSingleNode('//VersionPrefix')
               if ($null -eq $node) {
@@ -60,16 +149,14 @@ stages:
               }
               $base = $node.InnerText.Trim()
               Write-Host "Base VersionPrefix: $base"
-
               $parts = $base.Split('.')
               if ($parts.Length -lt 3) { Write-Error "VersionPrefix must be Major.Minor.Patch"; exit 1 }
               $major = [int]$parts[0]
               $minor = [int]$parts[1] + 1
-              $patch = 0
+              # Keep patch consistent with your preference:
+              $patch = 1 # change to 0 if you want 2.2.0 when bumping from props
               $computed = "$major.$minor.$patch"
-              Write-Host "Computed bumped version: $computed"
-
-              # Make it available to later steps in this job and as an output for other jobs
+              Write-Host "Computed bumped version (from props): $computed"
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
 
         - task: NuGetAuthenticate@1
