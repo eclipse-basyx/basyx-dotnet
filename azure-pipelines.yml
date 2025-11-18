@@ -69,7 +69,7 @@ stages:
 
               $custom = $env:CUSTOM_VERSION
               if (-not [string]::IsNullOrWhiteSpace($custom)) {
-              Write-Host "Using custom version: $custom"
+              Write-Host "##vso[task.setvariable variable=PackageVersion]$custom"
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$custom"
               exit 0
               }
@@ -118,6 +118,7 @@ stages:
               $patch = $latest.Build + 1
               $computed = "$major.$minor.$patch"
               Write-Host "Computed bumped version (patch++): $computed"
+              Write-Host "##vso[task.setvariable variable=PackageVersion]$computed"
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
               exit 0
               } else {
@@ -153,10 +154,19 @@ stages:
               $patch = [int]$parts[2] + 1
               $computed = "$major.$minor.$patch"
               Write-Host "Computed bumped version (from props, patch++): $computed"
-              Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
+              Write-Host "##vso[task.setvariable variable=PackageVersion]$computed"
+              Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"        
 
         - task: NuGetAuthenticate@1
           displayName: Authenticate to Azure Artifacts
+
+
+        - task: PowerShell@2
+          displayName: Echo version (SDK)
+          inputs:
+            targetType: 'inline'
+            script: |
+              Write-Host "PackageVersion in SDK job: $(PackageVersion)"
 
         - task: DotNetCoreCLI@2
           displayName: Restore SDK
@@ -180,7 +190,7 @@ stages:
             includesource: true
             includesymbols: true
             configuration: '$(buildConfiguration)'
-            buildProperties: 'Version=$(PackageVersion)'
+            buildProperties: 'Version=$(PackageVersion);PackageVersion=$(PackageVersion)'
             packDirectory: '$(Build.ArtifactStagingDirectory)/packages/sdk'
 
         - task: NuGetCommand@2
@@ -195,7 +205,7 @@ stages:
     displayName: Pack and publish Components
     dependsOn: SDK
     variables:
-      PackageVersionFromSDK: $[ stageDependencies.SDK.BuildSDK.outputs['ComputeVersion.PackageVersion'] ]
+      PackageVersionFromSDK: $[ stageDependencies.SDK.SDK.outputs['ComputeVersion.PackageVersion'] ]
     jobs:
     - job: Components
       displayName: Build and pack Components
@@ -210,6 +220,13 @@ stages:
             checkLatest: true
         - task: NuGetAuthenticate@1
           displayName: Authenticate to Azure Artifacts
+
+        - task: PowerShell@2
+          displayName: Echo version (SDK)
+          inputs:
+            targetType: 'inline'
+            script: |
+              Write-Host "PackageVersionFromSDK in SDK job: $(PackageVersionFromSDK)"
 
         - task: DotNetCoreCLI@2
           displayName: Restore Components (from internal feed)
@@ -233,7 +250,7 @@ stages:
             includesource: true
             includesymbols: true
             configuration: '$(buildConfiguration)'
-            buildProperties: 'Version=$(PackageVersionFromSDK)'
+            buildProperties: 'Version=$(PackageVersionFromSDK);PackageVersion=$(PackageVersionFromSDK)'
             packDirectory: '$(Build.ArtifactStagingDirectory)/packages/components'
 
         - task: NuGetCommand@2
