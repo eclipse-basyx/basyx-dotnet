@@ -12,6 +12,7 @@ variables:
   # solution: '**/*.sln'
   # buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  feedProject: 'FACTORY-Orchestration-Platform' # Azure DevOps project name
   feedName: 'BaSyx-NET-SDK-Packages' # Azure Artifacts feed name
 
 stages:
@@ -96,5 +97,5 @@ stages:
           inputs:
             command: 'push'
             packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/sdk/*.nupkg'
-            publishVstsFeed: '$(feedName)'
+            publishVstsFeed: '$(feedProject)/$(feedName)'
             allowPackageConflicts: true
