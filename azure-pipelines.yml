@@ -6,7 +6,7 @@ trigger:
 parameters:
   - name: customVersion
     type: string
-    default: ''
+    default: '2.1.0'
 
 variables:
   # solution: '**/*.sln'
@@ -33,29 +33,32 @@ stages:
         - task: PowerShell@2
           name: ComputeVersion
           displayName: Compute package version
+          env:
+            CUSTOM_VERSION: ${{ parameters.customVersion }}
           inputs:
             targetType: 'inline'
             script: |
-              $custom = '$(customVersion)'.Trim()
-              if ($custom) {
+              $custom = $env:CUSTOM_VERSION
+              if (-not [string]::IsNullOrWhiteSpace($custom)) {
               Write-Host "Using custom version: $custom"
+              # Make it available to later steps in this job and as an output for other jobs
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$custom"
               exit 0
               }
 
-              $propsPath = "$(Build.SourcesDirectory)\Directory.Build.props"
+              $propsPath = Join-Path "$(Build.SourcesDirectory)" "Directory.Build.props"
               if (!(Test-Path $propsPath)) {
-              Write-Error "Directory.Build.props not found at $propsPath. Add it with a <VersionPrefix>x.y.z</VersionPrefix>."
+              Write-Error "Directory.Build.props not found at $propsPath. Add <VersionPrefix>x.y.z</VersionPrefix>."
               exit 1
               }
 
-              [xml]$xml = Get-Content $propsPath
-              $versionPrefixNode = $xml.Project.PropertyGroup.VersionPrefix
-              if (!$versionPrefixNode) {
+              [xml]$xml = Get-Content -Raw $propsPath
+              $node = $xml.SelectSingleNode('//VersionPrefix')
+              if ($null -eq $node) {
               Write-Error "VersionPrefix not found in Directory.Build.props."
               exit 1
               }
-              $base = $versionPrefixNode.'#text'
+              $base = $node.InnerText.Trim()
               Write-Host "Base VersionPrefix: $base"
 
               $parts = $base.Split('.')
@@ -66,6 +69,7 @@ stages:
               $computed = "$major.$minor.$patch"
               Write-Host "Computed bumped version: $computed"
 
+              # Make it available to later steps in this job and as an output for other jobs
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
 
         - task: NuGetAuthenticate@1
@@ -89,7 +93,7 @@ stages:
           inputs:
             command: 'pack'
             packagesToPack: 'basyx-dotnet-sdk/**/*.csproj'
-            arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(ComputeVersion.PackageVersion)'
+            arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(PackageVersion)'
             packDirectory: '$(Build.ArtifactStagingDirectory)/packages/sdk'
 
         - task: NuGetCommand@2
@@ -100,7 +104,14 @@ stages:
             publishVstsFeed: '$(feedProject)/$(feedName)'
             allowPackageConflicts: true
     
+  - stage: Components
+    displayName: Pack and publish Components
+    dependsOn: SDK
+    variables:
+      PackageVersionFromSDK: $[ stageDependencies.SDK.BuildSDK.outputs['ComputeVersion.PackageVersion'] ]
+    jobs:
     - job: Components
+      displayName: Build and pack Components
       pool:
         vmImage: 'windows-latest'
       steps:
@@ -131,7 +142,7 @@ stages:
           inputs:
             command: 'pack'
             packagesToPack: 'basyx-dotnet-components/**/*.csproj'
-            arguments: '--configuration $(buildConfiguration) /p:Version=$(PackageVersionFromSDK)'
+            arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(PackageVersionFromSDK)'
             packDirectory: '$(Build.ArtifactStagingDirectory)/packages/components'
 
         - task: NuGetCommand@2
