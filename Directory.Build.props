@@ -1,0 +1,10 @@
+<Project> 
+	<PropertyGroup> 
+		<VersionPrefix>3.0.0</VersionPrefix> <!-- Adjust this once; pipeline bumps minor automatically --> 
+		<Authors>Constantin Ziesche | Bosch Rexroth AG</Authors> 
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<RepositoryUrl>https://dev.azure.com/ESF-Cloud/FACTORY-Orchestration-Platform/_git/basyx-sdk</RepositoryUrl> 
+		<PackageLicenseFile>LICENSE</PackageLicenseFile> 
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild> 
+	</PropertyGroup> 
+</Project> 
