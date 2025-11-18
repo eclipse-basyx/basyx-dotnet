@@ -205,7 +205,7 @@ stages:
     displayName: Pack and publish Components
     dependsOn: SDK
     variables:
-      PackageVersionFromSDK: $[ stageDependencies.SDK.BuildSDK.outputs['ComputeVersion.PackageVersion'] ]
+      PackageVersionFromSDK: $[ stageDependencies.SDK.SDK.outputs['ComputeVersion.PackageVersion'] ]
     jobs:
     - job: Components
       displayName: Build and pack Components
