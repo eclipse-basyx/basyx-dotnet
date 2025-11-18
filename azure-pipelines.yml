@@ -99,3 +99,47 @@ stages:
             packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/sdk/*.nupkg'
             publishVstsFeed: '$(feedProject)/$(feedName)'
             allowPackageConflicts: true
+    
+    - job: Components
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+        - checkout: self
+          fetchDepth: 0
+
+        - task: NuGetToolInstaller@1
+          inputs:
+            checkLatest: true
+        - task: NuGetAuthenticate@1
+          displayName: Authenticate to Azure Artifacts
+
+        - task: DotNetCoreCLI@2
+          displayName: Restore Components (from internal feed)
+          inputs:
+            command: 'restore'
+            projects: 'basyx-dotnet-components/**/*.csproj'
+
+        - task: DotNetCoreCLI@2
+          displayName: Build Components
+          inputs:
+            command: 'build'
+            projects: 'basyx-dotnet-components/**/*.csproj'
+            arguments: '--configuration $(buildConfiguration)'
+
+        - task: DotNetCoreCLI@2
+          displayName: Pack Components
+          inputs:
+            command: 'pack'
+            packagesToPack: 'basyx-dotnet-components/**/*.csproj'
+            arguments: '--configuration $(buildConfiguration) /p:Version=$(PackageVersionFromSDK)'
+            packDirectory: '$(Build.ArtifactStagingDirectory)/packages/components'
+
+        - task: NuGetCommand@2
+          displayName: Push Components packages to internal feed
+          inputs:
+            command: 'push'
+            packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/components/*.nupkg'
+            publishVstsFeed: '$(feedProject)/$(feedName)'
+            allowPackageConflicts: true
+
+
