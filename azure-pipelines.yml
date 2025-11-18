@@ -176,7 +176,11 @@ stages:
           inputs:
             command: 'pack'
             packagesToPack: 'basyx-dotnet-sdk/**/*.csproj'
-            arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(PackageVersion)'
+            nobuild: true
+            includesource: true
+            includesymbols: true
+            configuration: '$(buildConfiguration)'
+            buildProperties: 'Version=$(PackageVersion)'
             packDirectory: '$(Build.ArtifactStagingDirectory)/packages/sdk'
 
         - task: NuGetCommand@2
@@ -225,7 +229,11 @@ stages:
           inputs:
             command: 'pack'
             packagesToPack: 'basyx-dotnet-components/**/*.csproj'
-            arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(PackageVersionFromSDK)'
+            nobuild: true
+            includesource: true
+            includesymbols: true
+            configuration: '$(buildConfiguration)'
+            buildProperties: 'Version=$(PackageVersionFromSDK)'
             packDirectory: '$(Build.ArtifactStagingDirectory)/packages/components'
 
         - task: NuGetCommand@2
