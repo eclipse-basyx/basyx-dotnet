@@ -1,0 +1,100 @@
+trigger:
+  branches:
+    include:
+    - main
+
+parameters:
+  - name: customVersion
+    type: string
+    default: ''
+
+variables:
+  # solution: '**/*.sln'
+  # buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  feedName: 'BaSyx-NET-SDK-Packages' # Azure Artifacts feed name
+
+stages:
+  - stage: SDK
+    displayName: Pack and publish SDK
+    jobs:
+    - job: SDK
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+        - checkout: self
+          fetchDepth: 0
+
+        - task: NuGetToolInstaller@1
+          inputs:
+            checkLatest: true
+
+        - task: PowerShell@2
+          name: ComputeVersion
+          displayName: Compute package version
+          inputs:
+            targetType: 'inline'
+            script: |
+              $custom = '$(customVersion)'.Trim()
+              if ($custom) {
+              Write-Host "Using custom version: $custom"
+              Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$custom"
+              exit 0
+              }
+
+              $propsPath = "$(Build.SourcesDirectory)\Directory.Build.props"
+              if (!(Test-Path $propsPath)) {
+              Write-Error "Directory.Build.props not found at $propsPath. Add it with a <VersionPrefix>x.y.z</VersionPrefix>."
+              exit 1
+              }
+
+              [xml]$xml = Get-Content $propsPath
+              $versionPrefixNode = $xml.Project.PropertyGroup.VersionPrefix
+              if (!$versionPrefixNode) {
+              Write-Error "VersionPrefix not found in Directory.Build.props."
+              exit 1
+              }
+              $base = $versionPrefixNode.'#text'
+              Write-Host "Base VersionPrefix: $base"
+
+              $parts = $base.Split('.')
+              if ($parts.Length -lt 3) { Write-Error "VersionPrefix must be Major.Minor.Patch"; exit 1 }
+              $major = [int]$parts[0]
+              $minor = [int]$parts[1] + 1
+              $patch = 0
+              $computed = "$major.$minor.$patch"
+              Write-Host "Computed bumped version: $computed"
+
+              Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
+
+        - task: NuGetAuthenticate@1
+          displayName: Authenticate to Azure Artifacts
+
+        - task: DotNetCoreCLI@2
+          displayName: Restore SDK
+          inputs:
+            command: 'restore'
+            projects: 'basyx-dotnet-sdk/**/*.csproj'
+
+        - task: DotNetCoreCLI@2
+          displayName: Build SDK
+          inputs:
+            command: 'build'
+            projects: 'basyx-dotnet-sdk/**/*.csproj'
+            arguments: '--configuration $(buildConfiguration)'
+
+        - task: DotNetCoreCLI@2
+          displayName: Pack SDK
+          inputs:
+            command: 'pack'
+            projects: 'basyx-dotnet-sdk/**/*.csproj'
+            arguments: '--configuration $(buildConfiguration) /p:Version=$(ComputeVersion.PackageVersion)'
+            packDirectory: '$(Build.ArtifactStagingDirectory)/packages/sdk'
+
+        - task: NuGetCommand@2
+          displayName: Push SDK packages to internal feed
+          inputs:
+            command: 'push'
+            packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/sdk/*.nupkg'
+            publishVstsFeed: '$(feedName)'
+            allowPackageConflicts: true
