@@ -125,9 +125,8 @@ stages:
               else {
               Write-Host "Latest stable version in feed: $($latest.ToString())"
               $major = $latest.Major
-              $minor = $latest.Minor + 1
-              # Set patch to 1 to match your example 2.1.0 -> 2.2.1
-              $patch = 1 # change to 0 if you want 2.2.0 instead
+              $minor = $latest.Minor
+              $patch = $latest.Patch + 1
               $computed = "$major.$minor.$patch"
               Write-Host "Computed bumped version: $computed"
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
