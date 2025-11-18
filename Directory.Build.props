@@ -4,7 +4,7 @@
 		<Authors>Constantin Ziesche | Bosch Rexroth AG</Authors> 
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<RepositoryUrl>https://dev.azure.com/ESF-Cloud/FACTORY-Orchestration-Platform/_git/basyx-sdk</RepositoryUrl> 
-		<PackageLicenseFile>LICENSE</PackageLicenseFile> 
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild> 
 	</PropertyGroup> 
 </Project> 
