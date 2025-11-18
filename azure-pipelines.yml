@@ -87,7 +87,7 @@ stages:
           displayName: Pack SDK
           inputs:
             command: 'pack'
-            projects: 'basyx-dotnet-sdk/**/*.csproj'
+            packagesToPack: 'basyx-dotnet-sdk/**/*.csproj'
             arguments: '--no-build --include-source --include-symbols --configuration $(buildConfiguration) /p:Version=$(ComputeVersion.PackageVersion)'
             packDirectory: '$(Build.ArtifactStagingDirectory)/packages/sdk'
 
