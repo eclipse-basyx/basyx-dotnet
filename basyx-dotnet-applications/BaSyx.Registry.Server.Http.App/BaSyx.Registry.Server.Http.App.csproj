@@ -12,6 +12,7 @@
     <PackageTags>BaSys BaSyx Registry Server Component</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">

@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>SubmodelRepository.Program</StartupObject>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

@@ -12,6 +12,7 @@
     <Company>:em engineering methods AG</Company>
     <PackageTags>BaSys BaSyx Dev Submodell Example</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

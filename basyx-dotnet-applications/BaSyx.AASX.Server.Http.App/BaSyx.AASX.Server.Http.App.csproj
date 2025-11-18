@@ -13,6 +13,7 @@
     <Company>Bosch Rexroth AG</Company>
     <PackageTags>BaSys BaSyx Component HTTP REST-API AssetAdministrationShell AASX Package Server</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

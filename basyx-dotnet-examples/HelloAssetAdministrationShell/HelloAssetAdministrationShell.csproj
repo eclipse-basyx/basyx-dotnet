@@ -13,6 +13,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <StartupObject>HelloAssetAdministrationShell.Program</StartupObject>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

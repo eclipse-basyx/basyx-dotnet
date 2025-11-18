@@ -12,6 +12,7 @@
     <PackageTags>BaSys BaSyx Asset Administration Shell Repository Server App</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup Condition="Exists('..\..\basyx-dotnet-components\')">
