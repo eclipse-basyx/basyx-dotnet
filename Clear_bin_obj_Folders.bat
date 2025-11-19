@@ -1,5 +1,4 @@
 @echo off
-setlocal
 
 set "root=%~dp0"
 
@@ -14,4 +13,9 @@ for /r "%root%" %%d in (.) do (
     popd
 )
 
-endlocal
+IF %ERRORLEVEL% EQU 0 (
+	exit 0
+) ELSE (
+	Echo One or more errors occured
+	pause
+)
