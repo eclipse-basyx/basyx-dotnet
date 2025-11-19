@@ -8,6 +8,8 @@
 *
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
+using BaSyx.Models.Extensions;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace BaSyx.Models.AdminShell
@@ -19,7 +21,7 @@ namespace BaSyx.Models.AdminShell
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "value")]
 		public IElementContainer<ISubmodelElement> Value { get => _value; set => _value.AddRange(value); }
 
-        private readonly IElementContainer<ISubmodelElement> _value;
+        protected internal IElementContainer<ISubmodelElement> _value;
 
         public SubmodelElementListValue() 
         {
@@ -28,6 +30,14 @@ namespace BaSyx.Models.AdminShell
         public SubmodelElementListValue(IElementContainer<ISubmodelElement> valueElements)
         {
             _value = valueElements;
+        }
+    }
+
+    public class SubmodelElementListValue<T> : SubmodelElementListValue
+    {
+        public SubmodelElementListValue(ISubmodelElement sml, IEnumerable<T> valueElements) : base()
+        {
+            _value = valueElements.ToElementContainer<T>(sml.Parent, sml);
         }
     }
 }
