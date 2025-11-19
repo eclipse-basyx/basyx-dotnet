@@ -308,7 +308,8 @@ namespace BaSyx.Models.AdminShell
             SupplementalSemanticIds = collection.SupplementalSemanticIds;
             Get = (collection as SubmodelElementCollection).Get;
             Set = (collection as SubmodelElementCollection).Set;
-            BaseValue = collection.Value.Value;
+            base.Value = collection.Value;
+            //BaseValue = collection.Value.Value;
         }
     }
     
