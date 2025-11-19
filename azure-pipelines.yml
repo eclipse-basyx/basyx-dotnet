@@ -122,9 +122,18 @@ stages:
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
               exit 0
               } else {
-              Write-Error "No stable versions found for '$packageName' in feed."
+              Write-Warning "No stable versions found for '$packageName' in feed."
               exit 1
-              }                         
+              }
+              } else {
+              Write-Warning "Package '$packageName' not found in feed '$feedName'."
+              exit 1
+              }
+              }
+              } else {
+              Write-Host "Non-CI run (Build.Reason=$reason)."
+              exit 1
+              }                  
 
         - task: NuGetAuthenticate@1
           displayName: Authenticate to Azure Artifacts
