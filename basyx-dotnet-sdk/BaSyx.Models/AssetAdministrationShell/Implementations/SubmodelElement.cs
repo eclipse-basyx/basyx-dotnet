@@ -140,7 +140,7 @@ namespace BaSyx.Models.AdminShell
                 if (_get == null)
                 {
                     _get = new GetValueScopeHandler<TValueScope>(element => Task.FromResult((TValueScope)_valueScope));
-                    base.Get = new GetValueScopeHandler(async element => await _get(this));
+                    base.Get = new GetValueScopeHandler(async element => await _get(this).ConfigureAwait(false));
                 }
                 return _get;
             }
@@ -148,7 +148,7 @@ namespace BaSyx.Models.AdminShell
             {
                 _get = value;
                 if (value != null)
-                    base.Get = new GetValueScopeHandler(async element => await _get(this));
+                    base.Get = new GetValueScopeHandler(async element => await _get(this).ConfigureAwait(false));
                 else
                     base.Get = null;
             }
@@ -161,7 +161,7 @@ namespace BaSyx.Models.AdminShell
                 if (_set == null)
                 {
                     _set = new SetValueScopeHandler<TValueScope>((element, valueScope) => { _valueScope = valueScope; return Task.CompletedTask; });
-                    base.Set = new SetValueScopeHandler(async (element, valueScope) => await _set(element, (TValueScope)valueScope));
+                    base.Set = new SetValueScopeHandler(async (element, valueScope) => await _set(element, (TValueScope)valueScope).ConfigureAwait(false));
                 }                    
                 return _set;
             }
@@ -169,14 +169,14 @@ namespace BaSyx.Models.AdminShell
             {
                 _set = value;
                 if (value != null)
-                    base.Set = new SetValueScopeHandler(async (element, valueScope) => await _set(element, (TValueScope)valueScope));                    
+                    base.Set = new SetValueScopeHandler(async (element, valueScope) => await _set(element, (TValueScope)valueScope).ConfigureAwait(false));                    
                 else
                     base.Set = null;
             }
         }
 
         [JsonIgnore, IgnoreDataMember]
-        public new TValueScope Value { get => Get(this).Result; set => Set(this, value); }
+        public new TValueScope Value { get => Get(this).ConfigureAwait(false).GetAwaiter().GetResult(); set => Set(this, value).ConfigureAwait(false).GetAwaiter().GetResult(); }
 
         protected SubmodelElement(string idShort) : base(idShort) { }
 
