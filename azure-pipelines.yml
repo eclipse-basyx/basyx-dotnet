@@ -122,40 +122,18 @@ stages:
               Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"
               exit 0
               } else {
-              Write-Warning "No stable versions found for '$packageName' in feed; falling back to Directory.Build.props."
-              }
-              } else {
-              Write-Warning "Package '$packageName' not found in feed '$feedName'; falling back to Directory.Build.props."
-              }
-              }
-              } else {
-              Write-Host "Non-CI run (Build.Reason=$reason). Will use Directory.Build.props unless customVersion is provided."
-              }
-
-              # Fallback: bump patch from Directory.Build.props
-              $propsPath = Join-Path "$(Build.SourcesDirectory)" "Directory.Build.props"
-              if (!(Test-Path $propsPath)) {
-              Write-Error "Directory.Build.props not found at $propsPath."
+              Write-Warning "No stable versions found for '$packageName' in feed."
               exit 1
               }
-              [xml]$xml = Get-Content -Raw $propsPath
-              $node = $xml.SelectSingleNode('//VersionPrefix')
-              if ($null -eq $node) {
-              Write-Error "VersionPrefix not found in Directory.Build.props."
+              } else {
+              Write-Warning "Package '$packageName' not found in feed '$feedName'."
               exit 1
               }
-              $base = $node.InnerText.Trim()
-              Write-Host "Base VersionPrefix: $base"
-
-              $parts = $base.Split('.')
-              if ($parts.Length -lt 3) { Write-Error "VersionPrefix must be Major.Minor.Patch"; exit 1 }
-              $major = [int]$parts[0]
-              $minor = [int]$parts[1]
-              $patch = [int]$parts[2] + 1
-              $computed = "$major.$minor.$patch"
-              Write-Host "Computed bumped version (from props, patch++): $computed"
-              Write-Host "##vso[task.setvariable variable=PackageVersion]$computed"
-              Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$computed"        
+              }
+              } else {
+              Write-Host "Non-CI run (Build.Reason=$reason)."
+              exit 1
+              }                  
 
         - task: NuGetAuthenticate@1
           displayName: Authenticate to Azure Artifacts
