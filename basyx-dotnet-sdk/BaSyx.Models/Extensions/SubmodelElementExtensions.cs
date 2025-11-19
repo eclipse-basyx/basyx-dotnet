@@ -37,12 +37,45 @@ namespace BaSyx.Models.Extensions
         {
             return referable as T;
         }
-    
-        public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementList list)
+
+        public static IElementContainer<ISubmodelElement> ToElementContainer<T>(this IEnumerable<T> enumerable, 
+            IReferable parent = null, ISubmodelElement rootElement = null, IElementContainer<ISubmodelElement> parentContainer = null)
         {
-            if (list != null)
+            if (enumerable != null)
             {
-                return list.Value.Value.Select(s => s.Cast<IProperty>().GetValue<T>());
+                ElementContainer<ISubmodelElement> smElements = new ElementContainer<ISubmodelElement>(parent, rootElement, parentContainer);
+                DataType type = DataType.GetDataTypeFromSystemType(typeof(T));
+                if (type.IsCollection)
+                {
+                    ISubmodelElementCollection smc = CreateSubmodelElementCollectionFromEnumerable<T>(enumerable);
+                    smElements.Add(smc);
+                }
+                else
+                {
+                    for (int i = 0; i < enumerable.Count(); i++)
+                    {
+                        var item = enumerable.ElementAt(i);
+                        Property property = new Property($"{i}", type, item);
+                        smElements.Add(property);
+                    }
+                }
+                return smElements;
+            }
+            else
+                return null;
+        }
+
+        public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementList sml)
+         => ToEnumerable<T>(sml.Value.Value);
+
+        public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementCollection smc)
+         => ToEnumerable<T>(smc.Value.Value);
+
+        public static IEnumerable<T> ToEnumerable<T>(this IElementContainer<ISubmodelElement> container)
+        {
+            if (container != null)
+            {
+                return container.Select(s => s.Cast<IProperty>().GetValue<T>());                
             }
             else
                 return null;
@@ -69,7 +102,7 @@ namespace BaSyx.Models.Extensions
                     PropertyInfo info = type.GetProperty(element.IdShort);
                     if(info != null && info.CanWrite)
                     {
-                        var value = element.GetValue<object>();
+                        var value = element.Cast<IProperty>().Value.Value.ToObject(info.PropertyType);
                         info.SetValue(instance, value, null);
                     }
                 }
@@ -107,7 +140,8 @@ namespace BaSyx.Models.Extensions
             {
                 return propValue.Value.ToObject<T>();
             }
-            return default(T);
+            else
+                return default(T);
         }
 
         public static void SetValue<T>(this ISubmodelElement sme, ValueScope valueScope) => SetValueAsync(sme, valueScope).Wait();
@@ -139,6 +173,10 @@ namespace BaSyx.Models.Extensions
                 {
                     await sme.SetValueScope(smlValue).ConfigureAwait(false);
                 }
+                else if (sme is SubmodelElementList sml && value is SubmodelElementList valueSml)
+                {
+                    sml.Value = valueSml.Value;
+                }
                 else if (value is ICollection collection)
                 {
                     var enumerable = collection.Cast<object>();
@@ -158,6 +196,10 @@ namespace BaSyx.Models.Extensions
                 {
                     await sme.SetValueScope(smcValue).ConfigureAwait(false);
                 }
+                else if(sme is SubmodelElementCollection smc && value is SubmodelElementCollection valueSmc)
+                {
+                    smc.Value = valueSmc.Value;
+                }
                 else
                 {
                     IElementContainer<ISubmodelElement> smeElements = new ElementContainer<ISubmodelElement>();
@@ -172,7 +214,7 @@ namespace BaSyx.Models.Extensions
                             smProp.Value = new PropertyValue(new ElementValue(propertyValue, propertyInfo.PropertyType));
 
                             smeElements.Add(smProp);
-                        }                            
+                        }
                     }
                     SubmodelElementCollectionValue collectionValue = new SubmodelElementCollectionValue(smeElements);
                     await sme.SetValueScope(collectionValue).ConfigureAwait(false);
@@ -222,7 +264,7 @@ namespace BaSyx.Models.Extensions
                 {
                     Property p = new Property($"{i}", item.GetType());
                     if (enumerable is IList list)
-                    {
+                    {                        
                         p.Get = (prop) => { return new PropertyValue(new ElementValue(list[Convert.ToInt32(prop.IdShort)], item.GetType())); };
                         p.Set = (prop, value) => { list[Convert.ToInt32(prop.IdShort)] = value.Value.ToObject(item.GetType()); return Task.CompletedTask; };
                     }
