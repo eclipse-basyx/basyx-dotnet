@@ -170,19 +170,28 @@ stages:
 
         - task: DotNetCoreCLI@2
           displayName: Restore SDK
+          env:
+            BASYX_SDK: $(Build.SourcesDirectory)
           inputs:
             command: 'restore'
+            feedsToUse: 'select'
+            vstsFeed: '$(feedProject)/$(feedName)'
+            includeNuGetOrg: false
             projects: 'basyx-dotnet-sdk/**/*.csproj'
 
         - task: DotNetCoreCLI@2
           displayName: Build SDK
+          env:
+            BASYX_SDK: $(Build.SourcesDirectory)
           inputs:
             command: 'build'
             projects: 'basyx-dotnet-sdk/**/*.csproj'
-            arguments: '--configuration $(buildConfiguration)'
+            arguments: '--configuration $(buildConfiguration) --no-restore'
 
         - task: DotNetCoreCLI@2
           displayName: Pack SDK
+          env:
+            BASYX_SDK: $(Build.SourcesDirectory)
           inputs:
             command: 'pack'
             packagesToPack: 'basyx-dotnet-sdk/**/*.csproj'
@@ -230,19 +239,28 @@ stages:
 
         - task: DotNetCoreCLI@2
           displayName: Restore Components (from internal feed)
+          env:
+            BASYX_SDK: $(Build.SourcesDirectory)
           inputs:
             command: 'restore'
+            feedsToUse: 'select'
+            vstsFeed: '$(feedProject)/$(feedName)'
+            includeNuGetOrg: false
             projects: 'basyx-dotnet-components/**/*.csproj'
 
         - task: DotNetCoreCLI@2
           displayName: Build Components
+          env:
+            BASYX_SDK: $(Build.SourcesDirectory)
           inputs:
             command: 'build'
             projects: 'basyx-dotnet-components/**/*.csproj'
-            arguments: '--configuration $(buildConfiguration)'
+            arguments: '--configuration $(buildConfiguration) --no-restore'
 
         - task: DotNetCoreCLI@2
           displayName: Pack Components
+          env:
+            BASYX_SDK: $(Build.SourcesDirectory)
           inputs:
             command: 'pack'
             packagesToPack: 'basyx-dotnet-components/**/*.csproj'
@@ -260,3 +278,19 @@ stages:
             packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/components/*.nupkg'
             publishVstsFeed: '$(feedProject)/$(feedName)'
             allowPackageConflicts: true
+        
+        - task: PowerShell@2
+          displayName: Write computed version artifact
+          inputs:
+            targetType: 'inline'
+            script: |
+              $dir = "$(Build.ArtifactStagingDirectory)\version"
+              New-Item -ItemType Directory -Path $dir -Force | Out-Null
+              Set-Content -Path (Join-Path $dir 'package-version.txt') -Value "$(PackageVersionFromSDK)"
+              Write-Host "Wrote version file: $(Build.ArtifactStagingDirectory)\version\package-version.txt"
+        
+        - task: PublishPipelineArtifact@1
+          displayName: Publish version artifact
+          inputs:
+            targetPath: '$(Build.ArtifactStagingDirectory)/version'
+            artifact: 'version'
