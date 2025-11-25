@@ -143,7 +143,7 @@ namespace BaSyx.Clients.AdminShell.Http
             return RetrieveSubmodelElementsAsync(limit, cursor).GetAwaiter().GetResult();
         }
 
-        public IResult<List<string>> RetrieveSubmodelElementsPath(
+        public IResult<PagedResult<List<string>>> RetrieveSubmodelElementsPath(
             int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep)
         {
             return RetrieveSubmodelElementsPathAsync(limit, cursor, level).GetAwaiter().GetResult();
@@ -308,7 +308,7 @@ namespace BaSyx.Clients.AdminShell.Http
             return result;
         }
 
-        public async Task<IResult<List<string>>> RetrieveSubmodelElementsPathAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep)
+        public async Task<IResult<PagedResult<List<string>>>> RetrieveSubmodelElementsPathAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep)
         {
             Uri uri = GetPath(SubmodelRoutes.SUBMODEL_ELEMENTS + OutputModifier.PATH);
             var query = HttpUtility.ParseQueryString(uri.Query);
@@ -320,7 +320,7 @@ namespace BaSyx.Clients.AdminShell.Http
 
             var request = await CreateRequest(uri, HttpMethod.Get).ConfigureAwait(false);
             var response = await SendRequestAsync(request, CancellationToken.None).ConfigureAwait(false);
-            var result = await EvaluateResponseAsync<List<string>>(response, response.Entity).ConfigureAwait(false);
+            var result = await EvaluateResponseAsync<PagedResult<List<string>>>(response, response.Entity).ConfigureAwait(false);
             response?.Entity?.Dispose();
             return result;
         }

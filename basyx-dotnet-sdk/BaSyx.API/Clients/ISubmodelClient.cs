@@ -24,8 +24,8 @@ namespace BaSyx.API.Clients
         Task<IResult<ISubmodelElement>> CreateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement);
         Task<IResult> UpdateSubmodelElementAsync(string rootIdShortPath, ISubmodelElement submodelElement);
         Task<IResult<PagedResult<IElementContainer<ISubmodelElement>>>> RetrieveSubmodelElementsAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep, RequestExtent extent = RequestExtent.WithoutBlobValue);
-        IResult<List<string>> RetrieveSubmodelElementsPath(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep);
-        Task<IResult<List<string>>> RetrieveSubmodelElementsPathAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep);
+        IResult<PagedResult<List<string>>> RetrieveSubmodelElementsPath(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep);
+        Task<IResult<PagedResult<List<string>>>> RetrieveSubmodelElementsPathAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep);
         Task<IResult<ISubmodelElement>> RetrieveSubmodelElementAsync(string idShortPath);
         Task<IResult<ValueScope>> RetrieveSubmodelElementValueAsync(string idShortPath);
         IResult<List<string>> RetrieveSubmodelElementPath(string idShortPath, RequestLevel level = RequestLevel.Deep);
