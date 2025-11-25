@@ -583,7 +583,10 @@ namespace BaSyx.Models.AdminShell
             }
             else if (idShortPath.Contains(PATH_SEPERATOR))
             {
-                string lastElement = idShortPath.Substring(idShortPath.LastIndexOf(PATH_SEPERATOR), idShortPath.Length - idShortPath.LastIndexOf(PATH_SEPERATOR));
+                // Fix: extract last element correctly (after separator)
+                int idx = idShortPath.LastIndexOf(PATH_SEPERATOR);
+                string lastElement = idx >= 0 && idx + 1 < idShortPath.Length ? idShortPath.Substring(idx + 1) : idShortPath;
+
                 var child = GetChild(idShortPath);
                 if (child != null)
                 {
@@ -627,9 +630,9 @@ namespace BaSyx.Models.AdminShell
                     var index = directChild.Index;
                     if (index != -1)
                     {
-                        if (element is IElementContainer<TElement> containerElement)
-                        {
-                        }
+                        IElementContainer<TElement> containerElement;
+                        if (element is IElementContainer<TElement> container)
+                            containerElement = container;
                         else
                             containerElement = new ElementContainer<TElement>(Parent, element, this);
 
@@ -689,6 +692,9 @@ namespace BaSyx.Models.AdminShell
 
         public void AddRange(IEnumerable<TElement> collection)
         {
+            if (collection == null)
+                return;
+
             foreach (var item in collection)
             {
                 Add(item);
@@ -712,6 +718,9 @@ namespace BaSyx.Models.AdminShell
 
         public bool Contains(TElement item)
         {
+            if (item == null)
+                return false;
+
             return this[item.IdShort] != null;
         }
 
@@ -725,6 +734,9 @@ namespace BaSyx.Models.AdminShell
 
         public bool Remove(TElement item)
         {
+            if (item == null)
+                return false;
+
             var removed = _children.RemoveAll(c => c.IdShort == item.IdShort);
             if (removed > 0)
             {
@@ -735,6 +747,4 @@ namespace BaSyx.Models.AdminShell
                 return false;
         }
     }
-
-   
 }
