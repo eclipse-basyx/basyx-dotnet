@@ -9,6 +9,9 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
 namespace BaSyx.Models.AdminShell
 {
     /// <summary>
@@ -16,6 +19,10 @@ namespace BaSyx.Models.AdminShell
     /// </summary>
     public interface ISubmodelElementCollection : ISubmodelElement<SubmodelElementCollectionValue>, IGetSet
     {
+        [IgnoreDataMember, JsonIgnore]
+        ISubmodelElement this[string idShort] { get; set; }
 
+        [IgnoreDataMember, JsonIgnore]
+        ISubmodelElement this[int i] { get; set; }
     }
 }

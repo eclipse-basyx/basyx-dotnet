@@ -9,6 +9,7 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BaSyx.Models.AdminShell
 {
@@ -64,5 +65,11 @@ namespace BaSyx.Models.AdminShell
         /// </summary>
         [DataMember(EmitDefaultValue = false, IsRequired = false, Name = "valueTypeListElement")]
         DataType ValueTypeListElement { get; set; }
+
+        [IgnoreDataMember, JsonIgnore]
+        ISubmodelElement this[string idShort] { get; set; }
+
+        [IgnoreDataMember, JsonIgnore]
+        ISubmodelElement this[int i] { get; set; }
     }
 }
