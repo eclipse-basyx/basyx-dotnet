@@ -1,13 +1,3 @@
-/*******************************************************************************
-* Copyright (c) 2024 Bosch Rexroth AG
-* Author: Constantin Ziesche (constantin.ziesche@bosch.com)
-*
-* This program and the accompanying materials are made available under the
-* terms of the MIT License which is available at
-* https://github.com/eclipse-basyx/basyx-dotnet/blob/main/LICENSE
-*
-* SPDX-License-Identifier: MIT
-*******************************************************************************/
 using BaSyx.Models.AdminShell;
 using BaSyx.Models.Semantics;
 using BaSyx.Utils.ResultHandling;
@@ -23,7 +13,7 @@ using System.Threading.Tasks;
 namespace BaSyx.Models.Extensions
 {
     public static class SubmodelElementExtensions
-    {        
+    {
         private static readonly ILogger logger = LoggingExtentions.CreateLogger("SubmodelElementExtensions");
 
         public const BindingFlags DEFAULT_BINDING_FLAGS = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
@@ -38,7 +28,7 @@ namespace BaSyx.Models.Extensions
             return referable as T;
         }
 
-        public static IElementContainer<ISubmodelElement> ToElementContainer<T>(this IEnumerable<T> enumerable, 
+        public static IElementContainer<ISubmodelElement> ToElementContainer<T>(this IEnumerable<T> enumerable,
             IReferable parent = null, ISubmodelElement rootElement = null, IElementContainer<ISubmodelElement> parentContainer = null)
         {
             if (enumerable != null)
@@ -47,16 +37,18 @@ namespace BaSyx.Models.Extensions
                 DataType type = DataType.GetDataTypeFromSystemType(typeof(T));
                 if (type.IsCollection)
                 {
-                    ISubmodelElementCollection smc = CreateSubmodelElementCollectionFromEnumerable<T>(enumerable);
-                    smElements.Add(smc);
+                    // New behavior: Lists/Arrays become SubmodelElementList instead of SubmodelElementCollection
+                    ISubmodelElementList sml = CreateSubmodelElementListFromEnumerable(enumerable, typeof(T).Name, DEFAULT_BINDING_FLAGS);
+                    smElements.Add(sml);
                 }
                 else
                 {
-                    for (int i = 0; i < enumerable.Count(); i++)
+                    int i = 0;
+                    foreach (var item in enumerable)
                     {
-                        var item = enumerable.ElementAt(i);
                         Property property = new Property($"{i}", type, item);
                         smElements.Add(property);
+                        i++;
                     }
                 }
                 return smElements;
@@ -66,50 +58,148 @@ namespace BaSyx.Models.Extensions
         }
 
         public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementList sml)
-         => ToEnumerable<T>(sml.Value.Value);
+            => ToEnumerable<T>(sml.Value.Value);
 
         public static IEnumerable<T> ToEnumerable<T>(this ISubmodelElementCollection smc)
-         => ToEnumerable<T>(smc.Value.Value);
+            => ToEnumerable<T>(smc.Value.Value);
 
         public static IEnumerable<T> ToEnumerable<T>(this IElementContainer<ISubmodelElement> container)
         {
-            if (container != null)
-            {
-                return container.Select(s => s.Cast<IProperty>().GetValue<T>());                
-            }
-            else
+            if (container == null)
                 return null;
+
+            var targetElementType = typeof(T);
+            var result = new List<T>();
+
+            foreach (var element in container.Values)
+            {
+                if (element == null)
+                    continue;
+
+                if (element.ModelType == ModelType.Property)
+                {
+                    var value = element.Cast<IProperty>().GetValue<T>();
+                    result.Add(value);
+                }
+                else if (element.ModelType == ModelType.SubmodelElementCollection)
+                {
+                    // Convert each collection element to object of T
+                    var obj = element.Cast<ISubmodelElementCollection>().ToObject(targetElementType);
+                    if (obj is T t)
+                        result.Add(t);
+                    else if (obj != null)
+                        result.Add((T)Convert.ChangeType(obj, targetElementType));
+                }
+                else if (element.ModelType == ModelType.SubmodelElementList)
+                {
+                    // Nested list support (basic): try to convert list to target type if the target is an IEnumerable
+                    var list = element.Cast<ISubmodelElementList>();
+                    var obj = list.ToObject(targetElementType);
+                    if (obj is T t)
+                        result.Add(t);
+                }
+                else
+                {
+                    // other SME types are currently not supported for IEnumerable<T> conversion
+                }
+            }
+
+            return result;
         }
 
         public static T ToObject<T>(this ISubmodelElementCollection collection) where T : class
         {
             if (collection != null)
             {
-                return new SubmodelElementCollection<T>(collection).Value;
+                return (T)ToObject(collection, typeof(T));
             }
             else
                 return null;
         }
 
+        //public static T ToObject<T>(this IEnumerable<ISubmodelElement> container) where T : class
+        //{
+        //    if (container != null)
+        //    {
+        //        return (T)ToObject(container, typeof(T));
+        //    }
+        //    else
+        //        return null;
+        //}
+
         public static T ToObject<T>(this IEnumerable<ISubmodelElement> container) where T : class
         {
             if (container != null)
             {
-                Type type = typeof(T);
-                T instance = Activator.CreateInstance<T>();
-                foreach (var element in container)
-                {
-                    PropertyInfo info = type.GetProperty(element.IdShort);
-                    if(info != null && info.CanWrite)
-                    {
-                        var value = element.Cast<IProperty>().Value.Value.ToObject(info.PropertyType);
-                        info.SetValue(instance, value, null);
-                    }
-                }
-                return instance;
+                // Convert IEnumerable<ISubmodelElement> to IElementContainer<ISubmodelElement>
+                var elementContainer = new ElementContainer<ISubmodelElement>();
+                elementContainer.AddRange(container);
+                return (T)ToObject(elementContainer, typeof(T));
             }
             else
                 return null;
+        }
+
+
+        public static object ToObject(this ISubmodelElementCollection collection, Type type)
+        {
+            if (collection == null || type == null)
+                return null;
+
+            return ToObject(collection.Value.Value, type);
+        }
+
+        public static object ToObject(this ISubmodelElementList list, Type targetType)
+        {
+            if (list == null || targetType == null)
+                return null;
+
+            var elementContainer = list.Value.Value;
+            return ConvertElementContainerToCollection(elementContainer, targetType);
+        }
+
+        public static object ToObject(this IElementContainer<ISubmodelElement> container, Type type)
+        {
+            if (container == null || type == null)
+                return null;
+
+            // Create instance and set properties
+            var instance = Activator.CreateInstance(type);
+            foreach (var element in container.Values)
+            {
+                if (string.IsNullOrEmpty(element?.IdShort))
+                    continue;
+
+                var info = type.GetProperty(element.IdShort, DEFAULT_BINDING_FLAGS);
+                if (info == null || !info.CanWrite)
+                    continue;
+
+                var targetPropertyType = info.PropertyType;
+                object valueToAssign = null;
+
+                if (element.ModelType == ModelType.Property)
+                {
+                    var propScope = element.Cast<IProperty>()?.Value;
+                    var elemValue = propScope?.Value?.ToObject(targetPropertyType);
+                    valueToAssign = elemValue;
+                }
+                else if (element.ModelType == ModelType.SubmodelElementCollection)
+                {
+                    // Nested complex type
+                    var nestedObj = element.Cast<ISubmodelElementCollection>().ToObject(targetPropertyType);
+                    valueToAssign = nestedObj;
+                }
+                else if (element.ModelType == ModelType.SubmodelElementList)
+                {
+                    // List/Array conversion
+                    var nestedListObj = element.Cast<ISubmodelElementList>().ToObject(targetPropertyType);
+                    valueToAssign = nestedListObj;
+                }
+
+                if (valueToAssign != null)
+                    info.SetValue(instance, valueToAssign, null);
+            }
+            return instance;
         }
 
         public static TValueScope GetValueScope<TValueScope>(this ISubmodelElement sme) where TValueScope : ValueScope
@@ -136,7 +226,7 @@ namespace BaSyx.Models.Extensions
 
         public static T GetValue<T>(this ValueScope valueScope)
         {
-            if(valueScope is PropertyValue propValue)
+            if (valueScope is PropertyValue propValue)
             {
                 return propValue.Value.ToObject<T>();
             }
@@ -155,21 +245,21 @@ namespace BaSyx.Models.Extensions
 
         public static async Task SetValueAsync<T>(this ISubmodelElement sme, T value)
         {
-            if(sme.ModelType == ModelType.Property)
+            if (sme.ModelType == ModelType.Property)
             {
-                if(value is PropertyValue propValue)
+                if (value is PropertyValue propValue)
                 {
                     await sme.SetValueScope(propValue).ConfigureAwait(false);
-                }                    
+                }
                 else
                 {
                     PropertyValue<T> propertyValue = new PropertyValue<T>(value);
                     await sme.SetValueScope(propertyValue).ConfigureAwait(false);
-                }               
+                }
             }
             else if (sme.ModelType == ModelType.SubmodelElementList)
             {
-                if(value is SubmodelElementListValue smlValue)
+                if (value is SubmodelElementListValue smlValue)
                 {
                     await sme.SetValueScope(smlValue).ConfigureAwait(false);
                 }
@@ -181,12 +271,25 @@ namespace BaSyx.Models.Extensions
                 {
                     var enumerable = collection.Cast<object>();
                     IElementContainer<ISubmodelElement> smeElements = new ElementContainer<ISubmodelElement>();
-                    for (int i = 0; i < collection.Count; i++)
+                    int i = 0;
+                    foreach (var element in enumerable)
                     {
-                        var element = enumerable.ElementAt(i);
-                        smeElements.Add(new Property($"{i}", element.GetType(), element));
+                        if (element == null)
+                            continue;
+
+                        if (DataType.IsSimpleType(element.GetType()) || element is DateTime)
+                        {
+                            smeElements.Add(new Property($"{i}", element.GetType(), element));
+                        }
+                        else
+                        {
+                            // complex type -> element collection
+                            var childCollection = CreateSubmodelElementCollectionFromType(element.GetType(), $"{i}", DEFAULT_BINDING_FLAGS, element);
+                            smeElements.Add(childCollection);
+                        }
+                        i++;
                     }
-                    SubmodelElementListValue listValue = new SubmodelElementListValue(smeElements);                 
+                    SubmodelElementListValue listValue = new SubmodelElementListValue(smeElements);
                     await sme.SetValueScope(listValue).ConfigureAwait(false);
                 }
             }
@@ -196,7 +299,7 @@ namespace BaSyx.Models.Extensions
                 {
                     await sme.SetValueScope(smcValue).ConfigureAwait(false);
                 }
-                else if(sme is SubmodelElementCollection smc && value is SubmodelElementCollection valueSmc)
+                else if (sme is SubmodelElementCollection smc && value is SubmodelElementCollection valueSmc)
                 {
                     smc.Value = valueSmc.Value;
                 }
@@ -210,10 +313,25 @@ namespace BaSyx.Models.Extensions
                         {
                             var propertyValue = propertyInfo.GetValue(value);
 
-                            Property smProp = new Property(propertyInfo.Name, propertyInfo.PropertyType);
-                            smProp.Value = new PropertyValue(new ElementValue(propertyValue, propertyInfo.PropertyType));
+                            if (propertyValue == null)
+                                continue;
 
-                            smeElements.Add(smProp);
+                            if (DataType.IsSimpleType(propertyInfo.PropertyType) || propertyInfo.PropertyType == typeof(DateTime))
+                            {
+                                Property smProp = new Property(propertyInfo.Name, propertyInfo.PropertyType);
+                                smProp.Value = new PropertyValue(new ElementValue(propertyValue, propertyInfo.PropertyType));
+                                smeElements.Add(smProp);
+                            }
+                            else if (DataType.IsGenericList(propertyInfo.PropertyType) || DataType.IsArray(propertyInfo.PropertyType))
+                            {
+                                var listElement = CreateSubmodelElementListFromEnumerable((IEnumerable)propertyValue, propertyInfo.Name, DEFAULT_BINDING_FLAGS);
+                                smeElements.Add(listElement);
+                            }
+                            else
+                            {
+                                var childSmc = CreateSubmodelElementCollectionFromType(propertyInfo.PropertyType, propertyInfo.Name, DEFAULT_BINDING_FLAGS, propertyValue);
+                                smeElements.Add(childSmc);
+                            }
                         }
                     }
                     SubmodelElementCollectionValue collectionValue = new SubmodelElementCollectionValue(smeElements);
@@ -221,7 +339,7 @@ namespace BaSyx.Models.Extensions
                 }
             }
         }
-        
+
         public static Task<OperationResult> Invoke(this IOperation operation, IOperationVariableSet inputArguments, IOperationVariableSet inoutputArguments, IOperationVariableSet outputArguments, CancellationToken ct)
         {
             return operation?.OnMethodCalled?.Invoke(operation, inputArguments, inoutputArguments, outputArguments, ct);
@@ -230,6 +348,32 @@ namespace BaSyx.Models.Extensions
         public static async Task<OperationResult> InvokeAsync(this IOperation operation, IOperationVariableSet inputArguments, IOperationVariableSet inoutputArguments, IOperationVariableSet outputArguments, CancellationToken ct)
         {
             return await operation?.OnMethodCalled?.Invoke(operation, inputArguments, inoutputArguments, outputArguments, ct);
+        }
+
+        // Convenience: create a SME from an object instance (simple -> Property, list/array -> SubmodelElementList, complex -> SubmodelElementCollection)
+        public static ISubmodelElement CreateSubmodelElementFromInstance(this object target, string idShort = null, BindingFlags bindingFlags = DEFAULT_BINDING_FLAGS)
+        {
+            if (target == null)
+                return null;
+
+            var type = target.GetType();
+            idShort ??= type.Name;
+
+            if (DataType.IsSimpleType(type) || type == typeof(DateTime))
+            {
+                var prop = new Property(idShort, type, target);
+                return prop;
+            }
+            else if (DataType.IsGenericList(type) || DataType.IsArray(type))
+            {
+                var listSme = CreateSubmodelElementListFromEnumerable((IEnumerable)target, idShort, bindingFlags);
+                return listSme;
+            }
+            else
+            {
+                var smc = CreateSubmodelElementCollectionFromType(type, idShort, bindingFlags, target);
+                return smc;
+            }
         }
 
         public static ISubmodelElementCollection CreateSubmodelElementCollectionFromObject(this object target)
@@ -244,6 +388,68 @@ namespace BaSyx.Models.Extensions
         public static ISubmodelElementCollection CreateSubmodelElementCollectionFromObject(this object target, string idShort, BindingFlags bindingFlags)
             => CreateSubmodelElementCollectionFromType(target.GetType(), idShort, bindingFlags, target);
 
+        // New: SubmodelElementList builder for enumerables
+        public static ISubmodelElementList CreateSubmodelElementListFromEnumerable<T>(this IEnumerable enumerable)
+            => CreateSubmodelElementListFromEnumerable(enumerable, typeof(T).Name, DEFAULT_BINDING_FLAGS);
+
+        public static ISubmodelElementList CreateSubmodelElementListFromEnumerable(this IEnumerable enumerable, string idShort)
+            => CreateSubmodelElementListFromEnumerable(enumerable, idShort, DEFAULT_BINDING_FLAGS);
+
+        public static ISubmodelElementList CreateSubmodelElementListFromEnumerable<T>(this IEnumerable enumerable, BindingFlags bindingFlags)
+            => CreateSubmodelElementListFromEnumerable(enumerable, typeof(T).Name, bindingFlags);
+
+        public static ISubmodelElementList CreateSubmodelElementListFromEnumerable(this IEnumerable enumerable, string idShort, BindingFlags bindingFlags)
+        {
+            var sml = new SubmodelElementList(idShort);
+            if (enumerable == null)
+                return sml;
+
+            Type itemType = null;
+            var e = enumerable.GetEnumerator();
+            if (e.MoveNext() && e.Current != null)
+                itemType = e.Current.GetType();
+
+            if (itemType == null)
+            {
+                // try to infer from IEnumerable type
+                var enType = enumerable.GetType();
+                if (DataType.IsArray(enType))
+                    itemType = enType.GetElementType();
+                else if (DataType.IsGenericList(enType))
+                    itemType = enType.GetGenericArguments().FirstOrDefault();
+            }
+
+            bool simpleItem = itemType != null && (DataType.IsSimpleType(itemType) || itemType == typeof(DateTime));
+            sml.TypeValueListElement = simpleItem ? ModelType.Property : ModelType.SubmodelElementCollection;
+            sml.ValueTypeListElement = DataType.GetDataTypeFromSystemType(simpleItem ? itemType : typeof(object));
+
+            int i = 0;
+            foreach (var item in enumerable)
+            {
+                if (item == null) { i++; continue; }
+
+                if (simpleItem)
+                {
+                    if (enumerable is IList list)
+                    {
+                        Property p = new Property($"{i}", item.GetType());
+                        p.Get = (prop) => { return new PropertyValue(new ElementValue(list[Convert.ToInt32(prop.IdShort)], item.GetType())); };
+                        p.Set = (prop, value) => { list[Convert.ToInt32(prop.IdShort)] = value.Value.ToObject(item.GetType()); return Task.CompletedTask; };
+                        sml.Add(p);
+                    }
+                    else
+                        sml.Add(new Property($"{i}", item.GetType(), item));
+                }
+                else
+                {
+                    var itemCollection = CreateSubmodelElementCollectionFromType(item.GetType(), $"{i}", bindingFlags, item);
+                    sml.Add(itemCollection);
+                }
+                i++;
+            }
+            return sml;
+        }
+
         public static ISubmodelElementCollection CreateSubmodelElementCollectionFromEnumerable<T>(this IEnumerable enumerable)
             => CreateSubmodelElementCollectionFromEnumerable(enumerable, typeof(T).Name, DEFAULT_BINDING_FLAGS);
 
@@ -251,20 +457,24 @@ namespace BaSyx.Models.Extensions
             => CreateSubmodelElementCollectionFromEnumerable(enumerable, idShort, DEFAULT_BINDING_FLAGS);
 
         public static ISubmodelElementCollection CreateSubmodelElementCollectionFromEnumerable<T>(this IEnumerable enumerable, BindingFlags bindingFlags)
-         => CreateSubmodelElementCollectionFromEnumerable(enumerable, typeof(T).Name, bindingFlags);
+            => CreateSubmodelElementCollectionFromEnumerable(enumerable, typeof(T).Name, bindingFlags);
 
         public static ISubmodelElementCollection CreateSubmodelElementCollectionFromEnumerable(this IEnumerable enumerable, string idShort, BindingFlags bindingFlags)
         {
+            // Keep this for backward compatibility when an enumerable is intended to flatten into a collection of properties/child collections.
+            // For simple enumerable elements, add properties; for complex elements, add embedded collections.
             SubmodelElementCollection smCollection = new SubmodelElementCollection(idShort);
 
             int i = 0;
             foreach (var item in enumerable)
             {
-                if (DataType.IsSimpleType(item.GetType()))
+                if (item == null) { i++; continue; }
+
+                if (DataType.IsSimpleType(item.GetType()) || item is DateTime)
                 {
                     Property p = new Property($"{i}", item.GetType());
                     if (enumerable is IList list)
-                    {                        
+                    {
                         p.Get = (prop) => { return new PropertyValue(new ElementValue(list[Convert.ToInt32(prop.IdShort)], item.GetType())); };
                         p.Set = (prop, value) => { list[Convert.ToInt32(prop.IdShort)] = value.Value.ToObject(item.GetType()); return Task.CompletedTask; };
                     }
@@ -272,12 +482,8 @@ namespace BaSyx.Models.Extensions
                 }
                 else
                 {
-                    foreach (var propertyInfo in item.GetType().GetProperties(bindingFlags))
-                    {
-                        ISubmodelElement smElement = CreateSubmodelElementFromPropertyInfo(propertyInfo, propertyInfo.Name, bindingFlags, item);
-                        if (smElement != null)
-                            smCollection.Value.Value.Create(smElement);
-                    }
+                    var itemSmc = CreateSubmodelElementCollectionFromType(item.GetType(), $"{i}", bindingFlags, item);
+                    smCollection.Add(itemSmc);
                 }
                 i++;
             }
@@ -347,9 +553,9 @@ namespace BaSyx.Models.Extensions
                     {
                         Id = specAttribute.Identification,
                         EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
-                        {
-                            new DataSpecificationIEC61360(specAttribute.Content)
-                        }
+                    {
+                        new DataSpecificationIEC61360(specAttribute.Content)
+                    }
                     };
                 }
 
@@ -357,15 +563,8 @@ namespace BaSyx.Models.Extensions
                 {
                     if (DataType.IsGenericList(propertyInfo.PropertyType) || DataType.IsArray(propertyInfo.PropertyType))
                     {
-                        ISubmodelElementCollection tempSeCollection;
-                        if (target != null && propertyInfo.CanRead && propertyInfo.GetValue(target) is IEnumerable enumerable)
-                            tempSeCollection = enumerable.CreateSubmodelElementCollectionFromEnumerable(idShort, bindingFlags);
-                        else
-                            tempSeCollection = new SubmodelElementCollection(idShort);
-
-                        seCollection.Value.Value.AddRange(tempSeCollection.Value.Value);
-
-                        return seCollection;
+                        // Override: Lists/Arrays should become SubmodelElementList, not collection
+                        return BuildSubmodelElementListFromProperty(propertyInfo, idShort, bindingFlags, target, se.ConceptDescription);
                     }
                     else
                     {
@@ -389,7 +588,7 @@ namespace BaSyx.Models.Extensions
                         if (propertyInfo.CanRead)
                             seProp.Get = (p) => { return new PropertyValue(new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType)); };
                         if (propertyInfo.CanWrite)
-                            seProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
+                            seProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value.Value); return Task.CompletedTask; };
                     }
                     return seProp;
                 }
@@ -417,9 +616,9 @@ namespace BaSyx.Models.Extensions
                     {
                         Id = specAttribute.Identification,
                         EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
-                        {
-                            new DataSpecificationIEC61360(specAttribute.Content)
-                        }
+                    {
+                        new DataSpecificationIEC61360(specAttribute.Content)
+                    }
                     };
                 }
 
@@ -431,7 +630,7 @@ namespace BaSyx.Models.Extensions
                         if (propertyInfo.CanRead)
                             smProp.Get = (p) => { return new PropertyValue(new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType)); };
                         if (propertyInfo.CanWrite)
-                            smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
+                            smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value.Value); return Task.CompletedTask; };
                     }
 
                     smProp.ConceptDescription = conceptDescription;
@@ -445,7 +644,7 @@ namespace BaSyx.Models.Extensions
                         if (propertyInfo.CanRead)
                             smProp.Get = (p) => { return new PropertyValue(new ElementValue(propertyInfo.GetValue(target), propertyInfo.PropertyType)); };
                         if (propertyInfo.CanWrite)
-                            smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value); return Task.CompletedTask; };
+                            smProp.Set = (p, val) => { propertyInfo.SetValue(target, val.Value.Value); return Task.CompletedTask; };
                     }
 
                     smProp.ConceptDescription = conceptDescription;
@@ -475,14 +674,9 @@ namespace BaSyx.Models.Extensions
                 }
                 else if (DataType.IsGenericList(propertyInfo.PropertyType) || DataType.IsArray(propertyInfo.PropertyType))
                 {
-                    SubmodelElementCollection seCollection;
-                    if (target != null && propertyInfo.CanRead && propertyInfo.GetValue(target) is IEnumerable enumerable)
-                        seCollection = (SubmodelElementCollection)enumerable.CreateSubmodelElementCollectionFromEnumerable(idShort, bindingFlags);
-                    else
-                        seCollection = new SubmodelElementCollection(idShort);
-
-                    seCollection.ConceptDescription = conceptDescription;
-                    return seCollection;
+                    // New behavior: produce SubmodelElementList
+                    var sml = BuildSubmodelElementListFromProperty(propertyInfo, idShort, bindingFlags, target, conceptDescription);
+                    return sml;
                 }
                 else
                 {
@@ -502,6 +696,126 @@ namespace BaSyx.Models.Extensions
                     smCollection.ConceptDescription = conceptDescription;
                     return smCollection;
                 }
+            }
+        }
+
+        private static ISubmodelElementList BuildSubmodelElementListFromProperty(PropertyInfo propertyInfo, string idShort, BindingFlags bindingFlags, object target, IConceptDescription conceptDescription)
+        {
+            Type elementType = propertyInfo.PropertyType.IsArray
+                ? propertyInfo.PropertyType.GetElementType()
+                : propertyInfo.PropertyType.GetGenericArguments().FirstOrDefault();
+
+            var simpleItem = elementType != null && (DataType.IsSimpleType(elementType) || elementType == typeof(DateTime));
+
+            var sml = new SubmodelElementList(idShort)
+            {
+                TypeValueListElement = simpleItem ? ModelType.Property : ModelType.SubmodelElementCollection,
+                ValueTypeListElement = DataType.GetDataTypeFromSystemType(simpleItem ? elementType : typeof(object)),
+                ConceptDescription = conceptDescription
+            };
+
+            if (target != null && propertyInfo.CanRead)
+            {
+                var enumerable = propertyInfo.GetValue(target) as IEnumerable;
+
+                if (enumerable != null)
+                {
+                    var tempList = CreateSubmodelElementListFromEnumerable(enumerable, idShort, bindingFlags);
+                    sml.Value.Value.AddRange(tempList.Value.Value);
+                }
+
+                // Bind Get/Set to the underlying object property
+                sml.Get = (prop) =>
+                {
+                    var currentVal = propertyInfo.GetValue(target) as IEnumerable;
+                    if (currentVal == null)
+                        return Task.FromResult(new SubmodelElementListValue(new ElementContainer<ISubmodelElement>()));
+
+                    var container = CreateSubmodelElementListFromEnumerable(currentVal, idShort, bindingFlags).Value;
+                    return Task.FromResult(new SubmodelElementListValue(container.Value));
+                };
+
+                sml.Set = (prop, valueScope) =>
+                {
+                    if (valueScope is SubmodelElementListValue listValue)
+                    {
+                        var targetCollectionType = propertyInfo.PropertyType;
+                        var obj = ConvertElementContainerToCollection(listValue.Value, targetCollectionType);
+                        propertyInfo.SetValue(target, obj);
+                    }
+                    return Task.CompletedTask;
+                };
+            }
+
+            return sml;
+        }
+
+        private static object ConvertElementContainerToCollection(IElementContainer<ISubmodelElement> container, Type targetType)
+        {
+            if (container == null || targetType == null)
+                return null;
+
+            Type elementType;
+            bool isArray = targetType.IsArray;
+            if (isArray)
+                elementType = targetType.GetElementType();
+            else
+                elementType = targetType.IsGenericType ? targetType.GetGenericArguments()[0] : typeof(object);
+
+            var items = new List<object>();
+
+            foreach (var element in container.Values)
+            {
+                object itemVal = null;
+                if (element.ModelType == ModelType.Property)
+                {
+                    itemVal = element.Cast<IProperty>()?.Value?.Value?.ToObject(elementType);
+                }
+                else if (element.ModelType == ModelType.SubmodelElementCollection)
+                {
+                    itemVal = element.Cast<ISubmodelElementCollection>().ToObject(elementType);
+                }
+                else if (element.ModelType == ModelType.SubmodelElementList)
+                {
+                    itemVal = element.Cast<ISubmodelElementList>().ToObject(elementType);
+                }
+
+                if (itemVal != null)
+                    items.Add(itemVal);
+            }
+
+            if (isArray)
+            {
+                var arr = Array.CreateInstance(elementType, items.Count);
+                for (int i = 0; i < items.Count; i++)
+                    arr.SetValue(items[i], i);
+                return arr;
+            }
+            else
+            {
+                // Try to instantiate targetType if it’s a concrete collection; otherwise, use List<T>
+                object listObj = null;
+                try
+                {
+                    listObj = Activator.CreateInstance(targetType);
+                    if (listObj is IList list)
+                    {
+                        foreach (var item in items)
+                            list.Add(item);
+                        return list;
+                    }
+                }
+                catch
+                {
+                    // fallback to List<T>
+                }
+
+                var genericListType = typeof(List<>).MakeGenericType(elementType);
+                var genericList = Activator.CreateInstance(genericListType);
+                var addMethod = genericListType.GetMethod("Add");
+                foreach (var item in items)
+                    addMethod.Invoke(genericList, new[] { item });
+                return genericList;
             }
         }
     }
