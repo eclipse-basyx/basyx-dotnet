@@ -26,23 +26,34 @@ namespace BaSyx.Models.AdminShell
 
         private List<IReference<ISubmodel>> _submodelRefs;
 
+
         [JsonPropertyName("submodels")]
-        public IEnumerable<IReference<ISubmodel>> SubmodelReferences 
-        { 
-            get 
+        public IEnumerable<IReference<ISubmodel>> SubmodelReferences
+        {
+            get
             {
-                _submodelRefs = new List<IReference<ISubmodel>>();
-                var safeSubmodels = Submodels.ToList();
-                foreach (var submodel in safeSubmodels)
+                if (_submodelRefs == null || !_submodelRefs.Any())
+                    _submodelRefs = new List<IReference<ISubmodel>>();
+
+                if (Submodels != null && Submodels.Any())
                 {
-                    var reference = submodel.CreateReference();
-                    _submodelRefs.Add(reference);
+                    var safeSubmodels = Submodels.ToList();
+                    foreach (var submodel in safeSubmodels)
+                    {
+                        if (_submodelRefs.FindIndex(r => r.First?.Value == submodel.Id) == -1)
+                        {
+                            var reference = submodel.CreateReference();
+                            _submodelRefs.Add(reference);
+                        }
+                        else
+                            continue;                     
+                    }
                 }
                 return _submodelRefs;
             }
             set
             {
-                _submodelRefs = value.ToList();
+                _submodelRefs = value?.ToList() ?? new List<IReference<ISubmodel>>();
             }
         }
         public IReference<IAssetAdministrationShell> DerivedFrom { get; set; }     
