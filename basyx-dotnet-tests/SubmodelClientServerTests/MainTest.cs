@@ -1261,7 +1261,7 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElementPath(idShortPath, level);
         }
 
-        public IResult<List<string>> RetrieveSubmodelElementsPath(int limit = 100,
+        public IResult<PagedResult<List<string>>> RetrieveSubmodelElementsPath(int limit = 100,
             string cursor = "", RequestLevel level = RequestLevel.Deep)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementsPath(limit, cursor, level);
@@ -1302,7 +1302,7 @@ namespace SubmodelClientServerTests
             return ((ISubmodelClient)Client).RetrieveSubmodelElementsAsync(limit, cursor, level, extent);
         }
 
-        public Task<IResult<List<string>>> RetrieveSubmodelElementsPathAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep)
+        public Task<IResult<PagedResult<List<string>>>> RetrieveSubmodelElementsPathAsync(int limit = 100, string cursor = "", RequestLevel level = RequestLevel.Deep)
         {
             return ((ISubmodelClient)Client).RetrieveSubmodelElementsPathAsync(limit, cursor, level);
         }
