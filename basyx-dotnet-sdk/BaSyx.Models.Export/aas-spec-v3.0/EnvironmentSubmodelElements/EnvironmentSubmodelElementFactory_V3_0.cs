@@ -161,26 +161,27 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 Entity entity = new Entity(castedEntity.IdShort)
                 {
-                    EntityType = (EntityType)Enum.Parse(typeof(EntityType), castedEntity.EntityType.ToString()),
-                    Value = new EntityValue()
-                    {
-                        GlobalAssetId = castedEntity.GlobalAssetId,
-                        SpecificAssetIds = castedEntity.SpecificAssetIds?.ConvertAll(s => new SpecificAssetId()
-                        {
-                            ExternalSubjectId = s.ExternalSubjectId?.ToReference_V3_0(),
-                            Name = s.Name,
-                            SemanticId = s.SemanticId?.ToReference_V3_0(),
-                            SupplementalSemanticIds = s.SupplementalSemanticIds?.ConvertAll(r => r.ToReference_V3_0()),
-                            Value = s.Value
-                        })
-                    }
+                    EntityType = (EntityType)Enum.Parse(typeof(EntityType), castedEntity.EntityType.ToString())
                 };
 
-                var statements = castedEntity.Statements?.ConvertAll(c => c.ToSubmodelElement(conceptDescriptions, parent));
-                if (statements?.Count > 0)
+                entity.Value.GlobalAssetId = castedEntity.GlobalAssetId;
+                entity.Value.SpecificAssetIds = castedEntity.SpecificAssetIds?.ConvertAll(s => new SpecificAssetId()
+                {
+                    ExternalSubjectId = s.ExternalSubjectId?.ToReference_V3_0(),
+                    Name = s.Name,
+                    SemanticId = s.SemanticId?.ToReference_V3_0(),
+                    SupplementalSemanticIds = s.SupplementalSemanticIds?.ConvertAll(r => r.ToReference_V3_0()),
+                    Value = s.Value
+                });
+
+                if (castedEntity.Statements?.Count > 0)
+                {
+                    entity.Value.Statements = new ElementContainer<ISubmodelElement>(parent, entity, null);
+                    List<ISubmodelElement> statements = castedEntity.Statements?.ConvertAll(c => c.ToSubmodelElement(conceptDescriptions, parent));
                     foreach (var element in statements)
                         entity.Value?.Statements.Create(element);
-
+                }
+                                   
                 submodelElement = entity;
             }
             else if (modelType == ModelType.Operation && envSubmodelElement is Operation_V3_0 castedOperation)
