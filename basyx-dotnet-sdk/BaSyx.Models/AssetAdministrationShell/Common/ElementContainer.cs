@@ -73,21 +73,23 @@ namespace BaSyx.Models.AdminShell
         }
 
         /// <summary>
-        /// Set the initial Path of the current ElementContainer.
-        /// If it is a ListChild, the Path will be the index of the child in its ParentContainer in brackets.
-        /// This is used to append the Path for nested elements more easily and to include SubmodelElementList children accordingly.
+        /// Set the initial local Path segment of the current ElementContainer.
+        /// For list children, the Path is the index in brackets (e.g. "[0]").
+        /// For non-list children, the Path is the element's IdShort.
+        /// The full hierarchical path is assembled later by AppendRootPath.
         /// </summary>
         private void SetPath()
         {
             if (IsListChild())
             {
-                Index = ParentContainer.Children.Count();
+                // Do not try to compute the index here; use whatever is currently in Index.
+                // The authoritative Index is assigned by the parent before appending (in Add).
                 Path = "[" + Index + "]";
             }
-            else if (ParentContainer != null && !string.IsNullOrEmpty(ParentContainer.Path))
-                Path = ParentContainer.Path + PATH_SEPERATOR + this.Path;
             else
+            {
                 Path = IdShort;
+            }
         }
 
         public TElement this[int i]
@@ -166,31 +168,38 @@ namespace BaSyx.Models.AdminShell
 
         public void AppendRootPath(string rootPath, bool rootIsList)
         {
-            if (string.IsNullOrEmpty(this.Path))
+            // Always rebuild the path from the local segment, using the assigned Index for list children.
+            string localSegment;
+            if (IsListChild())
             {
-                Index = ParentContainer.Children.Count();
-                Path = "[" + Index + "]";
+                // Use the element's assigned Index as the single source of truth.
+                // Do NOT derive it from ParentContainer.Children.Count() here, to avoid off-by-one after the element was added.
+                localSegment = "[" + Index + "]";
+            }
+            else
+            {
+                localSegment = IdShort;
             }
 
-            if (!string.IsNullOrEmpty(rootPath))
+            // Assemble the full path
+            if (string.IsNullOrEmpty(rootPath))
             {
-                if (rootIsList)
-                    this.Path = rootPath + this.Path;
+                this.Path = localSegment;
+            }
+            else
+            {
+                // If the immediate parent is a list and this element is a list item: concatenate without dot.
+                if (rootIsList && IsListChild())
+                    this.Path = rootPath + localSegment;
                 else
-                    this.Path = rootPath + PATH_SEPERATOR + this.Path;
+                    this.Path = rootPath + PATH_SEPERATOR + localSegment;
             }
 
+            // Propagate downwards; children need to know if their immediate parent is a list
+            bool nextRootIsList = this.Value?.ModelType == ModelType.SubmodelElementList;
             foreach (var child in _children)
             {
-                if (!string.IsNullOrEmpty(rootPath))
-                {
-                    if (rootIsList && this.Value?.ModelType == ModelType.SubmodelElementList)
-                        child.AppendRootPath(this.Path, true);
-                    else if (rootIsList && this.Value?.ModelType != ModelType.SubmodelElementList)
-                        child.AppendRootPath(this.Path, false);
-                    else
-                        child.AppendRootPath(rootPath, false);
-                }
+                child.AppendRootPath(this.Path, nextRootIsList);
             }
         }
 
@@ -488,10 +497,6 @@ namespace BaSyx.Models.AdminShell
 
             var isListParent = this.Value?.ModelType == ModelType.SubmodelElementList;
 
-            //prevent to create list children with short ID
-            //if (isListParent && !string.IsNullOrEmpty(element.IdShort))
-            //    throw new InvalidOperationException($"List element children must not have short IDs '{element.IdShort}'");
-
             //prevent to create collection children without short ID
             if (!isListParent && string.IsNullOrEmpty(element.IdShort))
                 throw new ArgumentNullException(nameof(element.IdShort));
@@ -508,26 +513,50 @@ namespace BaSyx.Models.AdminShell
                 if (this[idShortOrIndex.Item2] != null)
                     return;
             }
-                       
+
             element.Parent = this.Parent;
-            
+
             IElementContainer<TElement> node;
+
+            // Pre-calculate the future index (before adding) for list parents
+            int futureIndex = _children.Count;
+
             if (element is IElementContainer<TElement> subElements)
             {
                 subElements.Parent = this.Parent;
                 subElements.ParentContainer = this;
-                subElements.AppendRootPath(this.Path, isListParent);
+
+                if (isListParent)
+                {
+                    // Assign index BEFORE assembling the path
+                    subElements.Index = futureIndex;
+                    subElements.AppendRootPath(this.Path, true);
+                }
+                else
+                {
+                    subElements.AppendRootPath(this.Path, false);
+                }
+
                 node = subElements;
             }
             else
             {
                 node = new ElementContainer<TElement>(Parent, element, this);
+
                 if (isListParent)
+                {
+                    // Assign index BEFORE assembling the path
+                    node.Index = futureIndex;
                     node.AppendRootPath(this.Path, true);
+                }
+                else
+                {
+                    node.AppendRootPath(this.Path, false);
+                }
             }
 
-            // set index of nested SubmodelElements of type IElementContainer
-            node.Index = _children.Count;
+            // Index was already set above for list children; keep it consistent here
+            node.Index = futureIndex;
 
             _children.Add(node);
             OnCreated?.Invoke(this, new ElementContainerEventArgs<TElement>(this, element, ChangedEventType.Created));
