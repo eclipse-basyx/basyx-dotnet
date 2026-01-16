@@ -156,5 +156,10 @@ namespace BaSyx.API.ServiceProvider
         {
             return _shellClient.DeleteSubmodel(id);
         }
+
+        public virtual void Dispose()
+        {
+            
+        }
     }
 }

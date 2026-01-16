@@ -21,5 +21,10 @@ namespace BaSyx.API.ServiceProvider
         {
             return AssetAdministrationShell;
         }
+
+        public override void Dispose()
+        {
+            
+        }
     }
 }
