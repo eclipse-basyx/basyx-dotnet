@@ -349,5 +349,7 @@ namespace BaSyx.API.ServiceProvider
             else
                 return new Result(false, new ErrorMessage("Submodel reference could not be deleted"));
         }
+
+        public abstract void Dispose();
     }
 }

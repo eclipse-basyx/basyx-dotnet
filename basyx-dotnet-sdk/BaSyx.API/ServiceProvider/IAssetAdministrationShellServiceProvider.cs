@@ -12,11 +12,12 @@ using BaSyx.API.Interfaces;
 using BaSyx.Models.Connectivity;
 using BaSyx.Models.AdminShell;
 using BaSyx.API.Clients;
+using System;
 
 namespace BaSyx.API.ServiceProvider
 {
     public interface IAssetAdministrationShellServiceProvider 
-        : IServiceProvider<IAssetAdministrationShell, IAssetAdministrationShellDescriptor>, IAssetAdministrationShellInterface
+        : IServiceProvider<IAssetAdministrationShell, IAssetAdministrationShellDescriptor>, IAssetAdministrationShellInterface, IDisposable
     {
         ISubmodelServiceProviderRegistry SubmodelProviderRegistry { get; }
     }
