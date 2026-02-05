@@ -346,7 +346,7 @@ namespace BaSyx.Models.Export.EnvironmentSubmodelElements
             {
                 environmentSubmodelElement = new Property_V3_0(submodelElementType)
                 {
-                    Value = castedProperty.Value?.ToString(),
+                    Value = castedProperty.Value?.Value?.ToString(),
                     ValueId = castedProperty.ValueId?.ToEnvironmentReference_V3_0(),
                     ValueType = "xs:" + castedProperty.ValueType?.ToString()
                 };
