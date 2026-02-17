@@ -36,8 +36,47 @@ namespace BaSyx.Utils.Settings
         [XmlElement]
         public string TokenType { get; set; }
 
+        [XmlElement]
+        public OAuth2Configuration OAuth2Config { get; set; }
+
+        [XmlElement]
+        public ProxyConfiguration ProxyConfig { get; set; }
+
         public AuthenticationConfiguration()
         {
         }
+    }
+
+    public class OAuth2Configuration
+    {
+        [XmlElement]
+        public string AuthorizationEndpoint { get; set; }
+
+        [XmlElement]
+        public string TokenEndpoint { get; set; }
+
+        [XmlElement]
+        public string UserInformationEndpoint { get; set; }
+
+        [XmlElement]
+        public string IntrospectEndpoint { get; set; }
+
+        [XmlElement]
+        public string ClientId { get; set; }
+
+        [XmlElement]
+        public string ClientSecret { get; set; }
+
+        [XmlElement]
+        public string ServiceClientId { get; set; }
+
+        [XmlElement]
+        public string ServiceClientSecret { get; set; }
+
+        [XmlElement]
+        public string RedirectUri { get; set; }
+
+        [XmlElement]
+        public int CachedTokenValidityInMinutes { get; set; } = 3;
     }
 }
